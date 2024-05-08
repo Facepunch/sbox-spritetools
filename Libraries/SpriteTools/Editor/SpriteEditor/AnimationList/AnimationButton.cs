@@ -18,13 +18,13 @@ internal class AnimationButton : Widget
     bool draggingAbove = false;
     bool draggingBelow = false;
 
-    public AnimationButton( AnimationList list, MainWindow window, SpriteAnimation animation ) : base( null )
+    public AnimationButton(AnimationList list, MainWindow window, SpriteAnimation animation) : base(null)
     {
         AnimationList = list;
         MainWindow = window;
         Animation = animation;
 
-        if ( Animation.Name == MainWindow.SelectedAnimation.Name )
+        if (Animation.Name == MainWindow.SelectedAnimation.Name)
         {
             Selected = true;
         }
@@ -33,86 +33,86 @@ internal class AnimationButton : Widget
         Layout.Margin = 4;
 
         var serializedObject = Animation.GetSerialized();
-        serializedObject.TryGetProperty( nameof( SpriteAnimation.Name ), out var name );
-        labelText = new LabelTextEntry( MainWindow, name );
+        serializedObject.TryGetProperty(nameof(SpriteAnimation.Name), out var name);
+        labelText = new LabelTextEntry(MainWindow, name);
 
-        Layout.Add( labelText );
+        Layout.Add(labelText);
 
-        var duplicateButton = new IconButton( "content_copy" );
+        var duplicateButton = new IconButton("content_copy");
         duplicateButton.ToolTip = "Duplicate";
         duplicateButton.OnClick += () =>
         {
             DuplicateAnimationPopup();
         };
-        Layout.Add( duplicateButton );
+        Layout.Add(duplicateButton);
 
-        Layout.AddSpacingCell( 4 );
+        Layout.AddSpacingCell(4);
 
-        var deleteButton = new IconButton( "delete" );
+        var deleteButton = new IconButton("delete");
         deleteButton.ToolTip = "Delete";
         deleteButton.OnClick += () =>
         {
             DeleteAnimationPopup();
         };
-        Layout.Add( deleteButton );
+        Layout.Add(deleteButton);
 
         IsDraggable = true;
         AcceptDrops = true;
     }
 
-    protected override void OnContextMenu( ContextMenuEvent e )
+    protected override void OnContextMenu(ContextMenuEvent e)
     {
-        base.OnContextMenu( e );
+        base.OnContextMenu(e);
 
-        var m = new Menu( this );
+        var m = new Menu(this);
 
-        m.AddOption( "Rename", "edit", Rename );
-        m.AddOption( "Duplicate", "content_copy", DuplicateAnimationPopup );
-        m.AddOption( "Delete", "delete", Delete );
+        m.AddOption("Rename", "edit", Rename);
+        m.AddOption("Duplicate", "content_copy", DuplicateAnimationPopup);
+        m.AddOption("Delete", "delete", Delete);
 
-        m.OpenAtCursor( false );
+        m.OpenAtCursor(false);
     }
 
     protected override void OnPaint()
     {
-        if ( Selected )
+        if (Selected)
         {
-            Paint.SetBrushAndPen( Theme.Selection.WithAlpha( 0.5f ) );
-            Paint.DrawRect( LocalRect );
+            Paint.SetBrushAndPen(Theme.Selection.WithAlpha(0.5f));
+            Paint.DrawRect(LocalRect);
         }
 
-        if ( dragData?.IsValid ?? false )
+        if (dragData?.IsValid ?? false)
         {
-            Paint.SetBrushAndPen( Theme.Black.WithAlpha( 0.5f ) );
-            Paint.DrawRect( LocalRect );
+            Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
+            Paint.DrawRect(LocalRect);
         }
 
         base.OnPaint();
 
-        if ( draggingAbove )
+        if (draggingAbove)
         {
-            Paint.SetPen( Theme.Selection, 2f, PenStyle.Dot );
-            Paint.DrawLine( LocalRect.TopLeft, LocalRect.TopRight );
+            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
+            Paint.DrawLine(LocalRect.TopLeft, LocalRect.TopRight);
             draggingAbove = false;
         }
-        else if ( draggingBelow )
+        else if (draggingBelow)
         {
-            Paint.SetPen( Theme.Selection, 2f, PenStyle.Dot );
-            Paint.DrawLine( LocalRect.BottomLeft, LocalRect.BottomRight );
+            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
+            Paint.DrawLine(LocalRect.BottomLeft, LocalRect.BottomRight);
             draggingBelow = false;
         }
     }
 
     void DeleteAnimationPopup()
     {
-        var popup = new PopupWidget( MainWindow );
+        var popup = new PopupWidget(MainWindow);
         popup.Layout = Layout.Column();
         popup.Layout.Margin = 16;
         popup.Layout.Spacing = 8;
 
-        popup.Layout.Add( new Label( $"Are you sure you want to delete this animation?" ) );
+        popup.Layout.Add(new Label($"Are you sure you want to delete this animation?"));
 
-        var button = new Button.Primary( "Delete" );
+        var button = new Button.Primary("Delete");
 
 
         button.MouseClick = () =>
@@ -121,11 +121,11 @@ internal class AnimationButton : Widget
             popup.Visible = false;
         };
 
-        popup.Layout.Add( button );
+        popup.Layout.Add(button);
 
         var bottomBar = popup.Layout.AddRow();
         bottomBar.AddStretchCell();
-        bottomBar.Add( button );
+        bottomBar.Add(button);
 
         popup.Position = Editor.Application.CursorPosition;
         popup.Visible = true;
@@ -133,30 +133,30 @@ internal class AnimationButton : Widget
 
     void DuplicateAnimationPopup()
     {
-        var popup = new PopupWidget( MainWindow );
+        var popup = new PopupWidget(MainWindow);
         popup.Layout = Layout.Column();
         popup.Layout.Margin = 16;
         popup.Layout.Spacing = 8;
 
-        popup.Layout.Add( new Label( $"What would you like to name the duplicated animation?" ) );
+        popup.Layout.Add(new Label($"What would you like to name the duplicated animation?"));
 
-        var entry = new LineEdit( popup );
+        var entry = new LineEdit(popup);
         entry.Text = $"{Animation.Name} 2";
-        var button = new Button.Primary( "Duplicate" );
+        var button = new Button.Primary("Duplicate");
 
         button.MouseClick = () =>
         {
-            Duplicate( entry.Text );
+            Duplicate(entry.Text);
             popup.Visible = false;
         };
 
         entry.ReturnPressed += button.MouseClick;
 
-        popup.Layout.Add( entry );
+        popup.Layout.Add(entry);
 
         var bottomBar = popup.Layout.AddRow();
         bottomBar.AddStretchCell();
-        bottomBar.Add( button );
+        bottomBar.Add(button);
 
         popup.Position = Editor.Application.CursorPosition;
         popup.Visible = true;
@@ -168,16 +168,16 @@ internal class AnimationButton : Widget
     {
         base.OnDragStart();
 
-        dragData = new Drag( this );
+        dragData = new Drag(this);
         dragData.Data.Object = Animation;
         dragData.Execute();
     }
 
-    public override void OnDragHover( DragEvent ev )
+    public override void OnDragHover(DragEvent ev)
     {
-        base.OnDragHover( ev );
+        base.OnDragHover(ev);
 
-        if ( !TryDragOperation( ev, out var dragDelta ) )
+        if (!TryDragOperation(ev, out var dragDelta))
         {
             draggingAbove = false;
             draggingBelow = false;
@@ -188,48 +188,48 @@ internal class AnimationButton : Widget
         draggingBelow = dragDelta < 0;
     }
 
-    public override void OnDragDrop( DragEvent ev )
+    public override void OnDragDrop(DragEvent ev)
     {
-        base.OnDragDrop( ev );
+        base.OnDragDrop(ev);
 
-        if ( !TryDragOperation( ev, out var delta ) ) return;
+        if (!TryDragOperation(ev, out var delta)) return;
 
-        var oldList = new List<SpriteAnimation>( MainWindow.Sprite.Animations );
+        var oldList = new List<SpriteAnimation>(MainWindow.Sprite.Animations);
         MainWindow.Sprite.Animations = new List<SpriteAnimation>();
 
-        var index = oldList.IndexOf( Animation );
+        var index = oldList.IndexOf(Animation);
         var newIndex = index + delta;
 
-        for ( int i = 0; i < oldList.Count; i++ )
+        for (int i = 0; i < oldList.Count; i++)
         {
-            if ( i == index ) continue;
+            if (i == index) continue;
 
-            if ( i == newIndex )
+            if (i == newIndex)
             {
-                MainWindow.Sprite.Animations.Add( Animation );
+                MainWindow.Sprite.Animations.Add(Animation);
             }
 
-            MainWindow.Sprite.Animations.Add( oldList[i] );
+            MainWindow.Sprite.Animations.Add(oldList[i]);
         }
 
         AnimationList.UpdateAnimationList();
     }
 
-    bool TryDragOperation( DragEvent ev, out int delta )
+    bool TryDragOperation(DragEvent ev, out int delta)
     {
         delta = 0;
         var animation = ev.Data.OfType<SpriteAnimation>().FirstOrDefault();
 
-        if ( animation == null || Animation == null || animation == Animation )
+        if (animation == null || Animation == null || animation == Animation)
         {
             return false;
         }
 
         var animationList = MainWindow.Sprite.Animations;
-        var myIndex = animationList.IndexOf( Animation );
-        var otherIndex = animationList.IndexOf( animation );
+        var myIndex = animationList.IndexOf(Animation);
+        var otherIndex = animationList.IndexOf(animation);
 
-        if ( myIndex == -1 || otherIndex == -1 )
+        if (myIndex == -1 || otherIndex == -1)
         {
             return false;
         }
@@ -245,26 +245,29 @@ internal class AnimationButton : Widget
 
     void Delete()
     {
-        MainWindow.Sprite.Animations.Remove( Animation );
+        MainWindow.Sprite.Animations.Remove(Animation);
         AnimationList.UpdateAnimationList();
     }
 
-    void Duplicate( string name )
+    void Duplicate(string name)
     {
-        if ( !string.IsNullOrEmpty( name ) && !MainWindow.Sprite.Animations.Any( a => a.Name.ToLowerInvariant() == name.ToLowerInvariant() ) )
+        if (!string.IsNullOrEmpty(name) && !MainWindow.Sprite.Animations.Any(a => a.Name.ToLowerInvariant() == name.ToLowerInvariant()))
         {
-            var newAnimation = new SpriteAnimation( name );
-            if ( Animation.Frames is not null )
+            var newAnimation = new SpriteAnimation(name)
             {
-                newAnimation.Frames = new List<string>( Animation.Frames );
+                FrameRate = Animation.FrameRate
+            };
+            if (Animation.Frames is not null)
+            {
+                newAnimation.Frames = new List<string>(Animation.Frames);
             }
-            int index = MainWindow.Sprite.Animations.IndexOf( Animation );
-            MainWindow.Sprite.Animations.Insert( index + 1, newAnimation );
+            int index = MainWindow.Sprite.Animations.IndexOf(Animation);
+            MainWindow.Sprite.Animations.Insert(index + 1, newAnimation);
             AnimationList.UpdateAnimationList();
         }
         else
         {
-            AnimationList.ShowNamingError( name );
+            AnimationList.ShowNamingError(name);
         }
     }
 }
