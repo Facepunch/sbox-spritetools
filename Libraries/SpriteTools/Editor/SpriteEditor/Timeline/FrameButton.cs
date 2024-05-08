@@ -18,7 +18,9 @@ internal class FrameButton : Widget
     bool draggingAbove = false;
     bool draggingBelow = false;
 
-    public FrameButton( Timeline timeline, MainWindow window, int index ) : base( null )
+    public static float FrameSize = 64f;
+
+    public FrameButton(Timeline timeline, MainWindow window, int index) : base(null)
     {
         Timeline = timeline;
         MainWindow = window;
@@ -27,7 +29,10 @@ internal class FrameButton : Widget
         Layout = Layout.Row();
         Layout.Margin = 4;
 
-        MaximumSize = new Vector2( 64, 64 );
+        MinimumSize = new Vector2(FrameSize, FrameSize);
+        MaximumSize = new Vector2(FrameSize, FrameSize);
+        HorizontalSizeMode = SizeMode.Ignore;
+        VerticalSizeMode = SizeMode.Ignore;
 
         // var serializedObject = Animation.GetSerialized();
         // serializedObject.TryGetProperty( nameof( SpriteAnimation.Name ), out var name );
@@ -47,56 +52,59 @@ internal class FrameButton : Widget
         MainWindow.OnTextureUpdate -= Update;
     }
 
-    protected override void OnContextMenu( ContextMenuEvent e )
+    protected override void OnContextMenu(ContextMenuEvent e)
     {
-        base.OnContextMenu( e );
+        base.OnContextMenu(e);
 
-        var m = new Menu( this );
+        var m = new Menu(this);
 
         // m.AddOption( "Rename", "edit", Rename );
         // m.AddOption( "Duplicate", "content_copy", DuplicateAnimationPopup );
-        m.AddOption( "Delete", "delete", Delete );
+        m.AddOption("Delete", "delete", Delete);
 
-        m.OpenAtCursor( false );
+        m.OpenAtCursor(false);
     }
 
     protected override void OnPaint()
     {
-        Paint.SetBrushAndPen( Theme.ControlBackground );
-        Paint.DrawRect( LocalRect );
+        MinimumSize = new Vector2(FrameSize, FrameSize);
+        MaximumSize = new Vector2(FrameSize, FrameSize);
 
-        if ( IsCurrentFrame )
+        Paint.SetBrushAndPen(Theme.ControlBackground);
+        Paint.DrawRect(LocalRect);
+
+        if (IsCurrentFrame)
         {
-            Paint.SetBrushAndPen( Theme.Selection.WithAlpha( 0.5f ) );
-            Paint.DrawRect( new Rect( LocalRect.TopLeft, LocalRect.BottomRight.WithY( 4f ) ) );
+            Paint.SetBrushAndPen(Theme.Selection.WithAlpha(0.5f));
+            Paint.DrawRect(new Rect(LocalRect.TopLeft, LocalRect.BottomRight.WithY(4f)));
         }
 
-        if ( dragData?.IsValid ?? false )
+        if (dragData?.IsValid ?? false)
         {
-            Paint.SetBrushAndPen( Theme.Black.WithAlpha( 0.5f ) );
-            Paint.DrawRect( LocalRect );
+            Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
+            Paint.DrawRect(LocalRect);
         }
 
         //Log.Info( MainWindow.SelectedAnimation.Frames[FrameIndex] );
-        Texture texture = Texture.Load( Sandbox.FileSystem.Mounted, MainWindow.SelectedAnimation.Frames[FrameIndex] );
+        Texture texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.SelectedAnimation.Frames[FrameIndex]);
 
-        Pixmap pix = new Pixmap( texture.Width, texture.Height );
+        Pixmap pix = new Pixmap(texture.Width, texture.Height);
         var pixels = texture.GetPixels();
-        pix.UpdateFromPixels( MemoryMarshal.AsBytes<Color32>( pixels ), texture.Width, texture.Height, ImageFormat.RGBA8888 );
-        Paint.Draw( LocalRect.Shrink( 2 ), pix );
+        pix.UpdateFromPixels(MemoryMarshal.AsBytes<Color32>(pixels), texture.Width, texture.Height, ImageFormat.RGBA8888);
+        Paint.Draw(LocalRect.Shrink(2), pix);
 
         base.OnPaint();
 
-        if ( draggingAbove )
+        if (draggingAbove)
         {
-            Paint.SetPen( Theme.Selection, 2f, PenStyle.Dot );
-            Paint.DrawLine( LocalRect.TopLeft, LocalRect.BottomLeft );
+            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
+            Paint.DrawLine(LocalRect.TopLeft, LocalRect.BottomLeft);
             draggingAbove = false;
         }
-        else if ( draggingBelow )
+        else if (draggingBelow)
         {
-            Paint.SetPen( Theme.Selection, 2f, PenStyle.Dot );
-            Paint.DrawLine( LocalRect.TopRight, LocalRect.BottomRight );
+            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
+            Paint.DrawLine(LocalRect.TopRight, LocalRect.BottomRight);
             draggingBelow = false;
         }
     }
@@ -106,18 +114,18 @@ internal class FrameButton : Widget
     {
         base.OnDragStart();
 
-        if ( MainWindow.Playing ) return;
+        if (MainWindow.Playing) return;
 
-        dragData = new Drag( this );
+        dragData = new Drag(this);
         dragData.Data.Object = this;
         dragData.Execute();
     }
 
-    public override void OnDragHover( DragEvent ev )
+    public override void OnDragHover(DragEvent ev)
     {
-        base.OnDragHover( ev );
+        base.OnDragHover(ev);
 
-        if ( !TryDragOperation( ev, out var dragDelta ) )
+        if (!TryDragOperation(ev, out var dragDelta))
         {
             draggingAbove = false;
             draggingBelow = false;
@@ -128,45 +136,45 @@ internal class FrameButton : Widget
         draggingBelow = dragDelta < 0;
     }
 
-    public override void OnDragDrop( DragEvent ev )
+    public override void OnDragDrop(DragEvent ev)
     {
-        base.OnDragDrop( ev );
+        base.OnDragDrop(ev);
 
-        if ( !TryDragOperation( ev, out var delta ) ) return;
+        if (!TryDragOperation(ev, out var delta)) return;
 
-        var oldList = new List<string>( MainWindow.SelectedAnimation.Frames );
+        var oldList = new List<string>(MainWindow.SelectedAnimation.Frames);
         MainWindow.SelectedAnimation.Frames = new List<string>();
 
         var index = FrameIndex;
         var newIndex = index + delta;
 
-        for ( int i = 0; i < oldList.Count; i++ )
+        for (int i = 0; i < oldList.Count; i++)
         {
-            if ( i == index ) continue;
+            if (i == index) continue;
 
-            if ( i == newIndex )
+            if (i == newIndex)
             {
-                MainWindow.SelectedAnimation.Frames.Add( oldList[FrameIndex] );
+                MainWindow.SelectedAnimation.Frames.Add(oldList[FrameIndex]);
             }
 
-            MainWindow.SelectedAnimation.Frames.Add( oldList[i] );
+            MainWindow.SelectedAnimation.Frames.Add(oldList[i]);
         }
 
         Timeline.UpdateFrameList();
     }
 
-    bool TryDragOperation( DragEvent ev, out int delta )
+    bool TryDragOperation(DragEvent ev, out int delta)
     {
         delta = 0;
         var draggingButton = ev.Data.OfType<FrameButton>().FirstOrDefault();
         var otherIndex = draggingButton?.FrameIndex ?? -1;
 
-        if ( otherIndex < 0 || MainWindow.SelectedAnimation == null || FrameIndex == otherIndex )
+        if (otherIndex < 0 || MainWindow.SelectedAnimation == null || FrameIndex == otherIndex)
         {
             return false;
         }
 
-        if ( FrameIndex == -1 || otherIndex == -1 )
+        if (FrameIndex == -1 || otherIndex == -1)
         {
             return false;
         }
@@ -175,16 +183,16 @@ internal class FrameButton : Widget
         return true;
     }
 
-    protected override void OnMouseClick( MouseEvent e )
+    protected override void OnMouseClick(MouseEvent e)
     {
-        base.OnMouseClick( e );
+        base.OnMouseClick(e);
 
         MainWindow.CurrentFrameIndex = FrameIndex;
     }
 
     void Delete()
     {
-        MainWindow.SelectedAnimation.Frames.RemoveAt( FrameIndex );
+        MainWindow.SelectedAnimation.Frames.RemoveAt(FrameIndex);
         Timeline.UpdateFrameList();
     }
 }

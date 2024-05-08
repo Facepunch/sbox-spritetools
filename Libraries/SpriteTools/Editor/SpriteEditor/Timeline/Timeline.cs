@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Editor;
 using Sandbox;
+using Sandbox.UI;
 
 namespace SpriteTools.SpriteEditor.Timeline;
 
@@ -21,11 +22,33 @@ public class Timeline : Widget
         SetWindowIcon("view_column");
 
         Layout = Layout.Column();
+
+        var bannerLayout = Layout.Row();
+        bannerLayout.Margin = 4;
+        bannerLayout.AddStretchCell();
+
+        var text = bannerLayout.Add(new Editor.Label("Frame Size:"));
+        text.HorizontalSizeMode = SizeMode.CanShrink;
+        var slider = new FloatSlider(this);
+        slider.HorizontalSizeMode = SizeMode.CanGrow;
+        slider.Minimum = 16f;
+        slider.Maximum = 92f;
+        slider.Step = 1f;
+        slider.Value = FrameButton.FrameSize;
+        slider.MinimumWidth = 128f;
+        slider.OnValueEdited = () =>
+        {
+            FrameButton.FrameSize = slider.Value;
+            Update();
+        };
+        bannerLayout.Add(slider);
+
+        Layout.Add(bannerLayout);
+
         scrollArea = new ScrollArea(this);
         scrollArea.Canvas = new Widget();
         scrollArea.Canvas.Layout = Layout.Row();
-        scrollArea.Canvas.VerticalSizeMode = SizeMode.Flexible;
-        scrollArea.Canvas.HorizontalSizeMode = SizeMode.CanGrow;
+        scrollArea.Canvas.Layout.Spacing = 4;
 
         Layout.Add(scrollArea);
 
@@ -49,6 +72,8 @@ public class Timeline : Widget
         if (MainWindow?.SelectedAnimation is null) return;
 
         scrollArea.Canvas.Layout.Clear(true);
+        scrollArea.Canvas.VerticalSizeMode = SizeMode.Flexible;
+        scrollArea.Canvas.HorizontalSizeMode = SizeMode.Flexible;
 
         if (MainWindow.SelectedAnimation.Frames is not null)
         {
