@@ -9,6 +9,7 @@ public class RenderingWidget : NativeRenderingWidget
 
     private SceneWorld World;
     public SceneObject TextureRect;
+    SceneObject OriginMarker;
     public Material PreviewMaterial;
 
     float targetZoom = 115f;
@@ -53,6 +54,14 @@ public class RenderingWidget : NativeRenderingWidget
         TextureRect.Flags.WantsFrameBufferCopy = true;
         TextureRect.Flags.IsTranslucent = true;
         TextureRect.Flags.IsOpaque = false;
+
+        var markerMaterial = Material.Load("materials/sprite_editor_origin.vmat");
+        OriginMarker = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
+        OriginMarker.SetMaterialOverride(markerMaterial);
+        OriginMarker.Position = new Vector3(0, 0, 1f);
+        OriginMarker.Flags.WantsFrameBufferCopy = true;
+        OriginMarker.Flags.IsTranslucent = true;
+        OriginMarker.Flags.IsOpaque = false;
     }
 
     protected override void OnWheel(WheelEvent e)
@@ -109,6 +118,20 @@ public class RenderingWidget : NativeRenderingWidget
     public override void PreFrame()
     {
         Camera.OrthoHeight = Camera.OrthoHeight.LerpTo(targetZoom, 0.1f);
+        float scale = Camera.OrthoHeight / 1024f;
+        if (MainWindow.SelectedAnimation is not null)
+        {
+            OriginMarker.RenderingEnabled = true;
+            var origin = MainWindow.SelectedAnimation.Origin;
+            origin -= Vector2.One * 0.5f;
+            origin *= 100f;
+            OriginMarker.Position = new Vector3(origin.y, origin.x, 1f);
+            OriginMarker.Transform = OriginMarker.Transform.WithScale(new Vector3(scale, scale, 1f));
+        }
+        else
+        {
+            OriginMarker.RenderingEnabled = false;
+        }
     }
 
     public override void OnDestroyed()
