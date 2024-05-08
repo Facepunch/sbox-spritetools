@@ -19,9 +19,10 @@ public class Inspector : Widget
         WindowTitle = "Inspector";
         SetWindowIcon("manage_search");
 
-
         Layout = Layout.Column();
         controlSheet = new ControlSheet();
+
+        MinimumWidth = 450f;
 
         var scroller = new ScrollArea(this);
         scroller.Canvas = new Widget();
