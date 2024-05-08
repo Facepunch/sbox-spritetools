@@ -51,14 +51,35 @@ public class Timeline : Widget
         bannerLayout.AddStretchCell();
 
         buttonFramePrevious = new IconButton("navigate_before");
+        buttonFramePrevious.OnClick = () =>
+        {
+            if (MainWindow.SelectedAnimation is null) return;
+            var frame = MainWindow.CurrentFrameIndex;
+            frame--;
+            if (frame < 0) frame = MainWindow.SelectedAnimation.Frames.Count - 1;
+            MainWindow.CurrentFrameIndex = frame;
+        };
         bannerLayout.Add(buttonFramePrevious);
         bannerLayout.AddSpacingCell(4);
 
         buttonPlay = new IconButton("play_arrow");
+        buttonPlay.OnClick = () =>
+        {
+            MainWindow.PlayPause();
+        };
         bannerLayout.Add(buttonPlay);
         bannerLayout.AddSpacingCell(4);
+        UpdatePlayButton();
 
         buttonFrameNext = new IconButton("navigate_next");
+        buttonFrameNext.OnClick = () =>
+        {
+            if (MainWindow.SelectedAnimation is null) return;
+            var frame = MainWindow.CurrentFrameIndex;
+            frame++;
+            if (frame >= MainWindow.SelectedAnimation.Frames.Count) frame = 0;
+            MainWindow.CurrentFrameIndex = frame;
+        };
         bannerLayout.Add(buttonFrameNext);
         bannerLayout.AddSpacingCell(4);
 
@@ -94,6 +115,7 @@ public class Timeline : Widget
         UpdateFrameList();
 
         MainWindow.OnAnimationSelected += UpdateFrameList;
+        MainWindow.OnPlayPause += UpdatePlayButton;
     }
 
     public override void OnDestroyed()
@@ -101,9 +123,22 @@ public class Timeline : Widget
         base.OnDestroyed();
 
         MainWindow.OnAnimationSelected -= UpdateFrameList;
+        MainWindow.OnPlayPause -= UpdatePlayButton;
     }
 
     [EditorEvent.Hotload]
+    void Hotload()
+    {
+        UpdateFrameList();
+        UpdatePlayButton();
+    }
+
+    void UpdatePlayButton()
+    {
+        buttonPlay.Icon = MainWindow.Playing ? "pause" : "play_arrow";
+        buttonPlay.Update();
+    }
+
     public void UpdateFrameList()
     {
         if (MainWindow?.SelectedAnimation is null) return;

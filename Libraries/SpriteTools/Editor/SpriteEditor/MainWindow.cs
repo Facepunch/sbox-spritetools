@@ -16,6 +16,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public Action OnTextureUpdate;
     public Action OnAnimationChanges;
     public Action OnAnimationSelected;
+    public Action OnPlayPause;
 
     internal static List<MainWindow> AllWindows { get; } = new List<MainWindow>();
     public bool CanOpenMultipleAssets => true;
@@ -367,5 +368,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         {
             CurrentFrameIndex = 0;
         }
+
+        OnPlayPause?.Invoke();
     }
 }
