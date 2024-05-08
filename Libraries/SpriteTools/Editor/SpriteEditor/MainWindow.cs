@@ -174,7 +174,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         // DockManager.RegisterDockType( "ErrorList", "error", () => new ErrorList( null, this ) );
 
         DockManager.AddDock(null, inspector, DockArea.Left, DockManager.DockProperty.HideOnClose);
-        DockManager.AddDock(null, preview, DockArea.Right, DockManager.DockProperty.HideOnClose, split: 0.65f);
+        DockManager.AddDock(null, preview, DockArea.Right, DockManager.DockProperty.HideOnClose, split: 0.8f);
 
         DockManager.AddDock(preview, timeline, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.2f);
         DockManager.AddDock(inspector, animationList, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.45f);
@@ -248,7 +248,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
             return;
         }
 
-        StateCookie = asset.RelativePath;
+        StateCookie = "sprite-editor-window";
 
         _asset = asset;
         Sprite = sprite;

@@ -16,6 +16,8 @@ public class Preview : Widget
         WindowTitle = "Preview";
         SetWindowIcon("emoji_emotions");
 
+        MinimumSize = new Vector2(256, 256);
+
         Layout = Layout.Column();
 
         Rendering = new RenderingWidget(MainWindow, this);

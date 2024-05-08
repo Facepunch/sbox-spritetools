@@ -28,6 +28,7 @@ public class Timeline : Widget
 
         Layout = Layout.Column();
 
+        MinimumWidth = 512f;
         MinimumHeight = 128f;
 
         var bannerLayout = Layout.Row();

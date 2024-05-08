@@ -51,6 +51,7 @@ public class AnimationList : Widget
 
         SetSizeMode(SizeMode.Default, SizeMode.CanShrink);
 
+        UpdateAnimationList();
         MainWindow.OnAssetLoaded += UpdateAnimationList;
         MainWindow.OnAnimationChanges += UpdateAnimationList;
     }

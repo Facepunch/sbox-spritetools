@@ -36,6 +36,7 @@ public class Inspector : Widget
 
         SetSizeMode(SizeMode.Default, SizeMode.CanShrink);
 
+        UpdateControlSheet();
         MainWindow.OnAssetLoaded += UpdateControlSheet;
         MainWindow.OnAnimationSelected += UpdateControlSheet;
     }
