@@ -54,6 +54,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
         DeleteOnClose = true;
 
         Size = new Vector2(1280, 720);
+        Sprite = new SpriteResource();
+        Sprite.Animations.Clear();
 
         // Make this window stay on top of the editor, by making it a dialog
         Parent = EditorWindow;
