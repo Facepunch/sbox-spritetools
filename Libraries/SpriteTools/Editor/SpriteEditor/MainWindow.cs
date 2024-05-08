@@ -3,6 +3,7 @@ using Editor.NodeEditor;
 using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 
 namespace SpriteTools.SpriteEditor;
@@ -108,7 +109,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         {
             var file = MenuBar.AddMenu("File");
-            file.AddOption("New", "common/new.png", () => { }, "CTRL+N").StatusText = "New Sprite";
+            file.AddOption("New", "common/new.png", () => New(), "CTRL+N").StatusText = "New Sprite";
             file.AddOption("Open", "common/open.png", () => Open(), "Ctrl+O").StatusText = "Open Sprite";
             file.AddOption("Save", "common/save.png", () => Save(), "Ctrl+S").StatusText = "Save Sprite";
             file.AddOption("Save As...", "common/save.png", () => Save(true), "Ctrl+Shift+S").StatusText = "Save Sprite As...";
@@ -176,6 +177,30 @@ public partial class MainWindow : DockWindow, IAssetEditor
         DockManager.Update();
 
         RebuildUI();
+    }
+
+    public void New()
+    {
+        PromptSave(() => CreateNew());
+    }
+
+    public void CreateNew()
+    {
+        var savePath = GetSavePath("New Sprite");
+
+        _asset = null;
+        Sprite = AssetSystem.CreateResource("sprite", savePath).LoadResource<SpriteResource>();
+        _dirty = false;
+
+        if (Sprite.Animations.Count > 0)
+        {
+            SelectedAnimation = Sprite.Animations[0];
+            OnAnimationSelected?.Invoke();
+        }
+
+        UpdateWindowTitle();
+        OnAssetLoaded?.Invoke();
+        OnTextureUpdate?.Invoke();
     }
 
     public void Open()
@@ -290,11 +315,11 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
     }
 
-    static string GetSavePath()
+    static string GetSavePath(string title = "Save Sprite")
     {
         var fd = new FileDialog(null)
         {
-            Title = $"Save Sprite",
+            Title = title,
             DefaultSuffix = $".sprite"
         };
 
@@ -319,8 +344,12 @@ public partial class MainWindow : DockWindow, IAssetEditor
             "Save Current Sprite", "The open sprite has unsaved changes. Would you like to save before continuing?", "Cancel",
             new Dictionary<string, Action>
             {
-                { "No", () => action?.Invoke() },
-                { "Yes", () => {if (Save()) action?.Invoke(); }}
+                { "No", () => {
+                    action?.Invoke();
+                } },
+                { "Yes", () => {
+                    if (Save()) action?.Invoke();
+                }}
             });
         confirm.Show();
     }
