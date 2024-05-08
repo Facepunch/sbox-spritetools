@@ -4,6 +4,7 @@
       "Name": "anim_3_1",
       "FrameRate": 40.97402,
       "Origin": "0.5,0.5",
+      "Looping": true,
       "Frames": [
         "images/sausage_idle_01.png",
         "images/sausage_idle_02.png",
