@@ -11,7 +11,7 @@ internal class AnimationButton : Widget
     AnimationList AnimationList;
     public SpriteAnimation Animation;
 
-    public bool Selected = false;
+    public bool Selected => Animation == MainWindow?.SelectedAnimation;
     LabelTextEntry labelText;
 
     Drag dragData;
@@ -26,7 +26,7 @@ internal class AnimationButton : Widget
 
         if (Animation.Name == MainWindow?.SelectedAnimation?.Name)
         {
-            Selected = true;
+            MainWindow.SelectedAnimation = Animation;
         }
 
         Layout = Layout.Row();

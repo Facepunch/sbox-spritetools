@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Editor;
 using Sandbox;
-using Sandbox.UI;
 
 namespace SpriteTools.SpriteEditor.Timeline;
 
@@ -12,6 +11,8 @@ public class Timeline : Widget
     public MainWindow MainWindow { get; }
 
     ScrollArea scrollArea;
+
+    Label labelCurrentFrame;
 
     public Timeline(MainWindow mainWindow) : base(null)
     {
@@ -23,11 +24,17 @@ public class Timeline : Widget
 
         Layout = Layout.Column();
 
+
+
         var bannerLayout = Layout.Row();
         bannerLayout.Margin = 4;
+
+        labelCurrentFrame = new Label(this);
+        bannerLayout.Add(labelCurrentFrame);
+
         bannerLayout.AddStretchCell();
 
-        var text = bannerLayout.Add(new Editor.Label("Frame Size:"));
+        var text = bannerLayout.Add(new Label("Frame Size:"));
         text.HorizontalSizeMode = SizeMode.CanShrink;
         var slider = new FloatSlider(this);
         slider.HorizontalSizeMode = SizeMode.CanGrow;
@@ -130,6 +137,18 @@ public class Timeline : Widget
             MainWindow.SelectedAnimation.Frames.RemoveAt(MainWindow.CurrentFrameIndex);
             UpdateFrameList();
         }
+    }
+
+    [EditorEvent.Frame]
+    void Frame()
+    {
+        if (MainWindow.SelectedAnimation is null)
+        {
+            labelCurrentFrame.Text = "";
+            return;
+        }
+
+        labelCurrentFrame.Text = $"Frame: {MainWindow.CurrentFrameIndex} / {MainWindow.SelectedAnimation.Frames.Count - 1}";
     }
 
 }
