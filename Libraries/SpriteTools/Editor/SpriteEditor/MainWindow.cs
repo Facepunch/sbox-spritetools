@@ -268,10 +268,23 @@ public partial class MainWindow : DockWindow, IAssetEditor
         if (SelectedAnimation?.Frames?.Count == 0) return;
         if (FrameTime == 0) return;
 
-        while (frameTimer >= FrameTime)
+        if (Playing)
         {
-            CurrentFrameIndex = (CurrentFrameIndex + 1) % SelectedAnimation.Frames.Count;
-            frameTimer -= FrameTime;
+            while (frameTimer >= FrameTime)
+            {
+                CurrentFrameIndex = (CurrentFrameIndex + 1) % SelectedAnimation.Frames.Count;
+                frameTimer -= FrameTime;
+                if (CurrentFrameIndex == 0 && !SelectedAnimation.Looping)
+                {
+                    Playing = false;
+                    CurrentFrameIndex = SelectedAnimation.Frames.Count - 1;
+                    frameTimer = 0;
+                }
+            }
+        }
+        else
+        {
+            frameTimer = 0f;
         }
     }
 
@@ -308,5 +321,14 @@ public partial class MainWindow : DockWindow, IAssetEditor
                 { "Yes", () => {if (Save()) action?.Invoke(); }}
             });
         confirm.Show();
+    }
+
+    public void PlayPause()
+    {
+        Playing = !Playing;
+        if (Playing && !SelectedAnimation.Looping && CurrentFrameIndex >= SelectedAnimation.Frames.Count - 1)
+        {
+            CurrentFrameIndex = 0;
+        }
     }
 }

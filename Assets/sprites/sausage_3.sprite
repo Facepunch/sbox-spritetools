@@ -3,11 +3,34 @@
     {
       "Name": "anim_3_1",
       "FrameRate": 15,
-      "Frames": []
+      "Looping": true,
+      "Frames": [
+        "images/sausage_idle_01.png",
+        "images/sausage_idle_02.png",
+        "images/sausage_idle_03.png",
+        "images/sausage_idle_04.png",
+        "images/sausage_run_01.png",
+        "images/sausage_run_02.png",
+        "images/sausage_run_03.png",
+        "images/sausage_run_04.png",
+        "images/sausage_run_05.png",
+        "images/sausage_run_06.png",
+        "images/sausage_idle_01.png",
+        "images/sausage_idle_02.png",
+        "images/sausage_idle_03.png",
+        "images/sausage_idle_04.png",
+        "images/sausage_run_01.png",
+        "images/sausage_run_02.png",
+        "images/sausage_run_03.png",
+        "images/sausage_run_04.png",
+        "images/sausage_run_05.png",
+        "images/sausage_run_06.png"
+      ]
     },
     {
       "Name": "anim_3_02",
       "FrameRate": 8,
+      "Looping": true,
       "Frames": [
         "images/sausage_idle_01.png",
         "images/sausage_idle_02.png",

@@ -5,6 +5,8 @@ namespace SpriteTools.SpriteEditor.Preview;
 
 public class RenderingWidget : NativeRenderingWidget
 {
+    MainWindow MainWindow;
+
     private SceneWorld World;
     public SceneObject TextureRect;
     public Material PreviewMaterial;
@@ -13,10 +15,13 @@ public class RenderingWidget : NativeRenderingWidget
     Vector2 cameraGrabPos = Vector2.Zero;
     bool cameraGrabbing = false;
 
-    public RenderingWidget(Widget parent) : base(parent)
+    public RenderingWidget(MainWindow window, Widget parent) : base(parent)
     {
+        MainWindow = window;
         MouseTracking = true;
         FocusMode = FocusMode.Click;
+
+
 
         World = new SceneWorld();
         Camera = new SceneCamera
@@ -88,6 +93,16 @@ public class RenderingWidget : NativeRenderingWidget
         if (e.MiddleMouseButton)
         {
             cameraGrabbing = false;
+        }
+    }
+
+    protected override void OnKeyPress(KeyEvent e)
+    {
+        base.OnKeyPress(e);
+
+        if (e.Key == KeyCode.Space)
+        {
+            MainWindow?.PlayPause();
         }
     }
 
