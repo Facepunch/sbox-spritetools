@@ -169,7 +169,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         DockManager.AddDock(null, inspector, DockArea.Left, DockManager.DockProperty.HideOnClose);
         DockManager.AddDock(null, preview, DockArea.Right, DockManager.DockProperty.HideOnClose, split: 0.65f);
 
-        DockManager.AddDock(preview, timeline, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.25f);
+        DockManager.AddDock(preview, timeline, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.2f);
         DockManager.AddDock(inspector, animationList, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.45f);
 
         // DockManager.AddDock( inspector, errorList, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.75f );
