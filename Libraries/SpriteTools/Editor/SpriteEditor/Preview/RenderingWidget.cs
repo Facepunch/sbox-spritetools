@@ -9,20 +9,24 @@ public class RenderingWidget : NativeRenderingWidget
 
     private SceneWorld World;
     public SceneObject TextureRect;
-    SceneObject OriginMarker;
+    public Vector2 TextureSize;
+    Draggable OriginMarker;
     public Material PreviewMaterial;
 
     float targetZoom = 115f;
     Vector2 cameraGrabPos = Vector2.Zero;
     bool cameraGrabbing = false;
 
+    Draggable dragging = null;
+    Vector3 draggableGrabPos = Vector3.Zero;
+
+    bool holdingControl = false;
+
     public RenderingWidget(MainWindow window, Widget parent) : base(parent)
     {
         MainWindow = window;
         MouseTracking = true;
         FocusMode = FocusMode.Click;
-
-
 
         World = new SceneWorld();
         Camera = new SceneCamera
@@ -56,12 +60,26 @@ public class RenderingWidget : NativeRenderingWidget
         TextureRect.Flags.IsOpaque = false;
 
         var markerMaterial = Material.Load("materials/sprite_editor_origin.vmat");
-        OriginMarker = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
+        OriginMarker = new Draggable(World, "models/preview_quad.vmdl", Transform.Zero);
         OriginMarker.SetMaterialOverride(markerMaterial);
+        OriginMarker.Tags.Add("origin");
         OriginMarker.Position = new Vector3(0, 0, 1f);
         OriginMarker.Flags.WantsFrameBufferCopy = true;
         OriginMarker.Flags.IsTranslucent = true;
         OriginMarker.Flags.IsOpaque = false;
+        OriginMarker.OnPositionChanged = (Vector2 pos) =>
+        {
+            if (MainWindow.SelectedAnimation is null) return;
+
+            var origin = (pos / 100f) + (Vector2.One * 0.5f);
+            if (!holdingControl)
+            {
+                origin = origin.SnapToGrid(1f / TextureSize.x, true, false);
+                origin = origin.SnapToGrid(1f / TextureSize.y, false, true);
+            }
+
+            MainWindow.SelectedAnimation.Origin = origin;
+        };
     }
 
     protected override void OnWheel(WheelEvent e)
@@ -76,10 +94,19 @@ public class RenderingWidget : NativeRenderingWidget
     {
         base.OnMousePress(e);
 
-        if (e.MiddleMouseButton)
+        if (dragging is not null && e.MiddleMouseButton)
         {
             cameraGrabbing = true;
             cameraGrabPos = e.LocalPosition;
+        }
+        else if (e.LeftMouseButton)
+        {
+            var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition), 5000f).Run();
+            if (tr.SceneObject is Draggable draggable)
+            {
+                dragging = draggable;
+                draggableGrabPos = tr.EndPosition.WithZ(0f);
+            }
         }
     }
 
@@ -87,7 +114,16 @@ public class RenderingWidget : NativeRenderingWidget
     {
         base.OnMouseMove(e);
 
-        if (cameraGrabbing)
+        if (dragging is not null)
+        {
+            var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition), 5000f).Run();
+            var pos = tr.EndPosition.WithZ(0f);
+            var delta = (pos - draggableGrabPos).WithZ(0f);
+            var dragPos = dragging.Position + delta;
+            draggableGrabPos = pos;
+            dragging?.OnPositionChanged.Invoke(new Vector2(pos.y, pos.x));
+        }
+        else if (cameraGrabbing)
         {
             var delta = (cameraGrabPos - e.LocalPosition) * (Camera.OrthoHeight / 512f);
             Camera.Position = new Vector3(Camera.Position.x + delta.y, Camera.Position.y + delta.x, Camera.Position.z);
@@ -103,6 +139,10 @@ public class RenderingWidget : NativeRenderingWidget
         {
             cameraGrabbing = false;
         }
+        if (dragging is not null)
+        {
+            dragging = null;
+        }
     }
 
     protected override void OnKeyPress(KeyEvent e)
@@ -112,6 +152,21 @@ public class RenderingWidget : NativeRenderingWidget
         if (e.Key == KeyCode.Space)
         {
             MainWindow?.PlayPause();
+        }
+
+        if (e.Key == KeyCode.Control)
+        {
+            holdingControl = true;
+        }
+    }
+
+    protected override void OnKeyRelease(KeyEvent e)
+    {
+        base.OnKeyRelease(e);
+
+        if (e.Key == KeyCode.Control)
+        {
+            holdingControl = false;
         }
     }
 

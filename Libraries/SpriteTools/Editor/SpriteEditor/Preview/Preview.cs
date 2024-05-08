@@ -53,7 +53,7 @@ public class Preview : Widget
 
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.CurrentTexturePath);
         Rendering.PreviewMaterial.Set("Color", texture);
+        Rendering.TextureSize = new Vector2(texture.Width, texture.Height);
         Rendering.TextureRect.SetMaterialOverride(Rendering.PreviewMaterial);
-        // Rendering.TextureRect.Attributes.Set( "Color", texture );
     }
 }
