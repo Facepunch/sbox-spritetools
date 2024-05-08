@@ -86,8 +86,7 @@ public class RenderingWidget : NativeRenderingWidget
     {
         base.OnWheel(e);
 
-        targetZoom *= 1f - (e.Delta / 500f);
-        targetZoom = targetZoom.Clamp(1, 1000);
+        Zoom(e.Delta);
     }
 
     protected override void OnMousePress(MouseEvent e)
@@ -195,5 +194,17 @@ public class RenderingWidget : NativeRenderingWidget
 
         World?.Delete();
         World = null;
+    }
+
+    public void Zoom(float delta)
+    {
+        targetZoom *= 1f - (delta / 500f);
+        targetZoom = targetZoom.Clamp(1, 1000);
+    }
+
+    public void Fit()
+    {
+        targetZoom = 115f;
+        Camera.Position = new Vector3(0, 0, targetZoom);
     }
 }
