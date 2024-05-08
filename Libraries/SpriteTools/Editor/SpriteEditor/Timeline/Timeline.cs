@@ -148,7 +148,7 @@ public class Timeline : Widget
             return;
         }
 
-        labelCurrentFrame.Text = $"Frame: {MainWindow.CurrentFrameIndex} / {MainWindow.SelectedAnimation.Frames.Count - 1}";
+        labelCurrentFrame.Text = $"Frame: {MainWindow.CurrentFrameIndex + 1} / {MainWindow.SelectedAnimation.Frames.Count}";
     }
 
 }
