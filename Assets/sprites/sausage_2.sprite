@@ -1,18 +1,20 @@
 {
   "Animations": [
     {
-      "Name": "idle",
-      "FrameRate": 5,
+      "Name": "funny_guy",
+      "FrameRate": 15,
       "Frames": [
-        "images/sausage_idle_01.png",
-        "images/sausage_idle_02.png",
-        "images/sausage_idle_03.png",
-        "images/sausage_idle_04.png"
+        "images/sausage_run_06.png",
+        "images/sausage_run_05.png",
+        "images/sausage_run_04.png",
+        "images/sausage_run_03.png",
+        "images/sausage_run_02.png",
+        "images/sausage_run_01.png"
       ]
     },
     {
-      "Name": "walk",
-      "FrameRate": 5,
+      "Name": "forwards",
+      "FrameRate": 10,
       "Frames": [
         "images/sausage_run_01.png",
         "images/sausage_run_02.png",

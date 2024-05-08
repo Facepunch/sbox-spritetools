@@ -1,0 +1,22 @@
+{
+  "Animations": [
+    {
+      "Name": "anim_3_1",
+      "FrameRate": 15,
+      "Frames": []
+    },
+    {
+      "Name": "anim_3_02",
+      "FrameRate": 8,
+      "Frames": [
+        "images/sausage_idle_01.png",
+        "images/sausage_idle_02.png",
+        "images/sausage_idle_03.png",
+        "images/sausage_idle_04.png"
+      ]
+    }
+  ],
+  "ResourceVersion": 0,
+  "__version": 0,
+  "__references": []
+}
