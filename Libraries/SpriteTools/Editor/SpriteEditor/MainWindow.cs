@@ -195,7 +195,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
     {
         if (!string.IsNullOrEmpty(path))
         {
+            Log.Info($"Opening sprite at path {path}");
             asset ??= AssetSystem.FindByPath(path);
+            Log.Info(asset);
         }
         if (asset == null) return;
 
@@ -303,9 +305,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
             new Dictionary<string, Action>
             {
                 { "No", () => action?.Invoke() },
-                { "Yes", () => {if (Save()) action?.Invoke();
-    }
-}
+                { "Yes", () => {if (Save()) action?.Invoke(); }}
             });
+        confirm.Show();
     }
 }
