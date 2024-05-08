@@ -18,7 +18,8 @@ public class SpriteResource : GameResource
 
 public class SpriteAnimation
 {
-	[Property] public string Name { get; set; }
+	[Property, ReadOnly, Title("Name")] private string _nameProp => Name;
+	public string Name { get; set; }
 	[Property, Range(0f, 999f, 0.01f, true, false)] public float FrameRate { get; set; } = 15.0f;
 	[Property] public bool Looping { get; set; } = true;
 	public List<string> Frames { get; set; }
