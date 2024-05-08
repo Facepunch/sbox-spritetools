@@ -22,8 +22,8 @@ public class Timeline : Widget
     {
         MainWindow = mainWindow;
 
-        Name = "Frames";
-        WindowTitle = "Frames";
+        Name = "Timeline";
+        WindowTitle = "Timeline";
         SetWindowIcon("view_column");
 
         Layout = Layout.Column();
