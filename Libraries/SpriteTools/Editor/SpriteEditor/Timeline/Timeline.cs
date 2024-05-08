@@ -92,7 +92,7 @@ public class Timeline : Widget
         var slider = new FloatSlider(this);
         slider.HorizontalSizeMode = SizeMode.CanGrow;
         slider.Minimum = 16f;
-        slider.Maximum = 92f;
+        slider.Maximum = 128f;
         slider.Step = 1f;
         slider.Value = FrameButton.FrameSize;
         slider.MinimumWidth = 128f;
