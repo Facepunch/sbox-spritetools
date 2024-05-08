@@ -48,7 +48,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     RealTimeSince frameTimer = 0;
     float FrameTime => ((SelectedAnimation?.FrameRate ?? 0) == 0) ? 0 : (1f / (SelectedAnimation?.FrameRate ?? 30));
 
-    public bool Playing = false;
+    public bool Playing = true;
 
     public MainWindow()
     {
