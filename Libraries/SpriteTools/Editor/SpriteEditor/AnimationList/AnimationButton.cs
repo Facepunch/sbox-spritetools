@@ -24,7 +24,7 @@ internal class AnimationButton : Widget
         MainWindow = window;
         Animation = animation;
 
-        if (Animation.Name == MainWindow.SelectedAnimation.Name)
+        if (Animation.Name == MainWindow?.SelectedAnimation?.Name)
         {
             Selected = true;
         }

@@ -8,6 +8,7 @@ using System.Text.Json;
 namespace SpriteTools.SpriteEditor;
 
 [EditorForAssetType("sprite")]
+[EditorApp("Sprite Editor", "emoji_emotions", "Edit 2D Sprites")]
 public partial class MainWindow : DockWindow, IAssetEditor
 {
     public Action OnAssetLoaded;
@@ -17,6 +18,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     internal static List<MainWindow> AllWindows { get; } = new List<MainWindow>();
     public bool CanOpenMultipleAssets => true;
+
+    bool _dirty = true;
 
     private Asset _asset;
     public SpriteResource Sprite;
@@ -83,25 +86,18 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     public void AssetOpen(Asset asset)
     {
-        _asset = asset;
-        Sprite = asset.LoadResource<SpriteResource>();
-
-        if ((Sprite.Animations?.Count ?? 0) > 0)
-        {
-            SelectedAnimation = Sprite.Animations[0];
-            OnAnimationSelected?.Invoke();
-        }
-
-        Title = $"{asset.Name} - Sprite Editor" ?? "Untitled Sprite - Sprite Editor";
-
-        OnAssetLoaded?.Invoke();
-        OnTextureUpdate?.Invoke();
+        Open("", asset);
         Show();
     }
 
     public void SelectMember(string memberName)
     {
 
+    }
+
+    void UpdateWindowTitle()
+    {
+        Title = $"{_asset.Name} - Sprite Editor" ?? "Untitled Sprite - Sprite Editor";
     }
 
     public void RebuildUI()
@@ -111,6 +107,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         {
             var file = MenuBar.AddMenu("File");
             file.AddOption("New", "common/new.png", () => { }, "CTRL+N").StatusText = "New Sprite";
+            file.AddOption("Open", "common/open.png", () => Open(), "Ctrl+O").StatusText = "Open Sprite";
             file.AddOption("Save", "common/save.png", () => Save(), "Ctrl+S").StatusText = "Save Sprite";
             file.AddOption("Save As...", "common/save.png", () => Save(true), "Ctrl+Shift+S").StatusText = "Save Sprite As...";
             file.AddSeparator();
@@ -179,6 +176,58 @@ public partial class MainWindow : DockWindow, IAssetEditor
         RebuildUI();
     }
 
+    public void Open()
+    {
+        var fd = new FileDialog(null)
+        {
+            Title = "Open Sprite",
+            DefaultSuffix = ".sprite"
+        };
+
+        fd.SetNameFilter("2D Sprite (*.sprite)");
+
+        if (!fd.Execute()) return;
+
+        PromptSave(() => Open(fd.SelectedFile));
+    }
+
+    public void Open(string path, Asset asset = null)
+    {
+        if (!string.IsNullOrEmpty(path))
+        {
+            asset ??= AssetSystem.FindByPath(path);
+        }
+        if (asset == null) return;
+
+        if (asset == _asset)
+        {
+            Log.Warning($"{asset.RelativePath} is already open.");
+            return;
+        }
+
+        var sprite = asset.LoadResource<SpriteResource>();
+        if (sprite == null)
+        {
+            Log.Warning($"Failed to load sprite from {asset.RelativePath}");
+            return;
+        }
+
+        StateCookie = asset.RelativePath;
+
+        _asset = asset;
+        Sprite = sprite;
+        UpdateWindowTitle();
+
+        OnAssetLoaded?.Invoke();
+        OnTextureUpdate?.Invoke();
+
+        if ((Sprite.Animations?.Count ?? 0) > 0)
+        {
+            SelectedAnimation = Sprite.Animations[0];
+            OnAnimationSelected?.Invoke();
+        }
+    }
+
     public bool Save(bool saveAs = false)
     {
         var savePath = (_asset == null || saveAs) ? GetSavePath() : _asset.AbsolutePath;
@@ -239,5 +288,24 @@ public partial class MainWindow : DockWindow, IAssetEditor
         if (!fd.Execute()) return null;
 
         return fd.SelectedFile;
+    }
+
+    void PromptSave(Action action)
+    {
+        if (!_dirty)
+        {
+            action?.Invoke();
+            return;
+        }
+
+        var confirm = new PopupWindow(
+            "Save Current Sprite", "The open sprite has unsaved changes. Would you like to save before continuing?", "Cancel",
+            new Dictionary<string, Action>
+            {
+                { "No", () => action?.Invoke() },
+                { "Yes", () => {if (Save()) action?.Invoke();
+    }
+}
+            });
     }
 }
