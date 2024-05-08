@@ -58,10 +58,6 @@ public partial class MainWindow : DockWindow, IAssetEditor
         Sprite = new SpriteResource();
         Sprite.Animations.Clear();
 
-        // Make this window stay on top of the editor, by making it a dialog
-        Parent = EditorWindow;
-        WindowFlags = WindowFlags.Dialog | WindowFlags.Customized | WindowFlags.CloseButton | WindowFlags.WindowSystemMenuHint | WindowFlags.WindowTitle | WindowFlags.MaximizeButton;
-
         SetWindowIcon("emoji_emotions");
 
         AllWindows.Add(this);
