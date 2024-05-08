@@ -44,6 +44,16 @@ public partial class MainWindow : DockWindow, IAssetEditor
             OnTextureUpdate?.Invoke();
         }
     }
+    public int CurrentFrame
+    {
+        get => CurrentFrameIndex + 1;
+        set
+        {
+            if (value <= 0) CurrentFrameIndex = 0;
+            else if (value > SelectedAnimation.Frames.Count) CurrentFrameIndex = SelectedAnimation.Frames.Count - 1;
+            else CurrentFrameIndex = value - 1;
+        }
+    }
     private int _currentFrameIndex = 0;
     RealTimeSince frameTimer = 0;
     float FrameTime => ((SelectedAnimation?.FrameRate ?? 0) == 0) ? 0 : (1f / (SelectedAnimation?.FrameRate ?? 30));

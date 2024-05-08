@@ -11,8 +11,12 @@ public class Timeline : Widget
     public MainWindow MainWindow { get; }
 
     ScrollArea scrollArea;
+    IconButton buttonPlay;
+    IconButton buttonFramePrevious;
+    IconButton buttonFrameNext;
 
-    Label labelCurrentFrame;
+    IntegerControlWidget widgetCurrentFrame;
+    Label labelFrameCount;
 
     public Timeline(MainWindow mainWindow) : base(null)
     {
@@ -29,8 +33,34 @@ public class Timeline : Widget
         var bannerLayout = Layout.Row();
         bannerLayout.Margin = 4;
 
-        labelCurrentFrame = new Label(this);
-        bannerLayout.Add(labelCurrentFrame);
+        var label1 = new Label(this);
+        label1.Text = "Frame:";
+        bannerLayout.Add(label1);
+        bannerLayout.AddSpacingCell(4);
+
+        MainWindow.GetSerialized().TryGetProperty(nameof(MainWindow.CurrentFrame), out var currentFrameIndex);
+        widgetCurrentFrame = new IntegerControlWidget(currentFrameIndex);
+        widgetCurrentFrame.MaximumWidth = 64f;
+        bannerLayout.Add(widgetCurrentFrame);
+        bannerLayout.AddSpacingCell(4);
+
+        labelFrameCount = new Label(this);
+        labelFrameCount.Text = "/ 0";
+        bannerLayout.Add(labelFrameCount);
+
+        bannerLayout.AddStretchCell();
+
+        buttonFramePrevious = new IconButton("navigate_before");
+        bannerLayout.Add(buttonFramePrevious);
+        bannerLayout.AddSpacingCell(4);
+
+        buttonPlay = new IconButton("play_arrow");
+        bannerLayout.Add(buttonPlay);
+        bannerLayout.AddSpacingCell(4);
+
+        buttonFrameNext = new IconButton("navigate_next");
+        bannerLayout.Add(buttonFrameNext);
+        bannerLayout.AddSpacingCell(4);
 
         bannerLayout.AddStretchCell();
 
@@ -100,6 +130,9 @@ public class Timeline : Widget
         addButton.OnClick = () => LoadImage();
 
         scrollArea.Canvas.Layout.Add(addButton);
+        widgetCurrentFrame.Range = new Vector2(1, MainWindow.SelectedAnimation.Frames.Count - 1);
+        widgetCurrentFrame.RangeClamped = true;
+        widgetCurrentFrame.HasRange = true;
     }
 
     void LoadImage()
@@ -144,11 +177,11 @@ public class Timeline : Widget
     {
         if (MainWindow.SelectedAnimation is null)
         {
-            labelCurrentFrame.Text = "";
+            labelFrameCount.Text = "/ 0";
             return;
         }
 
-        labelCurrentFrame.Text = $"Frame: {MainWindow.CurrentFrameIndex + 1} / {MainWindow.SelectedAnimation.Frames.Count}";
+        labelFrameCount.Text = $"/ {MainWindow.SelectedAnimation.Frames.Count}";
     }
 
 }
