@@ -29,8 +29,8 @@ internal class FrameButton : Widget
         Layout = Layout.Row();
         Layout.Margin = 4;
 
-        MinimumSize = new Vector2(FrameSize, FrameSize);
-        MaximumSize = new Vector2(FrameSize, FrameSize);
+        MinimumSize = new Vector2(FrameSize, FrameSize + 16f);
+        MaximumSize = new Vector2(FrameSize, FrameSize + 16f);
         HorizontalSizeMode = SizeMode.Ignore;
         VerticalSizeMode = SizeMode.Ignore;
 
@@ -67,17 +67,23 @@ internal class FrameButton : Widget
 
     protected override void OnPaint()
     {
-        MinimumSize = new Vector2(FrameSize, FrameSize);
-        MaximumSize = new Vector2(FrameSize, FrameSize);
+        MinimumSize = new Vector2(FrameSize, FrameSize + 16f);
+        MaximumSize = new Vector2(FrameSize, FrameSize + 16f);
 
-        Paint.SetBrushAndPen(Theme.ControlBackground);
+        Paint.SetBrushAndPen(Theme.ControlBackground.Lighten(0.5f));
         Paint.DrawRect(LocalRect);
 
+        Paint.SetBrushAndPen(Theme.ControlBackground);
+        Paint.DrawRect(new Rect(LocalRect.TopLeft.WithY(16f), LocalRect.BottomRight + Vector2.Down * 16f).Shrink(4));
         if (IsCurrentFrame)
         {
             Paint.SetBrushAndPen(Theme.Selection.WithAlpha(0.5f));
-            Paint.DrawRect(new Rect(LocalRect.TopLeft, LocalRect.BottomRight.WithY(4f)));
+            Paint.DrawRect(new Rect(LocalRect.TopLeft, LocalRect.BottomRight.WithY(16f)));
         }
+
+        Paint.SetPen(Theme.White);
+        var rect = new Rect(LocalRect.TopLeft, LocalRect.BottomRight.WithY(16f));
+        Paint.DrawText(rect, FrameIndex.ToString(), TextFlag.Center);
 
         if (dragData?.IsValid ?? false)
         {
@@ -91,7 +97,7 @@ internal class FrameButton : Widget
         Pixmap pix = new Pixmap(texture.Width, texture.Height);
         var pixels = texture.GetPixels();
         pix.UpdateFromPixels(MemoryMarshal.AsBytes<Color32>(pixels), texture.Width, texture.Height, ImageFormat.RGBA8888);
-        Paint.Draw(LocalRect.Shrink(2), pix);
+        Paint.Draw(new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4), pix);
 
         base.OnPaint();
 
