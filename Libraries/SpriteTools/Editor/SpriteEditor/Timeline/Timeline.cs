@@ -24,7 +24,7 @@ public class Timeline : Widget
 
         Layout = Layout.Column();
 
-
+        MinimumHeight = 128f;
 
         var bannerLayout = Layout.Row();
         bannerLayout.Margin = 4;
