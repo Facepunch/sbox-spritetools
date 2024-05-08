@@ -59,7 +59,7 @@ internal class FrameButton : Widget
         var m = new Menu(this);
 
         // m.AddOption( "Rename", "edit", Rename );
-        // m.AddOption( "Duplicate", "content_copy", DuplicateAnimationPopup );
+        m.AddOption("Duplicate", "content_copy", Duplicate);
         m.AddOption("Delete", "delete", Delete);
 
         m.OpenAtCursor(false);
@@ -194,6 +194,12 @@ internal class FrameButton : Widget
         base.OnMouseClick(e);
 
         MainWindow.CurrentFrameIndex = FrameIndex;
+    }
+
+    void Duplicate()
+    {
+        MainWindow.SelectedAnimation.Frames.Insert(FrameIndex, MainWindow.SelectedAnimation.Frames[FrameIndex]);
+        Timeline.UpdateFrameList();
     }
 
     void Delete()
