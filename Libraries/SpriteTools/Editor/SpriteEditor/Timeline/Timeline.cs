@@ -87,6 +87,7 @@ public class Timeline : Widget
 
         var text = bannerLayout.Add(new Label("Frame Size:"));
         text.HorizontalSizeMode = SizeMode.CanShrink;
+        bannerLayout.AddSpacingCell(4);
         var slider = new FloatSlider(this);
         slider.HorizontalSizeMode = SizeMode.CanGrow;
         slider.Minimum = 16f;
