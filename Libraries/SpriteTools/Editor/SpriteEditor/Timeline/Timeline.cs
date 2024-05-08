@@ -165,7 +165,7 @@ public class Timeline : Widget
         addButton.OnClick = () => LoadImage();
 
         scrollArea.Canvas.Layout.Add(addButton);
-        widgetCurrentFrame.Range = new Vector2(1, MainWindow.SelectedAnimation.Frames.Count - 1);
+        widgetCurrentFrame.Range = new Vector2(1, MainWindow.SelectedAnimation.Frames.Count);
         widgetCurrentFrame.RangeClamped = true;
         widgetCurrentFrame.HasRange = true;
     }
