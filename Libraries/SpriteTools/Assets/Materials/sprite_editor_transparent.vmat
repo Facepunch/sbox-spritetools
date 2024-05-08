@@ -1,0 +1,11 @@
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
+{
+	shader "shaders/sprite_editor_background.shader"
+
+	Texture_ps_0 "materials/sprite_editor_transparent.png"
+
+	//---- Fog ----
+	g_bFogEnabled "1"
+}

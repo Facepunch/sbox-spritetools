@@ -1,0 +1,39 @@
+
+# This file describes files and paths that should not be tracked by Git version control
+# https://git-scm.com/docs/gitignore
+
+# Auto-generated code editor files
+.vs/*
+.vscode/*
+*.csproj
+obj/*
+Properties/*
+code/obj/*
+code/Properties/*
+*.sln
+
+# Editor Projects
+Editor/obj/*
+Editor/Properties/*
+Editor/*.sln
+Editor/.vs/*
+Editor/.vscode/*
+
+Libraries/SpriteTools/Code/obj/*
+Libraries/SpriteTools/Code/Properties/*
+Libraries/SpriteTools/Code/*.sln
+Libraries/SpriteTools/Code/.vs/*
+Libraries/SpriteTools/Editor/obj/*
+Libraries/SpriteTools/Editor/Properties/*
+Libraries/SpriteTools/Editor/*.sln
+Libraries/SpriteTools/Editor/.vs/*
+Libraries/SpriteTools/UnitTests/obj/*
+Libraries/SpriteTools/UnitTests/Properties/*
+Libraries/SpriteTools/UnitTests/*.sln
+Libraries/SpriteTools/UnitTests/.vs/*
+
+# Auto-generated asset related files
+*.generated.*
+*.*_c
+*.los
+*.vpk
