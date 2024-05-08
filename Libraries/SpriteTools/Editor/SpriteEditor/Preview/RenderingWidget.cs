@@ -94,7 +94,7 @@ public class RenderingWidget : NativeRenderingWidget
     {
         base.OnMousePress(e);
 
-        if (dragging is not null && e.MiddleMouseButton)
+        if (dragging is null && e.MiddleMouseButton)
         {
             cameraGrabbing = true;
             cameraGrabPos = e.LocalPosition;
