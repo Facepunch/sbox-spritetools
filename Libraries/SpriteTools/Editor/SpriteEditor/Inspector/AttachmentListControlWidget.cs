@@ -51,11 +51,22 @@ public class AttachmentListControlWidget : ControlWidget
         int y = 0;
         foreach (var entry in Collection)
         {
+            var attachment = entry.GetValue<SpriteAttachment>();
+
             var control = Create(entry);
             var index = y;
             //grid.AddCell( 0, y, new IconButton( "drag_handle" ) { IconSize = 13, Foreground = Theme.ControlBackground, Background = Color.Transparent, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
             grid.AddCell(1, y, control, 1, 1, control.CellAlignment);
-            grid.AddCell(2, y, new IconButton("clear", () => RemoveEntry(index)) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
+            var visibilityButton = grid.AddCell(2, y, new IconButton("visibility", () => RemoveEntry(index)) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
+            grid.AddCell(3, y, new IconButton("clear", () => RemoveEntry(index)) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
+
+            visibilityButton.Icon = (attachment?.Visible ?? true) ? "visibility" : "visibility_off";
+            visibilityButton.OnClick = () =>
+            {
+                attachment.Visible = !attachment.Visible;
+                visibilityButton.Icon = attachment.Visible ? "visibility" : "visibility_off";
+            };
+
             y++;
         }
 

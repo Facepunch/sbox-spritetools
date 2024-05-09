@@ -19,7 +19,6 @@ public class SpriteAttachmentControlWidget : ControlWidget
         {
             property.SetValue(new SpriteAttachment($"new attachment {attachmentsMade++}"));
         }
-        Log.Info(property.GroupName);
 
         var serializedObject = property.GetValue<SpriteAttachment>()?.GetSerialized();
         if (serializedObject is null)

@@ -192,13 +192,19 @@ public class RenderingWidget : NativeRenderingWidget
         }
 
         scale /= 1.5f;
+        foreach (var attachmentWidget in Attachments)
+        {
+            attachmentWidget.Item1.RenderingEnabled = false;
+        }
+
         foreach (var attachment in MainWindow.SelectedAnimation?.Attachments ?? new List<SpriteAttachment>())
         {
             if (attachment is null) continue;
             var name = attachment.Name.ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(name)) continue;
             var attach = Attachments.FirstOrDefault(a => a.Item1.Tags.Has(name));
-            if (!Attachments.Any(a => a.Item1.Tags.Has(name)))
+            var has = Attachments.Any(a => a.Item1.Tags.Has(name));
+            if (!has)
             {
                 var markerMaterial = Material.Load("materials/sprite_editor_attachment.vmat").CreateCopy();
                 attach = (new Draggable(World, "models/preview_quad.vmdl", Transform.Zero), markerMaterial);
@@ -235,8 +241,6 @@ public class RenderingWidget : NativeRenderingWidget
             }
             else
             {
-                attach.Item1.RenderingEnabled = true;
-
                 if (MainWindow.SelectedAnimation is not null)
                 {
                     if (MainWindow.CurrentFrameIndex < attachment.Points.Count)
@@ -262,36 +266,20 @@ public class RenderingWidget : NativeRenderingWidget
                     }
                 }
             }
-            attach.Item1.Transform = attach.Item1.Transform.WithScale(new Vector3(scale, scale, 1f));
-            attach.Item1.ColorTint = attachment.Color;
-        }
-
-        int index = 0;
-        foreach (var attachmentWidget in Attachments)
-        {
-            var attachments = MainWindow.SelectedAnimation?.Attachments;
-            foreach (var attachment in attachments)
+            if (attachment.Visible)
             {
-                if (attachmentWidget.Item1.Tags.Has(attachment.Name.ToLowerInvariant()))
-                {
-                    attachmentWidget.Item1.RenderingEnabled = true;
-                    var texture = Texture.Create(1, 1);
-                    byte[] data = new byte[4];
-                    data[0] = (byte)(attachment.Color.r * 255);
-                    data[1] = (byte)(attachment.Color.g * 255);
-                    data[2] = (byte)(attachment.Color.b * 255);
-                    data[3] = (byte)(attachment.Color.a * 255);
-                    texture.WithData(data);
-                    attachmentWidget.Item2.Set("ColorMix", texture.Finish());
-                    // attachmentWidget.SetMaterialOverride(AttachmentMaterials[index]);
-                    break;
-                }
-                else
-                {
-                    attachmentWidget.Item1.RenderingEnabled = false;
-                }
+                attach.Item1.RenderingEnabled = true;
             }
-            index++;
+            attach.Item1.Transform = attach.Item1.Transform.WithScale(new Vector3(scale, scale, 1f));
+
+            var texture = Texture.Create(1, 1);
+            byte[] data = new byte[4];
+            data[0] = (byte)(attachment.Color.r * 255);
+            data[1] = (byte)(attachment.Color.g * 255);
+            data[2] = (byte)(attachment.Color.b * 255);
+            data[3] = (byte)(attachment.Color.a * 255);
+            texture.WithData(data);
+            attach.Item2.Set("ColorMix", texture.Finish());
         }
     }
 

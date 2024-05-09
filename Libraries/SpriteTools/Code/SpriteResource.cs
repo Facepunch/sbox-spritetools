@@ -111,11 +111,17 @@ public class SpriteAttachment
 	/// </summary>
 	public List<Vector2> Points { get; set; }
 
+	/// <summary>
+	/// Whether or not the attachment point is visible in the Sprite Editor.
+	/// </summary>
+	public bool Visible { get; set; }
+
 	public SpriteAttachment()
 	{
 		Name = "new attachment";
 		Color = Color.Red;
 		Points = new List<Vector2>();
+		Visible = true;
 	}
 
 	public SpriteAttachment(string name)
@@ -123,6 +129,7 @@ public class SpriteAttachment
 		Name = name;
 		Color = Color.Red;
 		Points = new List<Vector2>();
+		Visible = true;
 	}
 
 	public SpriteAttachment Copy()
@@ -130,6 +137,7 @@ public class SpriteAttachment
 		var copy = new SpriteAttachment(Name);
 		copy.Color = Color;
 		copy.Points = new List<Vector2>(Points);
+		copy.Visible = Visible;
 		return copy;
 	}
 
