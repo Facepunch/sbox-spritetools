@@ -196,23 +196,13 @@ internal class AnimationButton : Widget
 
         MainWindow.PushUndo("Re-Order Animations");
 
-        var oldList = new List<SpriteAnimation>(MainWindow.Sprite.Animations);
-        MainWindow.Sprite.Animations = new List<SpriteAnimation>();
+        var list = MainWindow.Sprite.Animations;
+        var index = list.IndexOf(Animation);
+        var movingIndex = index + delta;
+        var anim = list[movingIndex];
 
-        var index = oldList.IndexOf(Animation);
-        var newIndex = index + delta;
-
-        for (int i = 0; i < oldList.Count; i++)
-        {
-            if (i == index) continue;
-
-            if (i == newIndex)
-            {
-                MainWindow.Sprite.Animations.Add(Animation);
-            }
-
-            MainWindow.Sprite.Animations.Add(oldList[i]);
-        }
+        MainWindow.Sprite.Animations.RemoveAt(movingIndex);
+        MainWindow.Sprite.Animations.Insert(index, anim);
 
         MainWindow.PushRedo();
 
