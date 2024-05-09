@@ -177,8 +177,10 @@ public class Preview : Widget
         var pos = tr.EndPosition.WithZ(0f);
         var attachPos = new Vector2(pos.y, pos.x);
         attachPos = (attachPos / 100f) + (Vector2.One * 0.5f);
-        MainWindow.SelectedAnimation.Attachments.Add(new SpriteAttachment(name));
-        MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name] = attachPos;
+        var attachment = new SpriteAttachment(name);
+        attachment.Points.Add(attachPos);
+        MainWindow.SelectedAnimation.Attachments.Add(attachment);
+        // MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name] = attachPos;
         MainWindow.PushRedo();
     }
 

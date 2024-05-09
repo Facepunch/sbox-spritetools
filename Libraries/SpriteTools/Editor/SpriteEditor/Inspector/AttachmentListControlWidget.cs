@@ -76,15 +76,15 @@ public class AttachmentListControlWidget : ControlWidget
 
     void RemoveEntry(int index)
     {
-        var prop = Collection.ElementAt(index);
-        var attachment = prop.GetValue<SpriteAttachment>();
-        if (attachment is not null)
-        {
-            foreach (var frame in MainWindow.SelectedAnimation.Frames)
-            {
-                frame.AttachmentPoints.Remove(attachment.Name);
-            }
-        }
+        // var prop = Collection.ElementAt(index);
+        // var attachment = prop.GetValue<SpriteAttachment>();
+        // if (attachment is not null)
+        // {
+        //     foreach (var frame in MainWindow.SelectedAnimation.Frames)
+        //     {
+        //         frame.AttachmentPoints.Remove(attachment.Name);
+        //     }
+        // }
         Collection.RemoveAt(index);
     }
 

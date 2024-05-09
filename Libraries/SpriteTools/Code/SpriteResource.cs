@@ -18,50 +18,6 @@ public class SpriteResource : GameResource
 		}
 	};
 
-	protected override void PostLoad()
-	{
-		base.PostLoad();
-
-		foreach (var animation in Animations)
-		{
-			Vector2 lastPosition = Vector2.Zero;
-			bool firstFrame = true;
-			int passedFrames = 0;
-			foreach (var attachment in animation.Attachments)
-			{
-				attachment.Points = new();
-				foreach (var frame in animation.Frames)
-				{
-					if (!frame.AttachmentPoints.ContainsKey(attachment.Name))
-					{
-						if (firstFrame)
-						{
-							passedFrames++;
-						}
-						else
-						{
-							frame.AttachmentPoints[attachment.Name] = lastPosition;
-						}
-					}
-					else
-					{
-						lastPosition = frame.AttachmentPoints[attachment.Name];
-						attachment.Points.Add(lastPosition);
-
-						if (firstFrame)
-						{
-							for (int i = 0; i < passedFrames; i++)
-							{
-								attachment.Points.Add(lastPosition);
-							}
-							firstFrame = false;
-						}
-					}
-				}
-			}
-		}
-	}
-
 }
 
 public class SpriteAnimation
@@ -122,13 +78,11 @@ public class SpriteAnimationFrame
 {
 	public string FilePath { get; set; }
 	public List<string> Events { get; set; }
-	public Dictionary<string, Vector2> AttachmentPoints { get; set; }
 
 	public SpriteAnimationFrame(string filePath)
 	{
 		FilePath = filePath;
 		Events = new List<string>();
-		AttachmentPoints = new Dictionary<string, Vector2>();
 	}
 }
 

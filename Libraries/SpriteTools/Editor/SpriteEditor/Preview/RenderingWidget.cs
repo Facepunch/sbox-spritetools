@@ -221,7 +221,12 @@ public class RenderingWidget : NativeRenderingWidget
                         attachPos = attachPos.SnapToGrid(1f / TextureSize.y, false, true);
                     }
 
-                    MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name] = attachPos;
+                    var index = MainWindow.CurrentFrameIndex;
+                    for (int i = attachment.Points.Count; i <= index; i++)
+                    {
+                        attachment.Points.Add(attachPos);
+                    }
+                    attachment.Points[index] = attachPos;
                 };
                 Attachments.Add(attach);
             }
@@ -231,21 +236,23 @@ public class RenderingWidget : NativeRenderingWidget
 
                 if (MainWindow.SelectedAnimation is not null)
                 {
-                    if (MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints.TryGetValue(name, out var attachPos))
+                    if (MainWindow.CurrentFrameIndex < attachment.Points.Count)
                     {
+                        var attachPos = attachment.Points[MainWindow.CurrentFrameIndex];
                         attachPos -= Vector2.One * 0.5f;
                         attachPos *= 100f;
                         attach.Item1.Position = new Vector3(attachPos.y, attachPos.x, 10f);
                     }
                     else
                     {
-                        for (int i = 0; i < MainWindow.SelectedAnimation.Frames.Count; i++)
+                        for (int i = attachment.Points.Count - 1; i >= 0; i--)
                         {
-                            if (MainWindow.SelectedAnimation.Frames[i].AttachmentPoints.TryGetValue(name.ToLowerInvariant(), out var attachPos2))
+                            if (attachment.Points.Count > i)
                             {
-                                attachPos2 -= Vector2.One * 0.5f;
-                                attachPos2 *= 100f;
-                                attach.Item1.Position = new Vector3(attachPos2.y, attachPos2.x, 10f);
+                                var attachPos1 = attachment.Points[i];
+                                attachPos1 -= Vector2.One * 0.5f;
+                                attachPos1 *= 100f;
+                                attach.Item1.Position = new Vector3(attachPos1.y, attachPos1.x, 10f);
                                 break;
                             }
                         }
