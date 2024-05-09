@@ -1,12 +1,92 @@
 {
   "Animations": [
     {
-      "FrameRate": 15,
-      "Origin": "0.5,0.5",
+      "FrameRate": 8,
+      "Origin": "0.5,1",
       "Looping": true,
-      "Name": "animation_01",
-      "Frames": [],
-      "Attachments": []
+      "Name": "idle",
+      "Frames": [
+        {
+          "FilePath": "images/sausage_idle_01.png",
+          "Events": []
+        },
+        {
+          "FilePath": "images/sausage_idle_02.png",
+          "Events": []
+        },
+        {
+          "FilePath": "images/sausage_idle_03.png",
+          "Events": []
+        },
+        {
+          "FilePath": "images/sausage_idle_04.png",
+          "Events": [
+            "bob"
+          ]
+        }
+      ],
+      "Attachments": [
+        {
+          "Name": "hat",
+          "Color": "0.1,0,1,1",
+          "Points": [
+            "0.5,0.15625",
+            "0.5,0.125",
+            "0.5,0.125",
+            "0.5,0.15625"
+          ]
+        }
+      ]
+    },
+    {
+      "FrameRate": 8,
+      "Origin": "0.5,1",
+      "Looping": true,
+      "Name": "run",
+      "Frames": [
+        {
+          "FilePath": "images/sausage_run_01.png",
+          "Events": []
+        },
+        {
+          "FilePath": "images/sausage_run_02.png",
+          "Events": [
+            "step"
+          ]
+        },
+        {
+          "FilePath": "images/sausage_run_03.png",
+          "Events": []
+        },
+        {
+          "FilePath": "images/sausage_run_04.png",
+          "Events": []
+        },
+        {
+          "FilePath": "images/sausage_run_05.png",
+          "Events": [
+            "step"
+          ]
+        },
+        {
+          "FilePath": "images/sausage_run_06.png",
+          "Events": []
+        }
+      ],
+      "Attachments": [
+        {
+          "Name": "hat",
+          "Color": "0.1,0,1,1",
+          "Points": [
+            "0.59375,0.1875",
+            "0.59375,0.25",
+            "0.59375,0.28125",
+            "0.5625,0.21875",
+            "0.5625,0.21875",
+            "0.5625,0.28125"
+          ]
+        }
+      ]
     }
   ],
   "ResourceVersion": 0,
