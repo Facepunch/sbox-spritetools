@@ -18,6 +18,50 @@ public class SpriteResource : GameResource
 		}
 	};
 
+	protected override void PostLoad()
+	{
+		base.PostLoad();
+
+		foreach (var animation in Animations)
+		{
+			Vector2 lastPosition = Vector2.Zero;
+			bool firstFrame = true;
+			int passedFrames = 0;
+			foreach (var attachment in animation.Attachments)
+			{
+				attachment.Points = new();
+				foreach (var frame in animation.Frames)
+				{
+					if (!frame.AttachmentPoints.ContainsKey(attachment.Name))
+					{
+						if (firstFrame)
+						{
+							passedFrames++;
+						}
+						else
+						{
+							frame.AttachmentPoints[attachment.Name] = lastPosition;
+						}
+					}
+					else
+					{
+						lastPosition = frame.AttachmentPoints[attachment.Name];
+						attachment.Points.Add(lastPosition);
+
+						if (firstFrame)
+						{
+							for (int i = 0; i < passedFrames; i++)
+							{
+								attachment.Points.Add(lastPosition);
+							}
+							firstFrame = false;
+						}
+					}
+				}
+			}
+		}
+	}
+
 }
 
 public class SpriteAnimation
@@ -58,68 +102,19 @@ public class SpriteAnimation
 	/// <summary>
 	/// The list of attachment names that are available for this animation.
 	/// </summary>
-	public List<string> AttachmentNames { get; set; }
+	public List<SpriteAttachment> Attachments { get; set; }
 
 	public SpriteAnimation()
 	{
 		Frames = new List<SpriteAnimationFrame>();
-		AttachmentNames = new List<string>();
+		Attachments = new List<SpriteAttachment>();
 	}
 
 	public SpriteAnimation(string name)
 	{
 		Name = name;
 		Frames = new List<SpriteAnimationFrame>();
-		AttachmentNames = new List<string>();
-	}
-
-
-	/// <summary>
-	/// Returns a list of all attachments that are available for this animation.
-	/// </summary>
-	public List<SpriteAttachment> GetAttachments()
-	{
-		var attachments = new List<SpriteAttachment>();
-		foreach (var name in AttachmentNames)
-		{
-			var attachment = new SpriteAttachment() { Name = name };
-			var points = new List<Vector2>();
-			int i = 0;
-			int missedValues = 0;
-			foreach (var frame in Frames)
-			{
-				if (frame.AttachmentPoints.TryGetValue(name, out var attachPoint))
-				{
-					if (missedValues > 0)
-					{
-						for (int j = 0; j < missedValues; j++)
-						{
-							points.Add(attachPoint);
-						}
-						missedValues = 0;
-					}
-					points.Add(attachPoint);
-				}
-				else if (points.Count == 0)
-				{
-					missedValues++;
-				}
-				i++;
-			}
-
-		}
-		return attachments;
-	}
-
-	/// <summary>
-	/// Returns a specific attachment by name.
-	/// </summary>
-	/// <param name="name">The name of the animation (case-insensitive)</param>
-	/// <returns></returns>
-	public SpriteAttachment GetAttachment(string name)
-	{
-		var attachments = GetAttachments();
-		return attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name.ToLowerInvariant());
+		Attachments = new List<SpriteAttachment>();
 	}
 }
 
@@ -139,12 +134,34 @@ public class SpriteAnimationFrame
 
 public class SpriteAttachment
 {
+	/// <summary>
+	/// The name of the attachment point. This is used as a key to reference the attachment point.
+	/// </summary>
 	public string Name { get; set; }
-	public List<Vector2> AttachPoints { get; set; }
+
+	/// <summary>
+	/// The color of the attachment point. This is purely used as a visual aid in the Sprite Editor.
+	/// </summary>
+	public Color Color { get; set; }
+
+	/// <summary>
+	/// A list of points corresponding to the attachment point's position in each frame.
+	/// </summary>
+	public List<Vector2> Points { get; set; }
 
 	public SpriteAttachment()
 	{
-		AttachPoints = new List<Vector2>();
+		Name = "new attachment";
+		Color = Color.Red;
+		Points = new List<Vector2>();
 	}
+
+	public SpriteAttachment(string name)
+	{
+		Name = name;
+		Color = Color.Red;
+		Points = new List<Vector2>();
+	}
+
 
 }

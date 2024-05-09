@@ -5,29 +5,32 @@
   "nodes": [
     {
       "_class": "TextureSampler",
-      "Image": "materials/vehicles/ship1_color.png",
+      "Image": null,
       "Sampler": {
         "Filter": "Point"
       },
       "UI": {
-        "Name": "Color",
+        "Name": "Texture",
         "Default": "1,1,1,1",
         "ImageFormat": "BC7",
         "SrgbRead": true,
         "PrimaryGroup": {
-          "Name": "Color"
+          "Name": "Texture",
+          "Priority": 1
         },
         "CreateInput": "CreateInputTexture2D"
       },
       "Identifier": "0",
       "Position": "-96,160",
       "Coords": {
-        "Identifier": "10",
+        "Identifier": "9",
         "Output": "Result"
       }
     },
     {
       "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
       "Value": "1,1",
       "Name": "Tiling",
       "IsAttribute": false,
@@ -52,32 +55,7 @@
       "Identifier": "3",
       "Position": "896,288",
       "Input": {
-        "Identifier": "6",
-        "Output": "Result"
-      }
-    },
-    {
-      "_class": "TextureSampler",
-      "Image": "materials/dev/white_color.tga",
-      "Sampler": {
-        "Filter": "Point"
-      },
-      "UI": {
-        "Name": "Translucency",
-        "Default": "1,1,1,1",
-        "Extension": "Trans",
-        "ColorSpace": "Linear",
-        "ImageFormat": "BC7",
-        "PrimaryGroup": {
-          "Name": "Translucent",
-          "Priority": 1
-        },
-        "CreateInput": "CreateInputTexture2D"
-      },
-      "Identifier": "4",
-      "Position": "-96,432",
-      "Coords": {
-        "Identifier": "10",
+        "Identifier": "5",
         "Output": "Result"
       }
     },
@@ -87,10 +65,10 @@
       "DefaultRoughness": 1,
       "DefaultMetalness": 0,
       "DefaultAmbientOcclusion": 1,
-      "Identifier": "5",
+      "Identifier": "4",
       "Position": "1600,192",
       "Albedo": {
-        "Identifier": "16",
+        "Identifier": "15",
         "Output": "Out"
       },
       "Opacity": {
@@ -100,18 +78,18 @@
     },
     {
       "_class": "SmoothStep",
-      "Identifier": "6",
+      "Identifier": "5",
       "Position": "672,368",
       "Input": {
-        "Identifier": "17",
-        "Output": "Result"
+        "Identifier": "0",
+        "Output": "A"
       },
       "Edge1": {
-        "Identifier": "7",
+        "Identifier": "6",
         "Output": "Result"
       },
       "Edge2": {
-        "Identifier": "8",
+        "Identifier": "7",
         "Output": "Result"
       }
     },
@@ -132,7 +110,7 @@
           "Name": ""
         }
       },
-      "Identifier": "7",
+      "Identifier": "6",
       "Position": "416,480"
     },
     {
@@ -152,21 +130,21 @@
           "Name": ""
         }
       },
-      "Identifier": "8",
+      "Identifier": "7",
       "Position": "416,544"
     },
     {
       "_class": "Add",
       "DefaultA": 0,
       "DefaultB": 1,
-      "Identifier": "9",
+      "Identifier": "8",
       "Position": "1024,-16",
       "A": {
-        "Identifier": "13",
+        "Identifier": "12",
         "Output": "Result"
       },
       "B": {
-        "Identifier": "14",
+        "Identifier": "13",
         "Output": "X"
       }
     },
@@ -174,8 +152,8 @@
       "_class": "TileAndOffset",
       "DefaultTile": "1,1",
       "DefaultOffset": "0,0",
-      "WrapTo01": false,
-      "Identifier": "10",
+      "WrapTo01": true,
+      "Identifier": "9",
       "Position": "-544,304",
       "Coords": {
         "Identifier": "2",
@@ -186,12 +164,14 @@
         "Output": "Result"
       },
       "Offset": {
-        "Identifier": "11",
+        "Identifier": "10",
         "Output": "Result"
       }
     },
     {
       "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
       "Value": "1,1",
       "Name": "Offset",
       "IsAttribute": false,
@@ -201,15 +181,15 @@
           "Priority": 5
         }
       },
-      "Identifier": "11",
+      "Identifier": "10",
       "Position": "-944,432"
     },
     {
       "_class": "RGBtoHSV",
-      "Identifier": "12",
+      "Identifier": "11",
       "Position": "576,48",
       "In": {
-        "Identifier": "18",
+        "Identifier": "16",
         "Output": "Result"
       }
     },
@@ -229,15 +209,15 @@
           "Name": ""
         }
       },
-      "Identifier": "13",
+      "Identifier": "12",
       "Position": "816,-48"
     },
     {
       "_class": "SplitVector",
-      "Identifier": "14",
+      "Identifier": "13",
       "Position": "816,48",
       "Input": {
-        "Identifier": "12",
+        "Identifier": "11",
         "Output": "Out"
       }
     },
@@ -247,75 +227,67 @@
       "DefaultY": 0,
       "DefaultZ": 0,
       "DefaultW": 0,
-      "Identifier": "15",
+      "Identifier": "14",
       "Position": "1152,48",
       "X": {
-        "Identifier": "9",
+        "Identifier": "8",
         "Output": "Result"
       },
       "Y": {
-        "Identifier": "14",
+        "Identifier": "13",
         "Output": "Y"
       },
       "Z": {
-        "Identifier": "14",
+        "Identifier": "13",
         "Output": "Z"
       }
     },
     {
       "_class": "HSVtoRGB",
-      "Identifier": "16",
+      "Identifier": "15",
       "Position": "1392,80",
       "In": {
-        "Identifier": "15",
+        "Identifier": "14",
         "Output": "Vector"
       }
     },
     {
-      "_class": "Branch",
-      "Name": "Alpha from Colour",
-      "Operator": "Equal",
-      "Enabled": true,
-      "UI": {},
-      "Identifier": "17",
-      "Position": "176,336",
-      "True": {
-        "Identifier": "0",
-        "Output": "A"
+      "_class": "Multiply",
+      "DefaultA": 0,
+      "DefaultB": 1,
+      "Identifier": "16",
+      "Position": "336,64",
+      "A": {
+        "Identifier": "17",
+        "Output": "Result"
       },
-      "False": {
-        "Identifier": "4",
+      "B": {
+        "Identifier": "0",
         "Output": "Result"
       }
     },
     {
-      "_class": "Branch",
-      "Name": "Solid Color",
-      "Operator": "Equal",
-      "Enabled": false,
+      "_class": "TextureSampler",
+      "Image": "materials/lights/white_color.tga",
+      "Sampler": {
+        "Filter": "Point"
+      },
       "UI": {
+        "Name": "ColorMix",
+        "Default": "1,1,1,1",
+        "SrgbRead": true,
         "PrimaryGroup": {
-          "Name": "ColorSettings"
+          "Name": "Color",
+          "Priority": 2
         },
-        "SecondaryGroup": {
-          "Name": ""
-        }
+        "CreateInput": "CreateInputTexture2D"
       },
-      "Identifier": "18",
-      "Position": "272,48",
-      "True": {
-        "Identifier": "19",
-        "Output": "RGB"
-      },
-      "False": {
-        "Identifier": "0",
+      "Identifier": "17",
+      "Position": "-96,-96",
+      "Coords": {
+        "Identifier": "9",
         "Output": "Result"
       }
-    },
-    {
-      "_class": "VertexColor",
-      "Identifier": "19",
-      "Position": "-96,16"
     }
   ]
 }

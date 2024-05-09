@@ -262,9 +262,9 @@ internal class AnimationButton : Widget
             {
                 newAnimation.Frames = new List<SpriteAnimationFrame>(Animation.Frames);
             }
-            if (Animation.AttachmentNames is not null)
+            if (Animation.Attachments is not null)
             {
-                newAnimation.AttachmentNames = new List<string>(Animation.AttachmentNames);
+                newAnimation.Attachments = new List<SpriteAttachment>(Animation.Attachments);
             }
             int index = MainWindow.Sprite.Animations.IndexOf(Animation);
             MainWindow.Sprite.Animations.Insert(index + 1, newAnimation);

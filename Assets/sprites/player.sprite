@@ -1,62 +1,39 @@
 {
   "Animations": [
     {
-      "FrameRate": 10,
+      "FrameRate": 15,
       "Origin": "0.5,0.5",
       "Looping": true,
-      "Name": "idle",
+      "Name": "animation_01",
       "Frames": [
         {
-          "FilePath": "images/sausage_idle_01.png",
-          "Events": []
-        },
-        {
-          "FilePath": "images/sausage_idle_02.png",
-          "Events": []
+          "FilePath": "images/sausage_idle_04.png",
+          "Events": [],
+          "AttachmentPoints": {
+            "hat": "0.4375,0.21875"
+          }
         },
         {
           "FilePath": "images/sausage_idle_03.png",
-          "Events": []
+          "Events": [],
+          "AttachmentPoints": {}
         },
         {
-          "FilePath": "images/sausage_idle_04.png",
-          "Events": []
+          "FilePath": "images/sausage_idle_02.png",
+          "Events": [],
+          "AttachmentPoints": {}
+        },
+        {
+          "FilePath": "images/sausage_idle_01.png",
+          "Events": [],
+          "AttachmentPoints": {}
         }
-      ]
-    },
-    {
-      "FrameRate": 10,
-      "Origin": "0.5,0.5",
-      "Looping": true,
-      "Name": "run",
-      "Frames": [
+      ],
+      "Attachments": [
         {
-          "FilePath": "images/sausage_run_01.png",
-          "Events": []
-        },
-        {
-          "FilePath": "images/sausage_run_02.png",
-          "Events": [
-            "step"
-          ]
-        },
-        {
-          "FilePath": "images/sausage_run_03.png",
-          "Events": []
-        },
-        {
-          "FilePath": "images/sausage_run_04.png",
-          "Events": []
-        },
-        {
-          "FilePath": "images/sausage_run_05.png",
-          "Events": [
-            "step"
-          ]
-        },
-        {
-          "FilePath": "images/sausage_run_06.png",
-          "Events": []
+          "Name": "hat",
+          "Color": "0.13333,1,0,1",
+          "Points": []
         }
       ]
     }

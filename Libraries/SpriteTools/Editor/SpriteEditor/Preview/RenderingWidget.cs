@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using Editor;
 using Sandbox;
 
@@ -13,7 +14,7 @@ public class RenderingWidget : NativeRenderingWidget
     public SceneObject TextureRect;
     public Vector2 TextureSize;
     Draggable OriginMarker;
-    List<Draggable> Attachments = new();
+    List<(Draggable, Material)> Attachments = new();
     public Material PreviewMaterial;
 
     float targetZoom = 115f;
@@ -54,13 +55,14 @@ public class RenderingWidget : NativeRenderingWidget
         background.SetMaterialOverride(backgroundMat);
         background.Position = new Vector3(0, 0, -1);
 
-        PreviewMaterial = Material.Load("materials/spritegraph.vmat");
-        PreviewMaterial.Set("Color", Color.Transparent);
+        PreviewMaterial = Material.Load("materials/spritegraph.vmat").CreateCopy();
+        PreviewMaterial.Set("Texture", Color.Transparent);
         TextureRect = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
         TextureRect.SetMaterialOverride(PreviewMaterial);
         TextureRect.Flags.WantsFrameBufferCopy = true;
         TextureRect.Flags.IsTranslucent = true;
         TextureRect.Flags.IsOpaque = false;
+        TextureRect.Flags.CastShadows = false;
 
         var markerMaterial = Material.Load("materials/sprite_editor_origin.vmat");
         OriginMarker = new Draggable(World, "models/preview_quad.vmdl", Transform.Zero);
@@ -70,6 +72,7 @@ public class RenderingWidget : NativeRenderingWidget
         OriginMarker.Flags.WantsFrameBufferCopy = true;
         OriginMarker.Flags.IsTranslucent = true;
         OriginMarker.Flags.IsOpaque = false;
+        OriginMarker.Flags.CastShadows = false;
         OriginMarker.OnPositionChanged = (Vector2 pos) =>
         {
             if (MainWindow.SelectedAnimation is null) return;
@@ -189,21 +192,25 @@ public class RenderingWidget : NativeRenderingWidget
         }
 
         scale /= 1.5f;
-        foreach (var name in MainWindow.SelectedAnimation?.AttachmentNames ?? new List<string>())
+        foreach (var attachment in MainWindow.SelectedAnimation?.Attachments ?? new List<SpriteAttachment>())
         {
-            var attach = Attachments.FirstOrDefault(a => a.Tags.Has(name.ToLowerInvariant()));
-            if (attach is null)
+            if (attachment is null) continue;
+            var name = attachment.Name.ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(name)) continue;
+            var attach = Attachments.FirstOrDefault(a => a.Item1.Tags.Has(name));
+            if (!Attachments.Any(a => a.Item1.Tags.Has(name)))
             {
-                var markerMaterial = Material.Load("materials/sprite_editor_attachment.vmat");
-                attach = new Draggable(World, "models/preview_quad.vmdl", Transform.Zero);
-                attach.SetMaterialOverride(markerMaterial);
-                attach.Tags.Add(name.ToLowerInvariant());
-                attach.Position = new Vector3(0, 0, 10f);
-                attach.Transform = attach.Transform.WithRotation(new Angles(0, 45, 0));
-                attach.Flags.WantsFrameBufferCopy = true;
-                attach.Flags.IsTranslucent = true;
-                attach.Flags.IsOpaque = false;
-                attach.OnPositionChanged = (Vector2 pos) =>
+                var markerMaterial = Material.Load("materials/sprite_editor_attachment.vmat").CreateCopy();
+                attach = (new Draggable(World, "models/preview_quad.vmdl", Transform.Zero), markerMaterial);
+                attach.Item1.SetMaterialOverride(markerMaterial);
+                attach.Item1.Tags.Add(name);
+                attach.Item1.Position = new Vector3(0, 0, 10f);
+                attach.Item1.Transform = attach.Item1.Transform.WithRotation(new Angles(0, 45, 0));
+                attach.Item1.Flags.WantsFrameBufferCopy = true;
+                attach.Item1.Flags.IsTranslucent = true;
+                attach.Item1.Flags.IsOpaque = false;
+                attach.Item1.Flags.CastShadows = false;
+                attach.Item1.OnPositionChanged = (Vector2 pos) =>
                 {
                     if (MainWindow.SelectedAnimation is null) return;
 
@@ -214,21 +221,21 @@ public class RenderingWidget : NativeRenderingWidget
                         attachPos = attachPos.SnapToGrid(1f / TextureSize.y, false, true);
                     }
 
-                    MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name.ToLowerInvariant()] = attachPos;
+                    MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name] = attachPos;
                 };
                 Attachments.Add(attach);
             }
             else
             {
-                attach.RenderingEnabled = true;
+                attach.Item1.RenderingEnabled = true;
 
                 if (MainWindow.SelectedAnimation is not null)
                 {
-                    if (MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints.TryGetValue(name.ToLowerInvariant(), out var attachPos))
+                    if (MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints.TryGetValue(name, out var attachPos))
                     {
                         attachPos -= Vector2.One * 0.5f;
                         attachPos *= 100f;
-                        attach.Position = new Vector3(attachPos.y, attachPos.x, 10f);
+                        attach.Item1.Position = new Vector3(attachPos.y, attachPos.x, 10f);
                     }
                     else
                     {
@@ -238,26 +245,43 @@ public class RenderingWidget : NativeRenderingWidget
                             {
                                 attachPos2 -= Vector2.One * 0.5f;
                                 attachPos2 *= 100f;
-                                attach.Position = new Vector3(attachPos2.y, attachPos2.x, 10f);
+                                attach.Item1.Position = new Vector3(attachPos2.y, attachPos2.x, 10f);
                                 break;
                             }
                         }
                     }
                 }
             }
-            attach.Transform = attach.Transform.WithScale(new Vector3(scale, scale, 1f));
+            attach.Item1.Transform = attach.Item1.Transform.WithScale(new Vector3(scale, scale, 1f));
+            attach.Item1.ColorTint = attachment.Color;
         }
 
-        foreach (var attachment in Attachments)
+        int index = 0;
+        foreach (var attachmentWidget in Attachments)
         {
-            var names = MainWindow.SelectedAnimation?.AttachmentNames;
-            foreach (var name in names)
+            var attachments = MainWindow.SelectedAnimation?.Attachments;
+            foreach (var attachment in attachments)
             {
-                if (!attachment.Tags.Has(name.ToLowerInvariant()))
+                if (attachmentWidget.Item1.Tags.Has(attachment.Name.ToLowerInvariant()))
                 {
-                    attachment.RenderingEnabled = false;
+                    attachmentWidget.Item1.RenderingEnabled = true;
+                    var texture = Texture.Create(1, 1);
+                    byte[] data = new byte[4];
+                    data[0] = (byte)(attachment.Color.r * 255);
+                    data[1] = (byte)(attachment.Color.g * 255);
+                    data[2] = (byte)(attachment.Color.b * 255);
+                    data[3] = (byte)(attachment.Color.a * 255);
+                    texture.WithData(data);
+                    attachmentWidget.Item2.Set("ColorMix", texture.Finish());
+                    // attachmentWidget.SetMaterialOverride(AttachmentMaterials[index]);
+                    break;
+                }
+                else
+                {
+                    attachmentWidget.Item1.RenderingEnabled = false;
                 }
             }
+            index++;
         }
     }
 

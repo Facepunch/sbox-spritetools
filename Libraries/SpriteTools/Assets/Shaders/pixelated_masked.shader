@@ -70,17 +70,15 @@ PS
 	#include "common/pixel.hlsl"
 	
 	SamplerState g_sSampler0 < Filter( POINT ); AddressU( WRAP ); AddressV( WRAP ); >;
-	CreateInputTexture2D( Color, Srgb, 8, "None", "_color", "Color,0/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
-	CreateInputTexture2D( Translucency, Linear, 8, "None", "_trans", "Translucent,1/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
-	Texture2D g_tColor < Channel( RGBA, Box( Color ), Srgb ); OutputFormat( BC7 ); SrgbRead( True ); >;
-	Texture2D g_tTranslucency < Channel( RGBA, Box( Translucency ), Linear ); OutputFormat( BC7 ); SrgbRead( False ); >;
+	CreateInputTexture2D( ColorMix, Srgb, 8, "None", "_color", "Color,2/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
+	CreateInputTexture2D( Texture, Srgb, 8, "None", "_color", "Texture,1/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
+	Texture2D g_tColorMix < Channel( RGBA, Box( ColorMix ), Srgb ); OutputFormat( DXT5 ); SrgbRead( True ); >;
+	Texture2D g_tTexture < Channel( RGBA, Box( Texture ), Srgb ); OutputFormat( BC7 ); SrgbRead( True ); >;
 	float g_flHueshift < UiGroup( "Hue,2/,0/0" ); Default1( 0 ); Range1( 0, 1 ); >;
-	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); >;
-	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); >;
-	bool g_bSolidColor < UiGroup( "ColorSettings,0/,0/0" ); Default( 0 ); >;
+	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
+	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
 	float g_flSmoothStepMin < UiGroup( "Translucent,1/,0/1" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float g_flSmoothStepMax < UiGroup( "Translucent,1/,0/2" ); Default1( 1 ); Range1( 0, 1 ); >;
-	bool g_bAlphafromColour < UiGroup( ",0/,0/0" ); Default( 1 ); >;
 		
 	float3 RGB2HSV( float3 c )
 	{
@@ -114,13 +112,13 @@ PS
 		m.Transmission = 0;
 		
 		float l_0 = g_flHueshift;
-		float3 l_1 = i.vColor.rgb;
-		float2 l_2 = i.vTextureCoords.xy * float2( 1, 1 );
-		float2 l_3 = g_vTiling;
-		float2 l_4 = g_vOffset;
-		float2 l_5 = TileAndOffsetUv( l_2, l_3, l_4 );
-		float4 l_6 = Tex2DS( g_tColor, g_sSampler0, l_5 );
-		float4 l_7 = g_bSolidColor ? float4( l_1, 0 ) : l_6;
+		float2 l_1 = i.vTextureCoords.xy * float2( 1, 1 );
+		float2 l_2 = g_vTiling;
+		float2 l_3 = g_vOffset;
+		float2 l_4 = frac( TileAndOffsetUv( l_1, l_2, l_3 ) );
+		float4 l_5 = Tex2DS( g_tColorMix, g_sSampler0, l_4 );
+		float4 l_6 = Tex2DS( g_tTexture, g_sSampler0, l_4 );
+		float4 l_7 = l_5 * l_6;
 		float3 l_8 = RGB2HSV( l_7 );
 		float l_9 = l_8.x;
 		float l_10 = l_0 + l_9;
@@ -130,13 +128,11 @@ PS
 		float3 l_14 = HSV2RGB( l_13 );
 		float l_15 = g_flSmoothStepMin;
 		float l_16 = g_flSmoothStepMax;
-		float4 l_17 = Tex2DS( g_tTranslucency, g_sSampler0, l_5 );
-		float4 l_18 = g_bAlphafromColour ? float4( l_6.a, l_6.a, l_6.a, l_6.a ) : l_17;
-		float4 l_19 = smoothstep( l_15, l_16, l_18 );
-		float4 l_20 = saturate( l_19 );
+		float l_17 = smoothstep( l_15, l_16, l_6.a );
+		float l_18 = saturate( l_17 );
 		
 		m.Albedo = l_14;
-		m.Opacity = l_20.x;
+		m.Opacity = l_18;
 		m.Roughness = 1;
 		m.Metalness = 0;
 		m.AmbientOcclusion = 1;

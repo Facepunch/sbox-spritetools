@@ -168,14 +168,14 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     protected override void RestoreDefaultDockLayout()
     {
-        var inspector = new Inspector(this);
+        var inspector = new Inspector.Inspector(this);
         var preview = new Preview.Preview(this);
         var timeline = new Timeline.Timeline(this);
         var animationList = new AnimationList.AnimationList(this);
         // var errorList = new ErrorList( null, this );
 
         DockManager.Clear();
-        DockManager.RegisterDockType("Inspector", "edit", () => new Inspector(this));
+        DockManager.RegisterDockType("Inspector", "edit", () => new Inspector.Inspector(this));
         DockManager.RegisterDockType("Animations", "directions_walk", () => new AnimationList.AnimationList(this));
         DockManager.RegisterDockType("Preview", "emoji_emotions", () => new Preview.Preview(this));
         DockManager.RegisterDockType("Timeline", "view_column", () => new Timeline.Timeline(this));

@@ -3,7 +3,7 @@ using Sandbox;
 using System;
 using System.Linq;
 
-namespace SpriteTools.SpriteEditor;
+namespace SpriteTools.SpriteEditor.Inspector;
 
 public class Inspector : Widget
 {
@@ -65,13 +65,38 @@ public class Inspector : Widget
 
         // controlSheet.AddRow( serializedObject.GetProperty( nameof( SpriteResource.ResourceName ) ) );
 
+
         foreach (var prop in props)
         {
             controlSheet.AddRow(prop);
         }
 
+        var attachmentProp = serializedObject.GetProperty(nameof(MainWindow.SelectedAnimation.Attachments));
+        if (attachmentProp is not null)
+        {
+            var row = new GridLayout();
+            var attachmentControl = new AttachmentListControlWidget(attachmentProp, MainWindow);
+
+            row.SetMinimumColumnWidth(0, 154);
+            row.SetColumnStretch(0, 1);
+
+            var label = row.AddCell(0, 0, new Label("Attachments") { MinimumHeight = Theme.RowHeight, Alignment = TextFlag.Center }, 2, 1, TextFlag.LeftTop);
+            label.MinimumHeight = Theme.RowHeight;
+            label.Alignment = TextFlag.LeftCenter;
+            label.SetStyles("color: #888;");
+            label.ToolTip = attachmentProp.Description ?? attachmentProp.DisplayName;
+            // label.ContentMargins = new Sandbox.UI.Margin(4, 0, 0, 0);
+
+            var lo = row.AddCell(1, 0, Layout.Column(), 2, 1, TextFlag.LeftTop);
+            lo.Margin = new Sandbox.UI.Margin(16, 0, 0, 0);
+            lo.Add(attachmentControl);
+
+            controlSheet.AddLayout(row);
+        }
+
         serializedObject.OnPropertyChanged += (prop) =>
         {
+            if (prop is null) return;
             if (!prop.HasAttribute<PropertyAttribute>()) return;
 
             var undoName = $"Modify {prop.Name}";

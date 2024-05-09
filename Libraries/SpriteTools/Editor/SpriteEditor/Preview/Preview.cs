@@ -102,7 +102,7 @@ public class Preview : Widget
         if (string.IsNullOrEmpty(MainWindow.CurrentTexturePath)) return;
 
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.CurrentTexturePath);
-        Rendering.PreviewMaterial.Set("Color", texture);
+        Rendering.PreviewMaterial.Set("Texture", texture);
         Rendering.TextureSize = new Vector2(texture.Width, texture.Height);
         Rendering.TextureRect.SetMaterialOverride(Rendering.PreviewMaterial);
     }
@@ -145,7 +145,7 @@ public class Preview : Widget
 
         button.MouseClick = () =>
         {
-            if (!string.IsNullOrEmpty(entry.Text) && !MainWindow.SelectedAnimation.AttachmentNames.Any(a => a.ToLowerInvariant() == entry.Text.ToLowerInvariant()))
+            if (!string.IsNullOrEmpty(entry.Text) && !MainWindow.SelectedAnimation.Attachments.Any(a => a.Name.ToLowerInvariant() == entry.Text.ToLowerInvariant()))
             {
                 CreateAttachment(entry.Text);
             }
@@ -177,7 +177,7 @@ public class Preview : Widget
         var pos = tr.EndPosition.WithZ(0f);
         var attachPos = new Vector2(pos.y, pos.x);
         attachPos = (attachPos / 100f) + (Vector2.One * 0.5f);
-        MainWindow.SelectedAnimation.AttachmentNames.Add(name);
+        MainWindow.SelectedAnimation.Attachments.Add(new SpriteAttachment(name));
         MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name] = attachPos;
         MainWindow.PushRedo();
     }
