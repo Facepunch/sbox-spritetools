@@ -149,7 +149,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         CreateToolBar();
 
-	}
+    }
 
     private void OnViewMenu(Menu view)
     {
@@ -334,19 +334,19 @@ public partial class MainWindow : DockWindow, IAssetEditor
             frameTimer = 0f;
         }
 
-		_undoOption.Enabled = _undoStack.CanUndo;
-		_redoOption.Enabled = _undoStack.CanRedo;
-		_undoMenuOption.Enabled = _undoStack.CanUndo;
+        _undoOption.Enabled = _undoStack.CanUndo;
+        _redoOption.Enabled = _undoStack.CanRedo;
+        _undoMenuOption.Enabled = _undoStack.CanUndo;
         _redoMenuOption.Enabled = _undoStack.CanRedo;
 
-		_undoOption.Text = _undoStack.UndoName ?? "Undo";
-		_redoOption.Text = _undoStack.RedoName ?? "Redo";
-		_undoMenuOption.Text = _undoStack.UndoName ?? "Undo";
+        _undoOption.Text = _undoStack.UndoName ?? "Undo";
+        _redoOption.Text = _undoStack.RedoName ?? "Redo";
+        _undoMenuOption.Text = _undoStack.UndoName ?? "Undo";
         _redoMenuOption.Text = _undoStack.RedoName ?? "Redo";
 
-		_undoOption.StatusText = _undoStack.UndoName ?? "Undo";
-		_redoOption.StatusText = _undoStack.RedoName ?? "Redo";
-		_undoMenuOption.StatusText = _undoStack.UndoName ?? "Undo";
+        _undoOption.StatusText = _undoStack.UndoName ?? "Undo";
+        _redoOption.StatusText = _undoStack.RedoName ?? "Redo";
+        _undoMenuOption.StatusText = _undoStack.UndoName ?? "Undo";
         _redoMenuOption.StatusText = _undoStack.RedoName ?? "Redo";
     }
 
@@ -471,28 +471,28 @@ public partial class MainWindow : DockWindow, IAssetEditor
         SetDirty();
     }
 
-	private Option _undoOption;
-	private Option _redoOption;
+    private Option _undoOption;
+    private Option _redoOption;
 
-	private void CreateToolBar()
-	{
-		var toolBar = new ToolBar(this, "ShaderGraphToolbar");
-		AddToolBar(toolBar, ToolbarPosition.Top);
+    private void CreateToolBar()
+    {
+        var toolBar = new ToolBar(this, "ShaderGraphToolbar");
+        AddToolBar(toolBar, ToolbarPosition.Top);
 
-		toolBar.AddOption("New", "common/new.png", New).StatusText = "New Graph";
-		toolBar.AddOption("Open", "common/open.png", Open).StatusText = "Open Graph";
-		toolBar.AddOption("Save", "common/save.png", () => Save()).StatusText = "Save Graph";
+        toolBar.AddOption("New", "common/new.png", New).StatusText = "New Sprite";
+        toolBar.AddOption("Open", "common/open.png", Open).StatusText = "Open Sprite";
+        toolBar.AddOption("Save", "common/save.png", () => Save()).StatusText = "Save Sprite";
 
-		toolBar.AddSeparator();
+        toolBar.AddSeparator();
 
-		_undoOption = toolBar.AddOption("Undo", "undo", Undo);
-		_redoOption = toolBar.AddOption("Redo", "redo", Redo);
+        _undoOption = toolBar.AddOption("Undo", "undo", Undo);
+        _redoOption = toolBar.AddOption("Redo", "redo", Redo);
 
-		toolBar.AddSeparator();
+        toolBar.AddSeparator();
 
-		toolBar.AddSeparator();
+        toolBar.AddSeparator();
 
-		_undoOption.Enabled = false;
-		_redoOption.Enabled = false;
-	}
+        _undoOption.Enabled = false;
+        _redoOption.Enabled = false;
+    }
 }
