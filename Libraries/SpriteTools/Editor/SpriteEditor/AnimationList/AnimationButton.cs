@@ -40,6 +40,7 @@ internal class AnimationButton : Widget
 
         var duplicateButton = new IconButton("content_copy");
         duplicateButton.ToolTip = "Duplicate";
+        duplicateButton.StatusTip = "Duplicate Animation";
         duplicateButton.OnClick += () =>
         {
             DuplicateAnimationPopup();
@@ -50,6 +51,7 @@ internal class AnimationButton : Widget
 
         var deleteButton = new IconButton("delete");
         deleteButton.ToolTip = "Delete";
+        deleteButton.StatusTip = "Delete Animation";
         deleteButton.OnClick += () =>
         {
             DeleteAnimationPopup();

@@ -47,12 +47,14 @@ public class Preview : Widget
             Rendering.Zoom(-250);
         };
         btnZoomOut.ToolTip = "Zoom Out";
+        btnZoomOut.StatusTip = "Zoom Out View";
         var btnZoomIn = overlayWindow.Layout.Add(new IconButton("zoom_in"));
         btnZoomIn.OnClick = () =>
         {
             Rendering.Zoom(250);
         };
         btnZoomIn.ToolTip = "Zoom In";
+        btnZoomIn.StatusTip = "Zoom In View";
         overlayWindow.Layout.AddSeparator();
         var btnFit = overlayWindow.Layout.Add(new IconButton("zoom_out_map"));
         btnFit.OnClick = () =>
@@ -60,6 +62,7 @@ public class Preview : Widget
             Rendering.Fit();
         };
         btnFit.ToolTip = "Fit to Screen";
+        btnFit.StatusTip = "Fit View to Screen";
         overlayWindow.WindowTitle = "Zoom Controls";
 
         Overlay.Layout.Add(overlayWindow);

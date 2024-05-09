@@ -52,6 +52,7 @@ public class Timeline : Widget
         bannerLayout.AddStretchCell();
 
         buttonFramePrevious = new IconButton("navigate_before");
+        buttonFramePrevious.StatusTip = "Previous Frame";
         buttonFramePrevious.OnClick = () =>
         {
             if (MainWindow.SelectedAnimation is null) return;
@@ -73,6 +74,7 @@ public class Timeline : Widget
         UpdatePlayButton();
 
         buttonFrameNext = new IconButton("navigate_next");
+        buttonFrameNext.StatusTip = "Next Frame";
         buttonFrameNext.OnClick = () =>
         {
             if (MainWindow.SelectedAnimation is null) return;
@@ -138,6 +140,7 @@ public class Timeline : Widget
     void UpdatePlayButton()
     {
         buttonPlay.Icon = MainWindow.Playing ? "pause" : "play_arrow";
+        buttonPlay.StatusTip = MainWindow.Playing ? "Pause Animation" : "Play Animation";
         buttonPlay.Update();
     }
 
