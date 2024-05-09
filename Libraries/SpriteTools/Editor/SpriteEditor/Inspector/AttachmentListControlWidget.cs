@@ -63,8 +63,10 @@ public class AttachmentListControlWidget : ControlWidget
             visibilityButton.Icon = (attachment?.Visible ?? true) ? "visibility" : "visibility_off";
             visibilityButton.OnClick = () =>
             {
+                MainWindow.PushUndo("Toggle {attachment.Name} visibility");
                 attachment.Visible = !attachment.Visible;
                 visibilityButton.Icon = attachment.Visible ? "visibility" : "visibility_off";
+                MainWindow.PushRedo();
             };
 
             y++;
