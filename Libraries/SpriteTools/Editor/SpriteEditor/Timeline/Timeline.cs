@@ -237,6 +237,20 @@ public class Timeline : Widget
         }
     }
 
+    protected override void OnKeyRelease(KeyEvent e)
+    {
+        base.OnKeyRelease(e);
+
+        if (e.Key == KeyCode.Left)
+        {
+            buttonFramePrevious.OnClick?.Invoke();
+        }
+        else if (e.Key == KeyCode.Right)
+        {
+            buttonFrameNext.OnClick?.Invoke();
+        }
+    }
+
     [EditorEvent.Frame]
     void Frame()
     {
