@@ -10,6 +10,8 @@ public class Timeline : Widget
     public SpriteResource Sprite { get; set; }
     public MainWindow MainWindow { get; }
 
+    public List<FrameButton> Buttons = new();
+
     ScrollArea scrollArea;
     IconButton buttonPlay;
     IconButton buttonFramePrevious;
@@ -152,6 +154,7 @@ public class Timeline : Widget
         scrollArea.Canvas.VerticalSizeMode = SizeMode.Flexible;
         scrollArea.Canvas.HorizontalSizeMode = SizeMode.Flexible;
 
+        Buttons.Clear();
         if (MainWindow.SelectedAnimation.Frames is not null)
         {
             int index = 0;
@@ -159,6 +162,7 @@ public class Timeline : Widget
             {
                 var frameButton = new FrameButton(this, MainWindow, index);
                 scrollArea.Canvas.Layout.Add(frameButton);
+                Buttons.Add(frameButton);
                 index++;
             }
         }
@@ -209,7 +213,26 @@ public class Timeline : Widget
         {
             if (MainWindow.SelectedAnimation is null) return;
 
-            MainWindow.SelectedAnimation.Frames.RemoveAt(MainWindow.CurrentFrameIndex);
+            List<int> indexes = new();
+            foreach (var button in FrameButton.Selected)
+            {
+                if (!(button?.IsValid ?? false)) continue;
+                indexes.Add(button.FrameIndex);
+            }
+
+            if (indexes.Count > 0)
+            {
+                indexes.Sort();
+                MainWindow.PushUndo($"Remove {indexes.Count} Frame(s) from {MainWindow.SelectedAnimation.Name}");
+
+                for (int i = indexes.Count - 1; i >= 0; i--)
+                {
+                    MainWindow.SelectedAnimation.Frames.RemoveAt(indexes[i]);
+                }
+
+                MainWindow.PushRedo();
+            }
+
             UpdateFrameList();
         }
     }

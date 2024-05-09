@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace SpriteTools.SpriteEditor.Timeline;
 
-internal class FrameButton : Widget
+public class FrameButton : Widget
 {
     MainWindow MainWindow;
     Timeline Timeline;
@@ -20,6 +20,8 @@ internal class FrameButton : Widget
     bool draggingBelow = false;
 
     public static float FrameSize = 64f;
+    public static List<FrameButton> Selected = new();
+    static int lastSelectedIndex = 0;
 
     public FrameButton(Timeline timeline, MainWindow window, int index) : base(null)
     {
@@ -51,6 +53,7 @@ internal class FrameButton : Widget
         base.OnDestroyed();
 
         MainWindow.OnTextureUpdate -= Update;
+        Selected.Remove(this);
     }
 
     protected override void OnContextMenu(ContextMenuEvent e)
@@ -70,10 +73,12 @@ internal class FrameButton : Widget
 
     protected override void OnPaint()
     {
+        bool isSelected = Selected.Contains(this);
+
         MinimumSize = new Vector2(FrameSize, FrameSize + 16f);
         MaximumSize = new Vector2(FrameSize, FrameSize + 16f);
 
-        Paint.SetBrushAndPen(Theme.ControlBackground.Lighten(0.5f));
+        Paint.SetBrushAndPen(Theme.ControlBackground.Lighten(isSelected ? 2f : 0.5f));
         Paint.DrawRect(LocalRect);
 
         Paint.SetBrushAndPen(Theme.ControlBackground);
@@ -197,7 +202,37 @@ internal class FrameButton : Widget
     {
         base.OnMouseClick(e);
 
-        MainWindow.CurrentFrameIndex = FrameIndex;
+        if (!MainWindow.Playing)
+            MainWindow.CurrentFrameIndex = FrameIndex;
+
+        bool has = Selected.Contains(this);
+        bool shifting = e.HasShift && Selected.Count > 0;
+
+        if (!e.HasCtrl && !e.HasShift)
+        {
+            Selected.Clear();
+        }
+        else if (shifting)
+        {
+            Selected.Clear();
+            int start = Math.Min(lastSelectedIndex, FrameIndex);
+            int end = Math.Min(Math.Max(lastSelectedIndex, FrameIndex), Timeline.Buttons.Count - 1);
+
+            for (int i = start; i <= end; i++)
+            {
+                Selected.Add(Timeline.Buttons[i]);
+            }
+        }
+
+        if (!shifting)
+        {
+            if (has)
+                Selected.Remove(this);
+            else
+                Selected.Add(this);
+
+            lastSelectedIndex = FrameIndex;
+        }
     }
 
     void AddEventPopup()
