@@ -15,7 +15,7 @@ internal class LabelTextEntry : Widget
     RealTimeSince timeSinceLastEdit = 0;
     StringControlWidget stringControl;
 
-    public LabelTextEntry( MainWindow window, SerializedProperty property ) : base( null )
+    public LabelTextEntry(MainWindow window, SerializedProperty property) : base(null)
     {
         Layout = Layout.Row();
         MainWindow = window;
@@ -26,23 +26,23 @@ internal class LabelTextEntry : Widget
 
     void RebuildUI()
     {
-        Layout.Clear( true );
+        Layout.Clear(true);
 
-        if ( editing )
+        if (editing)
         {
-            stringControl = Layout.Add( new StringControlWidget( Property ) );
+            stringControl = Layout.Add(new StringControlWidget(Property));
         }
         else
         {
-            Layout.Add( new Label( Property.GetValue( "N/A" ) ) );
+            Layout.Add(new Label(Property.GetValue("N/A")));
         }
     }
 
-    protected override void OnDoubleClick( MouseEvent e )
+    protected override void OnDoubleClick(MouseEvent e)
     {
         timeSinceLastEdit = 0;
 
-        if ( editing )
+        if (editing)
         {
             editing = false;
             RebuildUI();
@@ -53,11 +53,11 @@ internal class LabelTextEntry : Widget
         }
     }
 
-    protected override void OnKeyPress( KeyEvent e )
+    protected override void OnKeyPress(KeyEvent e)
     {
-        base.OnKeyPress( e );
+        base.OnKeyPress(e);
 
-        if ( e.Key == KeyCode.Enter || e.Key == KeyCode.Return )
+        if (e.Key == KeyCode.Enter || e.Key == KeyCode.Return)
         {
             StopEditing();
         }
@@ -65,7 +65,7 @@ internal class LabelTextEntry : Widget
 
     public void Edit()
     {
-        lastSafeValue = Property.GetValue( "N/A" );
+        lastSafeValue = Property.GetValue("N/A");
         editing = true;
         timeSinceLastEdit = 0f;
         RebuildUI();
@@ -74,14 +74,21 @@ internal class LabelTextEntry : Widget
 
     public void StopEditing()
     {
-        if ( !editing ) return;
+        if (!editing) return;
 
         editing = false;
-        var value = Property.GetValue( "" );
-        if ( string.IsNullOrEmpty( value ) || MainWindow.Sprite.Animations.Where( a => a.Name.ToLowerInvariant() == value.ToLowerInvariant() ).Count() > 1 )
+        var value = Property.GetValue("");
+        if (string.IsNullOrEmpty(value) || MainWindow.Sprite.Animations.Where(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant()).Count() > 1)
         {
-            Property.SetValue( lastSafeValue );
-            AnimationList.ShowNamingError( value );
+            Property.SetValue(lastSafeValue);
+            AnimationList.ShowNamingError(value);
+        }
+        else
+        {
+            Property.SetValue(lastSafeValue);
+            MainWindow.PushUndo("Rename Animation");
+            Property.SetValue(value);
+            MainWindow.PushRedo();
         }
         RebuildUI();
     }
@@ -89,16 +96,16 @@ internal class LabelTextEntry : Widget
     [EditorEvent.Frame]
     void Frame()
     {
-        if ( editing )
+        if (editing)
         {
-            var val = Property.GetValue( "" );
-            if ( lastValue != val )
+            var val = Property.GetValue("");
+            if (lastValue != val)
             {
                 lastValue = val;
                 timeSinceLastEdit = 0;
             }
 
-            if ( timeSinceLastEdit > 5f )
+            if (timeSinceLastEdit > 5f)
             {
                 StopEditing();
             }

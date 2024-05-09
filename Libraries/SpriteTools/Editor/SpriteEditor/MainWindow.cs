@@ -21,6 +21,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
     internal static List<MainWindow> AllWindows { get; } = new List<MainWindow>();
     public bool CanOpenMultipleAssets => true;
 
+    private readonly UndoStack _undoStack = new();
+    public UndoStack UndoStack => _undoStack;
     bool _dirty = true;
 
     private Asset _asset;
@@ -60,6 +62,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
     float FrameTime => ((SelectedAnimation?.FrameRate ?? 0) == 0) ? 0 : (1f / (SelectedAnimation?.FrameRate ?? 30));
 
     public bool Playing = true;
+
+    Option _undoMenuOption;
+    Option _redoMenuOption;
 
     public MainWindow()
     {
@@ -107,7 +112,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     void UpdateWindowTitle()
     {
-        Title = $"{_asset.Name} - Sprite Editor" ?? "Untitled Sprite - Sprite Editor";
+        Title = ($"{_asset.Name} - Sprite Editor" ?? "Untitled Sprite - Sprite Editor") + (_dirty ? "*" : "");
     }
 
     public void RebuildUI()
@@ -126,8 +131,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         {
             var edit = MenuBar.AddMenu("Edit");
-            // _undoMenuOption = edit.AddOption( "Undo", "undo", Undo, "Ctrl+Z" );
-            // _redoMenuOption = edit.AddOption( "Redo", "redo", Redo, "Ctrl+Y" );
+            _undoMenuOption = edit.AddOption("Undo", "undo", () => Undo(), "Ctrl+Z");
+            _redoMenuOption = edit.AddOption("Redo", "redo", () => Redo(), "Ctrl+Y");
 
             // edit.AddSeparator();
             // edit.AddOption( "Cut", "common/cut.png", CutSelection, "Ctrl+X" );
@@ -198,6 +203,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _asset = null;
         Sprite = AssetSystem.CreateResource("sprite", savePath).LoadResource<SpriteResource>();
         _dirty = false;
+        _undoStack.Clear();
 
         if (Sprite.Animations.Count > 0)
         {
@@ -251,6 +257,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
         StateCookie = "sprite-editor-window";
 
         _asset = asset;
+        _dirty = false;
+        _undoStack.Clear();
         Sprite = sprite;
         UpdateWindowTitle();
 
@@ -283,6 +291,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
         // Register the asset if we haven't already
         _asset ??= AssetSystem.RegisterFile(savePath);
         _asset.SaveToDisk(Sprite);
+        _dirty = false;
+        UpdateWindowTitle();
 
         if (_asset == null)
         {
@@ -320,6 +330,15 @@ public partial class MainWindow : DockWindow, IAssetEditor
         {
             frameTimer = 0f;
         }
+
+        _undoMenuOption.Enabled = _undoStack.CanUndo;
+        _redoMenuOption.Enabled = _undoStack.CanRedo;
+
+        _undoMenuOption.Text = _undoStack.UndoName ?? "Undo";
+        _redoMenuOption.Text = _undoStack.RedoName ?? "Redo";
+
+        _undoMenuOption.StatusText = _undoStack.UndoName ?? "Undo";
+        _redoMenuOption.StatusText = _undoStack.RedoName ?? "Redo";
     }
 
     static string GetSavePath(string title = "Save Sprite")
@@ -370,5 +389,76 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
 
         OnPlayPause?.Invoke();
+    }
+
+    public void SetDirty()
+    {
+        _dirty = true;
+        UpdateWindowTitle();
+    }
+
+    public void PushUndo(string name, string buffer = "")
+    {
+        if (string.IsNullOrEmpty(buffer)) buffer = JsonSerializer.Serialize(Sprite.Animations);
+        _undoStack.PushUndo(name, buffer);
+    }
+
+    public void PushRedo()
+    {
+        _undoStack.PushRedo(JsonSerializer.Serialize(Sprite.Animations));
+    }
+
+    public void Undo()
+    {
+        if (_undoStack.Undo() is UndoOp op)
+        {
+            ReloadFromString(op.undoBuffer);
+            Sound.Play("ui.navigate.back");
+        }
+        else
+        {
+            Sound.Play("ui.navigate.deny");
+        }
+    }
+
+    private void SetUndoLevel(int level)
+    {
+        if (_undoStack.SetUndoLevel(level) is UndoOp op)
+        {
+            ReloadFromString(op.undoBuffer);
+        }
+    }
+
+    public void Redo()
+    {
+        if (_undoStack.Redo() is UndoOp op)
+        {
+            ReloadFromString(op.redoBuffer);
+            Sound.Play("ui.navigate.forward");
+        }
+        else
+        {
+            Sound.Play("ui.navigate.deny");
+        }
+    }
+
+    internal void ReloadFromString(string buffer)
+    {
+        var selectedName = SelectedAnimation?.Name;
+        Sprite.Animations = JsonSerializer.Deserialize<List<SpriteAnimation>>(buffer);
+
+        if (Sprite.Animations.Any(x => x.Name == selectedName))
+        {
+            SelectedAnimation = Sprite.Animations.FirstOrDefault(x => x.Name == selectedName);
+        }
+        else
+        {
+            SelectedAnimation = Sprite.Animations.FirstOrDefault();
+        }
+
+        OnAssetLoaded?.Invoke();
+        OnAnimationSelected?.Invoke();
+        OnAnimationChanges?.Invoke();
+        SetDirty();
     }
 }

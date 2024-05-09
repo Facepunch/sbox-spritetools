@@ -1,10 +1,13 @@
 {
   "Animations": [
     {
-      "Name": "funny_guy",
       "FrameRate": 15,
+      "Origin": "0.5,0.5",
+      "Looping": true,
+      "Name": "funny_guy",
       "Frames": [
         "images/sausage_run_06.png",
+        "images/sausage_run_05.png",
         "images/sausage_run_05.png",
         "images/sausage_run_04.png",
         "images/sausage_run_03.png",
@@ -13,8 +16,10 @@
       ]
     },
     {
+      "FrameRate": 29.980005,
+      "Origin": "0.5,0.5",
+      "Looping": true,
       "Name": "forwards",
-      "FrameRate": 10,
       "Frames": [
         "images/sausage_run_01.png",
         "images/sausage_run_02.png",

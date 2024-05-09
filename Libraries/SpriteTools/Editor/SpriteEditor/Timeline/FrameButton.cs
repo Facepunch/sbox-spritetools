@@ -148,6 +148,8 @@ internal class FrameButton : Widget
 
         if (!TryDragOperation(ev, out var delta)) return;
 
+        MainWindow.PushUndo($"Re-Order {MainWindow.SelectedAnimation.Name} Frames");
+
         var oldList = new List<string>(MainWindow.SelectedAnimation.Frames);
         MainWindow.SelectedAnimation.Frames = new List<string>();
 
@@ -165,6 +167,8 @@ internal class FrameButton : Widget
 
             MainWindow.SelectedAnimation.Frames.Add(oldList[i]);
         }
+
+        MainWindow.PushRedo();
 
         Timeline.UpdateFrameList();
     }
@@ -198,13 +202,17 @@ internal class FrameButton : Widget
 
     void Duplicate()
     {
+        MainWindow.PushUndo($"Duplicate {MainWindow.SelectedAnimation.Name} Frame");
         MainWindow.SelectedAnimation.Frames.Insert(FrameIndex, MainWindow.SelectedAnimation.Frames[FrameIndex]);
         Timeline.UpdateFrameList();
+        MainWindow.PushRedo();
     }
 
     void Delete()
     {
+        MainWindow.PushUndo($"Delete {MainWindow.SelectedAnimation.Name} Frame");
         MainWindow.SelectedAnimation.Frames.RemoveAt(FrameIndex);
         Timeline.UpdateFrameList();
+        MainWindow.PushRedo();
     }
 }

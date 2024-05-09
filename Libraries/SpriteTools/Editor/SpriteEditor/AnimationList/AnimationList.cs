@@ -80,7 +80,7 @@ public class AnimationList : Widget
         {
             if (!string.IsNullOrEmpty(entry.Text) && !MainWindow.Sprite.Animations.Any(a => a.Name.ToLowerInvariant() == entry.Text.ToLowerInvariant()))
             {
-                MainWindow.Sprite.Animations.Add(new SpriteAnimation(entry.Text));
+                CreateAnimation(entry.Text);
                 UpdateAnimationList();
             }
             else
@@ -118,6 +118,13 @@ public class AnimationList : Widget
             button.MouseClick = () => SelectAnimation(button);
             Animations.Add(button);
         }
+    }
+
+    void CreateAnimation(string name)
+    {
+        MainWindow.PushUndo($"Create Animation {name}");
+        MainWindow.Sprite.Animations.Add(new SpriteAnimation(name));
+        MainWindow.PushRedo();
     }
 
     void SelectAnimation(AnimationButton button)

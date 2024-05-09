@@ -1,10 +1,10 @@
 {
   "Animations": [
     {
-      "Name": "anim_3_1",
-      "FrameRate": 40.97402,
-      "Origin": "0.5,0.5",
+      "FrameRate": 679.3199,
+      "Origin": "0.5189998,0.6099992",
       "Looping": true,
+      "Name": "anim_3_1",
       "Frames": [
         "images/sausage_idle_01.png",
         "images/sausage_idle_02.png",
@@ -29,10 +29,10 @@
       ]
     },
     {
-      "Name": "anim_3_2",
       "FrameRate": 8,
       "Origin": "0.5,0.5",
       "Looping": true,
+      "Name": "anim_3_2",
       "Frames": [
         "images/sausage_idle_01.png",
         "images/sausage_idle_02.png",

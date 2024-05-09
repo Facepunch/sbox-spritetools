@@ -1,5 +1,6 @@
 using Editor;
 using Sandbox;
+using System;
 using System.Linq;
 
 namespace SpriteTools.SpriteEditor;
@@ -68,6 +69,32 @@ public class Inspector : Widget
         {
             controlSheet.AddRow(prop);
         }
+
+        serializedObject.OnPropertyChanged += (prop) =>
+        {
+            if (!prop.HasAttribute<PropertyAttribute>()) return;
+
+            var undoName = $"Modify {prop.Name}";
+
+            string buffer = "";
+            if (MainWindow.UndoStack.MostRecent is not null)
+            {
+                if (MainWindow.UndoStack.MostRecent.name == undoName)
+                {
+                    buffer = MainWindow.UndoStack.MostRecent.undoBuffer;
+                    MainWindow.UndoStack.PopMostRecent();
+                }
+                else
+                {
+                    buffer = MainWindow.UndoStack.MostRecent.redoBuffer;
+                }
+            }
+
+            MainWindow.PushUndo(undoName, buffer);
+            MainWindow.PushRedo();
+
+            MainWindow.SetDirty();
+        };
     }
 
 

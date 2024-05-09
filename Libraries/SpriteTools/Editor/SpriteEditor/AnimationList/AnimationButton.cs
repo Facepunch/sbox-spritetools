@@ -194,6 +194,8 @@ internal class AnimationButton : Widget
 
         if (!TryDragOperation(ev, out var delta)) return;
 
+        MainWindow.PushUndo("Re-Order Animations");
+
         var oldList = new List<SpriteAnimation>(MainWindow.Sprite.Animations);
         MainWindow.Sprite.Animations = new List<SpriteAnimation>();
 
@@ -211,6 +213,8 @@ internal class AnimationButton : Widget
 
             MainWindow.Sprite.Animations.Add(oldList[i]);
         }
+
+        MainWindow.PushRedo();
 
         AnimationList.UpdateAnimationList();
     }
@@ -245,14 +249,17 @@ internal class AnimationButton : Widget
 
     void Delete()
     {
+        MainWindow.PushUndo($"Delete Animation {Animation.Name}");
         MainWindow.Sprite.Animations.Remove(Animation);
         AnimationList.UpdateAnimationList();
+        MainWindow.PushRedo();
     }
 
     void Duplicate(string name)
     {
         if (!string.IsNullOrEmpty(name) && !MainWindow.Sprite.Animations.Any(a => a.Name.ToLowerInvariant() == name.ToLowerInvariant()))
         {
+            MainWindow.PushUndo($"Duplicate Animation {Animation.Name}");
             var newAnimation = new SpriteAnimation(name)
             {
                 FrameRate = Animation.FrameRate
@@ -264,6 +271,7 @@ internal class AnimationButton : Widget
             int index = MainWindow.Sprite.Animations.IndexOf(Animation);
             MainWindow.Sprite.Animations.Insert(index + 1, newAnimation);
             AnimationList.UpdateAnimationList();
+            MainWindow.PushRedo();
         }
         else
         {
