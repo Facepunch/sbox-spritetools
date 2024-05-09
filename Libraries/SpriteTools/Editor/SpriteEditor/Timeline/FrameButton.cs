@@ -169,23 +169,12 @@ internal class FrameButton : Widget
 
         MainWindow.PushUndo($"Re-Order {MainWindow.SelectedAnimation.Name} Frames");
 
-        var oldList = new List<SpriteAnimationFrame>(MainWindow.SelectedAnimation.Frames);
-        MainWindow.SelectedAnimation.Frames = new List<SpriteAnimationFrame>();
-
         var index = FrameIndex;
-        var newIndex = index + delta;
+        var movingIndex = index + delta;
+        var frame = MainWindow.SelectedAnimation.Frames[movingIndex];
 
-        for (int i = 0; i < oldList.Count; i++)
-        {
-            if (i == index) continue;
-
-            if (i == newIndex)
-            {
-                MainWindow.SelectedAnimation.Frames.Add(oldList[FrameIndex]);
-            }
-
-            MainWindow.SelectedAnimation.Frames.Add(oldList[i]);
-        }
+        MainWindow.SelectedAnimation.Frames.RemoveAt(movingIndex);
+        MainWindow.SelectedAnimation.Frames.Insert(index, frame);
 
         MainWindow.PushRedo();
 
