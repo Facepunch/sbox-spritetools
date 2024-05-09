@@ -262,7 +262,9 @@ internal class AnimationButton : Widget
             MainWindow.PushUndo($"Duplicate Animation {Animation.Name}");
             var newAnimation = new SpriteAnimation(name)
             {
-                FrameRate = Animation.FrameRate
+                FrameRate = Animation.FrameRate,
+                Origin = Animation.Origin,
+                Looping = Animation.Looping,
             };
             if (Animation.Frames is not null)
             {
