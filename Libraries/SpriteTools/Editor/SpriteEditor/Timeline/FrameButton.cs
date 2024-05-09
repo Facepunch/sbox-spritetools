@@ -145,8 +145,6 @@ public class FrameButton : Widget
     {
         base.OnDragStart();
 
-        if (MainWindow.Playing) return;
-
         dragData = new Drag(this);
         dragData.Data.Object = this;
         dragData.Execute();
