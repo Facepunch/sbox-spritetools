@@ -84,6 +84,14 @@ public class SpriteAnimationFrame
 		FilePath = filePath;
 		Events = new List<string>();
 	}
+
+	public SpriteAnimationFrame Copy()
+	{
+		var copy = new SpriteAnimationFrame(FilePath);
+		copy.Events = new List<string>(Events);
+		return copy;
+
+	}
 }
 
 public class SpriteAttachment
@@ -117,5 +125,12 @@ public class SpriteAttachment
 		Points = new List<Vector2>();
 	}
 
+	public SpriteAttachment Copy()
+	{
+		var copy = new SpriteAttachment(Name);
+		copy.Color = Color;
+		copy.Points = new List<Vector2>(Points);
+		return copy;
+	}
 
 }

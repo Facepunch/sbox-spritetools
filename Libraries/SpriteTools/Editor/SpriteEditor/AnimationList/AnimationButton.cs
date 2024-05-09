@@ -260,11 +260,19 @@ internal class AnimationButton : Widget
             };
             if (Animation.Frames is not null)
             {
-                newAnimation.Frames = new List<SpriteAnimationFrame>(Animation.Frames);
+                newAnimation.Frames = new List<SpriteAnimationFrame>();
+                foreach (var frame in Animation.Frames)
+                {
+                    newAnimation.Frames.Add(frame.Copy());
+                }
             }
             if (Animation.Attachments is not null)
             {
-                newAnimation.Attachments = new List<SpriteAttachment>(Animation.Attachments);
+                newAnimation.Attachments = new List<SpriteAttachment>();
+                foreach (var attachment in Animation.Attachments)
+                {
+                    newAnimation.Attachments.Add(attachment.Copy());
+                }
             }
             int index = MainWindow.Sprite.Animations.IndexOf(Animation);
             MainWindow.Sprite.Animations.Insert(index + 1, newAnimation);

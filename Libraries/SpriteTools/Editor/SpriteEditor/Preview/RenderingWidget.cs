@@ -221,12 +221,15 @@ public class RenderingWidget : NativeRenderingWidget
                         attachPos = attachPos.SnapToGrid(1f / TextureSize.y, false, true);
                     }
 
+                    var currentAttachment = MainWindow.SelectedAnimation.Attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name);
                     var index = MainWindow.CurrentFrameIndex;
-                    for (int i = attachment.Points.Count; i <= index; i++)
+                    for (int i = currentAttachment.Points.Count; i <= index; i++)
                     {
-                        attachment.Points.Add(attachPos);
+                        currentAttachment.Points.Add(attachPos);
                     }
-                    attachment.Points[index] = attachPos;
+                    currentAttachment.Points[index] = attachPos;
+
+                    // Log.Info($"{currentAttachment.} - {name} - {index} - {attachPos}");
                 };
                 Attachments.Add(attach);
             }
