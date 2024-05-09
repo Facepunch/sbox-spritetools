@@ -37,7 +37,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
     }
     private SpriteAnimation _selectedAnimation;
-    public string CurrentTexturePath => (SelectedAnimation?.Frames?.Count > 0) ? (SelectedAnimation?.Frames[CurrentFrameIndex] ?? "") : "";
+    public string CurrentTexturePath => (SelectedAnimation?.Frames?.Count > 0) ? (SelectedAnimation?.Frames[CurrentFrameIndex]?.FilePath ?? "") : "";
     public int CurrentFrameIndex
     {
         get => _currentFrameIndex;

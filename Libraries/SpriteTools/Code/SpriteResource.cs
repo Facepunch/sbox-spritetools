@@ -53,16 +53,28 @@ public class SpriteAnimation
 	/// <summary>
 	/// The list of frames that make up the animation. These are image paths.
 	/// </summary>
-	public List<string> Frames { get; set; }
+	public List<SpriteAnimationFrame> Frames { get; set; }
 
 	public SpriteAnimation()
 	{
-		Frames = new List<string>();
+		Frames = new List<SpriteAnimationFrame>();
 	}
 
 	public SpriteAnimation(string name)
 	{
 		Name = name;
-		Frames = new List<string>();
+		Frames = new List<SpriteAnimationFrame>();
+	}
+}
+
+public class SpriteAnimationFrame
+{
+	public string FilePath { get; set; }
+	public List<string> Events { get; set; }
+
+	public SpriteAnimationFrame(string filePath)
+	{
+		FilePath = filePath;
+		Events = new List<string>();
 	}
 }

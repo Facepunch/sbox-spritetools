@@ -58,7 +58,9 @@ internal class FrameButton : Widget
 
         var m = new Menu(this);
 
-        // m.AddOption( "Rename", "edit", Rename );
+        m.AddOption("Add Broadcast Message", "wifi_tethering", AddEventPopup);
+        var optionClear = m.AddOption("Clear Broadcast Messages", "portable_wifi_off", ClearBroadcastEvents);
+        optionClear.Enabled = MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Count > 0;
         m.AddOption("Duplicate", "content_copy", Duplicate);
         m.AddOption("Delete", "delete", Delete);
 
@@ -92,12 +94,29 @@ internal class FrameButton : Widget
         }
 
         //Log.Info( MainWindow.SelectedAnimation.Frames[FrameIndex] );
-        Texture texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.SelectedAnimation.Frames[FrameIndex]);
+        Texture texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.SelectedAnimation.Frames[FrameIndex].FilePath);
 
         Pixmap pix = new Pixmap(texture.Width, texture.Height);
         var pixels = texture.GetPixels();
         pix.UpdateFromPixels(MemoryMarshal.AsBytes<Color32>(pixels), texture.Width, texture.Height, ImageFormat.RGBA8888);
         Paint.Draw(new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4), pix);
+
+        if (MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Count > 0)
+        {
+            var tagRect = new Rect(LocalRect.BottomLeft + Vector2.Down * 20f, new Vector2(Width, 20f)).Shrink(4);
+            Paint.SetBrushAndPen(Theme.Yellow.WithAlpha(0.5f));
+            Paint.DrawRect(tagRect);
+
+            string events = string.Join(", ", MainWindow.SelectedAnimation.Frames[FrameIndex].Events);
+
+            Paint.SetFont("Poppins", 7, 1000, false);
+            Paint.SetPen(Theme.Black);
+            tagRect.Position += 1;
+            Paint.DrawText(tagRect, events, TextFlag.Center);
+            tagRect.Position -= 1;
+            Paint.SetPen(Theme.White);
+            Paint.DrawText(tagRect, events, TextFlag.Center);
+        }
 
         base.OnPaint();
 
@@ -150,8 +169,8 @@ internal class FrameButton : Widget
 
         MainWindow.PushUndo($"Re-Order {MainWindow.SelectedAnimation.Name} Frames");
 
-        var oldList = new List<string>(MainWindow.SelectedAnimation.Frames);
-        MainWindow.SelectedAnimation.Frames = new List<string>();
+        var oldList = new List<SpriteAnimationFrame>(MainWindow.SelectedAnimation.Frames);
+        MainWindow.SelectedAnimation.Frames = new List<SpriteAnimationFrame>();
 
         var index = FrameIndex;
         var newIndex = index + delta;
@@ -198,6 +217,58 @@ internal class FrameButton : Widget
         base.OnMouseClick(e);
 
         MainWindow.CurrentFrameIndex = FrameIndex;
+    }
+
+    void AddEventPopup()
+    {
+        var popup = new PopupWidget(MainWindow);
+        popup.Layout = Layout.Column();
+        popup.Layout.Margin = 16;
+        popup.Layout.Spacing = 8;
+
+        popup.Layout.Add(new Label($"What would you like to name the event?"));
+
+        var entry = new LineEdit(popup);
+        var button = new Button.Primary("Create");
+
+        button.MouseClick = () =>
+        {
+            AddBroadcastEvent(entry.Text, FrameIndex);
+            popup.Visible = false;
+        };
+
+        entry.ReturnPressed += button.MouseClick;
+
+        popup.Layout.Add(entry);
+
+        var bottomBar = popup.Layout.AddRow();
+        bottomBar.AddStretchCell();
+        bottomBar.Add(button);
+
+        popup.Position = Editor.Application.CursorPosition;
+        popup.Visible = true;
+
+        entry.Focus();
+    }
+
+    void AddBroadcastEvent(string name, int frame)
+    {
+        if (!MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Contains(name))
+        {
+            MainWindow.PushUndo($"Add Broadcast Event {name}");
+            MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Add(name);
+            MainWindow.PushRedo();
+
+            MainWindow.OnAnimationChanges?.Invoke();
+        }
+    }
+
+    void ClearBroadcastEvents()
+    {
+        MainWindow.PushUndo($"Clear Broadcast Events");
+        MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Clear();
+        MainWindow.PushRedo();
+        MainWindow.OnAnimationChanges?.Invoke();
     }
 
     void Duplicate()

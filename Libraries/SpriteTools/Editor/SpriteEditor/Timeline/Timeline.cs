@@ -185,12 +185,12 @@ public class Timeline : Widget
         // picker.OnAssetHighlighted = x => Asset = x.First();
         picker.OnAssetPicked = x =>
         {
-            List<string> paths = new List<string>();
+            List<SpriteAnimationFrame> frames = new List<SpriteAnimationFrame>();
             foreach (var asset in x)
             {
-                paths.Add(asset.GetSourceFile());
+                frames.Add(new SpriteAnimationFrame(asset.GetSourceFile()));
             }
-            MainWindow.SelectedAnimation.Frames.AddRange(paths);
+            MainWindow.SelectedAnimation.Frames.AddRange(frames);
             UpdateFrameList();
         };
         picker.Window.Show();
