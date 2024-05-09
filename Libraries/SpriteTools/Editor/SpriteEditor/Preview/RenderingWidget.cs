@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Editor;
 using Sandbox;
 
@@ -7,10 +9,11 @@ public class RenderingWidget : NativeRenderingWidget
 {
     MainWindow MainWindow;
 
-    private SceneWorld World;
+    public SceneWorld World;
     public SceneObject TextureRect;
     public Vector2 TextureSize;
     Draggable OriginMarker;
+    List<Draggable> Attachments = new();
     public Material PreviewMaterial;
 
     float targetZoom = 115f;
@@ -117,8 +120,6 @@ public class RenderingWidget : NativeRenderingWidget
         {
             var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition), 5000f).Run();
             var pos = tr.EndPosition.WithZ(0f);
-            var delta = (pos - draggableGrabPos).WithZ(0f);
-            var dragPos = dragging.Position + delta;
             draggableGrabPos = pos;
             dragging?.OnPositionChanged.Invoke(new Vector2(pos.y, pos.x));
         }
@@ -185,6 +186,78 @@ public class RenderingWidget : NativeRenderingWidget
         else
         {
             OriginMarker.RenderingEnabled = false;
+        }
+
+        scale /= 1.5f;
+        foreach (var name in MainWindow.SelectedAnimation?.AttachmentNames ?? new List<string>())
+        {
+            var attach = Attachments.FirstOrDefault(a => a.Tags.Has(name.ToLowerInvariant()));
+            if (attach is null)
+            {
+                var markerMaterial = Material.Load("materials/sprite_editor_attachment.vmat");
+                attach = new Draggable(World, "models/preview_quad.vmdl", Transform.Zero);
+                attach.SetMaterialOverride(markerMaterial);
+                attach.Tags.Add(name.ToLowerInvariant());
+                attach.Position = new Vector3(0, 0, 10f);
+                attach.Transform = attach.Transform.WithRotation(new Angles(0, 45, 0));
+                attach.Flags.WantsFrameBufferCopy = true;
+                attach.Flags.IsTranslucent = true;
+                attach.Flags.IsOpaque = false;
+                attach.OnPositionChanged = (Vector2 pos) =>
+                {
+                    if (MainWindow.SelectedAnimation is null) return;
+
+                    var attachPos = (pos / 100f) + (Vector2.One * 0.5f);
+                    if (!holdingControl)
+                    {
+                        attachPos = attachPos.SnapToGrid(1f / TextureSize.x, true, false);
+                        attachPos = attachPos.SnapToGrid(1f / TextureSize.y, false, true);
+                    }
+
+                    MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name.ToLowerInvariant()] = attachPos;
+                };
+                Attachments.Add(attach);
+            }
+            else
+            {
+                attach.RenderingEnabled = true;
+
+                if (MainWindow.SelectedAnimation is not null)
+                {
+                    if (MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints.TryGetValue(name.ToLowerInvariant(), out var attachPos))
+                    {
+                        attachPos -= Vector2.One * 0.5f;
+                        attachPos *= 100f;
+                        attach.Position = new Vector3(attachPos.y, attachPos.x, 10f);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < MainWindow.SelectedAnimation.Frames.Count; i++)
+                        {
+                            if (MainWindow.SelectedAnimation.Frames[i].AttachmentPoints.TryGetValue(name.ToLowerInvariant(), out var attachPos2))
+                            {
+                                attachPos2 -= Vector2.One * 0.5f;
+                                attachPos2 *= 100f;
+                                attach.Position = new Vector3(attachPos2.y, attachPos2.x, 10f);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            attach.Transform = attach.Transform.WithScale(new Vector3(scale, scale, 1f));
+        }
+
+        foreach (var attachment in Attachments)
+        {
+            var names = MainWindow.SelectedAnimation?.AttachmentNames;
+            foreach (var name in names)
+            {
+                if (!attachment.Tags.Has(name.ToLowerInvariant()))
+                {
+                    attachment.RenderingEnabled = false;
+                }
+            }
         }
     }
 

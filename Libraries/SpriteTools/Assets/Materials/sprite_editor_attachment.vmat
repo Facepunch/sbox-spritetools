@@ -1,0 +1,31 @@
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
+{
+	shader "shaders/pixelated_masked.shader"
+
+	g_bAlphafromColour "1"
+
+	//---- Color ----
+	Color "materials/sprite_editor_attachment.png"
+
+	//---- ColorSettings ----
+	g_bSolidColor "0"
+
+	//---- Fog ----
+	g_bFogEnabled "1"
+
+	//---- Hue ----
+	g_flHueshift "0.000"
+
+	//---- Texture Coordinates ----
+	g_vOffset "[1.000 1.000]"
+	g_vTiling "[1.000 1.000]"
+
+	//---- Translucent ----
+	g_flAlphaTestReference "0.500"
+	g_flAntiAliasedEdgeStrength "1.000"
+	g_flSmoothStepMax "1.000"
+	g_flSmoothStepMin "0.000"
+	Translucency "materials/default/default_trans.tga"
+}

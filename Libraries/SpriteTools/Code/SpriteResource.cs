@@ -1,6 +1,6 @@
 ﻿using Sandbox;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 
 namespace SpriteTools;
 
@@ -55,15 +55,71 @@ public class SpriteAnimation
 	/// </summary>
 	public List<SpriteAnimationFrame> Frames { get; set; }
 
+	/// <summary>
+	/// The list of attachment names that are available for this animation.
+	/// </summary>
+	public List<string> AttachmentNames { get; set; }
+
 	public SpriteAnimation()
 	{
 		Frames = new List<SpriteAnimationFrame>();
+		AttachmentNames = new List<string>();
 	}
 
 	public SpriteAnimation(string name)
 	{
 		Name = name;
 		Frames = new List<SpriteAnimationFrame>();
+		AttachmentNames = new List<string>();
+	}
+
+
+	/// <summary>
+	/// Returns a list of all attachments that are available for this animation.
+	/// </summary>
+	public List<SpriteAttachment> GetAttachments()
+	{
+		var attachments = new List<SpriteAttachment>();
+		foreach (var name in AttachmentNames)
+		{
+			var attachment = new SpriteAttachment() { Name = name };
+			var points = new List<Vector2>();
+			int i = 0;
+			int missedValues = 0;
+			foreach (var frame in Frames)
+			{
+				if (frame.AttachmentPoints.TryGetValue(name, out var attachPoint))
+				{
+					if (missedValues > 0)
+					{
+						for (int j = 0; j < missedValues; j++)
+						{
+							points.Add(attachPoint);
+						}
+						missedValues = 0;
+					}
+					points.Add(attachPoint);
+				}
+				else if (points.Count == 0)
+				{
+					missedValues++;
+				}
+				i++;
+			}
+
+		}
+		return attachments;
+	}
+
+	/// <summary>
+	/// Returns a specific attachment by name.
+	/// </summary>
+	/// <param name="name">The name of the animation (case-insensitive)</param>
+	/// <returns></returns>
+	public SpriteAttachment GetAttachment(string name)
+	{
+		var attachments = GetAttachments();
+		return attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name.ToLowerInvariant());
 	}
 }
 
@@ -71,10 +127,24 @@ public class SpriteAnimationFrame
 {
 	public string FilePath { get; set; }
 	public List<string> Events { get; set; }
+	public Dictionary<string, Vector2> AttachmentPoints { get; set; }
 
 	public SpriteAnimationFrame(string filePath)
 	{
 		FilePath = filePath;
 		Events = new List<string>();
+		AttachmentPoints = new Dictionary<string, Vector2>();
 	}
+}
+
+public class SpriteAttachment
+{
+	public string Name { get; set; }
+	public List<Vector2> AttachPoints { get; set; }
+
+	public SpriteAttachment()
+	{
+		AttachPoints = new List<Vector2>();
+	}
+
 }

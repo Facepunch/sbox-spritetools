@@ -1,5 +1,6 @@
 using Editor;
 using Sandbox;
+using System.Linq;
 
 namespace SpriteTools.SpriteEditor.Preview;
 
@@ -10,6 +11,8 @@ public class Preview : Widget
 
     Widget Overlay;
     WidgetWindow overlayWindow;
+
+    Vector2 attachmentCreatePosition;
 
     public Preview(MainWindow mainWindow) : base(null)
     {
@@ -123,5 +126,83 @@ public class Preview : Widget
         {
             Overlay.Visible = visible;
         }
+    }
+
+    void CreateAttachmentPopup()
+    {
+        var popup = new PopupWidget(MainWindow);
+        popup.Layout = Layout.Column();
+        popup.Layout.Margin = 16;
+        popup.Layout.Spacing = 8;
+
+        popup.Layout.Add(new Label($"What would you like to name the attachment point?"));
+
+        var entry = new LineEdit(popup);
+        var button = new Button.Primary("Create");
+
+        button.MouseClick = () =>
+        {
+            if (!string.IsNullOrEmpty(entry.Text) && !MainWindow.SelectedAnimation.AttachmentNames.Any(a => a.ToLowerInvariant() == entry.Text.ToLowerInvariant()))
+            {
+                CreateAttachment(entry.Text);
+            }
+            else
+            {
+                ShowNamingError(entry.Text);
+            }
+            popup.Visible = false;
+        };
+
+        entry.ReturnPressed += button.MouseClick;
+
+        popup.Layout.Add(entry);
+
+        var bottomBar = popup.Layout.AddRow();
+        bottomBar.AddStretchCell();
+        bottomBar.Add(button);
+
+        popup.Position = Editor.Application.CursorPosition;
+        popup.Visible = true;
+
+        entry.Focus();
+    }
+
+    void CreateAttachment(string name)
+    {
+        MainWindow.PushUndo("Add Attachment Point " + name);
+        var tr = Rendering.World.Trace.Ray(Rendering.Camera.GetRay(attachmentCreatePosition), 5000f).Run();
+        var pos = tr.EndPosition.WithZ(0f);
+        var attachPos = new Vector2(pos.y, pos.x);
+        attachPos = (attachPos / 100f) + (Vector2.One * 0.5f);
+        MainWindow.SelectedAnimation.AttachmentNames.Add(name);
+        MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex].AttachmentPoints[name] = attachPos;
+        MainWindow.PushRedo();
+    }
+
+    static void ShowNamingError(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            var confirm = new PopupWindow("Invalid name ''", "You cannot give an attachment point an empty name", "OK");
+            confirm.Show();
+
+            return;
+        }
+
+        var confirm2 = new PopupWindow("Invalid name", $"An attachment point named '{name}' already exists", "OK");
+        confirm2.Show();
+    }
+
+    protected override void OnContextMenu(ContextMenuEvent e)
+    {
+        base.OnContextMenu(e);
+
+        attachmentCreatePosition = e.LocalPosition;
+
+        var m = new Menu(this);
+
+        m.AddOption("Add Attach Point", "push_pin", CreateAttachmentPopup);
+
+        m.OpenAtCursor(false);
     }
 }
