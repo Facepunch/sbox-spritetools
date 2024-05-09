@@ -1,5 +1,6 @@
 using Editor;
 using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -167,16 +168,7 @@ internal class FrameButton : Widget
 
         if (!TryDragOperation(ev, out var delta)) return;
 
-        MainWindow.PushUndo($"Re-Order {MainWindow.SelectedAnimation.Name} Frames");
-
-        var index = FrameIndex;
-        var movingIndex = index + delta;
-        var frame = MainWindow.SelectedAnimation.Frames[movingIndex];
-
-        MainWindow.SelectedAnimation.Frames.RemoveAt(movingIndex);
-        MainWindow.SelectedAnimation.Frames.Insert(index, frame);
-
-        MainWindow.PushRedo();
+        Move(delta);
 
         Timeline.UpdateFrameList();
     }
@@ -260,19 +252,77 @@ internal class FrameButton : Widget
         MainWindow.OnAnimationChanges?.Invoke();
     }
 
+    void Move(int delta)
+    {
+        MainWindow.PushUndo($"Re-Order {MainWindow.SelectedAnimation.Name} Frames");
+
+        var index = FrameIndex;
+        var movingIndex = index + delta;
+        var frame = MainWindow.SelectedAnimation.Frames[movingIndex];
+
+        MainWindow.SelectedAnimation.Frames.RemoveAt(movingIndex);
+        MainWindow.SelectedAnimation.Frames.Insert(index, frame);
+
+        foreach (var attachment in MainWindow.SelectedAnimation.Attachments)
+        {
+            if (attachment.Points.Count == 0) continue;
+
+            var maxIndex = Math.Max(index, movingIndex);
+            if (maxIndex >= attachment.Points.Count)
+            {
+                for (int i = attachment.Points.Count; i <= maxIndex; i++)
+                {
+                    attachment.Points.Add(attachment.Points.Last());
+                }
+            }
+
+            var point = attachment.Points[movingIndex];
+            attachment.Points.RemoveAt(movingIndex);
+            attachment.Points.Insert(index, point);
+        }
+
+        MainWindow.PushRedo();
+    }
+
     void Duplicate()
     {
         MainWindow.PushUndo($"Duplicate {MainWindow.SelectedAnimation.Name} Frame");
+
         MainWindow.SelectedAnimation.Frames.Insert(FrameIndex, MainWindow.SelectedAnimation.Frames[FrameIndex]);
+
+        foreach (var attachment in MainWindow.SelectedAnimation.Attachments)
+        {
+            if (attachment.Points.Count == 0) continue;
+
+            if (FrameIndex < attachment.Points.Count)
+            {
+                attachment.Points.Insert(FrameIndex, attachment.Points[FrameIndex]);
+            }
+        }
+
         Timeline.UpdateFrameList();
+
         MainWindow.PushRedo();
     }
 
     void Delete()
     {
         MainWindow.PushUndo($"Delete {MainWindow.SelectedAnimation.Name} Frame");
+
         MainWindow.SelectedAnimation.Frames.RemoveAt(FrameIndex);
+
+        foreach (var attachment in MainWindow.SelectedAnimation.Attachments)
+        {
+            if (attachment.Points.Count == 0) continue;
+
+            if (FrameIndex < attachment.Points.Count)
+            {
+                attachment.Points.RemoveAt(FrameIndex);
+            }
+        }
+
         Timeline.UpdateFrameList();
+
         MainWindow.PushRedo();
     }
 }
