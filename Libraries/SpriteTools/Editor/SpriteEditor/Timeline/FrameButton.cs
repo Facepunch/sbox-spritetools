@@ -83,7 +83,7 @@ internal class FrameButton : Widget
 
         Paint.SetPen(Theme.White);
         var rect = new Rect(LocalRect.TopLeft, LocalRect.BottomRight.WithY(16f));
-        Paint.DrawText(rect, FrameIndex.ToString(), TextFlag.Center);
+        Paint.DrawText(rect, (FrameIndex + 1).ToString(), TextFlag.Center);
 
         if (dragData?.IsValid ?? false)
         {
