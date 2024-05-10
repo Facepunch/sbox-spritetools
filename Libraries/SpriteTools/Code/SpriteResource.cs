@@ -18,6 +18,24 @@ public class SpriteResource : GameResource
 		}
 	};
 
+	/// <summary>
+	/// Returns a list of names for every attachment this Sprite has.
+	/// </summary>
+	/// <returns>A list of names for every attachment this Sprite has</returns>
+	public List<string> GetAttachmentNames()
+	{
+		var attachmentNames = new List<string>();
+		foreach (var animation in Animations)
+		{
+			foreach (var attachment in animation.Attachments)
+			{
+				if (!attachmentNames.Contains(attachment.Name))
+					attachmentNames.Add(attachment.Name);
+			}
+		}
+		return attachmentNames;
+	}
+
 }
 
 public class SpriteAnimation
@@ -71,6 +89,14 @@ public class SpriteAnimation
 		Name = name;
 		Frames = new List<SpriteAnimationFrame>();
 		Attachments = new List<SpriteAttachment>();
+	}
+
+	public Vector2 GetAttachmentPosition(string attachment, int index)
+	{
+		var attach = Attachments.FirstOrDefault(x => x.Name == attachment);
+		if (index < 0) return attach.Points.FirstOrDefault();
+		if (index >= attach.Points.Count) return attach.Points.LastOrDefault();
+		return attach.Points[index];
 	}
 }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Text.Json.Serialization;
 using Sandbox;
 
@@ -110,6 +111,40 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Property, Category("Sprite"), JsonIgnore]
     BroadcastControls _broadcastEvents = new();
 
+    [Property, Category("Sprite")]
+    public bool CreateAttachPoints
+    {
+        get => _createAttachPoints;
+        set
+        {
+            if (_createAttachPoints != value)
+            {
+                _createAttachPoints = value;
+                var attachments = Sprite.GetAttachmentNames();
+
+                AttachPoints.Clear();
+                if (value)
+                {
+                    foreach (var attachment in attachments)
+                    {
+                        var go = GameObject.Children.FirstOrDefault(x => x.Name == attachment);
+                        if (go is null)
+                        {
+                            go = Scene.CreateObject();
+                            go.Parent = GameObject;
+                        }
+
+                        AttachPoints[attachment] = go;
+                        go.Flags |= GameObjectFlags.Bone;
+                        go.Name = attachment;
+                    }
+                }
+            }
+        }
+    }
+    bool _createAttachPoints = false;
+    Dictionary<string, GameObject> AttachPoints = new();
+
     /// <summary>
     /// Invoked when a broadcast event is triggered.
     /// </summary>
@@ -169,6 +204,20 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     protected override void OnUpdate()
     {
         UpdateSceneObject();
+    }
+
+    protected override void OnPreRender()
+    {
+        base.OnPreRender();
+
+        foreach (var attachment in AttachPoints)
+        {
+            var attachPos = CurrentAnimation.GetAttachmentPosition(attachment.Key, CurrentFrameIndex);
+            var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+            var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
+            // pos = pos.RotateAround(Transform.Position, Transform.Rotation);
+            attachment.Value.Transform.LocalPosition = pos;
+        }
     }
 
     protected override void DrawGizmos()

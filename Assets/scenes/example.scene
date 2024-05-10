@@ -73,7 +73,8 @@
           "__guid": "25053b8c-fba0-45c0-9c0a-6ef359c56b05",
           "Flags": 0,
           "Name": "Body",
-          "Rotation": "0,0.7071067,0,0.7071068",
+          "Position": "0,0,3.791718",
+          "Rotation": "0,0.7071068,0,0.7071068",
           "Enabled": true,
           "NetworkMode": 2,
           "NetworkInterpolation": true,
@@ -83,12 +84,14 @@
               "__guid": "dae31e73-9230-4382-a29b-b08f9779cef9",
               "_broadcastEvents": {},
               "CastShadows": "On",
+              "CreateAttachPoints": false,
               "PlaybackSpeed": 1,
               "Sprite": "sprites/player.sprite",
               "StartingAnimationName": "idle",
               "Tint": "1,1,1,1"
             }
-          ]
+          ],
+          "Children": []
         }
       ]
     },
@@ -136,7 +139,7 @@
   },
   "Title": "example",
   "Description": "",
-  "LastSaved": "2024-05-10T11:51:29.571105-04:00",
+  "LastSaved": "2024-05-10T12:16:22.6390712-04:00",
   "ResourceVersion": 1,
   "__version": 1,
   "__references": []
