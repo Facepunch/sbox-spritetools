@@ -52,21 +52,43 @@
       ]
     },
     {
-      "__guid": "0df90bca-c35c-4f10-9812-e2ad9cb9ce4b",
+      "__guid": "f47a99e5-ac45-4ff7-a97c-a9f03b99d266",
       "Flags": 0,
       "Name": "Player",
-      "Rotation": "0,0.7071068,0,0.7071071",
       "Enabled": true,
       "NetworkMode": 2,
       "NetworkInterpolation": true,
       "Components": [
         {
-          "__type": "SpriteTools.SpriteComponent",
-          "__guid": "8b7168fa-9378-493f-9027-5e9357a72b9c",
-          "CastShadows": "On",
-          "PlaybackSpeed": 1,
-          "Sprite": "sprites/player.sprite",
-          "Tint": "1,1,1,1"
+          "__type": "Sandbox.BoxCollider",
+          "__guid": "3cb41157-dc71-47ae-a0fe-b9ced9160b6f",
+          "Center": "0,0,50",
+          "IsTrigger": false,
+          "Scale": "1,53.99995,100",
+          "Static": false
+        }
+      ],
+      "Children": [
+        {
+          "__guid": "0df90bca-c35c-4f10-9812-e2ad9cb9ce4b",
+          "Flags": 0,
+          "Name": "Body",
+          "Rotation": "0,0.7071067,0,0.7071068",
+          "Enabled": true,
+          "NetworkMode": 2,
+          "NetworkInterpolation": true,
+          "Components": [
+            {
+              "__type": "SpriteTools.SpriteComponent",
+              "__guid": "d90a9383-c3eb-43f0-98e9-4fc00efd5ec6",
+              "_broadcastEvents": {},
+              "_currentAnimationName": "run",
+              "CastShadows": "On",
+              "PlaybackSpeed": 1,
+              "Sprite": "sprites/player.sprite",
+              "Tint": "1,1,1,1"
+            }
+          ]
         }
       ]
     },
@@ -74,7 +96,7 @@
       "__guid": "c8566090-a4b7-44ff-a983-d2a7c56b3c8a",
       "Flags": 0,
       "Name": "Plane",
-      "Scale": "9.273615,9.273615,9.273615",
+      "Scale": "25,25,1",
       "Enabled": true,
       "NetworkMode": 2,
       "NetworkInterpolation": true,
@@ -83,9 +105,10 @@
           "__type": "Sandbox.ModelRenderer",
           "__guid": "37f403ff-4391-4af9-9189-921ddfefb359",
           "BodyGroups": 18446744073709551615,
+          "MaterialOverride": "materials/dev/reflectivity_90b.vmat",
           "Model": "models/dev/plane.vmdl",
           "RenderType": "On",
-          "Tint": "1,1,1,1"
+          "Tint": "0.2159,0.53488,0.14429,1"
         }
       ]
     }
@@ -113,7 +136,7 @@
   },
   "Title": "example",
   "Description": "",
-  "LastSaved": "2024-05-09T23:54:41.2284678-04:00",
+  "LastSaved": "2024-05-10T11:38:37.255053-04:00",
   "ResourceVersion": 1,
   "__version": 1,
   "__references": []

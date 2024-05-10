@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using Sandbox;
 
 namespace SpriteTools;
@@ -17,9 +18,15 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _sprite;
         set
         {
+            var lastSprite = _sprite;
             _sprite = value;
             if (_sprite != null)
-                CurrentAnimation = _sprite.Animations.FirstOrDefault();
+            {
+                var anim = _sprite.Animations.FirstOrDefault(x => x.Name.ToLowerInvariant() == _currentAnimationName.ToLowerInvariant());
+                if (anim == null)
+                    anim = _sprite.Animations.FirstOrDefault();
+                PlayAnimation(anim.Name);
+            }
             else
                 CurrentAnimation = null;
             UpdateSprite();
@@ -79,7 +86,33 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// <summary>
     /// The sprite animation that is currently playing.
     /// </summary>
+    [JsonIgnore]
     public SpriteAnimation CurrentAnimation { get; private set; }
+    private string StartingAnimationName { get; set; }
+
+    [Property, Category("Sprite"), Title("Current Animation"), AnimationName]
+    private string _currentAnimationName
+    {
+        get => CurrentAnimation?.Name ?? "";
+        set
+        {
+            if (Sprite == null) return;
+            var animation = Sprite.Animations.Find(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant());
+            if (animation == null) return;
+            CurrentAnimation = animation;
+            CurrentFrameIndex = 0;
+            StartingAnimationName = value.ToLowerInvariant();
+        }
+    }
+
+    [Property, Category("Sprite")]
+    BroadcastControls _broadcastEvents = new();
+
+    /// <summary>
+    /// Invoked when a broadcast event is triggered.
+    /// </summary>
+    [Property, Group("Sprite")]
+    public Action<string> OnBroadcastEvent { get; set; }
 
     /// <summary>
     /// The current frame index of the animation playing.
@@ -105,7 +138,12 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         if (Sprite is null) return;
         if (Sprite.Animations.Count > 0)
-            PlayAnimation(Sprite.Animations[0].Name);
+        {
+            var anim = Sprite.Animations.FirstOrDefault(x => x.Name == StartingAnimationName);
+            if (anim is null)
+                anim = Sprite.Animations.FirstOrDefault();
+            PlayAnimation(anim.Name);
+        }
 
         UpdateSceneObject();
     }
@@ -194,6 +232,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (frame >= CurrentAnimation.Frames.Count)
                 frame = 0;
             CurrentFrameIndex = frame;
+            var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
+            foreach (var tag in currentFrame.Events)
+            {
+                BroadcastEvent(tag);
+            }
             _timeSinceLastFrame = 0;
         }
         else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
@@ -211,10 +254,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         // Add pivot to transform
         var pos = Transform.Position;
+        var scale = Transform.Scale;
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
-        pos -= new Vector3(origin.y, origin.x, 0) * 100f * Transform.Scale;
+        pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
         pos = pos.RotateAround(Transform.Position, Transform.Rotation);
-        SceneObject.Transform = new Transform(pos, Transform.Rotation, Transform.Scale);
+        SceneObject.Transform = new Transform(pos, Transform.Rotation, scale);
     }
 
     protected override void OnDestroy()
@@ -257,6 +301,13 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         CurrentFrameIndex = 0;
     }
 
+    void BroadcastEvent(string tag)
+    {
+        OnBroadcastEvent?.Invoke(tag);
+        if (BroadcastEvents.ContainsKey(tag))
+            BroadcastEvents[tag]?.Invoke();
+    }
+
     public enum ShadowRenderType
     {
         [Icon("wb_shade")]
@@ -269,5 +320,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         [Title("Shadows Only")]
         [Description("Render ONLY the sprites shadows")]
         ShadowsOnly
+    }
+
+    public class BroadcastControls { }
+    public class AnimationNameAttribute : Attribute
+    {
+        public string Parameter { get; set; } = "Sprite";
     }
 }
