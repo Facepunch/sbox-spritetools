@@ -18,7 +18,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         set
         {
             _sprite = value;
-            CurrentAnimation = _sprite.Animations.FirstOrDefault();
+            if (_sprite != null)
+                CurrentAnimation = _sprite.Animations.FirstOrDefault();
+            else
+                CurrentAnimation = null;
             UpdateSprite();
         }
     }
@@ -154,12 +157,14 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             SceneObject.SetMaterialOverride(SpriteMaterial);
         }
 
+        SceneObject.RenderingEnabled = true;
         SceneObject.Flags.ExcludeGameLayer = CastShadows == ShadowRenderType.ShadowsOnly;
         SceneObject.Flags.CastShadows = CastShadows == ShadowRenderType.On || CastShadows == ShadowRenderType.ShadowsOnly;
 
         if (CurrentAnimation == null)
         {
             SceneObject.Transform = new Transform(Transform.Position, Transform.Rotation, Transform.Scale);
+            SceneObject.RenderingEnabled = false;
             return;
         }
 
@@ -206,7 +211,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     internal void UpdateSprite()
     {
         BroadcastEvents.Clear();
-        if (Sprite == null) return;
+        if (Sprite == null || CurrentAnimation == null)
+        {
+            CurrentAnimation = null;
+            return;
+        }
 
         foreach (var animation in Sprite.Animations)
         {
