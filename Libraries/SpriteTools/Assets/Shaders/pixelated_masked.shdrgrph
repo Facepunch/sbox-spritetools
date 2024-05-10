@@ -7,7 +7,9 @@
       "_class": "TextureSampler",
       "Image": null,
       "Sampler": {
-        "Filter": "Point"
+        "Filter": "Point",
+        "AddressU": "Clamp",
+        "AddressV": "Clamp"
       },
       "UI": {
         "Name": "Texture",
@@ -259,7 +261,7 @@
       "Position": "336,64",
       "A": {
         "Identifier": "17",
-        "Output": "Result"
+        "Output": "RGBA"
       },
       "B": {
         "Identifier": "0",
@@ -267,27 +269,9 @@
       }
     },
     {
-      "_class": "TextureSampler",
-      "Image": "materials/lights/white_color.tga",
-      "Sampler": {
-        "Filter": "Point"
-      },
-      "UI": {
-        "Name": "ColorMix",
-        "Default": "1,1,1,1",
-        "SrgbRead": true,
-        "PrimaryGroup": {
-          "Name": "Color",
-          "Priority": 2
-        },
-        "CreateInput": "CreateInputTexture2D"
-      },
+      "_class": "Tint",
       "Identifier": "17",
-      "Position": "-96,-96",
-      "Coords": {
-        "Identifier": "9",
-        "Output": "Result"
-      }
+      "Position": "-96,32"
     }
   ]
 }

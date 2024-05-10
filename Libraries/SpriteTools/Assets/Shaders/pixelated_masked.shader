@@ -47,6 +47,7 @@ struct PixelInput
 	float3 vNormalOs : TEXCOORD15;
 	float4 vTangentUOs_flTangentVSign : TANGENT	< Semantic( TangentU_SignV ); >;
 	float4 vColor : COLOR0;
+	float4 vTintColor : COLOR1;
 };
 
 VS
@@ -59,6 +60,9 @@ VS
 		i.vPositionOs = v.vPositionOs.xyz;
 		i.vColor = v.vColor;
 
+		ExtraShaderData_t extraShaderData = GetExtraPerInstanceShaderData( v );
+		i.vTintColor = extraShaderData.vTint;
+
 		VS_DecodeObjectSpaceNormalAndTangent( v, i.vNormalOs, i.vTangentUOs_flTangentVSign );
 
 		return FinalizeVertex( i );
@@ -69,10 +73,8 @@ PS
 {
 	#include "common/pixel.hlsl"
 	
-	SamplerState g_sSampler0 < Filter( POINT ); AddressU( WRAP ); AddressV( WRAP ); >;
-	CreateInputTexture2D( ColorMix, Srgb, 8, "None", "_color", "Color,2/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
+	SamplerState g_sSampler0 < Filter( POINT ); AddressU( CLAMP ); AddressV( CLAMP ); >;
 	CreateInputTexture2D( Texture, Srgb, 8, "None", "_color", "Texture,1/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
-	Texture2D g_tColorMix < Channel( RGBA, Box( ColorMix ), Srgb ); OutputFormat( DXT5 ); SrgbRead( True ); >;
 	Texture2D g_tTexture < Channel( RGBA, Box( Texture ), Srgb ); OutputFormat( BC7 ); SrgbRead( True ); >;
 	float g_flHueshift < UiGroup( "Hue,2/,0/0" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
@@ -112,13 +114,13 @@ PS
 		m.Transmission = 0;
 		
 		float l_0 = g_flHueshift;
-		float2 l_1 = i.vTextureCoords.xy * float2( 1, 1 );
-		float2 l_2 = g_vTiling;
-		float2 l_3 = g_vOffset;
-		float2 l_4 = frac( TileAndOffsetUv( l_1, l_2, l_3 ) );
-		float4 l_5 = Tex2DS( g_tColorMix, g_sSampler0, l_4 );
-		float4 l_6 = Tex2DS( g_tTexture, g_sSampler0, l_4 );
-		float4 l_7 = l_5 * l_6;
+		float4 l_1 = i.vTintColor;
+		float2 l_2 = i.vTextureCoords.xy * float2( 1, 1 );
+		float2 l_3 = g_vTiling;
+		float2 l_4 = g_vOffset;
+		float2 l_5 = frac( TileAndOffsetUv( l_2, l_3, l_4 ) );
+		float4 l_6 = Tex2DS( g_tTexture, g_sSampler0, l_5 );
+		float4 l_7 = l_1 * l_6;
 		float3 l_8 = RGB2HSV( l_7 );
 		float l_9 = l_8.x;
 		float l_10 = l_0 + l_9;

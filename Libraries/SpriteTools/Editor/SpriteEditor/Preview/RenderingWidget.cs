@@ -17,7 +17,7 @@ public class RenderingWidget : NativeRenderingWidget
     public SceneObject TextureRect;
     public Vector2 TextureSize;
     public Draggable OriginMarker;
-    List<(Draggable, Material)> Attachments = new();
+    List<Draggable> Attachments = new();
     public Draggable LastDragged = null;
     public Material PreviewMaterial;
 
@@ -199,7 +199,7 @@ public class RenderingWidget : NativeRenderingWidget
         scale /= 1.5f;
         foreach (var attachmentWidget in Attachments)
         {
-            attachmentWidget.Item1.RenderingEnabled = false;
+            attachmentWidget.RenderingEnabled = false;
         }
 
         foreach (var attachment in MainWindow.SelectedAnimation?.Attachments ?? new List<SpriteAttachment>())
@@ -207,21 +207,21 @@ public class RenderingWidget : NativeRenderingWidget
             if (attachment is null) continue;
             var name = attachment.Name.ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(name)) continue;
-            var attach = Attachments.FirstOrDefault(a => a.Item1.Tags.Has(name));
-            var has = Attachments.Any(a => a.Item1.Tags.Has(name));
+            var attach = Attachments.FirstOrDefault(a => a.Tags.Has(name));
+            var has = Attachments.Any(a => a.Tags.Has(name));
             if (!has)
             {
                 var markerMaterial = Material.Load("materials/sprite_editor_attachment.vmat").CreateCopy();
-                attach = (new Draggable(World, "models/preview_quad.vmdl", Transform.Zero), markerMaterial);
-                attach.Item1.SetMaterialOverride(markerMaterial);
-                attach.Item1.Tags.Add(name);
-                attach.Item1.Position = new Vector3(0, 0, 10f);
-                attach.Item1.Transform = attach.Item1.Transform.WithRotation(new Angles(0, 45, 0));
-                attach.Item1.Flags.WantsFrameBufferCopy = true;
-                attach.Item1.Flags.IsTranslucent = true;
-                attach.Item1.Flags.IsOpaque = false;
-                attach.Item1.Flags.CastShadows = false;
-                attach.Item1.OnPositionChanged = (Vector2 pos) =>
+                attach = new Draggable(World, "models/preview_quad.vmdl", Transform.Zero);
+                attach.SetMaterialOverride(markerMaterial);
+                attach.Tags.Add(name);
+                attach.Position = new Vector3(0, 0, 10f);
+                attach.Transform = attach.Transform.WithRotation(new Angles(0, 45, 0));
+                attach.Flags.WantsFrameBufferCopy = true;
+                attach.Flags.IsTranslucent = true;
+                attach.Flags.IsOpaque = false;
+                attach.Flags.CastShadows = false;
+                attach.OnPositionChanged = (Vector2 pos) =>
                 {
                     if (MainWindow.SelectedAnimation is null) return;
 
@@ -234,7 +234,7 @@ public class RenderingWidget : NativeRenderingWidget
 
                     var currentAttachment = MainWindow.SelectedAnimation.Attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name);
                     if (currentAttachment is null) return;
-                    
+
                     var index = MainWindow.CurrentFrameIndex;
                     for (int i = currentAttachment.Points.Count; i <= index; i++)
                     {
@@ -255,7 +255,7 @@ public class RenderingWidget : NativeRenderingWidget
                         var attachPos = attachment.Points[MainWindow.CurrentFrameIndex];
                         attachPos -= Vector2.One * 0.5f;
                         attachPos *= 100f;
-                        attach.Item1.Position = new Vector3(attachPos.y, attachPos.x, 10f);
+                        attach.Position = new Vector3(attachPos.y, attachPos.x, 10f);
                     }
                     else
                     {
@@ -266,7 +266,7 @@ public class RenderingWidget : NativeRenderingWidget
                                 var attachPos1 = attachment.Points[i];
                                 attachPos1 -= Vector2.One * 0.5f;
                                 attachPos1 *= 100f;
-                                attach.Item1.Position = new Vector3(attachPos1.y, attachPos1.x, 10f);
+                                attach.Position = new Vector3(attachPos1.y, attachPos1.x, 10f);
                                 break;
                             }
                         }
@@ -275,18 +275,10 @@ public class RenderingWidget : NativeRenderingWidget
             }
             if (attachment.Visible)
             {
-                attach.Item1.RenderingEnabled = true;
+                attach.RenderingEnabled = true;
             }
-            attach.Item1.Transform = attach.Item1.Transform.WithScale(new Vector3(scale, scale, 1f));
-
-            var texture = Texture.Create(1, 1);
-            byte[] data = new byte[4];
-            data[0] = (byte)(attachment.Color.r * 255);
-            data[1] = (byte)(attachment.Color.g * 255);
-            data[2] = (byte)(attachment.Color.b * 255);
-            data[3] = (byte)(attachment.Color.a * 255);
-            texture.WithData(data);
-            attach.Item2.Set("ColorMix", texture.Finish());
+            attach.Transform = attach.Transform.WithScale(new Vector3(scale, scale, 1f));
+            attach.ColorTint = attachment.Color;
         }
     }
 
