@@ -22,7 +22,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             _sprite = value;
             if (_sprite != null)
             {
-                var anim = _sprite.Animations.FirstOrDefault(x => x.Name.ToLowerInvariant() == _currentAnimationName.ToLowerInvariant());
+                var anim = _sprite.Animations.FirstOrDefault(x => x.Name.ToLowerInvariant() == StartingAnimationName.ToLowerInvariant());
                 if (anim == null)
                     anim = _sprite.Animations.FirstOrDefault();
                 PlayAnimation(anim.Name);
@@ -81,6 +81,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// <summary>
     /// A dictionary of broadcast events that this component will send (populated based on the Sprite resource)
     /// </summary>
+    [JsonIgnore]
     public Dictionary<string, Action> BroadcastEvents = new();
 
     /// <summary>
@@ -88,10 +89,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// </summary>
     [JsonIgnore]
     public SpriteAnimation CurrentAnimation { get; private set; }
-    private string StartingAnimationName { get; set; }
 
     [Property, Category("Sprite"), Title("Current Animation"), AnimationName]
-    private string _currentAnimationName
+    private string StartingAnimationName
     {
         get => CurrentAnimation?.Name ?? "";
         set
@@ -101,11 +101,13 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (animation == null) return;
             CurrentAnimation = animation;
             CurrentFrameIndex = 0;
-            StartingAnimationName = value.ToLowerInvariant();
+            _startingAnimationName = value.ToLowerInvariant();
         }
     }
+    string _startingAnimationName = "";
 
-    [Property, Category("Sprite")]
+
+    [Property, Category("Sprite"), JsonIgnore]
     BroadcastControls _broadcastEvents = new();
 
     /// <summary>
@@ -134,12 +136,12 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     protected override void OnStart()
     {
-        base.OnEnabled();
+        base.OnStart();
 
         if (Sprite is null) return;
         if (Sprite.Animations.Count > 0)
         {
-            var anim = Sprite.Animations.FirstOrDefault(x => x.Name == StartingAnimationName);
+            var anim = Sprite.Animations.FirstOrDefault(x => x.Name.ToLowerInvariant() == StartingAnimationName);
             if (anim is null)
                 anim = Sprite.Animations.FirstOrDefault();
             PlayAnimation(anim.Name);
@@ -292,9 +294,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     public void PlayAnimation(string animationName)
     {
+        Log.Info($"Playing animation {animationName}");
         if (Sprite == null) return;
 
-        var animation = Sprite.Animations.Find(a => a.Name == animationName);
+        var animation = Sprite.Animations.Find(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
         if (animation == null) return;
 
         CurrentAnimation = animation;
