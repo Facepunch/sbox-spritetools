@@ -164,6 +164,7 @@ public class Preview : Widget
         if (string.IsNullOrEmpty(MainWindow.CurrentTexturePath)) return;
 
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.CurrentTexturePath);
+        if (texture is null) return;
         Rendering.PreviewMaterial.Set("Texture", texture);
         Rendering.TextureSize = new Vector2(texture.Width, texture.Height);
         Rendering.TextureRect.SetMaterialOverride(Rendering.PreviewMaterial);
