@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -10,11 +11,14 @@ public class RenderingWidget : NativeRenderingWidget
 {
     MainWindow MainWindow;
 
+    public Action OnDragSelected;
+
     public SceneWorld World;
     public SceneObject TextureRect;
     public Vector2 TextureSize;
-    Draggable OriginMarker;
+    public Draggable OriginMarker;
     List<(Draggable, Material)> Attachments = new();
+    public Draggable LastDragged = null;
     public Material PreviewMaterial;
 
     float targetZoom = 115f;
@@ -111,7 +115,13 @@ public class RenderingWidget : NativeRenderingWidget
             {
                 dragging = draggable;
                 draggableGrabPos = tr.EndPosition.WithZ(0f);
+                LastDragged = draggable;
             }
+            else
+            {
+                LastDragged = null;
+            }
+            OnDragSelected?.Invoke();
         }
     }
 

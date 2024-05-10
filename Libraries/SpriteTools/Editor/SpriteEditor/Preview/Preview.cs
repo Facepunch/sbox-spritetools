@@ -1,6 +1,8 @@
 using Editor;
 using Sandbox;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpriteTools.SpriteEditor.Preview;
 
@@ -10,7 +12,8 @@ public class Preview : Widget
     private readonly RenderingWidget Rendering;
 
     Widget Overlay;
-    WidgetWindow overlayWindow;
+    WidgetWindow overlayWindowZoom;
+    WidgetWindow overlayWindowPoint;
 
     Vector2 attachmentCreatePosition;
 
@@ -36,38 +39,97 @@ public class Preview : Widget
             NoSystemBackground = true,
             WindowFlags = WindowFlags.FramelessWindowHint | WindowFlags.Tool
         };
-        overlayWindow = new WidgetWindow(this);
-        overlayWindow.Parent = Overlay;
-        overlayWindow.Layout = Layout.Row();
-        overlayWindow.Layout.Spacing = 4;
-        overlayWindow.Layout.Margin = 4;
-        var btnZoomOut = overlayWindow.Layout.Add(new IconButton("zoom_out"));
+        overlayWindowZoom = new WidgetWindow(this);
+        overlayWindowZoom.Parent = Overlay;
+        overlayWindowZoom.Layout = Layout.Row();
+        overlayWindowZoom.Layout.Spacing = 4;
+        overlayWindowZoom.Layout.Margin = 4;
+        var btnZoomOut = overlayWindowZoom.Layout.Add(new IconButton("zoom_out"));
         btnZoomOut.OnClick = () =>
         {
             Rendering.Zoom(-250);
         };
         btnZoomOut.ToolTip = "Zoom Out";
         btnZoomOut.StatusTip = "Zoom Out View";
-        var btnZoomIn = overlayWindow.Layout.Add(new IconButton("zoom_in"));
+        var btnZoomIn = overlayWindowZoom.Layout.Add(new IconButton("zoom_in"));
         btnZoomIn.OnClick = () =>
         {
             Rendering.Zoom(250);
         };
         btnZoomIn.ToolTip = "Zoom In";
         btnZoomIn.StatusTip = "Zoom In View";
-        overlayWindow.Layout.AddSeparator();
-        var btnFit = overlayWindow.Layout.Add(new IconButton("zoom_out_map"));
+        overlayWindowZoom.Layout.AddSeparator();
+        var btnFit = overlayWindowZoom.Layout.Add(new IconButton("zoom_out_map"));
         btnFit.OnClick = () =>
         {
             Rendering.Fit();
         };
         btnFit.ToolTip = "Fit to Screen";
         btnFit.StatusTip = "Fit View to Screen";
-        overlayWindow.WindowTitle = "Zoom Controls";
+        overlayWindowZoom.WindowTitle = "Zoom Controls";
 
-        Overlay.Layout.Add(overlayWindow);
+        Overlay.Layout.Add(overlayWindowZoom);
+
+        overlayWindowPoint = new WidgetWindow(this);
+        overlayWindowPoint.Parent = Overlay;
+        overlayWindowPoint.Layout = Layout.Column();
+        overlayWindowPoint.Layout.Margin = 4;
+        overlayWindowPoint.WindowTitle = "Point Controls";
+
+        var row1 = overlayWindowPoint.Layout.AddRow();
+        var btnTopLeft = row1.Add(new TextureModifyButton(this, "Align Top-Left", "Images/grid-align-top-left.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(-50f, -50f));
+        }));
+        var btnTopMiddle = row1.Add(new TextureModifyButton(this, "Align Top-Center", "Images/grid-align-top-center.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(0f, -50f));
+        }));
+        var btnTopRight = row1.Add(new TextureModifyButton(this, "Align Top-Right", "Images/grid-align-top-right.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(50f, -50f));
+        }));
+
+        var row2 = overlayWindowPoint.Layout.AddRow();
+        var btnMiddleLeft = row2.Add(new TextureModifyButton(this, "Align Middle-Left", "Images/grid-align-middle-left.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(-50f, 0f));
+        }));
+        var btnMiddleCenter = row2.Add(new TextureModifyButton(this, "Align Middle-Center", "Images/grid-align-middle-center.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(0f, 0f));
+        }));
+        var btnMiddleRight = row2.Add(new TextureModifyButton(this, "Align Middle-Right", "Images/grid-align-middle-right.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(50f, 0f));
+        }));
+
+        var row3 = overlayWindowPoint.Layout.AddRow();
+        var btnBottomLeft = row3.Add(new TextureModifyButton(this, "Align Bottom-Left", "Images/grid-align-bottom-left.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(-50f, 50f));
+        }));
+        var btnBottomCenter = row3.Add(new TextureModifyButton(this, "Align Bottom-Center", "Images/grid-align-bottom-center.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(0f, 50f));
+        }));
+        var btnBottomRight = row3.Add(new TextureModifyButton(this, "Align Bottom-Right", "Images/grid-align-bottom-right.png", () =>
+        {
+            Draggable draggable = Rendering.OriginMarker;
+            draggable?.OnPositionChanged?.Invoke(new Vector2(50f, 50f));
+        }));
+
+        Overlay.Layout.Add(overlayWindowPoint);
+
         Overlay.Show();
-
         UpdateTexture();
         SetSizeMode(SizeMode.Default, SizeMode.CanShrink);
 
@@ -116,8 +178,14 @@ public class Preview : Widget
             Overlay.Position = Rendering.ScreenPosition;
             Overlay.Size = Rendering.Size + 1;
 
-            overlayWindow.AdjustSize();
-            overlayWindow.AlignToParent(TextFlag.RightTop, 4);
+            if (overlayWindowPoint.Visible)
+            {
+                overlayWindowPoint.AdjustSize();
+                overlayWindowPoint.AlignToParent(TextFlag.LeftTop, 4);
+            }
+
+            overlayWindowZoom.AdjustSize();
+            overlayWindowZoom.AlignToParent(TextFlag.RightTop, 4);
         }
     }
 
@@ -209,5 +277,36 @@ public class Preview : Widget
         m.AddOption("Add Attach Point", "push_pin", CreateAttachmentPopup);
 
         m.OpenAtCursor(false);
+    }
+
+
+    private class TextureModifyButton : Widget
+    {
+        private readonly string Icon;
+        private Pixmap pixmap;
+
+        public TextureModifyButton(Widget parent, string tooltip, string icon, Action onClick) : base(parent)
+        {
+            Icon = icon;
+            ToolTip = tooltip;
+            FixedSize = 26;
+            Cursor = CursorShape.Finger;
+            MouseClick = onClick;
+            pixmap = Pixmap.FromFile(Editor.FileSystem.Content.GetFullPath(Icon));
+        }
+
+        protected override void OnPaint()
+        {
+            base.OnPaint();
+
+            if (Paint.HasMouseOver)
+            {
+                Paint.ClearPen();
+                var bg = Theme.ControlBackground.Lighten(0.3f);
+                Paint.SetBrush(bg);
+                Paint.DrawRect(LocalRect, Theme.ControlRadius);
+            }
+            Paint.Draw(LocalRect.Shrink(5), pixmap);
+        }
     }
 }
