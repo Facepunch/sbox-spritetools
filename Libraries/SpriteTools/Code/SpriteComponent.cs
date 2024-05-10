@@ -130,8 +130,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         if (Gizmo.IsHovered)
         {
-            Gizmo.Draw.Color = Color.Orange;
-            Gizmo.Draw.LineBBox(bbox);
+            using (Gizmo.Scope("hover"))
+            {
+                Gizmo.Draw.Color = Color.Orange;
+                Gizmo.Draw.LineBBox(bbox);
+            }
         }
     }
 
