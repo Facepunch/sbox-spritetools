@@ -120,24 +120,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (_createAttachPoints != value)
             {
                 _createAttachPoints = value;
-                var attachments = Sprite.GetAttachmentNames();
 
                 AttachPoints.Clear();
                 if (value)
                 {
-                    foreach (var attachment in attachments)
-                    {
-                        var go = GameObject.Children.FirstOrDefault(x => x.Name == attachment);
-                        if (go is null)
-                        {
-                            go = Scene.CreateObject();
-                            go.Parent = GameObject;
-                        }
-
-                        AttachPoints[attachment] = go;
-                        go.Flags |= GameObjectFlags.Bone;
-                        go.Name = attachment;
-                    }
+                    BuildAttachPoints();
                 }
             }
         }
@@ -191,6 +178,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         if (SceneObject.IsValid())
             SceneObject.RenderingEnabled = true;
+
+        if (CreateAttachPoints)
+            BuildAttachPoints();
     }
 
     protected override void OnDisabled()
@@ -301,7 +291,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
-        SpriteMaterial.Set("Texture", texture);
+        if (texture is not null)
+            SpriteMaterial.Set("Texture", texture);
 
         // Add pivot to transform
         var pos = Transform.Position;
@@ -358,6 +349,24 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         OnBroadcastEvent?.Invoke(tag);
         if (BroadcastEvents.ContainsKey(tag))
             BroadcastEvents[tag]?.Invoke();
+    }
+
+    internal void BuildAttachPoints()
+    {
+        var attachments = Sprite.GetAttachmentNames();
+        foreach (var attachment in attachments)
+        {
+            var go = GameObject.Children.FirstOrDefault(x => x.Name == attachment);
+            if (go is null)
+            {
+                go = Scene.CreateObject();
+                go.Parent = GameObject;
+            }
+
+            AttachPoints[attachment] = go;
+            go.Flags |= GameObjectFlags.Bone;
+            go.Name = attachment;
+        }
     }
 
     public enum ShadowRenderType
