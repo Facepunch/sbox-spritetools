@@ -154,7 +154,7 @@
       "_class": "TileAndOffset",
       "DefaultTile": "1,1",
       "DefaultOffset": "0,0",
-      "WrapTo01": true,
+      "WrapTo01": false,
       "Identifier": "9",
       "Position": "-544,304",
       "Coords": {
@@ -174,7 +174,7 @@
       "_class": "Float2",
       "Min": "0,0",
       "Max": "1,1",
-      "Value": "1,1",
+      "Value": "0,0",
       "Name": "Offset",
       "IsAttribute": false,
       "UI": {

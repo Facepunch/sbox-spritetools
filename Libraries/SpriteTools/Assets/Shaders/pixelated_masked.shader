@@ -78,7 +78,7 @@ PS
 	Texture2D g_tTexture < Channel( RGBA, Box( Texture ), Srgb ); OutputFormat( BC7 ); SrgbRead( True ); >;
 	float g_flHueshift < UiGroup( "Hue,2/,0/0" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
-	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
+	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 0,0 ); Range2( 0,0, 1,1 ); >;
 	float g_flSmoothStepMin < UiGroup( "Translucent,1/,0/1" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float g_flSmoothStepMax < UiGroup( "Translucent,1/,0/2" ); Default1( 1 ); Range1( 0, 1 ); >;
 		
@@ -118,7 +118,7 @@ PS
 		float2 l_2 = i.vTextureCoords.xy * float2( 1, 1 );
 		float2 l_3 = g_vTiling;
 		float2 l_4 = g_vOffset;
-		float2 l_5 = frac( TileAndOffsetUv( l_2, l_3, l_4 ) );
+		float2 l_5 = TileAndOffsetUv( l_2, l_3, l_4 );
 		float4 l_6 = Tex2DS( g_tTexture, g_sSampler0, l_5 );
 		float4 l_7 = l_1 * l_6;
 		float3 l_8 = RGB2HSV( l_7 );

@@ -4,8 +4,8 @@ Layer0
 {
 	shader "shaders/pixelated_masked.shader"
 
-	//---- Color ----
-	ColorMix "materials/default/default_color.tga"
+	//---- Texture Filtering ----
+	F_TEXTURE_FILTERING 4 // Nearest Neighbour
 
 	//---- Fog ----
 	g_bFogEnabled "1"
@@ -17,7 +17,7 @@ Layer0
 	Texture "materials/sprite_editor_attachment.png"
 
 	//---- Texture Coordinates ----
-	g_vOffset "[1.000 1.000]"
+	g_vOffset "[0.000 0.000]"
 	g_vTiling "[1.000 1.000]"
 
 	//---- Translucent ----
