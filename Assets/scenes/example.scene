@@ -1,0 +1,122 @@
+{
+  "__guid": "50586750-d37b-4953-9594-7d993f51e9b7",
+  "GameObjects": [
+    {
+      "__guid": "9c36e744-faac-4710-9ae3-b1e2f6007eb6",
+      "Flags": 0,
+      "Name": "Main Camera",
+      "Position": "-300,0,100",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "Components": [
+        {
+          "__type": "Sandbox.CameraComponent",
+          "__guid": "4af0812f-6779-4788-9dfe-5a71176f3714",
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "FieldOfView": 60,
+          "IsMainCamera": true,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 10
+        }
+      ]
+    },
+    {
+      "__guid": "46fe7d97-50dd-458c-aee8-5624e8c8e909",
+      "Flags": 0,
+      "Name": "Directional Light",
+      "Position": "0,0,200",
+      "Rotation": "-0.3596048,0.8681628,0.1308855,0.3159855",
+      "Tags": "light_directional,light",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "Components": [
+        {
+          "__type": "Sandbox.DirectionalLight",
+          "__guid": "5869b7d4-05f6-4070-a207-2c2169be47a4",
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Shadows": true,
+          "SkyColor": "0.05882,0.07451,0.08235,1"
+        }
+      ]
+    },
+    {
+      "__guid": "0df90bca-c35c-4f10-9812-e2ad9cb9ce4b",
+      "Flags": 0,
+      "Name": "Object",
+      "Position": "0.00000880848,0,8.210052",
+      "Rotation": "0,0.7071068,0,0.7071069",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "Components": [
+        {
+          "__type": "SpriteTools.SpriteComponent",
+          "__guid": "8b7168fa-9378-493f-9027-5e9357a72b9c",
+          "__enabled": false,
+          "CastShadows": "On",
+          "PlaybackSpeed": 1,
+          "Sprite": "sprites/player.sprite",
+          "Tint": "1,1,1,1"
+        }
+      ]
+    },
+    {
+      "__guid": "c8566090-a4b7-44ff-a983-d2a7c56b3c8a",
+      "Flags": 0,
+      "Name": "Plane",
+      "Scale": "6.985178,6.985178,6.985178",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "37f403ff-4391-4af9-9189-921ddfefb359",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/plane.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        }
+      ]
+    }
+  ],
+  "SceneProperties": {
+    "FixedUpdateFrequency": 50,
+    "MaxFixedUpdates": 5,
+    "NetworkFrequency": 30,
+    "NetworkInterpolation": true,
+    "ThreadedAnimation": true,
+    "TimeScale": 1,
+    "UseFixedUpdate": true,
+    "NavMesh": {
+      "Enabled": false,
+      "IncludeStaticBodies": true,
+      "IncludeKeyframedBodies": true,
+      "EditorAutoUpdate": true,
+      "AgentHeight": 64,
+      "AgentRadius": 16,
+      "AgentStepSize": 18,
+      "AgentMaxSlope": 40,
+      "ExcludedBodies": "",
+      "IncludedBodies": ""
+    }
+  },
+  "Title": "example",
+  "Description": "",
+  "LastSaved": "2024-05-09T22:57:44.8245848-04:00",
+  "ResourceVersion": 1,
+  "__version": 1,
+  "__references": []
+}
