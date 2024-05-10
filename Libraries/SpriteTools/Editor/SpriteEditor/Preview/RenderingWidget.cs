@@ -162,11 +162,6 @@ public class RenderingWidget : NativeRenderingWidget
     {
         base.OnKeyPress(e);
 
-        if (e.Key == KeyCode.Space)
-        {
-            MainWindow?.PlayPause();
-        }
-
         if (e.Key == KeyCode.Control)
         {
             holdingControl = true;
@@ -238,6 +233,8 @@ public class RenderingWidget : NativeRenderingWidget
                     }
 
                     var currentAttachment = MainWindow.SelectedAnimation.Attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name);
+                    if (currentAttachment is null) return;
+                    
                     var index = MainWindow.CurrentFrameIndex;
                     for (int i = currentAttachment.Points.Count; i <= index; i++)
                     {

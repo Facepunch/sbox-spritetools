@@ -99,6 +99,16 @@ public partial class MainWindow : DockWindow, IAssetEditor
         AllWindows.Add(this);
     }
 
+    protected override void OnKeyPress(KeyEvent e)
+    {
+        base.OnKeyPress(e);
+
+        if (e.Key == KeyCode.Space)
+        {
+            PlayPause();
+        }
+    }
+
     public void AssetOpen(Asset asset)
     {
         Open("", asset);
@@ -398,6 +408,26 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
 
         OnPlayPause?.Invoke();
+    }
+
+    public void FrameNext()
+    {
+        var frame = CurrentFrameIndex + 1; ;
+        if (frame >= SelectedAnimation.Frames.Count)
+        {
+            frame = 0;
+        }
+        CurrentFrameIndex = frame;
+    }
+
+    public void FramePrevious()
+    {
+        var frame = CurrentFrameIndex - 1;
+        if (frame < 0)
+        {
+            frame = SelectedAnimation.Frames.Count - 1;
+        }
+        CurrentFrameIndex = frame;
     }
 
     public void SetDirty()

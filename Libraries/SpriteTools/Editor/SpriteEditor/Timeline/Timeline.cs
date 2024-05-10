@@ -55,14 +55,7 @@ public class Timeline : Widget
 
         buttonFramePrevious = new IconButton("navigate_before");
         buttonFramePrevious.StatusTip = "Previous Frame";
-        buttonFramePrevious.OnClick = () =>
-        {
-            if (MainWindow.SelectedAnimation is null) return;
-            var frame = MainWindow.CurrentFrameIndex;
-            frame--;
-            if (frame < 0) frame = MainWindow.SelectedAnimation.Frames.Count - 1;
-            MainWindow.CurrentFrameIndex = frame;
-        };
+        buttonFramePrevious.OnClick = () => { MainWindow.FramePrevious(); };
         bannerLayout.Add(buttonFramePrevious);
         bannerLayout.AddSpacingCell(4);
 
@@ -77,14 +70,7 @@ public class Timeline : Widget
 
         buttonFrameNext = new IconButton("navigate_next");
         buttonFrameNext.StatusTip = "Next Frame";
-        buttonFrameNext.OnClick = () =>
-        {
-            if (MainWindow.SelectedAnimation is null) return;
-            var frame = MainWindow.CurrentFrameIndex;
-            frame++;
-            if (frame >= MainWindow.SelectedAnimation.Frames.Count) frame = 0;
-            MainWindow.CurrentFrameIndex = frame;
-        };
+        buttonFrameNext.OnClick = () => { MainWindow.FrameNext(); };
         bannerLayout.Add(buttonFrameNext);
         bannerLayout.AddSpacingCell(4);
 
@@ -243,11 +229,11 @@ public class Timeline : Widget
 
         if (e.Key == KeyCode.Left)
         {
-            buttonFramePrevious.OnClick?.Invoke();
+            MainWindow.FramePrevious();
         }
         else if (e.Key == KeyCode.Right)
         {
-            buttonFrameNext.OnClick?.Invoke();
+            MainWindow.FrameNext();
         }
     }
 

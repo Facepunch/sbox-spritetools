@@ -199,6 +199,20 @@ public class Preview : Widget
         }
     }
 
+    protected override void OnKeyRelease(KeyEvent e)
+    {
+        base.OnKeyRelease(e);
+
+        if (e.Key == KeyCode.Left)
+        {
+            MainWindow.FramePrevious();
+        }
+        else if (e.Key == KeyCode.Right)
+        {
+            MainWindow.FrameNext();
+        }
+    }
+
     void CreateAttachmentPopup()
     {
         var popup = new PopupWidget(MainWindow);
