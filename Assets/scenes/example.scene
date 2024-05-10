@@ -54,7 +54,7 @@
     {
       "__guid": "0df90bca-c35c-4f10-9812-e2ad9cb9ce4b",
       "Flags": 0,
-      "Name": "Object",
+      "Name": "Player",
       "Rotation": "0,0.7071068,0,0.7071071",
       "Enabled": true,
       "NetworkMode": 2,
@@ -113,7 +113,7 @@
   },
   "Title": "example",
   "Description": "",
-  "LastSaved": "2024-05-09T23:52:53.1878793-04:00",
+  "LastSaved": "2024-05-09T23:54:41.2284678-04:00",
   "ResourceVersion": 1,
   "__version": 1,
   "__references": []
