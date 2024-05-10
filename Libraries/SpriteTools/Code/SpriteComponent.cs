@@ -28,7 +28,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     SpriteResource _sprite;
 
     /// <summary>
-    /// The color tint of the sprite.
+    /// The color tint of the Sprite.
     /// </summary>
     [Property]
     public Color Tint
@@ -41,8 +41,21 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
     }
 
+    /// <summary>
+    /// Used to override the material with your own. Useful for custom shaders.
+    /// Shader requires a texture parameter named "Texture".
+    /// </summary>
     [Property]
-    public Material MaterialOverride { get; set; }
+    public Material MaterialOverride
+    {
+        get => _materialOverride;
+        set
+        {
+            _materialOverride = value;
+            SpriteMaterial = null;
+        }
+    }
+    Material _materialOverride;
     private Material SpriteMaterial { get; set; }
 
     /// <summary>
@@ -153,7 +166,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         if (SpriteMaterial is null)
         {
-            SpriteMaterial = Material.Create("spritemat", "shaders/pixelated_masked.shader");
+            if (MaterialOverride != null)
+                SpriteMaterial = MaterialOverride;
+            else
+                SpriteMaterial = Material.Create("spritemat", "shaders/pixelated_masked.shader");
             SceneObject.SetMaterialOverride(SpriteMaterial);
         }
 
