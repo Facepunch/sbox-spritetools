@@ -112,6 +112,27 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         UpdateSceneObject();
     }
 
+    protected override void DrawGizmos()
+    {
+        base.DrawGizmos();
+
+        if (Game.IsPlaying) return;
+
+        // Move bbox by origin
+        var bbox = SceneObject.LocalBounds;
+        bbox = bbox.Rotate(Transform.Rotation);
+        var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+        var pos = Transform.Position - (new Vector3(origin.y, origin.x, 0) * bbox.Size);
+        bbox = bbox.Translate(pos);
+        Gizmo.Hitbox.BBox(bbox);
+
+        if (Gizmo.IsHovered)
+        {
+            Gizmo.Draw.Color = Color.Orange;
+            Gizmo.Draw.LineBBox(bbox);
+        }
+    }
+
     internal void UpdateSceneObject()
     {
         if (!SceneObject.IsValid())
