@@ -8,7 +8,9 @@
       "Frames": [
         {
           "FilePath": "images/sausage_idle_01.png",
-          "Events": []
+          "Events": [
+            "bob"
+          ]
         },
         {
           "FilePath": "images/sausage_idle_02.png",
@@ -20,9 +22,7 @@
         },
         {
           "FilePath": "images/sausage_idle_04.png",
-          "Events": [
-            "bob"
-          ]
+          "Events": []
         }
       ],
       "Attachments": [
