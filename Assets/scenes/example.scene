@@ -1,5 +1,5 @@
 {
-  "__guid": "50586750-d37b-4953-9594-7d993f51e9b7",
+  "__guid": "b3826e09-9b4a-4b9f-8170-145b944f927c",
   "GameObjects": [
     {
       "__guid": "9c36e744-faac-4710-9ae3-b1e2f6007eb6",
@@ -55,8 +55,7 @@
       "__guid": "0df90bca-c35c-4f10-9812-e2ad9cb9ce4b",
       "Flags": 0,
       "Name": "Object",
-      "Position": "0.00000880848,0,8.210052",
-      "Rotation": "0,0.7071068,0,0.7071069",
+      "Rotation": "0,0.7071068,0,0.7071071",
       "Enabled": true,
       "NetworkMode": 2,
       "NetworkInterpolation": true,
@@ -64,7 +63,6 @@
         {
           "__type": "SpriteTools.SpriteComponent",
           "__guid": "8b7168fa-9378-493f-9027-5e9357a72b9c",
-          "__enabled": false,
           "CastShadows": "On",
           "PlaybackSpeed": 1,
           "Sprite": "sprites/player.sprite",
@@ -76,7 +74,7 @@
       "__guid": "c8566090-a4b7-44ff-a983-d2a7c56b3c8a",
       "Flags": 0,
       "Name": "Plane",
-      "Scale": "6.985178,6.985178,6.985178",
+      "Scale": "9.273615,9.273615,9.273615",
       "Enabled": true,
       "NetworkMode": 2,
       "NetworkInterpolation": true,
@@ -115,7 +113,7 @@
   },
   "Title": "example",
   "Description": "",
-  "LastSaved": "2024-05-09T22:57:44.8245848-04:00",
+  "LastSaved": "2024-05-09T23:52:53.1878793-04:00",
   "ResourceVersion": 1,
   "__version": 1,
   "__references": []
