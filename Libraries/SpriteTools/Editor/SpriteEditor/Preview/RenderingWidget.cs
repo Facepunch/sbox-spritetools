@@ -131,7 +131,7 @@ public class RenderingWidget : NativeRenderingWidget
 
         if (dragging is not null)
         {
-            var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition), 5000f).Run();
+            var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition - Position), 5000f).Run();
             var pos = tr.EndPosition.WithZ(0f);
             draggableGrabPos = pos;
             dragging?.OnPositionChanged.Invoke(new Vector2(pos.y, pos.x));
