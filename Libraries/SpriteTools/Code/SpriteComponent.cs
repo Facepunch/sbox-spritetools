@@ -23,10 +23,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             _sprite = value;
             if (_sprite != null)
             {
-                var anim = _sprite.Animations.FirstOrDefault(x => x.Name.ToLowerInvariant() == StartingAnimationName.ToLowerInvariant());
-                if (anim == null)
-                    anim = _sprite.Animations.FirstOrDefault();
-                PlayAnimation(anim.Name);
+                PlayAnimation(StartingAnimationName);
             }
             else
                 CurrentAnimation = null;
@@ -100,8 +97,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (Sprite == null) return;
             var animation = Sprite.Animations.Find(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant());
             if (animation == null) return;
-            CurrentAnimation = animation;
-            CurrentFrameIndex = 0;
+            PlayAnimation(animation.Name);
             _startingAnimationName = value.ToLowerInvariant();
         }
     }
@@ -147,14 +143,19 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         set
         {
             _currentFrameIndex = value;
-            if (CurrentAnimation is not null && _currentFrameIndex >= CurrentAnimation.Frames.Count)
-                _currentFrameIndex = 0;
+            if (CurrentAnimation is not null)
+            {
+                if (_currentFrameIndex >= CurrentAnimation.Frames.Count)
+                    _currentFrameIndex = 0;
+                SpriteMaterial?.Set("g_vOffset", CurrentTexture.GetFrameOffset(CurrentFrameIndex));
+            }
         }
     }
     private int _currentFrameIndex = 0;
     private float _timeSinceLastFrame = 0;
 
     internal SceneObject SceneObject { get; set; }
+    TextureAtlas CurrentTexture { get; set; }
 
     protected override void OnStart()
     {
@@ -170,6 +171,16 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         UpdateSceneObject();
+    }
+
+    protected override void OnAwake()
+    {
+        base.OnAwake();
+
+        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
+        {
+            Flags = { IsTranslucent = true }
+        };
     }
 
     protected override void OnEnabled()
@@ -189,11 +200,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         if (SceneObject.IsValid())
             SceneObject.RenderingEnabled = false;
-    }
-
-    protected override void OnUpdate()
-    {
-        UpdateSceneObject();
     }
 
     protected override void OnPreRender()
@@ -235,20 +241,18 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void UpdateSceneObject()
     {
-        if (!SceneObject.IsValid())
-        {
-            SceneObject = new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
-            {
-                Flags = { IsTranslucent = true }
-            };
-        }
-
         if (SpriteMaterial is null)
         {
             if (MaterialOverride != null)
-                SpriteMaterial = MaterialOverride;
+                SpriteMaterial = MaterialOverride.CreateCopy();
             else
                 SpriteMaterial = Material.Create("spritemat", "shaders/pixelated_masked.shader");
+            if (CurrentTexture is not null)
+            {
+                SpriteMaterial.Set("Texture", CurrentTexture);
+                SpriteMaterial.Set("g_vTiling", CurrentTexture.GetFrameTiling());
+                SpriteMaterial.Set("g_vOffset", CurrentTexture.GetFrameOffset(CurrentFrameIndex));
+            }
             SceneObject.SetMaterialOverride(SpriteMaterial);
         }
 
@@ -290,9 +294,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             _timeSinceLastFrame = 0;
         }
 
-        var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
-        if (texture is not null)
-            SpriteMaterial.Set("Texture", texture);
+        // var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
+        // if (texture is not null)
+        //     SpriteMaterial.Set("Texture", texture);
 
         // Add pivot to transform
         var pos = Transform.Position;
@@ -313,7 +317,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     internal void UpdateSprite()
     {
         BroadcastEvents.Clear();
-        if (Sprite == null || CurrentAnimation == null)
+        if (Sprite == null)
         {
             CurrentAnimation = null;
             return;
@@ -334,14 +338,18 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     public void PlayAnimation(string animationName)
     {
-        Log.Info($"Playing animation {animationName}");
         if (Sprite == null) return;
 
-        var animation = Sprite.Animations.Find(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
+        var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
         if (animation == null) return;
 
         CurrentAnimation = animation;
         CurrentFrameIndex = 0;
+
+        var atlas = TextureAtlas.FromSprites(animation.Frames.Select(x => x.FilePath).ToList());
+        CurrentTexture = atlas;
+        SpriteMaterial?.Set("Texture", CurrentTexture);
+        SpriteMaterial?.Set("g_vTiling", CurrentTexture.GetFrameTiling());
     }
 
     void BroadcastEvent(string tag)
@@ -353,6 +361,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void BuildAttachPoints()
     {
+        if (Sprite is null) return;
         var attachments = Sprite.GetAttachmentNames();
         foreach (var attachment in attachments)
         {
