@@ -20900,7 +20900,7 @@
           "Children": [
             {
               "__guid": "3a755bbc-c3e6-44b1-a768-d8874c33e101",
-              "Flags": 4,
+              "Flags": 0,
               "Name": "hat",
               "Position": "-78.125,6.25,0",
               "Enabled": true,
@@ -20977,7 +20977,7 @@
   },
   "Title": "example",
   "Description": "",
-  "LastSaved": "2024-05-11T09:21:28.8864057-04:00",
+  "LastSaved": "2024-05-11T09:50:29.9681838-04:00",
   "ResourceVersion": 1,
   "__version": 1,
   "__references": []
