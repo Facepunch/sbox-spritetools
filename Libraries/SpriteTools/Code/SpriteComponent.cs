@@ -202,11 +202,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             SceneObject.RenderingEnabled = false;
     }
 
-    protected override void OnUpdate()
-    {
-        //UpdateSceneObject();
-    }
-
     protected override void OnPreRender()
     {
         base.OnPreRender();
@@ -322,7 +317,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     internal void UpdateSprite()
     {
         BroadcastEvents.Clear();
-        if (Sprite == null || CurrentAnimation == null)
+        if (Sprite == null)
         {
             CurrentAnimation = null;
             return;
@@ -343,7 +338,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     public void PlayAnimation(string animationName)
     {
-        Log.Info($"Playing animation {animationName}");
         if (Sprite == null) return;
 
         var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
@@ -352,7 +346,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         CurrentAnimation = animation;
         CurrentFrameIndex = 0;
 
-        var atlas = new TextureAtlas(animation.Frames.Select(x => x.FilePath).ToList());
+        var atlas = TextureAtlas.FromSprites(animation.Frames.Select(x => x.FilePath).ToList());
         CurrentTexture = atlas;
         SpriteMaterial?.Set("Texture", CurrentTexture);
         SpriteMaterial?.Set("g_vTiling", CurrentTexture.GetFrameTiling());
@@ -367,6 +361,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void BuildAttachPoints()
     {
+        if (Sprite is null) return;
         var attachments = Sprite.GetAttachmentNames();
         foreach (var attachment in attachments)
         {
