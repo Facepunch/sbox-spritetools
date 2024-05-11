@@ -7,21 +7,21 @@
       "Name": "idle",
       "Frames": [
         {
-          "FilePath": "images/sausage_idle_01.png",
+          "FilePath": "images/sausage/sausage_idle_01.png",
           "Events": [
             "bob"
           ]
         },
         {
-          "FilePath": "images/sausage_idle_02.png",
+          "FilePath": "images/sausage/sausage_idle_02.png",
           "Events": []
         },
         {
-          "FilePath": "images/sausage_idle_03.png",
+          "FilePath": "images/sausage/sausage_idle_03.png",
           "Events": []
         },
         {
-          "FilePath": "images/sausage_idle_04.png",
+          "FilePath": "images/sausage/sausage_idle_04.png",
           "Events": []
         }
       ],
@@ -46,31 +46,31 @@
       "Name": "run",
       "Frames": [
         {
-          "FilePath": "images/sausage_run_01.png",
+          "FilePath": "images/sausage/sausage_run_01.png",
           "Events": []
         },
         {
-          "FilePath": "images/sausage_run_02.png",
+          "FilePath": "images/sausage/sausage_run_02.png",
           "Events": [
             "step"
           ]
         },
         {
-          "FilePath": "images/sausage_run_03.png",
+          "FilePath": "images/sausage/sausage_run_03.png",
           "Events": []
         },
         {
-          "FilePath": "images/sausage_run_04.png",
+          "FilePath": "images/sausage/sausage_run_04.png",
           "Events": []
         },
         {
-          "FilePath": "images/sausage_run_05.png",
+          "FilePath": "images/sausage/sausage_run_05.png",
           "Events": [
             "step"
           ]
         },
         {
-          "FilePath": "images/sausage_run_06.png",
+          "FilePath": "images/sausage/sausage_run_06.png",
           "Events": []
         }
       ],
