@@ -154,7 +154,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     private int _currentFrameIndex = 0;
     private float _timeSinceLastFrame = 0;
 
-    SceneObject SceneObject { get; set; }
+    internal SceneObject SceneObject { get; set; }
     TextureAtlas CurrentTexture { get; set; }
 
     protected override void OnStart()
@@ -171,6 +171,16 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         UpdateSceneObject();
+    }
+
+    protected override void OnAwake()
+    {
+        base.OnAwake();
+
+        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
+        {
+            Flags = { IsTranslucent = true }
+        };
     }
 
     protected override void OnEnabled()
@@ -194,7 +204,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     protected override void OnUpdate()
     {
-        UpdateSceneObject();
+        //UpdateSceneObject();
     }
 
     protected override void OnPreRender()
@@ -236,14 +246,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void UpdateSceneObject()
     {
-        if (!SceneObject.IsValid())
-        {
-            SceneObject = new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
-            {
-                Flags = { IsTranslucent = true }
-            };
-        }
-
         if (SpriteMaterial is null)
         {
             if (MaterialOverride != null)
@@ -315,8 +317,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         base.OnDestroy();
         SceneObject?.Delete();
         SceneObject = null;
-
-        CurrentTexture?.Dispose();
     }
 
     internal void UpdateSprite()

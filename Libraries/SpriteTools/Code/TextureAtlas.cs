@@ -18,10 +18,6 @@ public class TextureAtlas
     public TextureAtlas(List<string> texturePaths)
     {
         Size = (int)Math.Ceiling(Math.Sqrt(texturePaths.Count));
-        if (Size % 2 != 0)
-        {
-            Size++;
-        }
 
         var key = string.Join(",", texturePaths);
         if (Cache.TryGetValue(key, out var cachedTexture))
@@ -45,6 +41,7 @@ public class TextureAtlas
             textures.Add(texture);
             MaxFrameSize = Math.Max(MaxFrameSize, Math.Max(texture.Width, texture.Height));
         }
+        MaxFrameSize += 2;
 
         int x = 0;
         int y = 0;
@@ -68,7 +65,7 @@ public class TextureAtlas
             {
                 for (int j = 0; j < texture.Height; j++)
                 {
-                    var index = (x + i + (y + j) * Size * MaxFrameSize) * 4;
+                    var index = (x + 1 + i + (y + 1 + j) * Size * MaxFrameSize) * 4;
                     var textureIndex = i + j * texture.Width;
                     textureData[index] = pixels[textureIndex].r;
                     textureData[index + 1] = pixels[textureIndex].g;
@@ -82,26 +79,25 @@ public class TextureAtlas
 
         var builder = Texture.Create(Size * MaxFrameSize, Size * MaxFrameSize);
         builder.WithData(textureData);
+        builder.WithMips(0);
         Texture = builder.Finish();
 
         Cache[key] = Texture;
     }
 
-    public void Dispose()
-    {
-        Texture?.Dispose();
-    }
-
     public Vector2 GetFrameTiling()
     {
-        return new Vector2(1f / Size, 1f / Size);
+        // inset by 1 pixel to avoid bleeding
+        return new Vector2(MaxFrameSize - 2, MaxFrameSize - 2) / ((float)MaxFrameSize * Size);
     }
 
     public Vector2 GetFrameOffset(int index)
     {
-        var x = index % Size;
-        var y = index / Size;
-        return new Vector2(x / (float)Size, y / (float)Size);
+        int x = index * MaxFrameSize % (Size * MaxFrameSize);
+        int y = index * MaxFrameSize / (Size * MaxFrameSize) * MaxFrameSize;
+        x += 1;
+        y += 1;
+        return new Vector2(x, y) / (float)(Size * MaxFrameSize);
     }
 
     // Cast to texture
