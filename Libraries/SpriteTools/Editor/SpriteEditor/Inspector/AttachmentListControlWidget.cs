@@ -58,7 +58,9 @@ public class AttachmentListControlWidget : ControlWidget
             //grid.AddCell( 0, y, new IconButton( "drag_handle" ) { IconSize = 13, Foreground = Theme.ControlBackground, Background = Color.Transparent, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
             grid.AddCell(1, y, control, 1, 1, control.CellAlignment);
             var visibilityButton = grid.AddCell(2, y, new IconButton("visibility", () => RemoveEntry(index)) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
-            grid.AddCell(3, y, new IconButton("clear", () => RemoveEntry(index)) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
+            visibilityButton.ToolTip = "Toggle attachment visibility";
+            var clearButton = grid.AddCell(3, y, new IconButton("clear", () => RemoveEntry(index)) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
+            clearButton.ToolTip = "Remove attachment";
 
             visibilityButton.Icon = (attachment?.Visible ?? true) ? "visibility" : "visibility_off";
             visibilityButton.OnClick = () =>
