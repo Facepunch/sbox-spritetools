@@ -1,7 +1,14 @@
 {
-  "Title": "SpriteTools",
+  "Title": "Sprite Tools",
   "Type": "library",
-  "Org": "local",
+  "Org": "carsonk",
   "Ident": "spritetools",
-  "Schema": 1
+  "Tags": "2d sprite tools pixel art",
+  "Schema": 1,
+  "Resources": null,
+  "PackageReferences": [],
+  "EditorReferences": null,
+  "Metadata": {
+    "CsProjName": ""
+  }
 }
