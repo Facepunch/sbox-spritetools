@@ -377,6 +377,32 @@ public partial class MainWindow : DockWindow, IAssetEditor
         return fd.SelectedFile;
     }
 
+    internal void PromptImportSpritesheet()
+    {
+        var picker = new AssetPicker(this, AssetType.ImageFile);
+        picker.Window.StateCookie = "SpriteEditor.Import";
+        picker.Window.RestoreFromStateCookie();
+        picker.Window.Title = $"Import Spritesheet for {SelectedAnimation.Name}";
+        picker.MultiPick = false;
+        picker.OnAssetPicked = x =>
+        {
+            var path = x.FirstOrDefault()?.GetSourceFile();
+            if (string.IsNullOrEmpty(path)) return;
+            var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
+            importer.OnImport = (string filepath, List<Rect> rects) =>
+            {
+                ImportSpritesheet(filepath, rects);
+            };
+            importer.Window.Show();
+        };
+        picker.Window.Show();
+    }
+
+    void ImportSpritesheet(string filePath, List<Rect> rects)
+    {
+
+    }
+
     void PromptSave(Action action)
     {
         if (!_dirty)
