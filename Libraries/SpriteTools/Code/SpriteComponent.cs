@@ -339,6 +339,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     public void PlayAnimation(string animationName)
     {
         if (Sprite == null) return;
+        if (CurrentAnimation?.Name == animationName) return;
 
         var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
         if (animation == null) return;
