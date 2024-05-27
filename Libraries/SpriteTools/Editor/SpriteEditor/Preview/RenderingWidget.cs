@@ -110,7 +110,8 @@ public class RenderingWidget : NativeRenderingWidget
         }
         else if (e.LeftMouseButton)
         {
-            var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition), 5000f).Run();
+            var cursorLocalPos = Editor.Application.CursorPosition - ScreenRect.Position;
+            var tr = World.Trace.Ray(Camera.GetRay(cursorLocalPos, Size), 5000f).Run();
             if (tr.SceneObject is Draggable draggable)
             {
                 dragging = draggable;
@@ -131,7 +132,8 @@ public class RenderingWidget : NativeRenderingWidget
 
         if (dragging is not null)
         {
-            var tr = World.Trace.Ray(Camera.GetRay(e.LocalPosition), 5000f).Run();
+            var cursorLocalPos = Editor.Application.CursorPosition - ScreenRect.Position;
+            var tr = World.Trace.Ray(Camera.GetRay(cursorLocalPos, Size), 5000f).Run();
             var pos = tr.EndPosition.WithZ(0f);
             draggableGrabPos = pos;
             dragging?.OnPositionChanged.Invoke(new Vector2(pos.y, pos.x));

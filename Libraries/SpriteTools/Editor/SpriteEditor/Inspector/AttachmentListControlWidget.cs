@@ -76,8 +76,7 @@ public class AttachmentListControlWidget : ControlWidget
 
         // bottom row
         {
-
-            addButton = grid.AddCell(1, y, new IconButton("add") { Background = Theme.ControlBackground, ToolTip = "Add row", FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
+            addButton = grid.AddCell(1, y, new IconButton("add") { Background = Theme.ControlBackground, ToolTip = "Add attachment", FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight });
             addButton.MouseClick = AddEntry;
         }
 

@@ -202,20 +202,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             SceneObject.RenderingEnabled = false;
     }
 
-    protected override void OnPreRender()
-    {
-        base.OnPreRender();
-
-        foreach (var attachment in AttachPoints)
-        {
-            var attachPos = CurrentAnimation.GetAttachmentPosition(attachment.Key, CurrentFrameIndex);
-            var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
-            var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
-            // pos = pos.RotateAround(Transform.Position, Transform.Rotation);
-            attachment.Value.Transform.LocalPosition = pos;
-        }
-    }
-
     protected override void DrawGizmos()
     {
         base.DrawGizmos();
@@ -307,6 +293,22 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         SceneObject.Transform = new Transform(pos, Transform.Rotation, scale);
     }
 
+    internal void UpdateAttachments()
+    {
+        if (AttachPoints is not null && AttachPoints.Count > 0)
+        {
+            foreach (var attachment in AttachPoints)
+            {
+                var attachPos = CurrentAnimation.GetAttachmentPosition(attachment.Key, CurrentFrameIndex);
+                var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+                var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
+                pos *= Transform.LocalScale;
+                // pos = pos.RotateAround(Transform.Position, Transform.Rotation);
+                attachment.Value.Transform.LocalPosition = pos;
+            }
+        }
+    }
+
     protected override void OnDestroy()
     {
         base.OnDestroy();
@@ -339,6 +341,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     public void PlayAnimation(string animationName)
     {
         if (Sprite == null) return;
+        if (CurrentAnimation?.Name == animationName) return;
 
         var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
         if (animation == null) return;
