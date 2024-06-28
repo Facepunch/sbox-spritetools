@@ -61,6 +61,7 @@ public class RenderingWidget : NativeRenderingWidget
 
         PreviewMaterial = Material.Load("materials/spritegraph.vmat").CreateCopy();
         PreviewMaterial.Set("Texture", Color.Transparent);
+        PreviewMaterial.Set("g_flFlashAmount", 0f);
         TextureRect = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
         TextureRect.SetMaterialOverride(PreviewMaterial);
         TextureRect.Flags.WantsFrameBufferCopy = true;
