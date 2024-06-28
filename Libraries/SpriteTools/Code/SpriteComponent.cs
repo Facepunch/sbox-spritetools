@@ -108,7 +108,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// A dictionary of broadcast events that this component will send (populated based on the Sprite resource)
     /// </summary>
     [JsonIgnore]
-    public Dictionary<string, Action> BroadcastEvents = new();
+    public Dictionary<string, Action<SpriteComponent>> BroadcastEvents = new();
 
     /// <summary>
     /// The sprite animation that is currently playing.
@@ -367,7 +367,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 foreach (var tag in frame.Events)
                 {
                     if (!BroadcastEvents.ContainsKey(tag))
-                        BroadcastEvents[tag] = () => { };
+                        BroadcastEvents[tag] = (_) => { };
                 }
             }
         }
@@ -394,7 +394,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         OnBroadcastEvent?.Invoke(tag);
         if (BroadcastEvents.ContainsKey(tag))
-            BroadcastEvents[tag]?.Invoke();
+            BroadcastEvents[tag]?.Invoke(this);
     }
 
     internal void BuildAttachPoints()
