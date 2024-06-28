@@ -14,13 +14,13 @@
       "UI": {
         "Name": "Texture",
         "Default": "1,1,1,1",
+        "CustomExtension": "",
         "ImageFormat": "BC7",
         "SrgbRead": true,
         "PrimaryGroup": {
           "Name": "Texture",
           "Priority": 1
-        },
-        "CreateInput": "CreateInputTexture2D"
+        }
       },
       "Identifier": "0",
       "Position": "-96,160",
@@ -258,13 +258,13 @@
       "DefaultA": 0,
       "DefaultB": 1,
       "Identifier": "16",
-      "Position": "336,64",
+      "Position": "416,96",
       "A": {
         "Identifier": "17",
         "Output": "RGBA"
       },
       "B": {
-        "Identifier": "0",
+        "Identifier": "18",
         "Output": "Result"
       }
     },
@@ -272,6 +272,48 @@
       "_class": "Tint",
       "Identifier": "17",
       "Position": "-96,32"
+    },
+    {
+      "_class": "Blend",
+      "Fraction": 0.5,
+      "BlendMode": "Mix",
+      "Clamp": true,
+      "Identifier": "18",
+      "Position": "144,288",
+      "A": {
+        "Identifier": "0",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "19",
+        "Output": "Result"
+      },
+      "C": {
+        "Identifier": "20",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Float4",
+      "Value": "1,1,1,1",
+      "Name": "FlashColor",
+      "IsAttribute": false,
+      "UI": {
+        "Type": "Color"
+      },
+      "Identifier": "19",
+      "Position": "-96,368"
+    },
+    {
+      "_class": "Float",
+      "Min": 0,
+      "Max": 1,
+      "Value": 1,
+      "Name": "FlashAmount",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "20",
+      "Position": "-96,544"
     }
   ]
 }

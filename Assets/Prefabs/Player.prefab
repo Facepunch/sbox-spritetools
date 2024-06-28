@@ -67,6 +67,8 @@
             "_broadcastEvents": {},
             "CastShadows": "On",
             "CreateAttachPoints": false,
+            "FlashAmount": 0,
+            "FlashColor": "1,1,1,1",
             "PlaybackSpeed": 1,
             "Sprite": "sprites/player.sprite",
             "StartingAnimationName": "idle",
@@ -108,7 +110,8 @@
         "NetworkMode": 2,
         "NetworkInterpolation": true
       }
-    ]
+    ],
+    "__variables": []
   },
   "ShowInMenu": false,
   "MenuPath": null,

@@ -47,6 +47,33 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     }
 
     /// <summary>
+    /// The color of the sprite when it is flashing.
+    /// </summary>
+    [Property]
+    public Color FlashColor
+    {
+        get => _flashColor;
+        set
+        {
+            _flashColor = value;
+            SpriteMaterial?.Set("g_vFlashColor", value);
+        }
+    }
+    Color _flashColor = Color.White;
+
+    [Property]
+    public float FlashAmount
+    {
+        get => _flashAmount;
+        set
+        {
+            _flashAmount = value;
+            SpriteMaterial?.Set("g_flFlashAmount", value);
+        }
+    }
+    float _flashAmount = 0;
+
+    /// <summary>
     /// Used to override the material with your own. Useful for custom shaders.
     /// Shader requires a texture parameter named "Texture".
     /// </summary>
@@ -62,6 +89,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     }
     Material _materialOverride;
     private Material SpriteMaterial { get; set; }
+    public Material Material => SpriteMaterial;
 
     /// <summary>
     /// The playback speed of the animation.
@@ -80,7 +108,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// A dictionary of broadcast events that this component will send (populated based on the Sprite resource)
     /// </summary>
     [JsonIgnore]
-    public Dictionary<string, Action> BroadcastEvents = new();
+    public Dictionary<string, Action<SpriteComponent>> BroadcastEvents = new();
 
     /// <summary>
     /// The sprite animation that is currently playing.
@@ -134,6 +162,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Property, Group("Sprite")]
     public Action<string> OnBroadcastEvent { get; set; }
 
+    [Property, Group("Sprite")]
+    public Action<string> OnAnimationComplete { get; set; }
+
     /// <summary>
     /// The current frame index of the animation playing.
     /// </summary>
@@ -171,6 +202,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         UpdateSceneObject();
+        FlashAmount = 0;
     }
 
     protected override void OnAwake()
@@ -256,28 +288,39 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(PlaybackSpeed))));
         _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
 
+        var lastFrame = CurrentAnimation.Frames.Count;
         if (PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate)
         {
-            var frame = CurrentFrameIndex;
-            frame++;
-            if (frame >= CurrentAnimation.Frames.Count)
-                frame = 0;
-            CurrentFrameIndex = frame;
-            var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
-            foreach (var tag in currentFrame.Events)
+            if (CurrentAnimation.Looping || CurrentFrameIndex < lastFrame - 1)
             {
-                BroadcastEvent(tag);
+                var frame = CurrentFrameIndex;
+                frame++;
+                if (CurrentAnimation.Looping && frame >= lastFrame)
+                    frame = 0;
+                else if (frame >= lastFrame - 1)
+                    OnAnimationComplete?.Invoke(CurrentAnimation.Name);
+                CurrentFrameIndex = frame;
+                var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
+                foreach (var tag in currentFrame.Events)
+                {
+                    BroadcastEvent(tag);
+                }
+                _timeSinceLastFrame = 0;
             }
-            _timeSinceLastFrame = 0;
         }
         else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
         {
-            var frame = CurrentFrameIndex;
-            frame--;
-            if (frame < 0)
-                frame = CurrentAnimation.Frames.Count - 1;
-            CurrentFrameIndex = frame;
-            _timeSinceLastFrame = 0;
+            if (CurrentAnimation.Looping || CurrentFrameIndex > 0)
+            {
+                var frame = CurrentFrameIndex;
+                frame--;
+                if (CurrentAnimation.Looping && frame < 0)
+                    frame = lastFrame - 1;
+                else if (frame <= 0)
+                    OnAnimationComplete?.Invoke(CurrentAnimation.Name);
+                CurrentFrameIndex = frame;
+                _timeSinceLastFrame = 0;
+            }
         }
 
         // var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
@@ -332,7 +375,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 foreach (var tag in frame.Events)
                 {
                     if (!BroadcastEvents.ContainsKey(tag))
-                        BroadcastEvents[tag] = () => { };
+                        BroadcastEvents[tag] = (_) => { };
                 }
             }
         }
@@ -359,7 +402,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         OnBroadcastEvent?.Invoke(tag);
         if (BroadcastEvents.ContainsKey(tag))
-            BroadcastEvents[tag]?.Invoke();
+            BroadcastEvents[tag]?.Invoke(this);
     }
 
     internal void BuildAttachPoints()
