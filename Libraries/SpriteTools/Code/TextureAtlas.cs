@@ -99,7 +99,8 @@ public class TextureAtlas
         var atlas = new TextureAtlas();
         atlas.Size = (int)Math.Ceiling(Math.Sqrt(spriteRects.Count));
 
-        var key = path + string.Join(",", spriteRects);
+        var key = path + string.Join(",", spriteRects.OrderBy(x => x));
+        Log.Info(key); // TODO: Remove this
         if (Cache.TryGetValue(key, out var cachedTexture))
         {
             atlas.Texture = cachedTexture;
