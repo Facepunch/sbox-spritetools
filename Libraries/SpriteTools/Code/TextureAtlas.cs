@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Sandbox;
 
 namespace SpriteTools;
@@ -25,7 +26,7 @@ public class TextureAtlas
         var atlas = new TextureAtlas();
         atlas.Size = (int)Math.Ceiling(Math.Sqrt(texturePaths.Count));
 
-        var key = string.Join(",", texturePaths);
+        var key = string.Join(",", texturePaths.OrderBy(x => x));
         if (Cache.TryGetValue(key, out var cachedTexture))
         {
             atlas.Texture = cachedTexture;
