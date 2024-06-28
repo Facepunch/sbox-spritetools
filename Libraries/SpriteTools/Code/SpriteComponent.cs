@@ -36,6 +36,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// The color tint of the Sprite.
     /// </summary>
     [Property]
+    [Category("Visuals")]
     public Color Tint
     {
         get => SceneObject?.ColorTint ?? Color.White;
@@ -50,34 +51,25 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// The color of the sprite when it is flashing.
     /// </summary>
     [Property]
-    public Color FlashColor
+    [Category("Visuals")]
+    public Color FlashTint
     {
-        get => _flashColor;
+        get => _flashTint;
         set
         {
-            _flashColor = value;
+            _flashTint = value;
             SpriteMaterial?.Set("g_vFlashColor", value);
+            SpriteMaterial?.Set("g_flFlashAmount", value.a);
         }
     }
-    Color _flashColor = Color.White;
-
-    [Property]
-    public float FlashAmount
-    {
-        get => _flashAmount;
-        set
-        {
-            _flashAmount = value;
-            SpriteMaterial?.Set("g_flFlashAmount", value);
-        }
-    }
-    float _flashAmount = 0;
+    Color _flashTint = Color.White.WithAlpha(0);
 
     /// <summary>
     /// Used to override the material with your own. Useful for custom shaders.
     /// Shader requires a texture parameter named "Texture".
     /// </summary>
     [Property]
+    [Category("Visuals")]
     public Material MaterialOverride
     {
         get => _materialOverride;
@@ -101,7 +93,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// Whether or not the sprite should render itself/its shadows.
     /// </summary>
     [Property]
-    [Category("Lighting")]
+    [Category("Visuals")]
     public ShadowRenderType CastShadows { get; set; } = ShadowRenderType.On;
 
     /// <summary>
@@ -202,7 +194,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         UpdateSceneObject();
-        FlashAmount = 0;
+        FlashTint = _flashTint;
     }
 
     protected override void OnAwake()

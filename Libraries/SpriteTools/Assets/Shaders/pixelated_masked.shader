@@ -80,7 +80,7 @@ PS
 	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
 	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 0,0 ); Range2( 0,0, 1,1 ); >;
 	float4 g_vFlashColor < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 1.00, 1.00, 1.00, 1.00 ); >;
-	float g_flFlashAmount < UiGroup( ",0/,0/0" ); Default1( 1 ); Range1( 0, 1 ); >;
+	float g_flFlashAmount < UiGroup( ",0/,0/0" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float g_flSmoothStepMin < UiGroup( "Translucent,1/,0/1" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float g_flSmoothStepMax < UiGroup( "Translucent,1/,0/2" ); Default1( 1 ); Range1( 0, 1 ); >;
 		

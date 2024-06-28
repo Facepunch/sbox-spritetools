@@ -11,7 +11,8 @@
       "Enabled": true,
       "NetworkMode": 2,
       "NetworkInterpolation": true,
-      "__Prefab": "prefabs/player.prefab"
+      "__Prefab": "prefabs/player.prefab",
+      "__PrefabVariables": {}
     },
     {
       "__guid": "bfc59c12-1ed2-4f91-8956-a95a315eac3c",
@@ -128,9 +129,13 @@
         {
           "__type": "Sandbox.Tonemapping",
           "__guid": "47ad2cb6-bebc-4175-a52a-39f5bd76b311",
+          "__version": 1,
+          "ExposureBias": 2,
           "ExposureCompensation": 0,
+          "ExposureMethod": "RGB",
           "MaximumExposure": 2,
           "MinimumExposure": 1,
+          "Mode": "Legacy",
           "Rate": 1
         },
         {
@@ -1227,9 +1232,9 @@
               "-0.718343,1.102248"
             ],
             "TextureUAxis": [
-              "1,-0.000000000000193671,0",
-              "1,-0.00000000000005533457,-0",
-              "0.0000006114964,-1,0",
+              "1,-0.0000000000002011945,0",
+              "1,-0.0000000000000670648,-0",
+              "0.0000006350155,-1,0",
               "-0.0000003763055,1,0",
               "-1,0,0",
               "1,-0,0"
@@ -1244,19 +1249,19 @@
             ],
             "TextureScale": [
               "0.2500001,0.25",
-              "0.25,0.25",
-              "0.25,0.25",
+              "0.25,0.2499999",
+              "0.2499999,0.25",
               "0.25,0.25",
               "0.2500001,0.2500001",
               "0.2500001,0.25"
             ],
             "TextureOffset": [
-              "33.71991,52.81204",
-              "33.71979,52.81244",
-              "52.81229,255.9994",
+              "33.71997,52.81204",
+              "33.71979,52.81242",
+              "52.81227,255.9994",
               "203.1878,255.9994",
               "222.2802,255.9994",
-              "33.71991,255.9994"
+              "33.71988,255.9994"
             ],
             "MaterialIndex": [
               0,
@@ -1516,7 +1521,8 @@
           "CreateBoneObjects": false,
           "Model": "models/citizen/citizen.vmdl",
           "RenderType": "On",
-          "Tint": "1,1,1,1"
+          "Tint": "1,1,1,1",
+          "UseAnimGraph": true
         },
         {
           "__type": "Sandbox.Citizen.CitizenAnimationHelper",
@@ -1559,11 +1565,35 @@
         {
           "__type": "Sandbox.MapInstance",
           "__guid": "01daedf7-304b-4145-ba5e-e6dac20f33a1",
+          "__version": 1,
           "MapName": "kaya.interior_design",
+          "NoOrigin": true,
           "UseMapFromLaunch": false
         }
       ],
       "Children": []
+    },
+    {
+      "__guid": "19ab943b-d649-4e72-87bb-92da9c858ca9",
+      "Flags": 0,
+      "Name": "Point Light",
+      "Position": "-74.16322,82.59528,26.5291",
+      "Tags": "light_point,light",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "Components": [
+        {
+          "__type": "Sandbox.PointLight",
+          "__guid": "15d638d9-6b1a-42de-b6fb-6b1b40fa8f6b",
+          "Attenuation": 1,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Radius": 400,
+          "Shadows": true
+        }
+      ]
     }
   ],
   "SceneProperties": {
@@ -1589,7 +1619,7 @@
   },
   "Title": "minimal",
   "Description": "",
-  "LastSaved": "2024-05-27T09:18:53.6537158-04:00",
+  "LastSaved": "2024-06-28T16:52:54.4819884-04:00",
   "ResourceVersion": 1,
   "__references": [],
   "__version": 1

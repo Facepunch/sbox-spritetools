@@ -308,7 +308,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 1,
-      "Value": 1,
+      "Value": 0,
       "Name": "FlashAmount",
       "IsAttribute": false,
       "UI": {},
