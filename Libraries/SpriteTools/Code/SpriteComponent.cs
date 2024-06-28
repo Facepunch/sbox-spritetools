@@ -7,7 +7,7 @@ using Sandbox;
 
 namespace SpriteTools;
 
-[Icon( "emoji_emotions" )]
+[Icon("emoji_emotions")]
 public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 {
     /// <summary>
@@ -21,9 +21,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         {
             var lastSprite = _sprite;
             _sprite = value;
-            if ( _sprite != null )
+            if (_sprite != null)
             {
-                PlayAnimation( StartingAnimationName );
+                PlayAnimation(StartingAnimationName);
             }
             else
                 CurrentAnimation = null;
@@ -41,7 +41,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => SceneObject?.ColorTint ?? Color.White;
         set
         {
-            if ( SceneObject != null )
+            if (SceneObject != null)
                 SceneObject.ColorTint = value;
         }
     }
@@ -56,7 +56,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         set
         {
             _flashColor = value;
-            SpriteMaterial?.Set( "g_vFlashColor", value );
+            SpriteMaterial?.Set("g_vFlashColor", value);
         }
     }
     Color _flashColor = Color.White;
@@ -68,7 +68,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         set
         {
             _flashAmount = value;
-            SpriteMaterial?.Set( "g_flFlashAmount", value );
+            SpriteMaterial?.Set("g_flFlashAmount", value);
         }
     }
     float _flashAmount = 0;
@@ -101,7 +101,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// Whether or not the sprite should render itself/its shadows.
     /// </summary>
     [Property]
-    [Category( "Lighting" )]
+    [Category("Lighting")]
     public ShadowRenderType CastShadows { get; set; } = ShadowRenderType.On;
 
     /// <summary>
@@ -116,37 +116,37 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [JsonIgnore]
     public SpriteAnimation CurrentAnimation { get; private set; }
 
-    [Property, Category( "Sprite" ), Title( "Current Animation" ), AnimationName]
+    [Property, Category("Sprite"), Title("Current Animation"), AnimationName]
     private string StartingAnimationName
     {
         get => CurrentAnimation?.Name ?? "";
         set
         {
-            if ( Sprite == null ) return;
-            var animation = Sprite.Animations.Find( a => a.Name.ToLowerInvariant() == value.ToLowerInvariant() );
-            if ( animation == null ) return;
-            PlayAnimation( animation.Name );
+            if (Sprite == null) return;
+            var animation = Sprite.Animations.Find(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant());
+            if (animation == null) return;
+            PlayAnimation(animation.Name);
             _startingAnimationName = value.ToLowerInvariant();
         }
     }
     string _startingAnimationName = "";
 
 
-    [Property, Category( "Sprite" ), JsonIgnore]
+    [Property, Category("Sprite"), JsonIgnore]
     BroadcastControls _broadcastEvents = new();
 
-    [Property, Category( "Sprite" )]
+    [Property, Category("Sprite")]
     public bool CreateAttachPoints
     {
         get => _createAttachPoints;
         set
         {
-            if ( _createAttachPoints != value )
+            if (_createAttachPoints != value)
             {
                 _createAttachPoints = value;
 
                 AttachPoints.Clear();
-                if ( value )
+                if (value)
                 {
                     BuildAttachPoints();
                 }
@@ -159,7 +159,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// <summary>
     /// Invoked when a broadcast event is triggered.
     /// </summary>
-    [Property, Group( "Sprite" )]
+    [Property, Group("Sprite")]
     public Action<string> OnBroadcastEvent { get; set; }
 
     /// <summary>
@@ -171,11 +171,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         set
         {
             _currentFrameIndex = value;
-            if ( CurrentAnimation is not null )
+            if (CurrentAnimation is not null)
             {
-                if ( _currentFrameIndex >= CurrentAnimation.Frames.Count )
+                if (_currentFrameIndex >= CurrentAnimation.Frames.Count)
                     _currentFrameIndex = 0;
-                SpriteMaterial?.Set( "g_vOffset", CurrentTexture.GetFrameOffset( CurrentFrameIndex ) );
+                SpriteMaterial?.Set("g_vOffset", CurrentTexture.GetFrameOffset(CurrentFrameIndex));
             }
         }
     }
@@ -189,13 +189,13 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.OnStart();
 
-        if ( Sprite is null ) return;
-        if ( Sprite.Animations.Count > 0 )
+        if (Sprite is null) return;
+        if (Sprite.Animations.Count > 0)
         {
-            var anim = Sprite.Animations.FirstOrDefault( x => x.Name.ToLowerInvariant() == StartingAnimationName );
-            if ( anim is null )
+            var anim = Sprite.Animations.FirstOrDefault(x => x.Name.ToLowerInvariant() == StartingAnimationName);
+            if (anim is null)
                 anim = Sprite.Animations.FirstOrDefault();
-            PlayAnimation( anim.Name );
+            PlayAnimation(anim.Name);
         }
 
         UpdateSceneObject();
@@ -206,7 +206,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.OnAwake();
 
-        SceneObject ??= new SceneObject( Scene.SceneWorld, Model.Load( "models/sprite_quad.vmdl" ) )
+        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
         {
             Flags = { IsTranslucent = true }
         };
@@ -216,10 +216,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.OnEnabled();
 
-        if ( SceneObject.IsValid() )
+        if (SceneObject.IsValid())
             SceneObject.RenderingEnabled = true;
 
-        if ( CreateAttachPoints )
+        if (CreateAttachPoints)
             BuildAttachPoints();
     }
 
@@ -227,7 +227,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.OnDisabled();
 
-        if ( SceneObject.IsValid() )
+        if (SceneObject.IsValid())
             SceneObject.RenderingEnabled = false;
     }
 
@@ -235,78 +235,84 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.DrawGizmos();
 
-        if ( Game.IsPlaying ) return;
+        if (Game.IsPlaying) return;
 
         // Move bbox by origin
         var bbox = SceneObject.LocalBounds;
-        bbox = bbox.Rotate( SceneObject.Transform.Rotation );
+        bbox = bbox.Rotate(SceneObject.Transform.Rotation);
         var pos = (Transform.Position - SceneObject.Transform.Position) * Transform.Rotation;
-        bbox = bbox.Translate( pos );
-        Gizmo.Hitbox.BBox( bbox );
+        bbox = bbox.Translate(pos);
+        Gizmo.Hitbox.BBox(bbox);
 
-        if ( Gizmo.IsHovered )
+        if (Gizmo.IsHovered)
         {
-            using ( Gizmo.Scope( "hover" ) )
+            using (Gizmo.Scope("hover"))
             {
                 Gizmo.Draw.Color = Color.Orange;
-                Gizmo.Draw.LineBBox( bbox );
+                Gizmo.Draw.LineBBox(bbox);
             }
         }
     }
 
     internal void UpdateSceneObject()
     {
-        if ( SpriteMaterial is null )
+        if (SpriteMaterial is null)
         {
-            if ( MaterialOverride != null )
+            if (MaterialOverride != null)
                 SpriteMaterial = MaterialOverride.CreateCopy();
             else
-                SpriteMaterial = Material.Create( "spritemat", "shaders/pixelated_masked.shader" );
-            if ( CurrentTexture is not null )
+                SpriteMaterial = Material.Create("spritemat", "shaders/pixelated_masked.shader");
+            if (CurrentTexture is not null)
             {
-                SpriteMaterial.Set( "Texture", CurrentTexture );
-                SpriteMaterial.Set( "g_vTiling", CurrentTexture.GetFrameTiling() );
-                SpriteMaterial.Set( "g_vOffset", CurrentTexture.GetFrameOffset( CurrentFrameIndex ) );
+                SpriteMaterial.Set("Texture", CurrentTexture);
+                SpriteMaterial.Set("g_vTiling", CurrentTexture.GetFrameTiling());
+                SpriteMaterial.Set("g_vOffset", CurrentTexture.GetFrameOffset(CurrentFrameIndex));
             }
-            SceneObject.SetMaterialOverride( SpriteMaterial );
+            SceneObject.SetMaterialOverride(SpriteMaterial);
         }
 
         SceneObject.RenderingEnabled = true;
         SceneObject.Flags.ExcludeGameLayer = CastShadows == ShadowRenderType.ShadowsOnly;
         SceneObject.Flags.CastShadows = CastShadows == ShadowRenderType.On || CastShadows == ShadowRenderType.ShadowsOnly;
 
-        if ( CurrentAnimation == null )
+        if (CurrentAnimation == null)
         {
-            SceneObject.Transform = new Transform( Transform.Position, Transform.Rotation, Transform.Scale );
+            SceneObject.Transform = new Transform(Transform.Position, Transform.Rotation, Transform.Scale);
             SceneObject.RenderingEnabled = false;
             return;
         }
 
-        var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs( PlaybackSpeed ))));
+        var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(PlaybackSpeed))));
         _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
 
-        if ( PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate )
+        if (PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate)
         {
-            var frame = CurrentFrameIndex;
-            frame++;
-            if ( frame >= CurrentAnimation.Frames.Count )
-                frame = 0;
-            CurrentFrameIndex = frame;
-            var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
-            foreach ( var tag in currentFrame.Events )
+            if (CurrentAnimation.Looping || CurrentFrameIndex < CurrentAnimation.Frames.Count - 1)
             {
-                BroadcastEvent( tag );
+                var frame = CurrentFrameIndex;
+                frame++;
+                if (!CurrentAnimation.Looping && frame >= CurrentAnimation.Frames.Count)
+                    frame = 0;
+                CurrentFrameIndex = frame;
+                var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
+                foreach (var tag in currentFrame.Events)
+                {
+                    BroadcastEvent(tag);
+                }
+                _timeSinceLastFrame = 0;
             }
-            _timeSinceLastFrame = 0;
         }
-        else if ( PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate )
+        else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
         {
-            var frame = CurrentFrameIndex;
-            frame--;
-            if ( frame < 0 )
-                frame = CurrentAnimation.Frames.Count - 1;
-            CurrentFrameIndex = frame;
-            _timeSinceLastFrame = 0;
+            if (CurrentAnimation.Looping || CurrentFrameIndex > 0)
+            {
+                var frame = CurrentFrameIndex;
+                frame--;
+                if (!CurrentAnimation.Looping && frame < 0)
+                    frame = CurrentAnimation.Frames.Count - 1;
+                CurrentFrameIndex = frame;
+                _timeSinceLastFrame = 0;
+            }
         }
 
         // var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
@@ -316,21 +322,21 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         // Add pivot to transform
         var pos = Transform.Position;
         var scale = Transform.Scale;
-        var origin = CurrentAnimation.Origin - new Vector2( 0.5f, 0.5f );
-        pos -= new Vector3( origin.y, origin.x, 0 ) * 100f * scale;
-        pos = pos.RotateAround( Transform.Position, Transform.Rotation );
-        SceneObject.Transform = new Transform( pos, Transform.Rotation, scale );
+        var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+        pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
+        pos = pos.RotateAround(Transform.Position, Transform.Rotation);
+        SceneObject.Transform = new Transform(pos, Transform.Rotation, scale);
     }
 
     internal void UpdateAttachments()
     {
-        if ( AttachPoints is not null && AttachPoints.Count > 0 )
+        if (AttachPoints is not null && AttachPoints.Count > 0)
         {
-            foreach ( var attachment in AttachPoints )
+            foreach (var attachment in AttachPoints)
             {
-                var attachPos = CurrentAnimation.GetAttachmentPosition( attachment.Key, CurrentFrameIndex );
-                var origin = CurrentAnimation.Origin - new Vector2( 0.5f, 0.5f );
-                var pos = (new Vector3( attachPos.y, attachPos.x, 0 ) - (Vector3.One.WithZ( 0 ) / 2f) - new Vector3( origin.y, origin.x, 0 )) * 100f;
+                var attachPos = CurrentAnimation.GetAttachmentPosition(attachment.Key, CurrentFrameIndex);
+                var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+                var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
                 pos *= Transform.LocalScale;
                 // pos = pos.RotateAround(Transform.Position, Transform.Rotation);
                 attachment.Value.Transform.LocalPosition = pos;
@@ -348,57 +354,57 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     internal void UpdateSprite()
     {
         BroadcastEvents.Clear();
-        if ( Sprite == null )
+        if (Sprite == null)
         {
             CurrentAnimation = null;
             return;
         }
 
-        foreach ( var animation in Sprite.Animations )
+        foreach (var animation in Sprite.Animations)
         {
-            foreach ( var frame in animation.Frames )
+            foreach (var frame in animation.Frames)
             {
-                foreach ( var tag in frame.Events )
+                foreach (var tag in frame.Events)
                 {
-                    if ( !BroadcastEvents.ContainsKey( tag ) )
+                    if (!BroadcastEvents.ContainsKey(tag))
                         BroadcastEvents[tag] = () => { };
                 }
             }
         }
     }
 
-    public void PlayAnimation( string animationName )
+    public void PlayAnimation(string animationName)
     {
-        if ( Sprite == null ) return;
-        if ( CurrentAnimation?.Name == animationName ) return;
+        if (Sprite == null) return;
+        if (CurrentAnimation?.Name == animationName) return;
 
-        var animation = Sprite.Animations.FirstOrDefault( a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant() );
-        if ( animation == null ) return;
+        var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
+        if (animation == null) return;
 
         CurrentAnimation = animation;
         CurrentFrameIndex = 0;
 
-        var atlas = TextureAtlas.FromSprites( animation.Frames.Select( x => x.FilePath ).ToList() );
+        var atlas = TextureAtlas.FromSprites(animation.Frames.Select(x => x.FilePath).ToList());
         CurrentTexture = atlas;
-        SpriteMaterial?.Set( "Texture", CurrentTexture );
-        SpriteMaterial?.Set( "g_vTiling", CurrentTexture.GetFrameTiling() );
+        SpriteMaterial?.Set("Texture", CurrentTexture);
+        SpriteMaterial?.Set("g_vTiling", CurrentTexture.GetFrameTiling());
     }
 
-    void BroadcastEvent( string tag )
+    void BroadcastEvent(string tag)
     {
-        OnBroadcastEvent?.Invoke( tag );
-        if ( BroadcastEvents.ContainsKey( tag ) )
+        OnBroadcastEvent?.Invoke(tag);
+        if (BroadcastEvents.ContainsKey(tag))
             BroadcastEvents[tag]?.Invoke();
     }
 
     internal void BuildAttachPoints()
     {
-        if ( Sprite is null ) return;
+        if (Sprite is null) return;
         var attachments = Sprite.GetAttachmentNames();
-        foreach ( var attachment in attachments )
+        foreach (var attachment in attachments)
         {
-            var go = GameObject.Children.FirstOrDefault( x => x.Name == attachment );
-            if ( go is null )
+            var go = GameObject.Children.FirstOrDefault(x => x.Name == attachment);
+            if (go is null)
             {
                 go = Scene.CreateObject();
                 go.Parent = GameObject;
@@ -412,15 +418,15 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     public enum ShadowRenderType
     {
-        [Icon( "wb_shade" )]
-        [Description( "Render the sprite with shadows (default)" )]
+        [Icon("wb_shade")]
+        [Description("Render the sprite with shadows (default)")]
         On,
-        [Icon( "wb_twilight" )]
-        [Description( "Render the sprite without shadows" )]
+        [Icon("wb_twilight")]
+        [Description("Render the sprite without shadows")]
         Off,
-        [Icon( "hide_source" )]
-        [Title( "Shadows Only" )]
-        [Description( "Render ONLY the sprites shadows" )]
+        [Icon("hide_source")]
+        [Title("Shadows Only")]
+        [Description("Render ONLY the sprites shadows")]
         ShadowsOnly
     }
 
