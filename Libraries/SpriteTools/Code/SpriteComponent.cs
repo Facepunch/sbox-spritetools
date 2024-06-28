@@ -162,6 +162,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Property, Group("Sprite")]
     public Action<string> OnBroadcastEvent { get; set; }
 
+    [Property, Group("Sprite")]
+    public Action<string> OnAnimationComplete { get; set; }
+
     /// <summary>
     /// The current frame index of the animation playing.
     /// </summary>
@@ -285,14 +288,17 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(PlaybackSpeed))));
         _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
 
+        var lastFrame = CurrentAnimation.Frames.Count;
         if (PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate)
         {
-            if (CurrentAnimation.Looping || CurrentFrameIndex < CurrentAnimation.Frames.Count - 1)
+            if (CurrentAnimation.Looping || CurrentFrameIndex < lastFrame - 1)
             {
                 var frame = CurrentFrameIndex;
                 frame++;
-                if (!CurrentAnimation.Looping && frame >= CurrentAnimation.Frames.Count)
+                if (CurrentAnimation.Looping && frame >= lastFrame)
                     frame = 0;
+                else if (frame >= lastFrame - 1)
+                    OnAnimationComplete?.Invoke(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
                 var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
                 foreach (var tag in currentFrame.Events)
@@ -308,8 +314,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             {
                 var frame = CurrentFrameIndex;
                 frame--;
-                if (!CurrentAnimation.Looping && frame < 0)
-                    frame = CurrentAnimation.Frames.Count - 1;
+                if (CurrentAnimation.Looping && frame < 0)
+                    frame = lastFrame - 1;
+                else if (frame <= 0)
+                    OnAnimationComplete?.Invoke(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
                 _timeSinceLastFrame = 0;
             }
