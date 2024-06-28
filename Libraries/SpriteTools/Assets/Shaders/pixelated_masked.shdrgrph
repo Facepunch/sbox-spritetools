@@ -1,7 +1,7 @@
 {
   "Model": null,
   "Description": "",
-  "BlendMode": "Masked",
+  "BlendMode": "Translucent",
   "nodes": [
     {
       "_class": "TextureSampler",

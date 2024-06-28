@@ -21,10 +21,10 @@ MODES
 COMMON
 {
 	#ifndef S_ALPHA_TEST
-	#define S_ALPHA_TEST 1
+	#define S_ALPHA_TEST 0
 	#endif
 	#ifndef S_TRANSLUCENT
-	#define S_TRANSLUCENT 0
+	#define S_TRANSLUCENT 1
 	#endif
 	
 	#include "common/shared.hlsl"
