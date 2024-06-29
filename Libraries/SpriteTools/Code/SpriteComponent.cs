@@ -366,6 +366,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     void UpdateMaterialOffset()
     {
         if (CurrentTexture is null) return;
+        if (SpriteMaterial is null) return;
         var offset = CurrentTexture.GetFrameOffset(CurrentFrameIndex);
         var tiling = CurrentTexture.GetFrameTiling();
         if (_flipHorizontal)
