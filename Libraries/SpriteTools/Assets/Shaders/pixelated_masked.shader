@@ -73,12 +73,12 @@ PS
 {
 	#include "common/pixel.hlsl"
 	
-	SamplerState g_sSampler0 < Filter( POINT ); AddressU( CLAMP ); AddressV( CLAMP ); >;
+	SamplerState g_sSampler0 < Filter( POINT ); AddressU( MIRROR ); AddressV( MIRROR ); >;
 	CreateInputTexture2D( Texture, Srgb, 8, "None", "_color", "Texture,1/,0/0", Default4( 1.00, 1.00, 1.00, 1.00 ) );
 	Texture2D g_tTexture < Channel( RGBA, Box( Texture ), Srgb ); OutputFormat( BC7 ); SrgbRead( True ); >;
 	float g_flHueshift < UiGroup( "Hue,2/,0/0" ); Default1( 0 ); Range1( 0, 1 ); >;
-	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 1,1 ); Range2( 0,0, 1,1 ); >;
-	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 0,0 ); Range2( 0,0, 1,1 ); >;
+	float2 g_vTiling < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( 0.25,0.25 ); Range2( -1,-1, 1,1 ); >;
+	float2 g_vOffset < UiGroup( "Texture Coordinates,5/,0/0" ); Default2( -0.25,0 ); Range2( -1,-1, 1,1 ); >;
 	float4 g_vFlashColor < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 1.00, 1.00, 1.00, 1.00 ); >;
 	float g_flFlashAmount < UiGroup( ",0/,0/0" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float g_flSmoothStepMin < UiGroup( "Translucent,1/,0/1" ); Default1( 0 ); Range1( 0, 1 ); >;

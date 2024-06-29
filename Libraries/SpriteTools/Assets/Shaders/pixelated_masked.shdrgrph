@@ -1,15 +1,15 @@
 {
-  "Model": null,
+  "Model": "models/dev/plane.vmdl",
   "Description": "",
   "BlendMode": "Translucent",
   "nodes": [
     {
       "_class": "TextureSampler",
-      "Image": null,
+      "Image": "dev/vgui/materials/hud/gameinstructor_iconsheet1.tga",
       "Sampler": {
         "Filter": "Point",
-        "AddressU": "Clamp",
-        "AddressV": "Clamp"
+        "AddressU": "Mirror",
+        "AddressV": "Mirror"
       },
       "UI": {
         "Name": "Texture",
@@ -31,9 +31,9 @@
     },
     {
       "_class": "Float2",
-      "Min": "0,0",
+      "Min": "-1,-1",
       "Max": "1,1",
-      "Value": "1,1",
+      "Value": "0.25,0.25",
       "Name": "Tiling",
       "IsAttribute": false,
       "UI": {
@@ -43,14 +43,14 @@
         }
       },
       "Identifier": "1",
-      "Position": "-944,320"
+      "Position": "-624,224"
     },
     {
       "_class": "TextureCoord",
       "UseSecondaryCoord": false,
       "Tiling": "1,1",
       "Identifier": "2",
-      "Position": "-944,240"
+      "Position": "-624,144"
     },
     {
       "_class": "Saturate",
@@ -156,7 +156,7 @@
       "DefaultOffset": "0,0",
       "WrapTo01": false,
       "Identifier": "9",
-      "Position": "-544,304",
+      "Position": "-352,208",
       "Coords": {
         "Identifier": "2",
         "Output": "Result"
@@ -172,9 +172,9 @@
     },
     {
       "_class": "Float2",
-      "Min": "0,0",
+      "Min": "-1,-1",
       "Max": "1,1",
-      "Value": "0,0",
+      "Value": "-0.25,0",
       "Name": "Offset",
       "IsAttribute": false,
       "UI": {
@@ -184,7 +184,7 @@
         }
       },
       "Identifier": "10",
-      "Position": "-944,432"
+      "Position": "-624,336"
     },
     {
       "_class": "RGBtoHSV",
@@ -271,7 +271,7 @@
     {
       "_class": "Tint",
       "Identifier": "17",
-      "Position": "-96,32"
+      "Position": "-96,80"
     },
     {
       "_class": "Blend",
@@ -279,7 +279,7 @@
       "BlendMode": "Mix",
       "Clamp": true,
       "Identifier": "18",
-      "Position": "144,288",
+      "Position": "144,352",
       "A": {
         "Identifier": "0",
         "Output": "Result"
