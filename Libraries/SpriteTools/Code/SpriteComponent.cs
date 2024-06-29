@@ -106,6 +106,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             _spriteFlags = value;
             _flipHorizontal = _spriteFlags.HasFlag(SpriteFlags.HorizontalFlip);
             _flipVertical = _spriteFlags.HasFlag(SpriteFlags.VerticalFlip);
+            var targetModel = _spriteFlags.HasFlag(SpriteFlags.DrawBackface) ? "models/sprite_quad_2_sided.vmdl" : "models/sprite_quad_1_sided.vmdl";
+            if (SceneObject is not null && SceneObject.Model.ResourcePath != targetModel)
+                SceneObject.Model = Model.Load(targetModel);
             UpdateMaterialOffset();
         }
     }
@@ -218,7 +221,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.OnAwake();
 
-        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
+        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad_1_sided.vmdl"))
         {
             Flags = { IsTranslucent = true }
         };
@@ -362,6 +365,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     void UpdateMaterialOffset()
     {
+        if (CurrentTexture is null) return;
         var offset = CurrentTexture.GetFrameOffset(CurrentFrameIndex);
         var tiling = CurrentTexture.GetFrameTiling();
         if (_flipHorizontal)
