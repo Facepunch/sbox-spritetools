@@ -61,7 +61,6 @@ public class RenderingWidget : SpriteRenderingWidget
             {
                 int cellX = i % framesPerRow;
                 int cellY = i / framesPerRow;
-                Log.Info($"CellX: {cellX}, CellY: {cellY}");
 
                 float x = startX + (cellX + Importer.Settings.VerticalCellOffset) * (frameWidth + xSeparation);
                 float y = startY + (cellY + Importer.Settings.HorizontalCellOffset) * (frameHeight + ySeparation);
