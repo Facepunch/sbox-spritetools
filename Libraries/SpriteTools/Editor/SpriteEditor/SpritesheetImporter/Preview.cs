@@ -58,7 +58,7 @@ public class Preview : Widget
         overlayWindowZoom.WindowTitle = "Zoom Controls";
 
         Overlay.Layout.Add(overlayWindowZoom);
-        Layout.Add(Overlay);
+        Overlay.Show();
 
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, parent.Path);
         if (texture is not null)
@@ -67,13 +67,27 @@ public class Preview : Widget
         }
     }
 
-    protected override void OnPaint()
-    {
-        base.OnPaint();
-    }
-
     protected override void DoLayout()
     {
         base.DoLayout();
+
+        if (Overlay.IsValid() && Rendering.IsValid())
+        {
+            Overlay.Position = Rendering.ScreenPosition;
+            Overlay.Size = Rendering.Size + 1;
+
+            overlayWindowZoom.AdjustSize();
+            overlayWindowZoom.AlignToParent(TextFlag.RightTop, 4);
+        }
+    }
+
+    protected override void OnVisibilityChanged(bool visible)
+    {
+        base.OnVisibilityChanged(visible);
+
+        if (Overlay is not null)
+        {
+            Overlay.Visible = visible;
+        }
     }
 }
