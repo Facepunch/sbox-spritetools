@@ -8,47 +8,54 @@ namespace SpriteTools.SpriteEditor.SpritesheetImporter;
 
 public class SpritesheetImporter : Dialog
 {
-    public static string Path { get; set; }
+    public string Path { get; set; }
 
     Preview Preview { get; set; }
     public Action<string, List<Rect>> OnImport { get; set; }
 
     ImportSettings Settings { get; set; } = new ImportSettings();
 
+    ControlSheet ControlSheet { get; set; }
+
     public SpritesheetImporter(Widget parent, string path) : base(parent, false)
     {
         Path = path;
 
+        Window.Title = "Spritesheet Importer";
+        Window.WindowTitle = "Spritesheet Importer";
         Window.Size = new Vector2(960, 540);
         Window.SetModal(true);
         Window.MinimumSize = 200;
         Window.MaximumSize = 10000;
 
-        Rebuild();
+        BuildLayout();
     }
 
-    [EditorEvent.Hotload]
-    void Rebuild()
+    void BuildLayout()
     {
         Layout = Layout.Row();
 
         var leftSide = Layout.Column();
         leftSide.Margin = 16;
-        leftSide.Add(new Label("Spritesheet Import"));
-        var settings = new ControlSheet();
-        var props = Settings.GetSerialized().Where(x => x.HasAttribute<PropertyAttribute>())
-            .OrderBy(x => x.SourceLine)
-            .ThenBy(x => x.DisplayName);
-        foreach (var prop in props)
-        {
-            settings.AddRow(prop);
-        }
-        leftSide.Add(settings);
-        leftSide.AddStretchCell();
+        var leftContent = new Widget();
+        leftContent.MaximumWidth = 300;
+        leftContent.Layout = Layout.Column();
+        ControlSheet = new ControlSheet();
+        UpdateControlSheet();
+        leftContent.Layout.Add(ControlSheet);
+        leftContent.Layout.AddStretchCell();
+        leftSide.Add(leftContent);
         Layout.Add(leftSide);
 
         Preview = new Preview(this);
         Layout.Add(Preview);
+    }
+
+    [EditorEvent.Hotload]
+    void UpdateControlSheet()
+    {
+        ControlSheet?.Clear(true);
+        ControlSheet.AddObject(Settings.GetSerialized());
     }
 
 }
