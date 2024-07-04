@@ -9,7 +9,6 @@ namespace SpriteTools.SpriteEditor.SpritesheetImporter;
 
 public class RenderingWidget : SpriteRenderingWidget
 {
-
     public RenderingWidget(Widget parent) : base(parent)
     {
 

@@ -10,12 +10,11 @@ public class Preview : Widget
     Widget Overlay;
     WidgetWindow overlayWindowZoom;
 
-    public Preview(Widget parent) : base(parent)
+    public Preview(SpritesheetImporter parent) : base(parent)
     {
         Name = "Preview";
         WindowTitle = "Preview";
         SetWindowIcon("emoji_emotions");
-        MinimumWidth = 500;
 
         Layout = Layout.Column();
 
@@ -59,12 +58,22 @@ public class Preview : Widget
         overlayWindowZoom.WindowTitle = "Zoom Controls";
 
         Overlay.Layout.Add(overlayWindowZoom);
+        Layout.Add(Overlay);
+
+        var texture = Texture.Load(Sandbox.FileSystem.Mounted, parent.Path);
+        if (texture is not null)
+        {
+            Rendering.PreviewMaterial.Set("Texture", texture);
+        }
     }
 
     protected override void OnPaint()
     {
         base.OnPaint();
+    }
 
-
+    protected override void DoLayout()
+    {
+        base.DoLayout();
     }
 }
