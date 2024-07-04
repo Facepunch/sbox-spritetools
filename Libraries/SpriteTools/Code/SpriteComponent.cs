@@ -36,6 +36,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// The color tint of the Sprite.
     /// </summary>
     [Property]
+    [Category("Visuals")]
     public Color Tint
     {
         get => SceneObject?.ColorTint ?? Color.White;
@@ -50,34 +51,25 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// The color of the sprite when it is flashing.
     /// </summary>
     [Property]
-    public Color FlashColor
+    [Category("Visuals")]
+    public Color FlashTint
     {
-        get => _flashColor;
+        get => _flashTint;
         set
         {
-            _flashColor = value;
+            _flashTint = value;
             SpriteMaterial?.Set("g_vFlashColor", value);
+            SpriteMaterial?.Set("g_flFlashAmount", value.a);
         }
     }
-    Color _flashColor = Color.White;
-
-    [Property]
-    public float FlashAmount
-    {
-        get => _flashAmount;
-        set
-        {
-            _flashAmount = value;
-            SpriteMaterial?.Set("g_flFlashAmount", value);
-        }
-    }
-    float _flashAmount = 0;
+    Color _flashTint = Color.White.WithAlpha(0);
 
     /// <summary>
     /// Used to override the material with your own. Useful for custom shaders.
     /// Shader requires a texture parameter named "Texture".
     /// </summary>
     [Property]
+    [Category("Visuals")]
     public Material MaterialOverride
     {
         get => _materialOverride;
@@ -101,8 +93,26 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// Whether or not the sprite should render itself/its shadows.
     /// </summary>
     [Property]
-    [Category("Lighting")]
+    [Category("Visuals")]
     public ShadowRenderType CastShadows { get; set; } = ShadowRenderType.On;
+
+    [Property]
+    [Category("Visuals")]
+    public SpriteFlags SpriteFlags
+    {
+        get => _spriteFlags;
+        set
+        {
+            _spriteFlags = value;
+            _flipHorizontal = _spriteFlags.HasFlag(SpriteFlags.HorizontalFlip);
+            _flipVertical = _spriteFlags.HasFlag(SpriteFlags.VerticalFlip);
+            var targetModel = _spriteFlags.HasFlag(SpriteFlags.DrawBackface) ? "models/sprite_quad_2_sided.vmdl" : "models/sprite_quad_1_sided.vmdl";
+            if (SceneObject is not null && SceneObject.Model.ResourcePath != targetModel)
+                SceneObject.Model = Model.Load(targetModel);
+            UpdateMaterialOffset();
+        }
+    }
+    private SpriteFlags _spriteFlags = SpriteFlags.None;
 
     /// <summary>
     /// A dictionary of broadcast events that this component will send (populated based on the Sprite resource)
@@ -178,12 +188,14 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             {
                 if (_currentFrameIndex >= CurrentAnimation.Frames.Count)
                     _currentFrameIndex = 0;
-                SpriteMaterial?.Set("g_vOffset", CurrentTexture.GetFrameOffset(CurrentFrameIndex));
+                UpdateMaterialOffset();
             }
         }
     }
     private int _currentFrameIndex = 0;
     private float _timeSinceLastFrame = 0;
+    private bool _flipHorizontal = false;
+    private bool _flipVertical = false;
 
     internal SceneObject SceneObject { get; set; }
     TextureAtlas CurrentTexture { get; set; }
@@ -202,14 +214,14 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         UpdateSceneObject();
-        FlashAmount = 0;
+        FlashTint = _flashTint;
     }
 
     protected override void OnAwake()
     {
         base.OnAwake();
 
-        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad.vmdl"))
+        SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad_1_sided.vmdl"))
         {
             Flags = { IsTranslucent = true }
         };
@@ -268,8 +280,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (CurrentTexture is not null)
             {
                 SpriteMaterial.Set("Texture", CurrentTexture);
-                SpriteMaterial.Set("g_vTiling", CurrentTexture.GetFrameTiling());
-                SpriteMaterial.Set("g_vOffset", CurrentTexture.GetFrameOffset(CurrentFrameIndex));
+                UpdateMaterialOffset();
             }
             SceneObject.SetMaterialOverride(SpriteMaterial);
         }
@@ -350,6 +361,24 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 attachment.Value.Transform.LocalPosition = pos;
             }
         }
+    }
+
+    void UpdateMaterialOffset()
+    {
+        if (CurrentTexture is null) return;
+        if (SpriteMaterial is null) return;
+        var offset = CurrentTexture.GetFrameOffset(CurrentFrameIndex);
+        var tiling = CurrentTexture.GetFrameTiling();
+        if (_flipHorizontal)
+        {
+            offset.x = -offset.x - tiling.x;
+        }
+        if (_flipVertical)
+        {
+            offset.y = -offset.y - tiling.y;
+        }
+        SpriteMaterial.Set("g_vTiling", tiling);
+        SpriteMaterial.Set("g_vOffset", offset);
     }
 
     protected override void OnDestroy()
