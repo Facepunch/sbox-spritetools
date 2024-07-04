@@ -14,11 +14,11 @@ Layer0
 	g_flHueshift "0.000"
 
 	//---- Texture ----
-	Texture "[1.000000 1.000000 1.000000 0.000000]"
+	Texture "[1.000000 1.000000 1.000000 1.000000]"
 
 	//---- Texture Coordinates ----
-	g_vOffset "[-0.250 0.000]"
-	g_vTiling "[0.250 0.250]"
+	g_vOffset "[0.000 0.000]"
+	g_vTiling "[1.000 1.000]"
 
 	//---- Translucent ----
 	g_flOpacityScale "1.000"
