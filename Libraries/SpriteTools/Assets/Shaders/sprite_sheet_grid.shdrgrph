@@ -1,0 +1,16 @@
+{
+  "Model": null,
+  "Description": "",
+  "BlendMode": "Masked",
+  "nodes": [
+    {
+      "_class": "Result",
+      "DefaultOpacity": 0,
+      "DefaultRoughness": 1,
+      "DefaultMetalness": 0,
+      "DefaultAmbientOcclusion": 1,
+      "Identifier": "0",
+      "Position": "160,-96"
+    }
+  ]
+}

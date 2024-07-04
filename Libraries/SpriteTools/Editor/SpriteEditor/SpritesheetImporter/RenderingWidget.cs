@@ -13,7 +13,7 @@ public class RenderingWidget : SpriteRenderingWidget
 
     public RenderingWidget(Widget parent) : base(parent)
     {
-        var GridMaterial = Material.Load("materials/spritesheet_grid.vmat");
+        var GridMaterial = Material.Load("materials/sprite_sheet_grid.vmat");
 
         TextureRect = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
         TextureRect.SetMaterialOverride(GridMaterial);
