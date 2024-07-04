@@ -48,7 +48,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         background.SetMaterialOverride(backgroundMat);
         background.Position = new Vector3(0, 0, -1);
 
-        PreviewMaterial = Material.Load("materials/spritegraph.vmat").CreateCopy();
+        PreviewMaterial = Material.Load("materials/sprite_2d.vmat").CreateCopy();
         PreviewMaterial.Set("Texture", Color.Transparent);
         PreviewMaterial.Set("g_flFlashAmount", 0f);
         TextureRect = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);

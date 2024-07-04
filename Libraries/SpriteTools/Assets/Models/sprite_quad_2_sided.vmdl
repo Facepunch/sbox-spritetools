@@ -37,7 +37,7 @@
 						[
 							{
 								from = "materials/dev/reflectivity_30.vmat"
-								to = "materials/spritegraph.vmat"
+								to = "materials/sprite_2d.vmat"
 							},
 						]
 						use_global_default = false

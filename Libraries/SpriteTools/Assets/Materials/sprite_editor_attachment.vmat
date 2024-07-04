@@ -2,10 +2,10 @@
 
 Layer0
 {
-	shader "shaders/pixelated_masked.shader"
+	shader "shaders/sprite_2d.shader"
 
-	//---- Texture Filtering ----
-	F_TEXTURE_FILTERING 4 // Nearest Neighbour
+	g_flFlashAmount "0.000"
+	g_vFlashColor "[1.000000 1.000000 1.000000 1.000000]"
 
 	//---- Fog ----
 	g_bFogEnabled "1"
@@ -14,15 +14,14 @@ Layer0
 	g_flHueshift "0.000"
 
 	//---- Texture ----
-	Texture "materials/sprite_editor_attachment.png"
+	Texture "materials/default/default_color.tga"
 
 	//---- Texture Coordinates ----
-	g_vOffset "[0.000 0.000]"
-	g_vTiling "[1.000 1.000]"
+	g_vOffset "[-0.250 0.000]"
+	g_vTiling "[0.250 0.250]"
 
 	//---- Translucent ----
-	g_flAlphaTestReference "0.500"
-	g_flAntiAliasedEdgeStrength "1.000"
+	g_flOpacityScale "1.000"
 	g_flSmoothStepMax "1.000"
 	g_flSmoothStepMin "0.000"
 }

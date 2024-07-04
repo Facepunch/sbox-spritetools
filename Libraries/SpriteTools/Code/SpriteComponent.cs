@@ -276,7 +276,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (MaterialOverride != null)
                 SpriteMaterial = MaterialOverride.CreateCopy();
             else
-                SpriteMaterial = Material.Create("spritemat", "shaders/pixelated_masked.shader");
+                SpriteMaterial = Material.Create("spritemat", "shaders/sprite_2d.shader");
             if (CurrentTexture is not null)
             {
                 SpriteMaterial.Set("Texture", CurrentTexture);
