@@ -9,7 +9,7 @@ public class SpritesheetImporter : Dialog
 {
     public static string Path { get; set; }
 
-    SpritesheetPreview Preview { get; set; }
+    Preview Preview { get; set; }
     public Action<string, List<Rect>> OnImport { get; set; }
 
     public SpritesheetImporter(Widget parent, string path) : base(parent, false)
@@ -27,7 +27,7 @@ public class SpritesheetImporter : Dialog
         leftSide.Add(new Label("Spritesheet Importer"));
         Layout.Add(leftSide);
 
-        Preview = new SpritesheetPreview(this);
+        Preview = new Preview(this);
         Layout.Add(Preview);
 
     }
