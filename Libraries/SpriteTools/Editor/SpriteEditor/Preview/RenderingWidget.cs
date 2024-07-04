@@ -36,7 +36,7 @@ public class RenderingWidget : NativeRenderingWidget
         MouseTracking = true;
         FocusMode = FocusMode.Click;
 
-        World = new SceneWorld();
+        World = EditorUtility.CreateSceneWorld();
         Camera = new SceneCamera
         {
             World = World,
