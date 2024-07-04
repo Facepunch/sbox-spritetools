@@ -16,6 +16,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     public Material PreviewMaterial;
     public Vector2 TextureSize;
 
+    protected Gizmo.Instance SceneInstance;
+
     float targetZoom = 115f;
     Vector2 cameraGrabPos = Vector2.Zero;
     bool cameraGrabbing = false;
@@ -25,7 +27,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         MouseTracking = true;
         FocusMode = FocusMode.Click;
 
-        World = EditorUtility.CreateSceneWorld();
+        SceneInstance = new Gizmo.Instance();
+        World = SceneInstance.World;
         Camera = new SceneCamera
         {
             World = World,
@@ -122,5 +125,12 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     {
         targetZoom = 115f;
         Camera.Position = new Vector3(0, 0, targetZoom);
+    }
+
+    public void SetTexture(Texture texture)
+    {
+        PreviewMaterial.Set("Texture", texture);
+        TextureSize = new Vector2(texture.Width, texture.Height);
+        TextureRect.SetMaterialOverride(PreviewMaterial);
     }
 }

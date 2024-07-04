@@ -18,7 +18,7 @@ public class Preview : Widget
 
         Layout = Layout.Column();
 
-        Rendering = new RenderingWidget(this);
+        Rendering = new RenderingWidget(parent, this);
         Layout.Add(Rendering);
 
         Overlay = new Widget(this)
@@ -63,7 +63,7 @@ public class Preview : Widget
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, parent.Path);
         if (texture is not null)
         {
-            Rendering.PreviewMaterial.Set("Texture", texture);
+            Rendering.SetTexture(texture);
         }
     }
 

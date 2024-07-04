@@ -165,9 +165,7 @@ public class Preview : Widget
 
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.CurrentTexturePath);
         if (texture is null) return;
-        Rendering.PreviewMaterial.Set("Texture", texture);
-        Rendering.TextureSize = new Vector2(texture.Width, texture.Height);
-        Rendering.TextureRect.SetMaterialOverride(Rendering.PreviewMaterial);
+        Rendering.SetTexture(texture);
     }
 
     protected override void DoLayout()

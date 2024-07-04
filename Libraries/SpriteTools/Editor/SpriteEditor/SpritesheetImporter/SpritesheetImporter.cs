@@ -12,8 +12,7 @@ public class SpritesheetImporter : Dialog
 
     Preview Preview { get; set; }
     public Action<string, List<Rect>> OnImport { get; set; }
-
-    ImportSettings Settings { get; set; } = new ImportSettings();
+    public ImportSettings Settings { get; set; } = new ImportSettings();
 
     ControlSheet ControlSheet { get; set; }
 
