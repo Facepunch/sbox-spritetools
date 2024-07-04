@@ -9,9 +9,18 @@ namespace SpriteTools.SpriteEditor.SpritesheetImporter;
 
 public class RenderingWidget : SpriteRenderingWidget
 {
+    Material GridMaterial;
+
     public RenderingWidget(Widget parent) : base(parent)
     {
+        var GridMaterial = Material.Load("materials/spritesheet_grid.vmat");
 
+        TextureRect = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
+        TextureRect.SetMaterialOverride(GridMaterial);
+        TextureRect.Flags.WantsFrameBufferCopy = true;
+        TextureRect.Flags.IsTranslucent = true;
+        TextureRect.Flags.IsOpaque = false;
+        TextureRect.Flags.CastShadows = false;
     }
 
     protected override void OnMousePress(MouseEvent e)
@@ -33,6 +42,7 @@ public class RenderingWidget : SpriteRenderingWidget
     {
         base.PreFrame();
 
+        // GridMaterial.Set
 
     }
 }

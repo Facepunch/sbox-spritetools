@@ -14,7 +14,7 @@ Layer0
 	g_flHueshift "0.000"
 
 	//---- Texture ----
-	Texture "materials/default/default_color.tga"
+	Texture "materials/sprite_editor_origin.png"
 
 	//---- Texture Coordinates ----
 	g_vOffset "[-0.250 0.000]"
