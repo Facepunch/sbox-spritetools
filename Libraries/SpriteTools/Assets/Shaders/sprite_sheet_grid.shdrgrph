@@ -1,16 +1,281 @@
 {
-  "Model": null,
+  "Model": "models/dev/plane.vmdl",
   "Description": "",
   "BlendMode": "Masked",
   "nodes": [
     {
       "_class": "Result",
-      "DefaultOpacity": 0,
+      "DefaultOpacity": 1,
       "DefaultRoughness": 1,
       "DefaultMetalness": 0,
       "DefaultAmbientOcclusion": 1,
       "Identifier": "0",
-      "Position": "160,-96"
+      "Position": "1280,128",
+      "Albedo": {
+        "Identifier": "18",
+        "Output": "Result"
+      },
+      "Opacity": {
+        "Identifier": "21",
+        "Output": "W"
+      }
+    },
+    {
+      "_class": "Float",
+      "Min": 0,
+      "Max": 1,
+      "Value": 1,
+      "Name": "NumberOfFrames",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "1",
+      "Position": "-720,32"
+    },
+    {
+      "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
+      "Value": "32,32",
+      "Name": "FrameSize",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "2",
+      "Position": "-720,176"
+    },
+    {
+      "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
+      "Value": "512,512",
+      "Name": "ImageSize",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "3",
+      "Position": "-720,768"
+    },
+    {
+      "_class": "Float",
+      "Min": 0,
+      "Max": 1,
+      "Value": 1,
+      "Name": "FramesPerRow",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "4",
+      "Position": "-720,96"
+    },
+    {
+      "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
+      "Value": "0,0",
+      "Name": "CellOffset",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "5",
+      "Position": "-720,432"
+    },
+    {
+      "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
+      "Value": "0,0",
+      "Name": "PixelOffset",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "6",
+      "Position": "-720,304"
+    },
+    {
+      "_class": "Float2",
+      "Min": "0,0",
+      "Max": "1,1",
+      "Value": "0,0",
+      "Name": "Separation",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "7",
+      "Position": "-720,560"
+    },
+    {
+      "_class": "Add",
+      "DefaultA": 0,
+      "DefaultB": 1,
+      "Identifier": "8",
+      "Position": "-432,320",
+      "A": {
+        "Identifier": "2",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "7",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "CommentNode",
+      "Size": "160,144",
+      "Color": "Orange",
+      "Title": "Total Cell Size",
+      "Description": "",
+      "Layer": 1,
+      "Identifier": "9",
+      "Position": "-480,272"
+    },
+    {
+      "_class": "TextureCoord",
+      "UseSecondaryCoord": false,
+      "Tiling": "1,1",
+      "Identifier": "10",
+      "Position": "-464,160"
+    },
+    {
+      "_class": "Step",
+      "DefaultInput": 0,
+      "DefaultEdge": 0,
+      "Identifier": "11",
+      "Position": "-0,240",
+      "Input": {
+        "Identifier": "13",
+        "Output": "Result"
+      },
+      "Edge": {
+        "Identifier": "22",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Divide",
+      "DefaultA": 0,
+      "DefaultB": 1,
+      "Identifier": "12",
+      "Position": "-256,240",
+      "A": {
+        "Identifier": "10",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "8",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Frac",
+      "Identifier": "13",
+      "Position": "-144,240",
+      "Input": {
+        "Identifier": "12",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Float",
+      "Min": 0,
+      "Max": 1,
+      "Value": 2,
+      "Name": "LineThickness",
+      "IsAttribute": false,
+      "UI": {},
+      "Identifier": "14",
+      "Position": "-720,688"
+    },
+    {
+      "_class": "Max",
+      "DefaultA": 0,
+      "DefaultB": 0,
+      "Identifier": "15",
+      "Position": "416,240",
+      "InputA": {
+        "Identifier": "16",
+        "Output": "X"
+      },
+      "InputB": {
+        "Identifier": "16",
+        "Output": "Y"
+      }
+    },
+    {
+      "_class": "SplitVector",
+      "Identifier": "16",
+      "Position": "208,240",
+      "Input": {
+        "Identifier": "11",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "CommentNode",
+      "Size": "1120,384",
+      "Color": "Green",
+      "Title": "Horizontal/Vertical Lines",
+      "Description": "",
+      "Layer": 2,
+      "Identifier": "17",
+      "Position": "-512,96"
+    },
+    {
+      "_class": "Lerp",
+      "Fraction": 0.5,
+      "Identifier": "18",
+      "Position": "768,0",
+      "A": {
+        "Identifier": "19",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "20",
+        "Output": "Result"
+      },
+      "C": {
+        "Identifier": "15",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Float4",
+      "Value": "1,1,1,1",
+      "Name": "GridColor",
+      "IsAttribute": false,
+      "UI": {
+        "Type": "Color"
+      },
+      "Identifier": "19",
+      "Position": "464,-272"
+    },
+    {
+      "_class": "Float4",
+      "Value": "0,0,0,0",
+      "Name": "BackgroundColor",
+      "IsAttribute": false,
+      "UI": {
+        "Type": "Color"
+      },
+      "Identifier": "20",
+      "Position": "464,-96"
+    },
+    {
+      "_class": "SplitVector",
+      "Identifier": "21",
+      "Position": "992,160",
+      "Input": {
+        "Identifier": "18",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Divide",
+      "DefaultA": 0,
+      "DefaultB": 1,
+      "Identifier": "22",
+      "Position": "-400,704",
+      "A": {
+        "Identifier": "14",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "3",
+        "Output": "Result"
+      }
     }
   ]
 }
