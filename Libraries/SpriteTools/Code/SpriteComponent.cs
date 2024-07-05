@@ -215,6 +215,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         UpdateSceneObject();
         FlashTint = _flashTint;
+        SpriteFlags = _spriteFlags;
     }
 
     protected override void OnAwake()
