@@ -1594,29 +1594,6 @@
           "Shadows": true
         }
       ]
-    },
-    {
-      "__guid": "d26466b8-c6eb-413d-9fa8-6a2ca8aab0bb",
-      "Flags": 0,
-      "Name": "Object",
-      "Position": "-69.97607,55.51531,27.16126",
-      "NetworkMode": 2,
-      "NetworkInterpolation": true,
-      "Components": [
-        {
-          "__type": "SpriteTools.SpriteComponent",
-          "__guid": "860d76f7-aad5-4334-b56d-8588118dd4ff",
-          "_broadcastEvents": {},
-          "CastShadows": "On",
-          "CreateAttachPoints": false,
-          "FlashTint": "1,1,1,0",
-          "PlaybackSpeed": 1,
-          "Sprite": "sprites/spritesheet_test.sprite",
-          "SpriteFlags": "None",
-          "StartingAnimationName": "animation_01",
-          "Tint": "1,1,1,1"
-        }
-      ]
     }
   ],
   "SceneProperties": {

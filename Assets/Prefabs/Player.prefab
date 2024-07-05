@@ -69,9 +69,9 @@
             "CastShadows": "On",
             "CreateAttachPoints": false,
             "FlashTint": "1,1,1,0",
-            "PlaybackSpeed": 0.1,
+            "PlaybackSpeed": 1,
             "Sprite": "sprites/player.sprite",
-            "SpriteFlags": "None",
+            "SpriteFlags": "DrawBackface",
             "StartingAnimationName": "idle",
             "Tint": "1,1,1,1"
           }
