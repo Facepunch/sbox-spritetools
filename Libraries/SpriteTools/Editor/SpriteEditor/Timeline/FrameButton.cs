@@ -12,6 +12,7 @@ public class FrameButton : Widget
     MainWindow MainWindow;
     Timeline Timeline;
     public int FrameIndex;
+    Pixmap Pixmap;
 
     public bool IsCurrentFrame => MainWindow.CurrentFrameIndex == FrameIndex;
 
@@ -42,6 +43,11 @@ public class FrameButton : Widget
         // labelText = new LabelTextEntry( MainWindow, name );
 
         // Layout.Add( labelText );
+
+        var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.SelectedAnimation.Frames[FrameIndex].FilePath);
+        Pixmap = new Pixmap(texture.Width, texture.Height);
+        var pixels = texture.GetPixels();
+        Pixmap.UpdateFromPixels(MemoryMarshal.AsBytes<Color32>(pixels), texture.Width, texture.Height, ImageFormat.RGBA8888);
 
         IsDraggable = true;
         AcceptDrops = true;
@@ -100,12 +106,8 @@ public class FrameButton : Widget
         }
 
         //Log.Info( MainWindow.SelectedAnimation.Frames[FrameIndex] );
-        Texture texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.SelectedAnimation.Frames[FrameIndex].FilePath);
 
-        Pixmap pix = new Pixmap(texture.Width, texture.Height);
-        var pixels = texture.GetPixels();
-        pix.UpdateFromPixels(MemoryMarshal.AsBytes<Color32>(pixels), texture.Width, texture.Height, ImageFormat.RGBA8888);
-        Paint.Draw(new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4), pix);
+        Paint.Draw(new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4), Pixmap);
 
         if (MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Count > 0)
         {
