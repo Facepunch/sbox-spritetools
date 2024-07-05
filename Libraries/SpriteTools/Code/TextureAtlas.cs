@@ -66,9 +66,9 @@ public class TextureAtlas
 
             var pixels = texture.GetPixels();
 
-            for (int i = (int)rect.Left; i < rect.Right; i++)
+            for (int i = 0; i < rect.Width; i++)
             {
-                for (int j = (int)rect.Top; j < rect.Bottom; j++)
+                for (int j = 0; j < rect.Height; j++)
                 {
                     var index = (x + 1 + i + (y + 1 + j) * imageSize) * 4;
                     var textureIndex = (int)(rect.Left + i + (rect.Top + j) * texture.Width);
