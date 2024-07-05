@@ -421,7 +421,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         CurrentAnimation = animation;
         CurrentFrameIndex = 0;
 
-        var atlas = TextureAtlas.FromTextures(animation.Frames.Select(x => x.FilePath).ToList());
+        var atlas = TextureAtlas.FromAnimation(animation);
         CurrentTexture = atlas;
         SpriteMaterial?.Set("Texture", CurrentTexture);
         SpriteMaterial?.Set("g_vTiling", CurrentTexture.GetFrameTiling());

@@ -16,7 +16,81 @@ public class TextureAtlas
     int MaxFrameSize;
     static Dictionary<string, TextureAtlas> Cache = new();
 
+    public static TextureAtlas FromAnimation(SpriteAnimation animation)
+    {
+        var key = "anim." + animation.Name;
+        if (Cache.TryGetValue(key, out var cachedAtlas))
+        {
+            return cachedAtlas;
+        }
 
+        var atlas = new TextureAtlas();
+        atlas.Size = (int)Math.Ceiling(Math.Sqrt(animation.Frames.Count));
+
+        List<(Texture, Rect)> textures = new();
+        atlas.MaxFrameSize = 0;
+        foreach (var frame in animation.Frames)
+        {
+            if (!FileSystem.Mounted.FileExists(frame.FilePath))
+            {
+                Log.Error($"TextureAtlas: Texture file not found: {frame.FilePath}");
+                continue;
+            }
+            var texture = Texture.Load(FileSystem.Mounted, frame.FilePath);
+            var rect = frame.SpriteSheetRect;
+            if (rect.Width == 0 || rect.Height == 0)
+            {
+                rect = new Rect(0, 0, texture.Width, texture.Height);
+            }
+            textures.Add((texture, rect));
+            atlas.MaxFrameSize = Math.Max(atlas.MaxFrameSize, (int)Math.Max(rect.Width, rect.Height));
+        }
+        atlas.MaxFrameSize += 2;
+
+        int imageSize = atlas.Size * atlas.MaxFrameSize;
+        int x = 0;
+        int y = 0;
+        byte[] textureData = new byte[imageSize * imageSize * 4];
+        foreach (var (texture, rect) in textures)
+        {
+            if (x + rect.Width > imageSize)
+            {
+                x = 0;
+                y += atlas.MaxFrameSize;
+            }
+            if (y + rect.Height > imageSize)
+            {
+                Log.Error("TextureAtlas: Texture too large for atlas");
+                continue;
+            }
+
+            var pixels = texture.GetPixels();
+
+            for (int i = (int)rect.Left; i < rect.Right; i++)
+            {
+                for (int j = (int)rect.Top; j < rect.Bottom; j++)
+                {
+                    var index = (x + 1 + i + (y + 1 + j) * imageSize) * 4;
+                    var textureIndex = (int)(rect.Left + i + (rect.Top + j) * texture.Width);
+                    textureData[index] = pixels[textureIndex].r;
+                    textureData[index + 1] = pixels[textureIndex].g;
+                    textureData[index + 2] = pixels[textureIndex].b;
+                    textureData[index + 3] = pixels[textureIndex].a;
+                }
+            }
+
+            x += atlas.MaxFrameSize;
+        }
+
+        var builder = Texture.Create(imageSize, imageSize);
+        builder.WithData(textureData);
+        builder.WithMips(0);
+        atlas.Texture = builder.Finish();
+
+        Cache[key] = atlas;
+
+        return atlas;
+    }
 
     /// <summary>
     /// Create a texture atlas from a list of texture paths. Returns null if there was an error and the texture cannot be loaded.
