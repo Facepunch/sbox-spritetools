@@ -14,25 +14,25 @@ public class TextureAtlas
 
     Texture Texture;
     int MaxFrameSize;
-    static Dictionary<string, Texture> Cache = new();
+    static Dictionary<string, TextureAtlas> Cache = new();
+
+
 
     /// <summary>
     /// Create a texture atlas from a list of texture paths. Returns null if there was an error and the texture cannot be loaded.
     /// </summary>
     /// <param name="texturePaths"></param>
     /// <returns></returns>
-    public static TextureAtlas FromSprites(List<string> texturePaths)
+    public static TextureAtlas FromTextures(List<string> texturePaths)
     {
+        var key = string.Join(",", texturePaths.OrderBy(x => x));
+        if (Cache.TryGetValue(key, out var cachedAtlas))
+        {
+            return cachedAtlas;
+        }
+
         var atlas = new TextureAtlas();
         atlas.Size = (int)Math.Ceiling(Math.Sqrt(texturePaths.Count));
-
-        var key = string.Join(",", texturePaths.OrderBy(x => x));
-        if (Cache.TryGetValue(key, out var cachedTexture))
-        {
-            atlas.Texture = cachedTexture;
-            atlas.MaxFrameSize = cachedTexture.Width / atlas.Size;
-            return atlas;
-        }
 
         List<Texture> textures = new();
         atlas.MaxFrameSize = 0;
@@ -89,24 +89,21 @@ public class TextureAtlas
         builder.WithMips(0);
         atlas.Texture = builder.Finish();
 
-        Cache[key] = atlas.Texture;
+        Cache[key] = atlas;
 
         return atlas;
     }
 
     public static TextureAtlas FromSpritesheet(string path, List<Rect> spriteRects)
     {
+        var key = path + string.Join(",", spriteRects.OrderBy(x => x));
+        if (Cache.TryGetValue(key, out var cachedAtlas))
+        {
+            return cachedAtlas;
+        }
+
         var atlas = new TextureAtlas();
         atlas.Size = (int)Math.Ceiling(Math.Sqrt(spriteRects.Count));
-
-        var key = path + string.Join(",", spriteRects.OrderBy(x => x));
-        Log.Info(key); // TODO: Remove this
-        if (Cache.TryGetValue(key, out var cachedTexture))
-        {
-            atlas.Texture = cachedTexture;
-            atlas.MaxFrameSize = cachedTexture.Width / atlas.Size;
-            return atlas;
-        }
 
         if (!FileSystem.Mounted.FileExists(path))
         {
@@ -161,7 +158,7 @@ public class TextureAtlas
         builder.WithMips(0);
         atlas.Texture = builder.Finish();
 
-        Cache[key] = atlas.Texture;
+        Cache[key] = atlas;
 
         return atlas;
     }
