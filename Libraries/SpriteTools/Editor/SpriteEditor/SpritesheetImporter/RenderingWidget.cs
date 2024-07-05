@@ -71,8 +71,6 @@ public class RenderingWidget : SpriteRenderingWidget
                 Gizmo.Draw.Line(new Vector3(y + frameHeight, x + frameWidth, 0), new Vector3(y + frameHeight, x, 0));
                 Gizmo.Draw.Line(new Vector3(y + frameHeight, x, 0), new Vector3(y, x, 0));
             }
-
-            // Gizmo.Draw.Line(Vector3.Up * 32f, Vector3.Right * 50);
         }
     }
 }
