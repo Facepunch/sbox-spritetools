@@ -18,7 +18,11 @@ public class TextureAtlas
 
     public static TextureAtlas FromAnimation(SpriteAnimation animation)
     {
-        var key = "anim." + animation.Name;
+        var key = "anim." + animation.Name + ".";
+        foreach (var frame in animation.Frames)
+        {
+            key += frame.FilePath + frame.SpriteSheetRect.ToString() + ".";
+        }
         if (Cache.TryGetValue(key, out var cachedAtlas))
         {
             return cachedAtlas;
