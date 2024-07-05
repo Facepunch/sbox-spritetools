@@ -104,19 +104,21 @@ public class SpriteAnimationFrame
 {
 	public string FilePath { get; set; }
 	public List<string> Events { get; set; }
+	public Rect SpriteSheetRect { get; set; }
 
 	public SpriteAnimationFrame(string filePath)
 	{
 		FilePath = filePath;
 		Events = new List<string>();
+		SpriteSheetRect = new Rect(0, 0, 0, 0);
 	}
 
 	public SpriteAnimationFrame Copy()
 	{
 		var copy = new SpriteAnimationFrame(FilePath);
 		copy.Events = new List<string>(Events);
+		copy.SpriteSheetRect = SpriteSheetRect;
 		return copy;
-
 	}
 }
 
