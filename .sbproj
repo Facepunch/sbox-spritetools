@@ -5,6 +5,7 @@
   "Ident": "sprite_tools_playground",
   "Tags": null,
   "Schema": 1,
+  "IncludeSourceFiles": false,
   "Resources": null,
   "PackageReferences": [],
   "EditorReferences": null,
