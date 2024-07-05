@@ -143,6 +143,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         PreviewMaterial.Set("g_vTiling", tiling);
         PreviewMaterial.Set("g_vOffset", offset);
 
+        TextureSize = rect.Size;
         ResizeQuads();
     }
 
