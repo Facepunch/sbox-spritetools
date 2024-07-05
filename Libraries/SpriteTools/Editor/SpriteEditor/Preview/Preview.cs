@@ -161,11 +161,12 @@ public class Preview : Widget
     void UpdateTexture()
     {
         if (MainWindow.Sprite is null) return;
-        if (string.IsNullOrEmpty(MainWindow.CurrentTexturePath)) return;
 
-        var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.CurrentTexturePath);
+        var frame = MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex];
+        if (frame is null) return;
+        var texture = Texture.Load(Sandbox.FileSystem.Mounted, frame.FilePath);
         if (texture is null) return;
-        Rendering.SetTexture(texture);
+        Rendering.SetTexture(texture, frame.SpriteSheetRect);
     }
 
     protected override void DoLayout()

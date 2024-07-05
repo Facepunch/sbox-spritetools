@@ -127,10 +127,19 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         Camera.Position = new Vector3(0, 0, targetZoom);
     }
 
-    public void SetTexture(Texture texture)
+    public void SetTexture(Texture texture, Rect rect = default)
     {
+        if (rect == default)
+        {
+            rect = new Rect(0, 0, texture.Width, texture.Height);
+        }
         PreviewMaterial.Set("Texture", texture);
         TextureSize = new Vector2(texture.Width, texture.Height);
         TextureRect.SetMaterialOverride(PreviewMaterial);
+
+        var tiling = rect.Size / TextureSize;
+        var offset = rect.Position / TextureSize;
+        PreviewMaterial.Set("g_vTiling", tiling);
+        PreviewMaterial.Set("g_vOffset", offset);
     }
 }
