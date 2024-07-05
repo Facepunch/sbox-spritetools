@@ -85,6 +85,7 @@ public class SpritesheetImporter : Dialog
             }
         }
 
+        ParentWindow.Timeline.UpdateFrameList();
         Close();
     }
 

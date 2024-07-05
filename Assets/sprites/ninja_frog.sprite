@@ -2,10 +2,202 @@
   "Animations": [
     {
       "FrameRate": 15,
-      "Origin": "0.5,0.5",
+      "Origin": "0.5,1",
       "Looping": true,
-      "Name": "animation_01",
-      "Frames": [],
+      "Name": "idle",
+      "Frames": [
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "32,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "64,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "96,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "128,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "160,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "192,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "224,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "256,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "288,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/idle (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "320,0",
+            "Size": "32,32"
+          }
+        }
+      ],
+      "Attachments": []
+    },
+    {
+      "FrameRate": 15,
+      "Origin": "0.5,1",
+      "Looping": true,
+      "Name": "run",
+      "Frames": [
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "32,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "256,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "64,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "96,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "128,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "192,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "224,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "160,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "288,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "320,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "352,0",
+            "Size": "32,32"
+          }
+        }
+      ],
       "Attachments": []
     }
   ],
