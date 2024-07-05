@@ -122,8 +122,11 @@ public class AnimationList : Widget
 
     void CreateAnimation(string name)
     {
+        var anim = new SpriteAnimation(name);
+        anim.Looping = true;
+
         MainWindow.PushUndo($"Create Animation {name}");
-        MainWindow.Sprite.Animations.Add(new SpriteAnimation(name));
+        MainWindow.Sprite.Animations.Add(anim);
         MainWindow.PushRedo();
     }
 
