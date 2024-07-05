@@ -161,7 +161,8 @@ public class Preview : Widget
     void UpdateTexture()
     {
         if (MainWindow.Sprite is null) return;
-
+        if (MainWindow.SelectedAnimation is null) return;
+        if (MainWindow.SelectedAnimation.Frames.Count <= 0) return;
         var frame = MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex];
         if (frame is null) return;
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, frame.FilePath);

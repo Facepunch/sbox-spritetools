@@ -13,6 +13,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 
     public SceneWorld World;
     public SceneObject TextureRect;
+    SceneObject BackgroundRect;
     public Material PreviewMaterial;
     public Vector2 TextureSize;
 
@@ -47,9 +48,9 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         new SceneDirectionalLight(World, new Angles(90, 0, 0), Color.White);
 
         var backgroundMat = Material.Load("materials/sprite_editor_transparent.vmat");
-        var background = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
-        background.SetMaterialOverride(backgroundMat);
-        background.Position = new Vector3(0, 0, -1);
+        BackgroundRect = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
+        BackgroundRect.SetMaterialOverride(backgroundMat);
+        BackgroundRect.Position = new Vector3(0, 0, -1);
 
         PreviewMaterial = Material.Load("materials/sprite_2d.vmat").CreateCopy();
         PreviewMaterial.Set("Texture", Color.Transparent);
@@ -141,5 +142,17 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         var offset = rect.Position / TextureSize;
         PreviewMaterial.Set("g_vTiling", tiling);
         PreviewMaterial.Set("g_vOffset", offset);
+
+        ResizeQuads();
+    }
+
+    void ResizeQuads()
+    {
+        // Scale the quad to be the same aspect ratio as the texture
+        var aspect = TextureSize.x / TextureSize.y;
+        var size = new Vector3(1f / aspect, 1f, 1f);
+
+        BackgroundRect.Transform = Transform.Zero.WithScale(size).WithPosition(new Vector3(0, 0, -1));
+        TextureRect.Transform = Transform.Zero.WithScale(size);
     }
 }
