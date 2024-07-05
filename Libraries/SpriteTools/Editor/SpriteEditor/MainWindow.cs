@@ -389,18 +389,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
             var path = x.FirstOrDefault()?.GetSourceFile();
             if (string.IsNullOrEmpty(path)) return;
             var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
-            importer.OnImport = (string filepath, List<Rect> rects) =>
-            {
-                ImportSpritesheet(filepath, rects);
-            };
             importer.Window.Show();
         };
         picker.Window.Show();
-    }
-
-    void ImportSpritesheet(string filePath, List<Rect> rects)
-    {
-
     }
 
     void PromptSave(Action action)

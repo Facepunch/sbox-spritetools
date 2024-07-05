@@ -10,14 +10,16 @@ public class SpritesheetImporter : Dialog
 {
     public string Path { get; set; }
 
+    MainWindow ParentWindow { get; set; }
     Preview Preview { get; set; }
     public Action<string, List<Rect>> OnImport { get; set; }
     public ImportSettings Settings { get; set; } = new ImportSettings();
 
     ControlSheet ControlSheet { get; set; }
 
-    public SpritesheetImporter(Widget parent, string path) : base(parent, false)
+    public SpritesheetImporter(MainWindow parent, string path) : base(parent, false)
     {
+        ParentWindow = parent;
         Path = path;
 
         Window.Title = "Spritesheet Importer";
@@ -43,11 +45,47 @@ public class SpritesheetImporter : Dialog
         UpdateControlSheet();
         leftContent.Layout.Add(ControlSheet);
         leftContent.Layout.AddStretchCell();
+        var buttonLoad = new Button("Import Spritesheet", "download", this);
+        buttonLoad.Clicked += ImportSpritesheet;
+        leftContent.Layout.Add(buttonLoad);
         leftSide.Add(leftContent);
         Layout.Add(leftSide);
 
         Preview = new Preview(this);
         Layout.Add(Preview);
+    }
+
+    void ImportSpritesheet()
+    {
+        var frames = new List<Rect>();
+        var frameWidth = Settings.FrameWidth;
+        var frameHeight = Settings.FrameHeight;
+        var framesPerRow = Settings.FramesPerRow;
+        var frameCount = Settings.NumberOfFrames;
+        var horizontalCellOffset = Settings.HorizontalCellOffset;
+        var verticalCellOffset = Settings.VerticalCellOffset;
+        var horizontalPixelOffset = Settings.HorizontalPixelOffset;
+        var verticalPixelOffset = Settings.VerticalPixelOffset;
+        var horizontalSeparation = Settings.HorizontalSeparation;
+        var verticalSeparation = Settings.VerticalSeparation;
+
+        for (int i = 0; i < frameCount; i++)
+        {
+            var x = (i % framesPerRow) * (frameWidth + horizontalSeparation) + horizontalPixelOffset + (i % framesPerRow) * horizontalCellOffset;
+            var y = (i / framesPerRow) * (frameHeight + verticalSeparation) + verticalPixelOffset + (i / framesPerRow) * verticalCellOffset;
+            frames.Add(new Rect(x, y, frameWidth, frameHeight));
+        }
+
+        if (ParentWindow.SelectedAnimation is not null)
+        {
+            ParentWindow.SelectedAnimation.Frames.Clear();
+            foreach (var frame in frames)
+            {
+                ParentWindow.SelectedAnimation.Frames.Add(new SpriteAnimationFrame(Path) { SpriteSheetRect = frame });
+            }
+        }
+
+        Close();
     }
 
     [EditorEvent.Hotload]
