@@ -426,6 +426,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         CurrentTexture = atlas;
         SpriteMaterial?.Set("Texture", CurrentTexture);
         SpriteMaterial?.Set("g_vTiling", CurrentTexture.GetFrameTiling());
+        SpriteMaterial?.Set("g_vOffset", CurrentTexture.GetFrameOffset(0));
     }
 
     void BroadcastEvent(string tag)
