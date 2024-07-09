@@ -14,7 +14,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// The sprite resource that this component uses.
     /// </summary>
     [Property]
-    SpriteResource Sprite
+    public SpriteResource Sprite
     {
         get => _sprite;
         set
