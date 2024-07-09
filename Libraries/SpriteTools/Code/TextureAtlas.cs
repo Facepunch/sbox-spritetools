@@ -49,14 +49,15 @@ public class TextureAtlas
         {
             for (int j = 0; j < MaxFrameSize; j++)
             {
-                var ind = (x + i + (y + j) * Size * MaxFrameSize) * 4;
+                var ind = (i + j * MaxFrameSize) * 4;
                 var color = Texture.GetPixel(x + i, y + j);
-                textureData[i + j * MaxFrameSize] = color.r;
-                textureData[i + j * MaxFrameSize + 1] = color.g;
-                textureData[i + j * MaxFrameSize + 2] = color.b;
-                textureData[i + j * MaxFrameSize + 3] = color.a;
+                textureData[ind + 0] = color.r;
+                textureData[ind + 1] = color.g;
+                textureData[ind + 2] = color.b;
+                textureData[ind + 3] = color.a;
             }
         }
+
         var builder = Texture.Create(MaxFrameSize, MaxFrameSize);
         builder.WithData(textureData);
         builder.WithMips(0);
