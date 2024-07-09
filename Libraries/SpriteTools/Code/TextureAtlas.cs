@@ -16,6 +16,41 @@ public class TextureAtlas
     int MaxFrameSize;
     static Dictionary<string, TextureAtlas> Cache = new();
 
+    /// <summary>
+    /// Returns the UV tiling for the texture atlas.
+    /// </summary>
+    public Vector2 GetFrameTiling()
+    {
+        // inset by 1 pixel to avoid bleeding
+        return new Vector2(MaxFrameSize - 2, MaxFrameSize - 2) / ((float)MaxFrameSize * Size);
+    }
+
+    /// <summary>
+    /// Returns the UV offset for a specific frame in the texture atlas.
+    /// </summary>
+    /// <param name="index">The index of the frame</param>
+    public Vector2 GetFrameOffset(int index)
+    {
+        int x = index * MaxFrameSize % (Size * MaxFrameSize);
+        int y = index * MaxFrameSize / (Size * MaxFrameSize) * MaxFrameSize;
+        x += 1;
+        y += 1;
+        return new Vector2(x, y) / (float)(Size * MaxFrameSize);
+    }
+
+    // Cast to texture
+    public static implicit operator Texture(TextureAtlas atlas)
+    {
+        return atlas.Texture;
+    }
+
+
+    //////////////////////////// STATIC METHODS //////////////////////////// 
+
+    /// <summary>
+    /// Returns a cached texture atlas given a sprite animation. Creates one if not in the cache. Returns null if there was an error and the atlas could not be created.
+    /// </summary>
+    /// <param name="animation">The sprite animation to create the atlas from</param>
     public static TextureAtlas FromAnimation(SpriteAnimation animation)
     {
         var key = "anim." + animation.Name + ".";
@@ -97,10 +132,9 @@ public class TextureAtlas
     }
 
     /// <summary>
-    /// Create a texture atlas from a list of texture paths. Returns null if there was an error and the texture cannot be loaded.
+    /// Returns a cached texture atlas given a list of texture paths. Creates one if not in the cache. Returns null if there was an error and the atlas could not be created.
     /// </summary>
-    /// <param name="texturePaths"></param>
-    /// <returns></returns>
+    /// <param name="texturePaths">A list containing a path to each frame</param>
     public static TextureAtlas FromTextures(List<string> texturePaths)
     {
         var key = string.Join(",", texturePaths.OrderBy(x => x));
@@ -172,6 +206,11 @@ public class TextureAtlas
         return atlas;
     }
 
+    /// <summary>
+    /// Returns a cached texture atlas given a spritesheet path and a list of sprite rects. Creates one if not in the cache. Returns null if there was an error and the atlas could not be created.
+    /// </summary>
+    /// <param name="path">The path to the spritesheet texture</param>
+    /// <param name="spriteRects">A list of rectangles representing the position of each sprite in the spritesheet</param>
     public static TextureAtlas FromSpritesheet(string path, List<Rect> spriteRects)
     {
         var key = path + string.Join(",", spriteRects.OrderBy(x => x));
@@ -239,26 +278,5 @@ public class TextureAtlas
         Cache[key] = atlas;
 
         return atlas;
-    }
-
-    public Vector2 GetFrameTiling()
-    {
-        // inset by 1 pixel to avoid bleeding
-        return new Vector2(MaxFrameSize - 2, MaxFrameSize - 2) / ((float)MaxFrameSize * Size);
-    }
-
-    public Vector2 GetFrameOffset(int index)
-    {
-        int x = index * MaxFrameSize % (Size * MaxFrameSize);
-        int y = index * MaxFrameSize / (Size * MaxFrameSize) * MaxFrameSize;
-        x += 1;
-        y += 1;
-        return new Vector2(x, y) / (float)(Size * MaxFrameSize);
-    }
-
-    // Cast to texture
-    public static implicit operator Texture(TextureAtlas atlas)
-    {
-        return atlas.Texture;
     }
 }
