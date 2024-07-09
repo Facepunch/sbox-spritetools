@@ -53,21 +53,7 @@ class PreviewSprite : AssetPreview
         so.Flags.CastShadows = false;
 
         var anim = sprite.Animations.FirstOrDefault();
-        atlas = TextureAtlas.FromAnimation(anim);
-
-        if (atlas is not null)
-        {
-            previewMat.Set("Texture", atlas);
-            frame = 0;
-            UpdateFrame();
-
-            PrimarySceneObject = so;
-
-            frameTime = 1f / anim.FrameRate;
-            frames = anim.Frames.Count;
-            if (frames < 1)
-                frames = 1;
-        }
+        Init(anim);
 
         so.SetMaterialOverride(previewMat);
 
@@ -86,6 +72,22 @@ class PreviewSprite : AssetPreview
         }
     }
 
+    void Init(SpriteAnimation anim)
+    {
+        atlas = TextureAtlas.FromAnimation(anim);
+        if (atlas is not null)
+        {
+            previewMat.Set("Texture", atlas);
+            frame = 0;
+            UpdateFrame();
+
+            frameTime = 1f / anim.FrameRate;
+            frames = anim.Frames.Count;
+            if (frames < 1)
+                frames = 1;
+        }
+    }
+
     void UpdateFrame()
     {
         if (atlas is null) return;
@@ -94,6 +96,13 @@ class PreviewSprite : AssetPreview
         previewMat.Set("g_vOffset", offset);
         previewMat.Set("g_vTiling", tiling);
         so.SetMaterialOverride(previewMat);
+    }
+
+    public void SetAnimation(string name)
+    {
+        var anim = sprite.Animations.FirstOrDefault(x => x.Name == name);
+        if (anim is null) return;
+        Init(anim);
     }
 
 }
