@@ -12,8 +12,12 @@ class PreviewSprite : AssetPreview
 {
     SceneObject so;
     Material previewMat;
-    int sequences;
     SpriteResource sprite;
+    TextureAtlas atlas;
+    int frame = 0;
+    int frames = 1;
+    float frameTime = 1f;
+    float timer = 0f;
 
     /// <summary>
     /// Use the eval, because in sequences we want to find a frame with the most action
@@ -40,7 +44,7 @@ class PreviewSprite : AssetPreview
 
         so = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
         so.Transform = Transform.Zero;
-        var previewMat = Material.Load("materials/sprite_2d.vmat").CreateCopy();
+        previewMat = Material.Load("materials/sprite_2d.vmat").CreateCopy();
         previewMat.Set("Texture", Color.Transparent);
         previewMat.Set("g_flFlashAmount", 0f);
         so.Flags.WantsFrameBufferCopy = true;
@@ -48,21 +52,21 @@ class PreviewSprite : AssetPreview
         so.Flags.IsOpaque = false;
         so.Flags.CastShadows = false;
 
-        var atlas = TextureAtlas.FromAnimation(sprite.Animations.FirstOrDefault());
+        var anim = sprite.Animations.FirstOrDefault();
+        atlas = TextureAtlas.FromAnimation(anim);
 
         if (atlas is not null)
         {
             previewMat.Set("Texture", atlas);
-            var offset = atlas.GetFrameOffset(0);
-            var tiling = atlas.GetFrameTiling();
-            previewMat.Set("g_vOffset", offset);
-            previewMat.Set("g_vTiling", tiling);
+            frame = 0;
+            UpdateFrame();
 
             PrimarySceneObject = so;
 
-            sequences = sprite.Animations.FirstOrDefault().Frames.Count;
-            if (sequences < 1)
-                sequences = 1;
+            frameTime = 1f / anim.FrameRate;
+            frames = anim.Frames.Count;
+            if (frames < 1)
+                frames = 1;
         }
 
         so.SetMaterialOverride(previewMat);
@@ -72,6 +76,24 @@ class PreviewSprite : AssetPreview
 
     public override void UpdateScene(float cycle, float timeStep)
     {
+        timer += timeStep;
+        if (timer >= frameTime)
+        {
+            frame = (frame + 1) % frames;
+            UpdateFrame();
+
+            timer -= frameTime;
+        }
+    }
+
+    void UpdateFrame()
+    {
+        if (atlas is null) return;
+        var offset = atlas.GetFrameOffset(frame);
+        var tiling = atlas.GetFrameTiling();
+        previewMat.Set("g_vOffset", offset);
+        previewMat.Set("g_vTiling", tiling);
+        so.SetMaterialOverride(previewMat);
     }
 
 }
