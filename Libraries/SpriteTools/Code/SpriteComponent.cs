@@ -19,7 +19,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _sprite;
         set
         {
-            var lastSprite = _sprite;
             _sprite = value;
             if (_sprite != null)
             {

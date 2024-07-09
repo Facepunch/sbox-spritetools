@@ -61,6 +61,7 @@ public class TextureAtlas
         var builder = Texture.Create(MaxFrameSize, MaxFrameSize);
         builder.WithData(textureData);
         builder.WithMips(0);
+        builder.WithMultisample(0);
         return builder.Finish();
     }
 
