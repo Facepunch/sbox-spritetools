@@ -36,6 +36,15 @@ public class SpriteResource : GameResource
 		return attachmentNames;
 	}
 
+	/// <summary>
+	/// Try to load a sprite from a file path.
+	/// </summary>
+	/// <param name="path">The path to the sprite resource</param>
+	public static SpriteResource Load(string path)
+	{
+		return ResourceLibrary.Get<SpriteResource>(path);
+	}
+
 }
 
 public class SpriteAnimation
