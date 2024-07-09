@@ -38,6 +38,31 @@ public class TextureAtlas
         return new Vector2(x, y) / (float)(Size * MaxFrameSize);
     }
 
+    public Texture GetTextureFromFrame(int index)
+    {
+        int x = index * MaxFrameSize % (Size * MaxFrameSize);
+        int y = index * MaxFrameSize / (Size * MaxFrameSize) * MaxFrameSize;
+        x += 1;
+        y += 1;
+        byte[] textureData = new byte[MaxFrameSize * MaxFrameSize * 4];
+        for (int i = 0; i < MaxFrameSize; i++)
+        {
+            for (int j = 0; j < MaxFrameSize; j++)
+            {
+                var ind = (x + i + (y + j) * Size * MaxFrameSize) * 4;
+                var color = Texture.GetPixel(x + i, y + j);
+                textureData[i + j * MaxFrameSize] = color.r;
+                textureData[i + j * MaxFrameSize + 1] = color.g;
+                textureData[i + j * MaxFrameSize + 2] = color.b;
+                textureData[i + j * MaxFrameSize + 3] = color.a;
+            }
+        }
+        var builder = Texture.Create(MaxFrameSize, MaxFrameSize);
+        builder.WithData(textureData);
+        builder.WithMips(0);
+        return builder.Finish();
+    }
+
     // Cast to texture
     public static implicit operator Texture(TextureAtlas atlas)
     {
