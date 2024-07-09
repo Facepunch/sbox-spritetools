@@ -103,13 +103,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _spriteFlags;
         set
         {
+            if (_spriteFlags == value) return;
             _spriteFlags = value;
-            _flipHorizontal = _spriteFlags.HasFlag(SpriteFlags.HorizontalFlip);
-            _flipVertical = _spriteFlags.HasFlag(SpriteFlags.VerticalFlip);
-            var targetModel = _spriteFlags.HasFlag(SpriteFlags.DrawBackface) ? "models/sprite_quad_2_sided.vmdl" : "models/sprite_quad_1_sided.vmdl";
-            if (SceneObject is not null && SceneObject.Model.ResourcePath != targetModel)
-                SceneObject.Model = Model.Load(targetModel);
-            UpdateMaterialOffset();
+            ApplySpriteFlags();
         }
     }
     private SpriteFlags _spriteFlags = SpriteFlags.None;
@@ -188,7 +184,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             {
                 if (_currentFrameIndex >= CurrentAnimation.Frames.Count)
                     _currentFrameIndex = 0;
-                UpdateMaterialOffset();
+                ApplyMaterialOffset();
             }
         }
     }
@@ -214,8 +210,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
 
         UpdateSceneObject();
+        ApplySpriteFlags();
         FlashTint = _flashTint;
-        SpriteFlags = _spriteFlags;
     }
 
     protected override void OnAwake()
@@ -281,7 +277,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (CurrentTexture is not null)
             {
                 SpriteMaterial.Set("Texture", CurrentTexture);
-                UpdateMaterialOffset();
+                ApplyMaterialOffset();
             }
             SceneObject.SetMaterialOverride(SpriteMaterial);
         }
@@ -364,7 +360,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
     }
 
-    void UpdateMaterialOffset()
+    void ApplyMaterialOffset()
     {
         if (CurrentTexture is null) return;
         if (SpriteMaterial is null) return;
@@ -380,6 +376,16 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
         SpriteMaterial.Set("g_vTiling", tiling);
         SpriteMaterial.Set("g_vOffset", offset);
+    }
+
+    void ApplySpriteFlags()
+    {
+        _flipHorizontal = _spriteFlags.HasFlag(SpriteFlags.HorizontalFlip);
+        _flipVertical = _spriteFlags.HasFlag(SpriteFlags.VerticalFlip);
+        var targetModel = _spriteFlags.HasFlag(SpriteFlags.DrawBackface) ? "models/sprite_quad_2_sided.vmdl" : "models/sprite_quad_1_sided.vmdl";
+        if (SceneObject is not null && SceneObject.Model.ResourcePath != targetModel)
+            SceneObject.Model = Model.Load(targetModel);
+        ApplyMaterialOffset();
     }
 
     protected override void OnDestroy()
@@ -425,8 +431,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         var atlas = TextureAtlas.FromAnimation(animation);
         CurrentTexture = atlas;
         SpriteMaterial?.Set("Texture", CurrentTexture);
-        SpriteMaterial?.Set("g_vTiling", CurrentTexture.GetFrameTiling());
-        SpriteMaterial?.Set("g_vOffset", CurrentTexture.GetFrameOffset(0));
+        ApplyMaterialOffset();
     }
 
     void BroadcastEvent(string tag)
