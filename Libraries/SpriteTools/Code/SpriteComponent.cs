@@ -38,13 +38,15 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Category("Visuals")]
     public Color Tint
     {
-        get => SceneObject?.ColorTint ?? Color.White;
+        get => _tint;
         set
         {
+            _tint = value;
             if (SceneObject != null)
                 SceneObject.ColorTint = value;
         }
     }
+    Color _tint = Color.White;
 
     /// <summary>
     /// The color of the sprite when it is flashing.
@@ -231,7 +233,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         SceneObject ??= new SceneObject(Scene.SceneWorld, Model.Load("models/sprite_quad_1_sided.vmdl"))
         {
-            Flags = { IsTranslucent = true }
+            Flags = { IsTranslucent = true },
+            ColorTint = Tint
         };
     }
 
