@@ -181,7 +181,6 @@ public partial class MainWindow : DockWindow, IAssetEditor
     {
         var inspector = new Inspector.Inspector(this);
         var preview = new Preview.Preview(this);
-        var animator = new Animator.Animator(this);
         Timeline = new Timeline.Timeline(this);
         var animationList = new AnimationList.AnimationList(this);
         // var errorList = new ErrorList( null, this );
@@ -190,7 +189,6 @@ public partial class MainWindow : DockWindow, IAssetEditor
         DockManager.RegisterDockType("Inspector", "edit", () => new Inspector.Inspector(this));
         DockManager.RegisterDockType("Animations", "directions_walk", () => new AnimationList.AnimationList(this));
         DockManager.RegisterDockType("Preview", "emoji_emotions", () => new Preview.Preview(this));
-        DockManager.RegisterDockType("Animator", "animation", () => new Animator.Animator(this));
         DockManager.RegisterDockType("Timeline", "view_column", () =>
         {
             Timeline = new Timeline.Timeline(this);
@@ -200,9 +198,6 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         DockManager.AddDock(null, inspector, DockArea.Left, DockManager.DockProperty.HideOnClose);
         DockManager.AddDock(null, preview, DockArea.Right, DockManager.DockProperty.HideOnClose, split: 0.8f);
-        DockManager.AddDock(preview, animator, DockArea.Inside, DockManager.DockProperty.HideOnClose);
-        DockManager.RaiseDock("Preview");
-        DockManager.Update();
 
         DockManager.AddDock(preview, Timeline, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.2f);
         DockManager.AddDock(inspector, animationList, DockArea.Bottom, DockManager.DockProperty.HideOnClose, split: 0.45f);
