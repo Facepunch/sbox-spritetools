@@ -7,8 +7,8 @@ namespace SpriteTools.SpriteEditor.SpritesheetImporter;
 public class Preview : Widget
 {
     RenderingWidget Rendering;
-    Widget Overlay;
-    WidgetWindow overlayWindowZoom;
+    // Widget Overlay;
+    // WidgetWindow overlayWindowZoom;
 
     public Preview(SpritesheetImporter parent) : base(parent)
     {
@@ -71,23 +71,23 @@ public class Preview : Widget
     {
         base.DoLayout();
 
-        if (Overlay.IsValid() && Rendering.IsValid())
-        {
-            Overlay.Position = Rendering.ScreenPosition;
-            Overlay.Size = Rendering.Size + 1;
+        // if (Overlay.IsValid() && Rendering.IsValid())
+        // {
+        //     Overlay.Position = Rendering.ScreenPosition;
+        //     Overlay.Size = Rendering.Size + 1;
 
-            overlayWindowZoom.AdjustSize();
-            overlayWindowZoom.AlignToParent(TextFlag.RightTop, 4);
-        }
+        //     overlayWindowZoom.AdjustSize();
+        //     overlayWindowZoom.AlignToParent(TextFlag.RightTop, 4);
+        // }
     }
 
     protected override void OnVisibilityChanged(bool visible)
     {
         base.OnVisibilityChanged(visible);
 
-        if (Overlay is not null)
-        {
-            Overlay.Visible = visible;
-        }
+        // if (Overlay is not null)
+        // {
+        //     Overlay.Visible = visible;
+        // }
     }
 }
