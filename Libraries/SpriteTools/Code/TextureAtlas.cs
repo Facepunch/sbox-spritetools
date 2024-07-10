@@ -306,4 +306,21 @@ public class TextureAtlas
 
         return atlas;
     }
+
+    /// <summary>
+    /// Clears the cache of texture atlases. If a path is provided, only the atlases that contain that path will be removed.
+    /// </summary>
+    /// <param name="path">The path to remove from the cache</param>
+    public static void ClearCache(string path = "")
+    {
+        if (path.StartsWith("/")) path = path.Substring(1);
+        if (string.IsNullOrEmpty(path))
+        {
+            Cache.Clear();
+        }
+        else
+        {
+            Cache = Cache.Where(x => !x.Key.Contains(path)).ToDictionary(x => x.Key, x => x.Value);
+        }
+    }
 }

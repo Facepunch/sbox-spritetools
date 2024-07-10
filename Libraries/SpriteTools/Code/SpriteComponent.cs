@@ -119,7 +119,16 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// The sprite animation that is currently playing.
     /// </summary>
     [JsonIgnore]
-    public SpriteAnimation CurrentAnimation { get; private set; }
+    public SpriteAnimation CurrentAnimation
+    {
+        get => _currentAnimation;
+        set
+        {
+            PlayAnimation(value.Name);
+        }
+    }
+    [JsonIgnore]
+    SpriteAnimation _currentAnimation;
 
     [Property, Category("Sprite"), Title("Current Animation"), AnimationName]
     private string StartingAnimationName
@@ -419,12 +428,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     public void PlayAnimation(string animationName)
     {
         if (Sprite == null) return;
-        if (CurrentAnimation?.Name == animationName) return;
 
         var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
         if (animation == null) return;
 
-        CurrentAnimation = animation;
+        _currentAnimation = animation;
         CurrentFrameIndex = 0;
 
         var atlas = TextureAtlas.FromAnimation(animation);
