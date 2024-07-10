@@ -19,7 +19,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public Action OnPlayPause;
 
     internal static List<MainWindow> AllWindows { get; } = new List<MainWindow>();
-    public bool CanOpenMultipleAssets => true;
+    public bool CanOpenMultipleAssets => false;
 
     private readonly UndoStack _undoStack = new();
     public UndoStack UndoStack => _undoStack;
