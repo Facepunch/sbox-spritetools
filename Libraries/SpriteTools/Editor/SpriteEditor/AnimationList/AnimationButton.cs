@@ -23,6 +23,8 @@ internal class AnimationButton : Widget
         AnimationList = list;
         MainWindow = window;
         Animation = animation;
+        StatusTip = $"Select {Animation.Name} Animation";
+        Cursor = CursorShape.Finger;
 
         if (Animation.Name == MainWindow?.SelectedAnimation?.Name)
         {
@@ -80,6 +82,11 @@ internal class AnimationButton : Widget
         if (Selected)
         {
             Paint.SetBrushAndPen(Theme.Selection.WithAlpha(0.5f));
+            Paint.DrawRect(LocalRect);
+        }
+        else if (IsUnderMouse)
+        {
+            Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
             Paint.DrawRect(LocalRect);
         }
 
