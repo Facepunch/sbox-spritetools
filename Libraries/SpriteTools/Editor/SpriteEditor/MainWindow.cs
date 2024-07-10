@@ -62,6 +62,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     public bool Playing = true;
     public Timeline.Timeline Timeline;
+    ToolBar toolBar;
 
     Option _undoMenuOption;
     Option _redoMenuOption;
@@ -527,7 +528,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     private void CreateToolBar()
     {
-        var toolBar = new ToolBar(this, "ShaderGraphToolbar");
+        toolBar?.Destroy();
+        toolBar = new ToolBar(this, "SpriteEditorToolbar");
         AddToolBar(toolBar, ToolbarPosition.Top);
 
         toolBar.AddOption("New", "common/new.png", New).StatusText = "New Sprite";
