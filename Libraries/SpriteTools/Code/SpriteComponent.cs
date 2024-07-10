@@ -264,11 +264,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         bbox = bbox.Translate(new Vector3(-origin.y, origin.x, 0) * 100f);
         Gizmo.Hitbox.BBox(bbox);
 
-        if (Gizmo.IsHovered)
+        if (Gizmo.IsHovered || Gizmo.IsSelected)
         {
             bbox.Mins.z = 0;
             bbox.Maxs.z = 0.0f;
-            Gizmo.Draw.Color = Color.Orange;
+            Gizmo.Draw.Color = Gizmo.IsSelected ? Color.White : Color.Orange;
             Gizmo.Draw.LineBBox(bbox);
         }
     }
