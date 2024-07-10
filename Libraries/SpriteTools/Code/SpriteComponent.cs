@@ -112,7 +112,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// <summary>
     /// A dictionary of broadcast events that this component will send (populated based on the Sprite resource)
     /// </summary>
-    [JsonIgnore]
+    [Property, Hide]
     public Dictionary<string, Action<SpriteComponent>> BroadcastEvents = new();
 
     /// <summary>
@@ -146,7 +146,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     string _startingAnimationName = "";
 
 
-    [Property, Category("Sprite"), JsonIgnore]
+    [JsonIgnore, Property, Category("Sprite")]
     BroadcastControls _broadcastEvents = new();
 
     [Property, Category("Sprite")]
@@ -176,6 +176,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Property, Group("Sprite")]
     public Action<string> OnBroadcastEvent { get; set; }
 
+    /// <summary>
+    /// Invoked when an animation reaches the last frame.
+    /// </summary>
     [Property, Group("Sprite")]
     public Action<string> OnAnimationComplete { get; set; }
 
