@@ -3,7 +3,6 @@
   "Type": "library",
   "Org": "facepunch",
   "Ident": "spritetools",
-  "Tags": "2d sprite tools pixel art",
   "Schema": 1,
   "IncludeSourceFiles": false,
   "Resources": null,
