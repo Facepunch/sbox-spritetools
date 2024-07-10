@@ -405,12 +405,14 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void UpdateSprite()
     {
-        BroadcastEvents.Clear();
         if (Sprite == null)
         {
+            BroadcastEvents.Clear();
             CurrentAnimation = null;
             return;
         }
+
+        List<string> keysToRemove = BroadcastEvents.Keys.ToList();
 
         foreach (var animation in Sprite.Animations)
         {
@@ -418,16 +420,25 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             {
                 foreach (var tag in frame.Events)
                 {
+                    if (keysToRemove.Contains(tag))
+                        keysToRemove.Remove(tag);
                     if (!BroadcastEvents.ContainsKey(tag))
                         BroadcastEvents[tag] = (_) => { };
                 }
             }
         }
+
+
+        foreach (var key in keysToRemove)
+        {
+            BroadcastEvents.Remove(key);
+        }
     }
 
-    public void PlayAnimation(string animationName)
+    public void PlayAnimation(string animationName, bool force = false)
     {
         if (Sprite == null) return;
+        if (!force && _currentAnimation?.Name == animationName) return;
 
         var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
         if (animation == null) return;

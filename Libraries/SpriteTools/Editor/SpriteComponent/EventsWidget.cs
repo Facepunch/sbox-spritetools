@@ -10,11 +10,13 @@ namespace SpriteTools;
 public class SpriteComponentControlWidget : ControlWidget
 {
     public override bool SupportsMultiEdit => false;
+    SerializedObject serializedObject;
+    SpriteComponent spriteComponent;
 
     public SpriteComponentControlWidget(SerializedProperty property) : base(property)
     {
-        var component = property.Parent.Targets.First() as SpriteComponent;
-        var serializedObject = component?.GetSerialized();
+        spriteComponent = property.Parent.Targets.First() as SpriteComponent;
+        serializedObject = spriteComponent?.GetSerialized();
         if (serializedObject is null)
         {
             return;
@@ -23,13 +25,19 @@ public class SpriteComponentControlWidget : ControlWidget
         Layout = Layout.Column();
         Layout.Spacing = 2;
 
-        serializedObject.TryGetProperty(nameof(SpriteComponent.BroadcastEvents), out var events);
-
-        Layout.Add(new DictionaryActionControlWidget(events, component));
+        Rebuild();
     }
 
     protected override void OnPaint()
     {
+
+    }
+
+    void Rebuild()
+    {
+        Layout.Clear(true);
+        serializedObject.TryGetProperty(nameof(SpriteComponent.BroadcastEvents), out var events);
+        Layout.Add(new DictionaryActionControlWidget(events, spriteComponent));
     }
 
     private class DictionaryActionControlWidget : ControlWidget
