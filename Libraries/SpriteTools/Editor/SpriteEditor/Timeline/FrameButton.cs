@@ -29,6 +29,7 @@ public class FrameButton : Widget
         Timeline = timeline;
         MainWindow = window;
         FrameIndex = index;
+        Cursor = CursorShape.Finger;
 
         Layout = Layout.Row();
         Layout.Margin = 4;
@@ -59,6 +60,12 @@ public class FrameButton : Widget
             }
         }
         Pixmap.UpdateFromPixels(MemoryMarshal.AsBytes<Color32>(span.ToArray()), (int)rect.Width, (int)rect.Height);
+
+        StatusTip = $"Frame {FrameIndex + 1} - {frame.FilePath}";
+        if (frame.SpriteSheetRect.Width != 0 && frame.SpriteSheetRect.Height != 0)
+        {
+            StatusTip += " - (" + frame.SpriteSheetRect + ")";
+        }
 
         IsDraggable = true;
         AcceptDrops = true;
@@ -95,7 +102,7 @@ public class FrameButton : Widget
         MinimumSize = new Vector2(FrameSize, FrameSize + 16f);
         MaximumSize = new Vector2(FrameSize, FrameSize + 16f);
 
-        Paint.SetBrushAndPen(Theme.ControlBackground.Lighten(isSelected ? 2f : 0.5f));
+        Paint.SetBrushAndPen(Theme.ControlBackground.Lighten(isSelected ? 2f : (IsUnderMouse ? 1f : 0.5f)));
         Paint.DrawRect(LocalRect);
 
         Paint.SetBrushAndPen(Theme.ControlBackground);
