@@ -51,7 +51,7 @@
       ]
     },
     {
-      "FrameRate": 8,
+      "FrameRate": 9,
       "Origin": "0.5,1",
       "Looping": true,
       "Name": "run",
@@ -115,6 +115,8 @@
       ]
     }
   ],
-  "__references": [],
+  "__references": [
+    "carsonk.spr_citizen_test"
+  ],
   "__version": 0
 }

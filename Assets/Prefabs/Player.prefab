@@ -5,8 +5,6 @@
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
-    "NetworkMode": 2,
-    "NetworkInterpolation": true,
     "Components": [
       {
         "__type": "Quest.Player",
@@ -59,13 +57,14 @@
         "Name": "Body",
         "Rotation": "0,0.7071068,0,0.7071068",
         "Enabled": true,
-        "NetworkMode": 2,
-        "NetworkInterpolation": true,
         "Components": [
           {
             "__type": "SpriteTools.SpriteComponent",
             "__guid": "979d1731-5074-48fa-8ffb-9cb5f0e31224",
-            "_broadcastEvents": {},
+            "BroadcastEvents": {
+              "bob": null,
+              "step": null
+            },
             "CastShadows": "On",
             "CreateAttachPoints": false,
             "FlashTint": "1,1,1,0",
@@ -73,7 +72,7 @@
             "Sprite": "sprites/player.sprite",
             "SpriteFlags": "DrawBackface",
             "StartingAnimationName": "idle",
-            "Tint": "1,1,1,1"
+            "Tint": "1,0,0.98333,1"
           }
         ],
         "Children": [
@@ -83,8 +82,6 @@
             "Name": "Interact Checker",
             "Tags": "trigger",
             "Enabled": true,
-            "NetworkMode": 2,
-            "NetworkInterpolation": true,
             "Components": [
               {
                 "__type": "Sandbox.SphereCollider",
@@ -107,9 +104,7 @@
         "Flags": 0,
         "Name": "PointAt",
         "Position": "0,0,57.69896",
-        "Enabled": true,
-        "NetworkMode": 2,
-        "NetworkInterpolation": true
+        "Enabled": true
       }
     ],
     "__variables": []
