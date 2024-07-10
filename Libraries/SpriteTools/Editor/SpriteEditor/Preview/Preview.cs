@@ -134,7 +134,6 @@ public class Preview : Widget
         SetSizeMode(SizeMode.Default, SizeMode.CanShrink);
 
         MainWindow.OnTextureUpdate += UpdateTexture;
-        MainWindow.OnAnimationSelected += UpdateWindowTitle;
 
         MainWindow.Moved += DoLayout;
     }
@@ -144,18 +143,7 @@ public class Preview : Widget
         base.OnDestroyed();
 
         MainWindow.OnTextureUpdate -= UpdateTexture;
-        MainWindow.OnAnimationSelected -= UpdateWindowTitle;
         MainWindow.Moved -= DoLayout;
-    }
-
-    void UpdateWindowTitle()
-    {
-        if (MainWindow.SelectedAnimation is null)
-        {
-            WindowTitle = "Preview";
-            return;
-        }
-        WindowTitle = $"Preview - {MainWindow.SelectedAnimation.Name}";
     }
 
     void UpdateTexture()
