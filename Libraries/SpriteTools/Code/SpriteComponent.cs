@@ -309,17 +309,18 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (CurrentAnimation.Looping || CurrentFrameIndex < lastFrame - 1)
             {
                 var frame = CurrentFrameIndex;
+                var currentFrame = CurrentAnimation.Frames[frame];
+                foreach (var tag in currentFrame.Events)
+                {
+                    BroadcastEvent(tag);
+                }
+
                 frame++;
                 if (CurrentAnimation.Looping && frame >= lastFrame)
                     frame = 0;
                 else if (frame >= lastFrame - 1)
                     OnAnimationComplete?.Invoke(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
-                var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
-                foreach (var tag in currentFrame.Events)
-                {
-                    BroadcastEvent(tag);
-                }
                 _timeSinceLastFrame = 0;
             }
         }
@@ -328,6 +329,12 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (CurrentAnimation.Looping || CurrentFrameIndex > 0)
             {
                 var frame = CurrentFrameIndex;
+                var currentFrame = CurrentAnimation.Frames[frame];
+                foreach (var tag in currentFrame.Events)
+                {
+                    BroadcastEvent(tag);
+                }
+
                 frame--;
                 if (CurrentAnimation.Looping && frame < 0)
                     frame = lastFrame - 1;
