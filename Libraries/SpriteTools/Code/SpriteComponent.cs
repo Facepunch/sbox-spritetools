@@ -446,7 +446,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (animation == null) return;
 
         _currentAnimation = animation;
-        CurrentFrameIndex = 0;
+        _currentFrameIndex = 0;
+        _timeSinceLastFrame = 0;
 
         var atlas = TextureAtlas.FromAnimation(animation);
         CurrentTexture = atlas;
