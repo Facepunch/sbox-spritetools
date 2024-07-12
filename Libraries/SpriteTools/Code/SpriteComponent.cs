@@ -135,18 +135,15 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Property, Category("Sprite"), Title("Current Animation"), AnimationName]
     private string StartingAnimationName
     {
-        get => CurrentAnimation?.Name ?? "";
+        get => CurrentAnimation?.Name ?? Sprite.Animations.FirstOrDefault()?.Name;
         set
         {
             if (Sprite == null) return;
             var animation = Sprite.Animations.Find(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant());
             if (animation == null) return;
             PlayAnimation(animation.Name);
-            _startingAnimationName = value.ToLowerInvariant();
         }
     }
-    string _startingAnimationName = "";
-
 
     [JsonIgnore, Property, Category("Sprite")]
     BroadcastControls _broadcastEvents = new();
