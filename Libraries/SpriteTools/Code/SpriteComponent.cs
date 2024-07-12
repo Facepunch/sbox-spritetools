@@ -263,7 +263,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (Game.IsPlaying) return;
 
         BBox bbox = new BBox(new Vector3(-50, -50, -0.1f), new Vector3(50, 50, 0.1f));
-        var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+        var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
         bbox = bbox.Translate(new Vector3(-origin.y, origin.x, 0) * 100f);
         Gizmo.Hitbox.BBox(bbox);
 
