@@ -443,7 +443,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (!force && _currentAnimation?.Name == animationName) return;
 
         var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
-        if (animation == null) return;
+        if (animation == null)
+        {
+            Log.Warning($"Could not find animation \"{animationName}\" in sprite \"{Sprite.ResourceName}\".");
+            return;
+        }
 
         _currentAnimation = animation;
         _currentFrameIndex = 0;
