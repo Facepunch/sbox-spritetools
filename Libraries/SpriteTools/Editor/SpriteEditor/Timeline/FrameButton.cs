@@ -360,6 +360,12 @@ public class FrameButton : Widget
 
     void Delete()
     {
+        if (Selected.Count > 1)
+        {
+            DeleteSelected();
+            return;
+        }
+
         MainWindow.PushUndo($"Delete {MainWindow.SelectedAnimation.Name} Frame");
 
         MainWindow.SelectedAnimation.Frames.RemoveAt(FrameIndex);
@@ -371,6 +377,32 @@ public class FrameButton : Widget
             if (FrameIndex < attachment.Points.Count)
             {
                 attachment.Points.RemoveAt(FrameIndex);
+            }
+        }
+
+        Timeline.UpdateFrameList();
+
+        MainWindow.PushRedo();
+    }
+
+    void DeleteSelected()
+    {
+        MainWindow.PushUndo($"Delete {Selected.Count} Frames from {MainWindow.SelectedAnimation.Name}");
+
+        Selected = Selected.OrderBy(x => x.FrameIndex).ToList();
+        for (int i = Selected.Count - 1; i >= 0; i--)
+        {
+            var button = Selected[i];
+            MainWindow.SelectedAnimation.Frames.RemoveAt(button.FrameIndex);
+
+            foreach (var attachment in MainWindow.SelectedAnimation.Attachments)
+            {
+                if (attachment.Points.Count == 0) continue;
+
+                if (button.FrameIndex < attachment.Points.Count)
+                {
+                    attachment.Points.RemoveAt(button.FrameIndex);
+                }
             }
         }
 
