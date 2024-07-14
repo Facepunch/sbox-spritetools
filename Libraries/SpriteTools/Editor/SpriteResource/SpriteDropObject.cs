@@ -36,16 +36,15 @@ partial class SpriteDropObject : BaseDropObject
 
 	public override void OnUpdate()
 	{
-		using var scope = Gizmo.Scope("DropObject", traceTransform);
+		using var scope = Gizmo.Scope("DropObject", traceTransform.WithRotation(Rotation.Identity));
 
 		Gizmo.Draw.Color = Color.White;
 		if (texture is not null)
 		{
 			// origin vector in respect to the camera
-			var camRot = SceneViewportWidget.LastSelected.State.CameraRotation;
-			var originVec = camRot.Up * origin.y + camRot.Right * origin.x;
-			Log.Info(-originVec);
-			Gizmo.Draw.Sprite(-originVec * 100f, new Vector2(100f, 100f), texture, true);
+			var camRot = SceneViewportWidget.LastSelected.State.CameraRotation * Rotation.From(90, 0, 0);
+			var originVec = camRot.Backward * origin.y + camRot.Right * origin.x;
+			Gizmo.Draw.Sprite(originVec * 100f, new Vector2(100f, 100f), texture, true);
 		}
 		else
 		{
@@ -64,7 +63,7 @@ partial class SpriteDropObject : BaseDropObject
 		var DragObject = new GameObject();
 		DragObject.Name = sprite.ResourceName;
 		DragObject.Transform.World = traceTransform;
-		DragObject.Transform.Rotation = Rotation.Identity;
+		DragObject.Transform.Rotation = SceneViewportWidget.LastSelected.State.CameraRotation * Rotation.From(90, 180, 0);
 
 		GameObject = DragObject;
 
