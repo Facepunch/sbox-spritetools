@@ -121,14 +121,6 @@
           "FilePath": "images/ninja frog/run (32x32).png",
           "Events": [],
           "SpriteSheetRect": {
-            "Position": "256,0",
-            "Size": "32,32"
-          }
-        },
-        {
-          "FilePath": "images/ninja frog/run (32x32).png",
-          "Events": [],
-          "SpriteSheetRect": {
             "Position": "64,0",
             "Size": "32,32"
           }
@@ -153,6 +145,14 @@
           "FilePath": "images/ninja frog/run (32x32).png",
           "Events": [],
           "SpriteSheetRect": {
+            "Position": "160,0",
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/run (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
             "Position": "192,0",
             "Size": "32,32"
           }
@@ -169,7 +169,7 @@
           "FilePath": "images/ninja frog/run (32x32).png",
           "Events": [],
           "SpriteSheetRect": {
-            "Position": "160,0",
+            "Position": "256,0",
             "Size": "32,32"
           }
         },
@@ -194,6 +194,56 @@
           "Events": [],
           "SpriteSheetRect": {
             "Position": "352,0",
+            "Size": "32,32"
+          }
+        }
+      ],
+      "Attachments": []
+    },
+    {
+      "FrameRate": 15,
+      "Origin": "0.5,0.5",
+      "Looping": true,
+      "Name": "jump",
+      "Frames": [
+        {
+          "FilePath": "images/ninja frog/jump (32x32).png",
+          "Events": []
+        }
+      ],
+      "Attachments": []
+    },
+    {
+      "FrameRate": 15,
+      "Origin": "0.5,0.5",
+      "Looping": true,
+      "Name": "fall",
+      "Frames": [
+        {
+          "FilePath": "images/ninja frog/fall (32x32).png",
+          "Events": []
+        }
+      ],
+      "Attachments": []
+    },
+    {
+      "FrameRate": 7,
+      "Origin": "0.5,0.5",
+      "Looping": true,
+      "Name": "wall",
+      "Frames": [
+        {
+          "FilePath": "images/ninja frog/wall jump (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Size": "32,32"
+          }
+        },
+        {
+          "FilePath": "images/ninja frog/wall jump (32x32).png",
+          "Events": [],
+          "SpriteSheetRect": {
+            "Position": "64,0",
             "Size": "32,32"
           }
         }
