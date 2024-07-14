@@ -135,7 +135,9 @@
         },
         {
           "FilePath": "images/ninja frog/run (32x32).png",
-          "Events": [],
+          "Events": [
+            "footstep"
+          ],
           "SpriteSheetRect": {
             "Position": "128,0",
             "Size": "32,32"
@@ -183,7 +185,9 @@
         },
         {
           "FilePath": "images/ninja frog/run (32x32).png",
-          "Events": [],
+          "Events": [
+            "footstep"
+          ],
           "SpriteSheetRect": {
             "Position": "320,0",
             "Size": "32,32"
