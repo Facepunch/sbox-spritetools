@@ -145,7 +145,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
     }
 
-    [JsonIgnore, Property, Category("Sprite")]
+    [JsonIgnore, Property, Category("Sprite"), HideIf("HasBroadcastEvents", false)]
     BroadcastControls _broadcastEvents = new();
 
     [Property, Category("Sprite")]
@@ -180,6 +180,22 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// </summary>
     [Property, Group("Sprite")]
     public Action<string> OnAnimationComplete { get; set; }
+
+    /// <summary>
+    /// Whether or not the sprite has any broadcast events.
+    /// </summary>
+    public bool HasBroadcastEvents => BroadcastEvents.Count > 0;
+
+    public BBox Bounds
+    {
+        get
+        {
+            BBox bbox = new BBox(new Vector3(-50, -50, -0.1f), new Vector3(50, 50, 0.1f));
+            var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
+            bbox = bbox.Translate(new Vector3(-origin.y, origin.x, 0) * 100f);
+            return bbox;
+        }
+    }
 
     /// <summary>
     /// The current frame index of the animation playing.
@@ -259,9 +275,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         base.DrawGizmos();
         if (Game.IsPlaying) return;
 
-        BBox bbox = new BBox(new Vector3(-50, -50, -0.1f), new Vector3(50, 50, 0.1f));
-        var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
-        bbox = bbox.Translate(new Vector3(-origin.y, origin.x, 0) * 100f);
+        var bbox = Bounds;
         Gizmo.Hitbox.BBox(bbox);
 
         if (Gizmo.IsHovered || Gizmo.IsSelected)
