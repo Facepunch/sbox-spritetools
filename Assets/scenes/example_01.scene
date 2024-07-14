@@ -48,30 +48,6 @@
           "SkyColor": "0,0,0,0"
         }
       ]
-    },
-    {
-      "__guid": "14258d3b-b0e4-4e32-8f42-c23018740fd1",
-      "Flags": 0,
-      "Name": "player",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "SpriteTools.SpriteComponent",
-          "__guid": "98db8fa8-a4bd-4cf1-8d08-540bbe871dae",
-          "BroadcastEvents": {
-            "bob": null,
-            "step": null
-          },
-          "CastShadows": "On",
-          "CreateAttachPoints": false,
-          "FlashTint": "1,1,1,0",
-          "PlaybackSpeed": 1,
-          "Sprite": "sprites/player.sprite",
-          "SpriteFlags": "None",
-          "StartingAnimationName": "idle",
-          "Tint": "1,1,1,1"
-        }
-      ]
     }
   ],
   "SceneProperties": {
