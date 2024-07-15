@@ -341,7 +341,7 @@ public class FrameButton : Widget
     {
         MainWindow.PushUndo($"Duplicate {MainWindow.SelectedAnimation.Name} Frame");
 
-        MainWindow.SelectedAnimation.Frames.Insert(FrameIndex, MainWindow.SelectedAnimation.Frames[FrameIndex]);
+        MainWindow.SelectedAnimation.Frames.Insert(FrameIndex, MainWindow.SelectedAnimation.Frames[FrameIndex].Copy());
 
         foreach (var attachment in MainWindow.SelectedAnimation.Attachments)
         {
