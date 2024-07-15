@@ -5,8 +5,8 @@
       "__guid": "c618736a-6fdc-4fbb-9b21-3d4278254026",
       "Flags": 0,
       "Name": "Camera",
-      "Position": "0,0,2000",
-      "Rotation": "-0.7071068,-0.00000003090862,0.7071068,-0.00000003090862",
+      "Position": "292.0225,-1287.547,176.5773",
+      "Rotation": "0,0,0.7071068,0.7071068",
       "Tags": "maincamera",
       "Enabled": true,
       "Components": [
@@ -53,19 +53,50 @@
       "__guid": "aa0a1791-9c12-4f42-8336-3465031895aa",
       "Flags": 0,
       "Name": "Player",
-      "Rotation": "-0.4999999,-0.5,0.4999999,-0.5",
+      "Position": "0,0,46.57425",
+      "Tags": "player",
       "Enabled": true,
       "Components": [
         {
           "__type": "Quest.Player",
           "__guid": "f9e476bc-457c-42d7-94b3-71b1b3753707",
-          "HitboxSize": "32,32",
+          "Acceleration": 400,
+          "Friction": 400,
+          "Gravity": -100,
+          "HitboxSize": "0.5,0.7",
+          "JumpForce": 35,
+          "MaxSpeed": 750,
           "Sprite": {
             "_type": "component",
             "component_id": "52c39bd5-3cf4-4afe-ba19-cf10a8b871c0",
             "go": "e3746d6c-f75a-473e-bbb8-209fbc6fa3f0",
             "component_type": "SpriteComponent"
           }
+        },
+        {
+          "__type": "Sandbox.BoxCollider",
+          "__guid": "6904d580-1144-4afa-8e7f-26d6d7bdae7f",
+          "Center": "0,0,35",
+          "IsTrigger": false,
+          "Scale": "50,50,70",
+          "Static": false
+        },
+        {
+          "__type": "Sandbox.Rigidbody",
+          "__guid": "d4f13a34-596d-4ad0-b1c8-ec94e85a852b",
+          "AngularDamping": 0,
+          "Gravity": false,
+          "LinearDamping": 0,
+          "Locking": {
+            "Y": true,
+            "Pitch": true,
+            "Yaw": true,
+            "Roll": true
+          },
+          "MassOverride": 0,
+          "MotionEnabled": true,
+          "RigidbodyFlags": "DisableCollisionSounds",
+          "StartAsleep": false
         }
       ],
       "Children": [
@@ -73,6 +104,8 @@
           "__guid": "e3746d6c-f75a-473e-bbb8-209fbc6fa3f0",
           "Flags": 0,
           "Name": "ninja_frog",
+          "Position": "0,0,0",
+          "Rotation": "0.4999999,0.5,-0.4999999,0.5",
           "Enabled": true,
           "Components": [
             {
@@ -1621,6 +1654,32 @@
           },
           "SmoothingAngle": 40,
           "Static": true
+        }
+      ]
+    },
+    {
+      "__guid": "5655c21c-99e0-44c3-a0aa-5885d4805292",
+      "Flags": 0,
+      "Name": "Cube",
+      "Position": "0,0,187.2479",
+      "Scale": "13.33511,1,1",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "cc89cd3f-8102-4de6-84d5-9bf2412aaacb",
+          "BodyGroups": 18446744073709551615,
+          "Model": "models/dev/box.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "Sandbox.BoxCollider",
+          "__guid": "a4984a98-99cb-4b95-96b9-1c31c980c2b3",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "50,50,50",
+          "Static": false
         }
       ]
     }

@@ -206,7 +206,7 @@
     },
     {
       "FrameRate": 15,
-      "Origin": "0.5,0.5",
+      "Origin": "0.5,1",
       "Looping": true,
       "Name": "jump",
       "Frames": [
@@ -219,7 +219,7 @@
     },
     {
       "FrameRate": 15,
-      "Origin": "0.5,0.5",
+      "Origin": "0.5,1",
       "Looping": true,
       "Name": "fall",
       "Frames": [
@@ -232,7 +232,7 @@
     },
     {
       "FrameRate": 7,
-      "Origin": "0.5,0.5",
+      "Origin": "0.5,1",
       "Looping": true,
       "Name": "wall",
       "Frames": [
