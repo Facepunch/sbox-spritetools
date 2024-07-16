@@ -125,7 +125,11 @@ public class FrameButton : Widget
 
         //Log.Info( MainWindow.SelectedAnimation.Frames[FrameIndex] );
 
-        Paint.Draw(new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4), Pixmap);
+        var pixRect = new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4);
+        pixRect.Height = pixRect.Height / (Pixmap.Width / Pixmap.Height);
+        pixRect.Top -= (pixRect.Height - pixRect.Width) / 2f;
+        pixRect.Bottom += (pixRect.Height - pixRect.Width) / 2f;
+        Paint.Draw(pixRect, Pixmap);
 
         if (MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Count > 0)
         {
