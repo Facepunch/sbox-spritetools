@@ -339,6 +339,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             SceneObject.SetMaterialOverride(SpriteMaterial);
         }
 
+        if (!SceneObject.IsValid()) return;
+
         SceneObject.RenderingEnabled = true;
         SceneObject.Flags.ExcludeGameLayer = CastShadows == ShadowRenderType.ShadowsOnly;
         SceneObject.Flags.CastShadows = CastShadows == ShadowRenderType.On || CastShadows == ShadowRenderType.ShadowsOnly;
@@ -362,7 +364,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 var currentFrame = CurrentAnimation.Frames[frame];
                 foreach (var tag in currentFrame.Events)
                 {
-                    BroadcastEvent(tag);
+                    QueueEvent(tag);
                 }
 
                 frame++;
@@ -382,7 +384,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 var currentFrame = CurrentAnimation.Frames[frame];
                 foreach (var tag in currentFrame.Events)
                 {
-                    BroadcastEvent(tag);
+                    QueueEvent(tag);
                 }
 
                 frame--;
@@ -522,6 +524,21 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         CurrentTexture = atlas;
         SpriteMaterial?.Set("Texture", CurrentTexture);
         ApplyMaterialOffset();
+    }
+
+    List<string> _queuedEvents = new();
+    void QueueEvent(string tag)
+    {
+        _queuedEvents.Add(tag);
+    }
+
+    internal void RunBroadcastQueue()
+    {
+        foreach (var tag in _queuedEvents)
+        {
+            BroadcastEvent(tag);
+        }
+        _queuedEvents.Clear();
     }
 
     void BroadcastEvent(string tag)

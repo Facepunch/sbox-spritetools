@@ -21,5 +21,10 @@ public class SpriteAnimationSystem : GameObjectSystem
         {
             sprite.UpdateSceneObject();
         });
+
+        foreach (var sprite in sprites)
+        {
+            sprite.RunBroadcastQueue();
+        }
     }
 }
