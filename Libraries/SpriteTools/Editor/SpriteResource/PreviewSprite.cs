@@ -81,6 +81,8 @@ class PreviewSprite : AssetPreview
             frame = 0;
             UpdateFrame();
 
+            so.Transform = so.Transform.WithScale(new Vector3(1f / atlas.AspectRatio, 1f, 1f));
+
             frameTime = 1f / anim.FrameRate;
             frames = anim.Frames.Count;
             if (frames < 1)
