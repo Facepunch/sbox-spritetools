@@ -77,56 +77,19 @@ public class Preview : Widget
         overlayWindowPoint.WindowTitle = "Point Controls";
 
         var row1 = overlayWindowPoint.Layout.AddRow();
-        var btnTopLeft = row1.Add(new TextureModifyButton(this, "Align Top-Left", "Images/grid-align-top-left.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(-50f, -50f));
-        }));
-        var btnTopMiddle = row1.Add(new TextureModifyButton(this, "Align Top-Center", "Images/grid-align-top-center.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(0f, -50f));
-        }));
-        var btnTopRight = row1.Add(new TextureModifyButton(this, "Align Top-Right", "Images/grid-align-top-right.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(50f, -50f));
-        }));
+        var btnTopLeft = row1.Add(new TextureModifyButton(this, "Align Top-Left", "Images/grid-align-top-left.png", () => SetOrigin(new Vector2(0, 0f))));
+        var btnTopMiddle = row1.Add(new TextureModifyButton(this, "Align Top-Center", "Images/grid-align-top-center.png", () => SetOrigin(new Vector2(0.5f, 0f))));
+        var btnTopRight = row1.Add(new TextureModifyButton(this, "Align Top-Right", "Images/grid-align-top-right.png", () => SetOrigin(new Vector2(1f, 0f))));
 
         var row2 = overlayWindowPoint.Layout.AddRow();
-        var btnMiddleLeft = row2.Add(new TextureModifyButton(this, "Align Middle-Left", "Images/grid-align-middle-left.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(-50f, 0f));
-        }));
-        var btnMiddleCenter = row2.Add(new TextureModifyButton(this, "Align Middle-Center", "Images/grid-align-middle-center.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(0f, 0f));
-        }));
-        var btnMiddleRight = row2.Add(new TextureModifyButton(this, "Align Middle-Right", "Images/grid-align-middle-right.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(50f, 0f));
-        }));
+        var btnMiddleLeft = row2.Add(new TextureModifyButton(this, "Align Middle-Left", "Images/grid-align-middle-left.png", () => SetOrigin(new Vector2(0f, 0.5f))));
+        var btnMiddleCenter = row2.Add(new TextureModifyButton(this, "Align Middle-Center", "Images/grid-align-middle-center.png", () => SetOrigin(new Vector2(0.5f, 0.5f))));
+        var btnMiddleRight = row2.Add(new TextureModifyButton(this, "Align Middle-Right", "Images/grid-align-middle-right.png", () => SetOrigin(new Vector2(1f, 0.5f))));
 
         var row3 = overlayWindowPoint.Layout.AddRow();
-        var btnBottomLeft = row3.Add(new TextureModifyButton(this, "Align Bottom-Left", "Images/grid-align-bottom-left.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(-50f, 50f));
-        }));
-        var btnBottomCenter = row3.Add(new TextureModifyButton(this, "Align Bottom-Center", "Images/grid-align-bottom-center.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(0f, 50f));
-        }));
-        var btnBottomRight = row3.Add(new TextureModifyButton(this, "Align Bottom-Right", "Images/grid-align-bottom-right.png", () =>
-        {
-            Draggable draggable = Rendering.OriginMarker;
-            draggable?.OnPositionChanged?.Invoke(new Vector2(50f, 50f));
-        }));
-
+        var btnBottomLeft = row3.Add(new TextureModifyButton(this, "Align Bottom-Left", "Images/grid-align-bottom-left.png", () => SetOrigin(new Vector2(0, 1f))));
+        var btnBottomCenter = row3.Add(new TextureModifyButton(this, "Align Bottom-Center", "Images/grid-align-bottom-center.png", () => SetOrigin(new Vector2(0.5f, 1f))));
+        var btnBottomRight = row3.Add(new TextureModifyButton(this, "Align Bottom-Right", "Images/grid-align-bottom-right.png", () => SetOrigin(new Vector2(1f, 1f))));
         Overlay.Layout.Add(overlayWindowPoint);
 
         Overlay.Show();
@@ -144,6 +107,12 @@ public class Preview : Widget
 
         MainWindow.OnTextureUpdate -= UpdateTexture;
         MainWindow.Moved -= DoLayout;
+    }
+
+    void SetOrigin(Vector2 origin)
+    {
+        if (MainWindow.SelectedAnimation is null) return;
+        MainWindow.SelectedAnimation.Origin = origin;
     }
 
     void UpdateTexture()
