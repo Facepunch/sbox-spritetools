@@ -17,6 +17,11 @@ public class TextureAtlas
     static Dictionary<string, TextureAtlas> Cache = new();
 
     /// <summary>
+    /// Returns the aspect ratio of a frame from the texture atlas.
+    /// </summary>
+    public float AspectRatio => MaxFrameSize.x / MaxFrameSize.y;
+
+    /// <summary>
     /// Returns the UV tiling for the texture atlas.
     /// </summary>
     public Vector2 GetFrameTiling()
