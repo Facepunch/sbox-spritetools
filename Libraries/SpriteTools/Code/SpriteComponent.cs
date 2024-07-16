@@ -421,6 +421,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 pos *= new Vector3(1f, CurrentTexture.AspectRatio, 1f);
                 pos = pos.RotateAround(Vector3.Zero, _rotationOffset);
                 pos *= Transform.LocalScale;
+
+                if (SpriteFlags.HasFlag(SpriteFlags.HorizontalFlip)) pos.x = -pos.x;
+                if (SpriteFlags.HasFlag(SpriteFlags.VerticalFlip)) pos.y = -pos.y;
+
                 attachment.Value.Transform.LocalPosition = pos;
             }
         }
