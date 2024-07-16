@@ -39,11 +39,11 @@ public class RenderingWidget : SpriteRenderingWidget
     {
         if (MainWindow.SelectedAnimation is null) return;
 
-        var origin = (pos / 100f) + (Vector2.One * 0.5f);
+        var origin = (pos / new Vector2(100, 100 / AspectRatio)) + (Vector2.One * 0.5f);
         if (!holdingControl)
         {
             origin = origin.SnapToGrid(1f / TextureSize.x, true, false);
-            origin = origin.SnapToGrid(1f / TextureSize.y / AspectRatio, false, true);
+            origin = origin.SnapToGrid(1f / TextureSize.y, false, true);
         }
 
         MainWindow.SelectedAnimation.Origin = origin;
@@ -118,6 +118,7 @@ public class RenderingWidget : SpriteRenderingWidget
     public override void PreFrame()
     {
         base.PreFrame();
+        var sizeVec = new Vector2(100, 100 / AspectRatio);
 
         float scale = Camera.OrthoHeight / 1024f;
         if (MainWindow.SelectedAnimation is not null)
@@ -125,7 +126,7 @@ public class RenderingWidget : SpriteRenderingWidget
             OriginMarker.RenderingEnabled = true;
             var origin = MainWindow.SelectedAnimation.Origin;
             origin -= Vector2.One * 0.5f;
-            origin *= 100f;
+            origin *= sizeVec;
             OriginMarker.Position = new Vector3(origin.y, origin.x, 1f);
             OriginMarker.Transform = OriginMarker.Transform.WithScale(new Vector3(scale, scale, 1f));
         }
@@ -163,11 +164,11 @@ public class RenderingWidget : SpriteRenderingWidget
                 {
                     if (MainWindow.SelectedAnimation is null) return;
 
-                    var attachPos = (pos / 100f) + (Vector2.One * 0.5f);
+                    var attachPos = (pos / sizeVec) + (Vector2.One * 0.5f);
                     if (!holdingControl)
                     {
                         attachPos = attachPos.SnapToGrid(1f / TextureSize.x, true, false);
-                        attachPos = attachPos.SnapToGrid(1f / TextureSize.y / AspectRatio, false, true);
+                        attachPos = attachPos.SnapToGrid(1f / TextureSize.y, false, true);
                     }
 
                     var currentAttachment = MainWindow.SelectedAnimation.Attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name);
@@ -192,7 +193,7 @@ public class RenderingWidget : SpriteRenderingWidget
                     {
                         var attachPos = attachment.Points[MainWindow.CurrentFrameIndex];
                         attachPos -= Vector2.One * 0.5f;
-                        attachPos *= 100f;
+                        attachPos *= sizeVec;
                         attach.Position = new Vector3(attachPos.y, attachPos.x, 10f);
                     }
                     else
@@ -203,7 +204,7 @@ public class RenderingWidget : SpriteRenderingWidget
                             {
                                 var attachPos1 = attachment.Points[i];
                                 attachPos1 -= Vector2.One * 0.5f;
-                                attachPos1 *= 100f;
+                                attachPos1 *= sizeVec;
                                 attach.Position = new Vector3(attachPos1.y, attachPos1.x, 10f);
                                 break;
                             }
