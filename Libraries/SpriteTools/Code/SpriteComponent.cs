@@ -63,7 +63,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
     }
     Axis _upDirection = Axis.YPositive;
-    Rotation _rotationOffset = Rotation.From(0, -90, 0);
+    Rotation _rotationOffset = Rotation.Identity;
 
     /// <summary>
     /// The color tint of the Sprite.
@@ -224,7 +224,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         get
         {
-            BBox bbox = new BBox(new Vector3(-50, -50, -0.1f), new Vector3(50, 50, 0.1f));
+            var ratio = CurrentTexture.AspectRatio;
+            BBox bbox = new BBox(new Vector3(-50, -50 * ratio, -0.1f), new Vector3(50, 50 * ratio, 0.1f));
             var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
             bbox = bbox.Translate(new Vector3(-origin.y, origin.x, 0) * 100f);
             return bbox;
@@ -404,7 +405,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         // Add pivot to transform
         var pos = Transform.Position;
         var rot = Transform.Rotation * _rotationOffset;
-        var scale = Transform.Scale;
+        var scale = Transform.Scale * new Vector3(1f, 1f * CurrentTexture.AspectRatio, 1f);
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
         pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
         pos = pos.RotateAround(Transform.Position, rot);
