@@ -418,6 +418,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 var attachPos = CurrentAnimation.GetAttachmentPosition(attachment.Key, CurrentFrameIndex);
                 var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
                 var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
+                pos *= new Vector3(1f, CurrentTexture.AspectRatio, 1f);
                 pos = pos.RotateAround(Vector3.Zero, _rotationOffset);
                 pos *= Transform.LocalScale;
                 attachment.Value.Transform.LocalPosition = pos;
