@@ -310,19 +310,16 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         base.DrawGizmos();
         if (Game.IsPlaying) return;
 
-        using (Gizmo.Scope("sprite"))
-        {
-            Gizmo.Transform = Gizmo.Transform.WithRotation(Transform.Rotation * _rotationOffset);
-            var bbox = Bounds;
-            Gizmo.Hitbox.BBox(bbox);
+        Gizmo.Transform = Gizmo.Transform.WithRotation(Transform.Rotation * _rotationOffset);
+        var bbox = Bounds;
+        Gizmo.Hitbox.BBox(bbox);
 
-            if (Gizmo.IsHovered || Gizmo.IsSelected)
-            {
-                bbox.Mins.z = 0;
-                bbox.Maxs.z = 0.0f;
-                Gizmo.Draw.Color = Gizmo.IsSelected ? Color.White : Color.Orange;
-                Gizmo.Draw.LineBBox(bbox);
-            }
+        if (Gizmo.IsHovered || Gizmo.IsSelected)
+        {
+            bbox.Mins.z = 0;
+            bbox.Maxs.z = 0.0f;
+            Gizmo.Draw.Color = Gizmo.IsSelected ? Color.White : Color.Orange;
+            Gizmo.Draw.LineBBox(bbox);
         }
     }
 
