@@ -19,6 +19,7 @@ public class Timeline : Widget
 
     IntegerControlWidget widgetCurrentFrame;
     Label labelFrameCount;
+    FloatSlider sliderFrameSize;
 
     public Timeline(MainWindow mainWindow) : base(null)
     {
@@ -79,19 +80,19 @@ public class Timeline : Widget
         var text = bannerLayout.Add(new Label("Frame Size:"));
         text.HorizontalSizeMode = SizeMode.CanShrink;
         bannerLayout.AddSpacingCell(4);
-        var slider = new FloatSlider(this);
-        slider.HorizontalSizeMode = SizeMode.CanGrow;
-        slider.Minimum = 16f;
-        slider.Maximum = 128f;
-        slider.Step = 1f;
-        slider.Value = FrameButton.FrameSize;
-        slider.MinimumWidth = 128f;
-        slider.OnValueEdited = () =>
+        sliderFrameSize = new FloatSlider(this);
+        sliderFrameSize.HorizontalSizeMode = SizeMode.CanGrow;
+        sliderFrameSize.Minimum = 16f;
+        sliderFrameSize.Maximum = 128f;
+        sliderFrameSize.Step = 1f;
+        sliderFrameSize.Value = FrameButton.FrameSize;
+        sliderFrameSize.MinimumWidth = 128f;
+        sliderFrameSize.OnValueEdited = () =>
         {
-            FrameButton.FrameSize = slider.Value;
+            FrameButton.FrameSize = sliderFrameSize.Value;
             Update();
         };
-        bannerLayout.Add(slider);
+        bannerLayout.Add(sliderFrameSize);
 
         Layout.Add(bannerLayout);
 
@@ -189,6 +190,20 @@ public class Timeline : Widget
             UpdateFrameList();
         };
         picker.Window.Show();
+    }
+
+    protected override void OnWheel(WheelEvent e)
+    {
+        base.OnWheel(e);
+
+        if (e.HasCtrl)
+        {
+            float value = FrameButton.FrameSize + e.Delta / 10f;
+            value = value.Clamp(16, 128);
+            sliderFrameSize.Value = value;
+            FrameButton.FrameSize = value;
+            Update();
+        }
     }
 
     protected override void OnKeyPress(KeyEvent e)
