@@ -15,7 +15,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     public SceneObject TextureRect;
     SceneObject BackgroundRect;
     public Material PreviewMaterial;
-    public Vector2 TextureSize;
+    public Vector2 TextureSize { get; private set; }
+    public float AspectRatio { get; private set; }
 
     protected Gizmo.Instance SceneInstance;
 
@@ -150,8 +151,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     void ResizeQuads()
     {
         // Scale the quad to be the same aspect ratio as the texture
-        var aspect = TextureSize.x / TextureSize.y;
-        var size = new Vector3(1f / aspect, 1f, 1f);
+        AspectRatio = TextureSize.x / TextureSize.y;
+        var size = new Vector3(1f / AspectRatio, 1f, 1f);
 
         BackgroundRect.Transform = Transform.Zero.WithScale(size).WithPosition(new Vector3(0, 0, -1));
         TextureRect.Transform = Transform.Zero.WithScale(size);

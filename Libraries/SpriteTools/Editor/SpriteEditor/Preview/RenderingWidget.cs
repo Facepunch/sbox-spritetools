@@ -32,19 +32,21 @@ public class RenderingWidget : SpriteRenderingWidget
         OriginMarker.Flags.IsTranslucent = true;
         OriginMarker.Flags.IsOpaque = false;
         OriginMarker.Flags.CastShadows = false;
-        OriginMarker.OnPositionChanged = (Vector2 pos) =>
+        OriginMarker.OnPositionChanged = MoveOrigin;
+    }
+
+    void MoveOrigin(Vector2 pos)
+    {
+        if (MainWindow.SelectedAnimation is null) return;
+
+        var origin = (pos / 100f) + (Vector2.One * 0.5f);
+        if (!holdingControl)
         {
-            if (MainWindow.SelectedAnimation is null) return;
+            origin = origin.SnapToGrid(1f / TextureSize.x, true, false);
+            origin = origin.SnapToGrid(1f / TextureSize.y / AspectRatio, false, true);
+        }
 
-            var origin = (pos / 100f) + (Vector2.One * 0.5f);
-            if (!holdingControl)
-            {
-                origin = origin.SnapToGrid(1f / TextureSize.x, true, false);
-                origin = origin.SnapToGrid(1f / TextureSize.y, false, true);
-            }
-
-            MainWindow.SelectedAnimation.Origin = origin;
-        };
+        MainWindow.SelectedAnimation.Origin = origin;
     }
 
     protected override void OnMousePress(MouseEvent e)
@@ -165,7 +167,7 @@ public class RenderingWidget : SpriteRenderingWidget
                     if (!holdingControl)
                     {
                         attachPos = attachPos.SnapToGrid(1f / TextureSize.x, true, false);
-                        attachPos = attachPos.SnapToGrid(1f / TextureSize.y, false, true);
+                        attachPos = attachPos.SnapToGrid(1f / TextureSize.y / AspectRatio, false, true);
                     }
 
                     var currentAttachment = MainWindow.SelectedAnimation.Attachments.FirstOrDefault(a => a.Name.ToLowerInvariant() == name);
