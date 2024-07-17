@@ -20,14 +20,23 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _sprite;
         set
         {
+            if (_sprite == value) return;
             _sprite = value;
             if (_sprite != null)
             {
-                PlayAnimation(StartingAnimationName);
+                PlayAnimation(StartingAnimationName, true);
             }
             else
                 CurrentAnimation = null;
+
             UpdateSprite();
+            if (SpriteMaterial is not null && CurrentTexture is not null)
+            {
+                SpriteMaterial.Set("Texture", CurrentTexture);
+                ApplyMaterialOffset();
+                SceneObject.SetMaterialOverride(SpriteMaterial);
+            }
+            ApplyMaterialOffset();
         }
     }
     SpriteResource _sprite;
@@ -274,6 +283,14 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             PlayAnimation(anim.Name);
         }
 
+        if (SpriteMaterial is null)
+        {
+            if (MaterialOverride != null)
+                SpriteMaterial = MaterialOverride.CreateCopy();
+            else
+                SpriteMaterial = Material.Create("spritemat", "shaders/sprite_2d.shader");
+        }
+
         UpdateSceneObject();
         ApplySpriteFlags();
         FlashTint = _flashTint;
@@ -329,20 +346,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void UpdateSceneObject()
     {
-        if (SpriteMaterial is null)
-        {
-            if (MaterialOverride != null)
-                SpriteMaterial = MaterialOverride.CreateCopy();
-            else
-                SpriteMaterial = Material.Create("spritemat", "shaders/sprite_2d.shader");
-            if (CurrentTexture is not null)
-            {
-                SpriteMaterial.Set("Texture", CurrentTexture);
-                ApplyMaterialOffset();
-            }
-            SceneObject.SetMaterialOverride(SpriteMaterial);
-        }
-
         if (!SceneObject.IsValid()) return;
 
         SceneObject.RenderingEnabled = true;
