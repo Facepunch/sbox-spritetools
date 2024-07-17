@@ -14,6 +14,7 @@ public class TextureAtlas
 
     Texture Texture;
     Vector2 MaxFrameSize;
+    Dictionary<int, Texture> FrameCache = new();
     static Dictionary<string, TextureAtlas> Cache = new();
 
     /// <summary>
@@ -45,6 +46,11 @@ public class TextureAtlas
 
     public Texture GetTextureFromFrame(int index)
     {
+        if (FrameCache.TryGetValue(index, out var cachedTexture))
+        {
+            return cachedTexture;
+        }
+
         int x = index * (int)MaxFrameSize.x % (Size * (int)MaxFrameSize.x);
         int y = index * (int)MaxFrameSize.y / (Size * (int)MaxFrameSize.y) * (int)MaxFrameSize.y;
         x += 1;
@@ -67,7 +73,9 @@ public class TextureAtlas
         builder.WithData(textureData);
         builder.WithMips(0);
         builder.WithMultisample(0);
-        return builder.Finish();
+        var texture = builder.Finish();
+        FrameCache[index] = texture;
+        return texture;
     }
 
     // Cast to texture
