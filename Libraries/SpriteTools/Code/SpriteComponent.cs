@@ -30,12 +30,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 CurrentAnimation = null;
 
             UpdateSprite();
-            if (SpriteMaterial is not null && CurrentTexture is not null)
-            {
-                SpriteMaterial.Set("Texture", CurrentTexture);
-                ApplyMaterialOffset();
-                SceneObject.SetMaterialOverride(SpriteMaterial);
-            }
             ApplyMaterialOffset();
         }
     }
@@ -291,6 +285,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 SpriteMaterial = Material.Create("spritemat", "shaders/sprite_2d.shader");
         }
 
+        UpdateSprite();
         UpdateSceneObject();
         ApplySpriteFlags();
         FlashTint = _flashTint;
@@ -486,6 +481,13 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             BroadcastEvents.Clear();
             CurrentAnimation = null;
             return;
+        }
+
+        if (SpriteMaterial is not null && CurrentTexture is not null)
+        {
+            SpriteMaterial.Set("Texture", CurrentTexture);
+            ApplyMaterialOffset();
+            SceneObject.SetMaterialOverride(SpriteMaterial);
         }
 
         List<string> keysToRemove = BroadcastEvents.Keys.ToList();
