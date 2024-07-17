@@ -216,6 +216,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     public Action<string> OnAnimationComplete { get; set; }
 
     /// <summary>
+    /// The current texture atlas that the sprite is using.
+    /// </summary>
+    public TextureAtlas CurrentTexture { get; set; }
+
+    /// <summary>
     /// Whether or not the sprite has any broadcast events.
     /// </summary>
     public bool HasBroadcastEvents => BroadcastEvents.Count > 0;
@@ -255,7 +260,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     private bool _flipVertical = false;
 
     internal SceneObject SceneObject { get; set; }
-    TextureAtlas CurrentTexture { get; set; }
 
     protected override void OnStart()
     {
