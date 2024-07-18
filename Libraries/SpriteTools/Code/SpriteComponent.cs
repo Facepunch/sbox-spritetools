@@ -416,25 +416,14 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void UpdateAttachments()
     {
-        var ratio = CurrentTexture.AspectRatio;
         if (AttachPoints is not null && AttachPoints.Count > 0)
         {
             foreach (var attachment in AttachPoints)
             {
-                var attachPos = CurrentAnimation.GetAttachmentPosition(attachment.Key, CurrentFrameIndex);
-                var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
-                var rot = Rotation.Identity;
-                var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
-                pos *= new Vector3(1f, ratio, 1f);
-                pos = pos.RotateAround(Vector3.Zero, _rotationOffset);
-                pos *= Transform.LocalScale;
+                var transform = GetAttachmentTransform(attachment.Key);
 
-                if (SpriteFlags.HasFlag(SpriteFlags.HorizontalFlip)) rot *= Rotation.From(180, 0, 0);
-                if (SpriteFlags.HasFlag(SpriteFlags.VerticalFlip)) rot *= Rotation.From(0, 0, 180);
-                pos = pos.RotateAround(origin / 2f * new Vector2(100, 100 * ratio), rot);
-
-                attachment.Value.Transform.LocalPosition = pos;
-                attachment.Value.Transform.LocalRotation = rot;
+                attachment.Value.Transform.LocalPosition = transform.Position;
+                attachment.Value.Transform.LocalRotation = transform.Rotation;
             }
         }
     }
@@ -512,6 +501,32 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         {
             BroadcastEvents.Remove(key);
         }
+    }
+
+    /// <summary>
+    /// Get the global transform of an attachment point. Returns Transform.World if the attachment point does not exist.
+    /// </summary>
+    /// <param name="attachmentName">The name of the attach point</param>
+    public Transform GetAttachmentTransform(string attachmentName)
+    {
+        if (AttachPoints.ContainsKey(attachmentName))
+        {
+            var ratio = CurrentTexture.AspectRatio;
+            var attachPos = CurrentAnimation.GetAttachmentPosition(attachmentName, CurrentFrameIndex);
+            var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
+            var rot = Rotation.Identity;
+            var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
+            pos *= new Vector3(1f, ratio, 1f);
+            pos = pos.RotateAround(Vector3.Zero, _rotationOffset);
+            pos *= Transform.LocalScale;
+
+            if (SpriteFlags.HasFlag(SpriteFlags.HorizontalFlip)) rot *= Rotation.From(180, 0, 0);
+            if (SpriteFlags.HasFlag(SpriteFlags.VerticalFlip)) rot *= Rotation.From(0, 0, 180);
+            pos = pos.RotateAround(origin / 2f * new Vector2(100, 100 * ratio), rot);
+
+            return new Transform(pos, rot, Vector3.One);
+        }
+        return Transform.World;
     }
 
     public void PlayAnimation(string animationName, bool force = false)
