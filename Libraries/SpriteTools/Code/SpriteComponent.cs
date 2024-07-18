@@ -173,7 +173,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     [Property, Category("Sprite"), Title("Current Animation"), AnimationName]
     private string StartingAnimationName
     {
-        get => CurrentAnimation?.Name ?? Sprite.Animations.FirstOrDefault()?.Name;
+        get => CurrentAnimation?.Name ?? (Sprite?.Animations?.FirstOrDefault()?.Name ?? "");
         set
         {
             if (Sprite == null) return;
