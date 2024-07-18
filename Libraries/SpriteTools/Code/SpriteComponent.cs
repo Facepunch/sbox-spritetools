@@ -233,7 +233,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         get
         {
-            var ratio = CurrentTexture.AspectRatio;
+            var ratio = CurrentTexture?.AspectRatio ?? 1;
             BBox bbox = new BBox(new Vector3(-50, -50 * ratio, -0.1f), new Vector3(50, 50 * ratio, 0.1f));
             var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
             bbox = bbox.Translate(new Vector3(-origin.y, origin.x, 0) * 100f);
