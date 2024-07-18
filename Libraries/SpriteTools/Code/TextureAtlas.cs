@@ -13,7 +13,7 @@ public class TextureAtlas
     public int Size { get; private set; }
 
     Texture Texture;
-    Vector2 MaxFrameSize;
+    Vector2 MaxFrameSize = Vector2.One;
     Dictionary<int, Texture> FrameCache = new();
     static Dictionary<string, TextureAtlas> Cache = new();
 
