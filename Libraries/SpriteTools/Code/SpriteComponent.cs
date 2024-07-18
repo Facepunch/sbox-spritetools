@@ -372,7 +372,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 frame++;
                 if (CurrentAnimation.Looping && frame >= lastFrame)
                     frame = 0;
-                else if (frame >= lastFrame - 1)
+                else if (frame >= lastFrame - 1 && Game.IsPlaying)
                     OnAnimationComplete?.Invoke(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
                 _timeSinceLastFrame = 0;
@@ -392,7 +392,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 frame--;
                 if (CurrentAnimation.Looping && frame < 0)
                     frame = lastFrame - 1;
-                else if (frame <= 0)
+                else if (frame <= 0 && Game.IsPlaying)
                     OnAnimationComplete?.Invoke(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
                 _timeSinceLastFrame = 0;
