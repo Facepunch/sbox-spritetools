@@ -529,6 +529,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         return Transform.World;
     }
 
+    /// <summary>
+    /// Plays an animation from the current Sprite by it's name.
+    /// </summary>
+    /// <param name="animationName">The name of the animation</param>
+    /// <param name="force">Whether or not the animation should be forced. If true this will restart the animation from frame index 0 even if the specified animation is equal to the current animation.</param>
     public void PlayAnimation(string animationName, bool force = false)
     {
         if (Sprite == null) return;
