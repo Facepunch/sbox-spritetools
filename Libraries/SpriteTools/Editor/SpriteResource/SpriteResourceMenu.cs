@@ -1,13 +1,14 @@
 using Sandbox;
 using Editor;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace SpriteTools;
 
 internal static class SpriteResourceMenu
 {
+    static SpriteImportSettings ImportSettings;
+
     [Event("asset.contextmenu", Priority = 50)]
     public static void OnSpriteResourceAssetContext(AssetContextMenu e)
     {
@@ -19,7 +20,7 @@ internal static class SpriteResourceMenu
 
         if (e.SelectedList.Count > 1)
         {
-            e.Menu.AddOption($"Create {e.SelectedList.Count} 2D Sprites", "emoji_emotions", action: () => CreateSpriteResourcesUsingImageFiles(e.SelectedList));
+            e.Menu.AddOption($"Create {e.SelectedList.Count} 2D Sprites", "emoji_emotions", action: () => CreateSpriteResourcesPopup(e.SelectedList));
         }
     }
 
@@ -67,17 +68,71 @@ internal static class SpriteResourceMenu
             var newAsset = AssetSystem.CreateResource("sprite", System.IO.Path.ChangeExtension(asset.AbsolutePath, ".sprite"));
             var sprite = newAsset.LoadResource<SpriteResource>();
             var anim = sprite.Animations.FirstOrDefault();
-            anim.Name = "default";
+            anim.Name = ImportSettings.AnimationName;
+            anim.Origin = ImportSettings.Origin;
             anim.Frames ??= new();
             anim.Frames.Clear();
             var frame = new SpriteAnimationFrame(System.IO.Path.ChangeExtension(asset.Path, System.IO.Path.GetExtension(asset.AbsolutePath)));
             anim.Frames.Add(frame);
             anim.Looping = true;
 
-            newAsset = AssetSystem.RegisterFile(newAsset.Path);
             newAsset.SaveToDisk(sprite);
         }
 
         MainAssetBrowser.Instance?.UpdateAssetList();
+    }
+
+    private static void CreateSpriteResourcesPopup(IEnumerable<Asset> assets)
+    {
+        ImportSettings = new();
+
+        var popup = new Dialog();
+
+        popup.Window.MinimumWidth = 500;
+        popup.Window.Height = 200;
+        popup.WindowTitle = "Create Sprite Resources from Image Files...";
+        popup.Window.SetWindowIcon("info");
+        popup.Window.SetModal(true, true);
+
+        popup.Layout = Layout.Column();
+        popup.Layout.Margin = 20;
+        popup.Layout.Spacing = 20;
+
+        popup.Layout.Add(new Label("Set import settings for each sprite", popup));
+
+        var controlSheet = new ControlSheet();
+        controlSheet.AddProperty(ImportSettings, x => x.AnimationName);
+        controlSheet.AddProperty(ImportSettings, x => x.Origin);
+        popup.Layout.Add(controlSheet);
+        popup.Layout.AddStretchCell();
+
+        var okButton = new Button.Primary("Import", popup);
+        okButton.Icon = "download";
+        okButton.MinimumWidth = 64;
+        okButton.MouseLeftPress += () =>
+        {
+            CreateSpriteResourcesUsingImageFiles(assets);
+            popup.Close();
+        };
+
+
+        var cancelButton = new Button("Cancel", popup);
+        cancelButton.MinimumWidth = 64;
+        cancelButton.MouseLeftPress += () => popup.Close();
+
+        var buttonLayout = Layout.Row();
+        buttonLayout.Spacing = 5;
+        popup.Layout.Add(buttonLayout);
+        buttonLayout.AddStretchCell();
+        buttonLayout.Add(okButton);
+        buttonLayout.Add(cancelButton);
+
+        popup.Show();
+    }
+
+    public class SpriteImportSettings
+    {
+        public string AnimationName { get; set; } = "default";
+        public Vector2 Origin { get; set; } = Vector2.One * 0.5f;
     }
 }
