@@ -54,7 +54,7 @@ internal static class SpriteResourceMenu
         }
         anim.Looping = true;
 
-        asset = AssetSystem.RegisterFile(fd.SelectedFile);
+        asset.SaveToDisk(sprite);
         MainAssetBrowser.Instance?.UpdateAssetList();
         MainAssetBrowser.Instance?.FocusOnAsset(asset);
         EditorUtility.InspectorObject = asset;
@@ -75,6 +75,7 @@ internal static class SpriteResourceMenu
             anim.Looping = true;
 
             newAsset = AssetSystem.RegisterFile(newAsset.Path);
+            newAsset.SaveToDisk(sprite);
         }
 
         MainAssetBrowser.Instance?.UpdateAssetList();
