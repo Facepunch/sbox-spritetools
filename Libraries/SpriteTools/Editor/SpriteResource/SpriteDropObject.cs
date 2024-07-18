@@ -63,7 +63,7 @@ partial class SpriteDropObject : BaseDropObject
 		var DragObject = new GameObject();
 		DragObject.Name = sprite.ResourceName;
 		DragObject.Transform.World = traceTransform;
-		DragObject.Transform.Rotation = SceneViewportWidget.LastSelected.State.CameraRotation * Rotation.From(90, 180, 0);
+		DragObject.Transform.Rotation = SceneViewportWidget.LastSelected.State.CameraRotation * new Angles(0, -90, 90);
 
 		GameObject = DragObject;
 

@@ -111,6 +111,7 @@
             {
               "__type": "SpriteTools.SpriteComponent",
               "__guid": "52c39bd5-3cf4-4afe-ba19-cf10a8b871c0",
+              "__version": 1,
               "BroadcastEvents": {
                 "footstep": null
               },
@@ -121,7 +122,8 @@
               "Sprite": "sprites/ninja_frog.sprite",
               "SpriteFlags": "None",
               "StartingAnimationName": "idle",
-              "Tint": "1,1,1,1"
+              "Tint": "1,1,1,1",
+              "UpDirection": "XNegative"
             }
           ]
         }

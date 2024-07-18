@@ -67,7 +67,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
     }
     Axis _upDirection = Axis.YPositive;
-    Rotation _rotationOffset = Rotation.Identity;
+    Rotation _rotationOffset = Rotation.From(0, -90, 0);
 
     /// <summary>
     /// The color tint of the Sprite.
