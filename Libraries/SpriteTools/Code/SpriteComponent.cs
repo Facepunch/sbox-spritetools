@@ -9,6 +9,7 @@ using Sandbox;
 namespace SpriteTools;
 
 [Icon("emoji_emotions")]
+[Title("2D Sprite Component")]
 public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 {
     /// <summary>
