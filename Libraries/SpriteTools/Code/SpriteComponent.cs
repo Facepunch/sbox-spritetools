@@ -407,7 +407,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         // Add pivot to transform
         var pos = Transform.Position;
         var rot = Transform.Rotation * _rotationOffset;
-        var scale = Transform.Scale * new Vector3(1f, 1f * CurrentTexture.AspectRatio, 1f);
+        var scale = Transform.Scale * new Vector3(1f, 1f * (CurrentTexture?.AspectRatio ?? 1f), 1f);
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
         pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
         pos = pos.RotateAround(Transform.Position, rot);
