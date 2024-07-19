@@ -10,7 +10,7 @@ namespace SpriteTools;
 /// </summary>
 public class TextureAtlas
 {
-    public int Size { get; private set; }
+    public int Size { get; private set; } = 1;
 
     Texture Texture;
     Vector2 MaxFrameSize = Vector2.One;
@@ -27,6 +27,11 @@ public class TextureAtlas
     /// </summary>
     public Vector2 GetFrameTiling()
     {
+        if (MaxFrameSize.x == 0 || MaxFrameSize.y == 0)
+        {
+            return Vector2.One;
+        }
+
         // inset by 1 pixel to avoid bleeding
         return (MaxFrameSize - Vector2.One * 2f) / (MaxFrameSize * (float)Size);
     }
@@ -37,6 +42,11 @@ public class TextureAtlas
     /// <param name="index">The index of the frame</param>
     public Vector2 GetFrameOffset(int index)
     {
+        if (MaxFrameSize.x == 0 || MaxFrameSize.y == 0)
+        {
+            return Vector2.Zero;
+        }
+
         int x = index * (int)MaxFrameSize.x % (Size * (int)MaxFrameSize.x);
         int y = index * (int)MaxFrameSize.y / (Size * (int)MaxFrameSize.y) * (int)MaxFrameSize.y;
         x += 1;
@@ -81,7 +91,7 @@ public class TextureAtlas
     // Cast to texture
     public static implicit operator Texture(TextureAtlas atlas)
     {
-        return atlas.Texture;
+        return atlas?.Texture ?? null;
     }
 
 
@@ -132,7 +142,12 @@ public class TextureAtlas
         Vector2 imageSize = atlas.Size * atlas.MaxFrameSize;
         int x = 0;
         int y = 0;
-        byte[] textureData = new byte[(int)(imageSize.x * imageSize.y * 4)];
+        int size = (int)(imageSize.x * imageSize.y * 4);
+        if (size == 0)
+        {
+            return null;
+        }
+        byte[] textureData = new byte[size];
         foreach (var (texture, rect) in textures)
         {
             if (x + rect.Width > imageSize.x)
