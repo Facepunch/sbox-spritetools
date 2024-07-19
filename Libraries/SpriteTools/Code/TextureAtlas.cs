@@ -161,20 +161,25 @@ public class TextureAtlas
                 continue;
             }
 
-            var pixels = texture.GetPixels();
-
-            for (int i = 0; i < rect.Width; i++)
+            try
             {
-                for (int j = 0; j < rect.Height; j++)
+
+                var pixels = texture.GetPixels();
+
+                for (int i = 0; i < rect.Width; i++)
                 {
-                    var index = (x + 1 + i + (y + 1 + j) * (int)imageSize.x) * 4;
-                    var textureIndex = (int)(rect.Left + i + (rect.Top + j) * texture.Width);
-                    textureData[index] = pixels[textureIndex].r;
-                    textureData[index + 1] = pixels[textureIndex].g;
-                    textureData[index + 2] = pixels[textureIndex].b;
-                    textureData[index + 3] = pixels[textureIndex].a;
+                    for (int j = 0; j < rect.Height; j++)
+                    {
+                        var index = (x + 1 + i + (y + 1 + j) * (int)imageSize.x) * 4;
+                        var textureIndex = (int)(rect.Left + i + (rect.Top + j) * texture.Width);
+                        textureData[index] = pixels[textureIndex].r;
+                        textureData[index + 1] = pixels[textureIndex].g;
+                        textureData[index + 2] = pixels[textureIndex].b;
+                        textureData[index + 3] = pixels[textureIndex].a;
+                    }
                 }
             }
+            catch (Exception e) { }
 
             x += (int)atlas.MaxFrameSize.x;
         }
