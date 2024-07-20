@@ -71,8 +71,8 @@ public class SpritesheetImporter : Dialog
 
         for (int i = 0; i < frameCount; i++)
         {
-            var x = (i % framesPerRow) * (frameWidth + horizontalSeparation) + horizontalPixelOffset + (i % framesPerRow) * horizontalCellOffset;
-            var y = (i / framesPerRow) * (frameHeight + verticalSeparation) + verticalPixelOffset + (i / framesPerRow) * verticalCellOffset;
+            var x = (i % framesPerRow) * (frameWidth + horizontalSeparation) + horizontalPixelOffset + frameWidth * horizontalCellOffset;
+            var y = (i / framesPerRow) * (frameHeight + verticalSeparation) + verticalPixelOffset + frameHeight * verticalCellOffset;
             frames.Add(new Rect(x, y, frameWidth, frameHeight));
         }
 
