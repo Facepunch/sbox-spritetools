@@ -13,14 +13,14 @@ public class TextureAtlas
     public int Size { get; private set; } = 1;
 
     Texture Texture;
-    Vector2 MaxFrameSize = Vector2.One;
+    Vector2 MaxFrameSize = Vector2.Zero;
     Dictionary<int, Texture> FrameCache = new();
     static Dictionary<string, TextureAtlas> Cache = new();
 
     /// <summary>
     /// Returns the aspect ratio of a frame from the texture atlas.
     /// </summary>
-    public float AspectRatio => MaxFrameSize.x / MaxFrameSize.y;
+    public float AspectRatio => (MaxFrameSize.y == 0) ? 1f : (MaxFrameSize.x / MaxFrameSize.y);
 
     /// <summary>
     /// Returns the UV tiling for the texture atlas.
@@ -116,10 +116,29 @@ public class TextureAtlas
         var atlas = new TextureAtlas();
         atlas.Size = (int)Math.Ceiling(Math.Sqrt(animation.Frames.Count));
 
+        if (animation.Frames.Count == 1)
+        {
+            var frame = animation.Frames[0];
+            if (frame is null) return null;
+            if (frame.SpriteSheetRect.Width == 0 && frame.SpriteSheetRect.Height == 0)
+            {
+                if (!FileSystem.Mounted.FileExists(frame.FilePath))
+                {
+                    Log.Error($"TextureAtlas: Texture file not found: {frame.FilePath}");
+                    return null;
+                }
+
+                var texture = Texture.Load(FileSystem.Mounted, frame.FilePath);
+                atlas.Texture = texture;
+                return atlas;
+            }
+        }
+
         List<(Texture, Rect)> textures = new();
         atlas.MaxFrameSize = 0;
         foreach (var frame in animation.Frames)
         {
+            if (frame is null) continue;
             if (!FileSystem.Mounted.FileExists(frame.FilePath))
             {
                 Log.Error($"TextureAtlas: Texture file not found: {frame.FilePath}");
