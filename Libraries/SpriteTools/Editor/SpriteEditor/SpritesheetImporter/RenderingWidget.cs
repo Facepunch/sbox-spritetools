@@ -65,8 +65,8 @@ public class RenderingWidget : SpriteRenderingWidget
                 int cellX = i % framesPerRow;
                 int cellY = i / framesPerRow;
 
-                float x = startX + (cellX + Importer.Settings.VerticalCellOffset) * (frameWidth + xSeparation);
-                float y = startY + (cellY + Importer.Settings.HorizontalCellOffset) * (frameHeight + ySeparation);
+                float x = startX + (cellX) * (frameWidth + xSeparation);
+                float y = startY + (cellY) * (frameHeight + ySeparation);
 
                 // Draw Box
                 Gizmo.Draw.Line(new Vector3(y, x, 0), new Vector3(y, x + frameWidth, 0));
