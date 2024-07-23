@@ -20,7 +20,6 @@ public partial class TilesetTool : EditorTool
     internal Action UpdateInspector;
 
     bool WasGridActive = true;
-    int GridSize = 32;
 
     SceneObject _sceneObject;
 
@@ -53,7 +52,7 @@ public partial class TilesetTool : EditorTool
         using (Gizmo.Scope("grid"))
         {
             Gizmo.Draw.IgnoreDepth = state.Is2D;
-            Gizmo.Draw.Grid(state.GridAxis, GridSize, state.GridOpacity);
+            Gizmo.Draw.Grid(state.GridAxis, SelectedLayer?.TilesetResource?.TileSize ?? 32, state.GridOpacity);
         }
     }
 
@@ -88,13 +87,11 @@ public partial class TilesetTool : EditorTool
     void InitGrid()
     {
         WasGridActive = SceneViewportWidget.LastSelected.State.ShowGrid;
-        GridSize = ProjectCookie.Get<int>("TilesetTool.GridSize", 64);
         SceneViewportWidget.LastSelected.State.ShowGrid = false;
     }
 
     void ResetGrid()
     {
-        ProjectCookie.Set<int>("TilesetTool.GridSize", GridSize);
         SceneViewportWidget.LastSelected.State.ShowGrid = WasGridActive;
     }
 
