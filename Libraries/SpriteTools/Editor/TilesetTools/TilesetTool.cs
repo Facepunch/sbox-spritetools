@@ -1,3 +1,4 @@
+using System.Linq;
 using Editor;
 using Sandbox;
 
@@ -13,18 +14,7 @@ public partial class TilesetTool : EditorTool
 {
     [Property] public TilesetResource SelectedTileset { get; set; }
 
-    public TilesetComponent SelectedComponent
-    {
-        get => _selectedComponent;
-        set
-        {
-            if(_selectedComponent == value) return;
-            _selectedComponent = value;
-
-
-        }
-    }
-    TilesetComponent _selectedComponent;
+    public TilesetComponent SelectedComponent;
 
     bool WasGridActive = true;
     int GridSize = 64;
@@ -40,7 +30,7 @@ public partial class TilesetTool : EditorTool
         Selection.Set(this);
 
         InitGrid();
-        InitComponent();
+        UpdateComponent();
     }
 
     public override void OnDisabled()
@@ -60,9 +50,23 @@ public partial class TilesetTool : EditorTool
         }
     }
 
-    void InitComponent()
+    void UpdateComponent()
     {
-        
+        var component = Scene.GetAllComponents<TilesetComponent>().FirstOrDefault();
+
+        if (!component.IsValid())
+        {
+            var go = new GameObject()
+            {
+                Name = "Tileset Object"
+            };
+            component = go.Components.GetOrCreate<TilesetComponent>();
+        }
+
+        if (component.IsValid())
+        {
+            SelectedComponent = component;
+        }
     }
 
     void DoGizmo()
