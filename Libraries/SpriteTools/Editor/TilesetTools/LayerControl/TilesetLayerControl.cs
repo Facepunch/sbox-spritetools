@@ -2,6 +2,7 @@ using Editor;
 using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpriteTools.TilesetTool;
 
@@ -71,6 +72,19 @@ public class TilesetLayerControl : Widget
             Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
             Paint.DrawRect(LocalRect, 4);
         }
+
+        if (draggingAbove)
+        {
+            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
+            Paint.DrawLine(LocalRect.TopLeft, LocalRect.TopRight);
+            draggingAbove = false;
+        }
+        else if (draggingBelow)
+        {
+            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
+            Paint.DrawLine(LocalRect.BottomLeft, LocalRect.BottomRight);
+            draggingBelow = false;
+        }
     }
 
     void DeleteLayerPopup()
@@ -105,5 +119,63 @@ public class TilesetLayerControl : Widget
     void Delete()
     {
         ParentList.DeleteLayer(Layer);
+    }
+
+    protected override void OnDragStart()
+    {
+        base.OnDragStart();
+
+        dragData = new Drag(this);
+        dragData.Data.Object = Layer;
+        dragData.Execute();
+    }
+
+    public override void OnDragHover(DragEvent ev)
+    {
+        base.OnDragHover(ev);
+
+        if (!TryDragOperation(ev, out var dragDelta))
+        {
+            draggingAbove = false;
+            draggingBelow = false;
+            return;
+        }
+
+        draggingAbove = dragDelta > 0;
+        draggingBelow = dragDelta < 0;
+    }
+
+    public override void OnDragDrop(DragEvent ev)
+    {
+        base.OnDragDrop(ev);
+
+        if (!TryDragOperation(ev, out var delta)) return;
+
+        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+        var index = list.IndexOf(Layer);
+        var movingIndex = index + delta;
+        var layer = list[movingIndex];
+
+        list.RemoveAt(movingIndex);
+        list.Insert(index, layer);
+
+        ParentList.SerializedProperty.SetValue(list);
+        ParentList.UpdateList();
+    }
+
+    bool TryDragOperation(DragEvent ev, out int delta)
+    {
+        delta = 0;
+        var layer = ev.Data.OfType<TilesetComponent.Layer>().FirstOrDefault();
+
+        if (layer == null || ParentList == null) return false;
+
+        var layerList = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+        var myIndex = layerList.IndexOf(Layer);
+        var otherIndex = layerList.IndexOf(layer);
+        if (myIndex == -1 || otherIndex == -1) return false;
+
+        delta = otherIndex - myIndex;
+        return true;
     }
 }

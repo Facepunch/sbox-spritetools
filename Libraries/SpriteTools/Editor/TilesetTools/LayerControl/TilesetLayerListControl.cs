@@ -60,7 +60,7 @@ public class TilesetLayerListControl : ControlWidget
         Paint.DrawRect(scrollArea.LocalRect, 4);
     }
 
-    void UpdateList()
+    public void UpdateList()
     {
         content.Clear(true);
 
