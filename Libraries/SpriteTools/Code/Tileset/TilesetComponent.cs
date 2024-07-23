@@ -5,31 +5,35 @@ namespace SpriteTools;
 
 public sealed class TilesetComponent : Component
 {
-	List<Tile> Tiles { get; set; } = new List<Tile>();
+	public List<Layer> Layers { get; set; }
 
+	public class Layer
+	{
+		public string Name { get; set; }
+		public bool IsVisible { get; set; }
+		public bool IsLocked { get; set; }
 
+		List<Tile> Tiles { get; set; }
+
+		public Layer(string name = "Untitled Layer")
+		{
+			Name = name;
+			IsVisible = true;
+			IsLocked = false;
+		}
+	}
 
 	public class Tile
 	{
 		public TilesetResource TileResource { get; set; }
-		public string Atlas { get; set; }
-		public Vector2 Offset { get; set; }
-		public Vector2 Tiling { get; set; }
-		public Vector3 Position { get; set; }
-		public Rotation Rotation { get; set; }
-		public Vector3 Scale { get; set; }
+		string TileName { get; set; }
+		public Transform Transform { get; set; }
 
-		public SceneObject SceneObject;
-
-		public Tile(string atlas, Vector2 offset, Vector2 tiling, Vector3 position, Rotation rotation, Vector3 scale, TilesetResource tileResource)
+		public Tile(TilesetResource tileResource, string tileName, Transform transform)
 		{
-			Atlas = atlas;
-			Offset = offset;
-			Tiling = tiling;
-			Position = position;
-			Rotation = rotation;
-			Scale = scale;
 			TileResource = tileResource;
+			TileName = tileName;
+			Transform = transform;
 		}
 	}
 
