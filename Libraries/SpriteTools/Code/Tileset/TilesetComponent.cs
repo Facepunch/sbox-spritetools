@@ -5,7 +5,7 @@ namespace SpriteTools;
 
 public sealed class TilesetComponent : Component
 {
-	public List<Layer> Layers { get; set; }
+	[Property, Group("Layers")] public List<Layer> Layers { get; set; }
 
 	public class Layer
 	{
