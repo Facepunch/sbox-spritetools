@@ -183,7 +183,7 @@ public class TilesetLayerControl : Widget
 
         m.AddOption("Rename", "edit", Rename);
         m.AddOption("Duplicate", "content_copy", DuplicateLayerPopup);
-        m.AddOption("Delete", "delete", DeleteLayerPopup);
+        m.AddOption("Delete", "delete", Delete);
 
         m.OpenAtCursor(false);
     }
