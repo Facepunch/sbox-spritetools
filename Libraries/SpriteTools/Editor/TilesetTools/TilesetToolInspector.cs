@@ -7,12 +7,14 @@ namespace SpriteTools.TilesetTool;
 [CanEdit(typeof(TilesetTool))]
 public class TilesetToolInspector : InspectorWidget
 {
+    TilesetTool Tool;
     StatusWidget Header;
 
     public TilesetToolInspector(SerializedObject so) : base(so)
     {
         if (so.Targets.FirstOrDefault() is not TilesetTool tool) return;
 
+        Tool = tool;
         Layout = Layout.Column();
         Layout.Margin = 4;
         Layout.Spacing = 8;
@@ -28,6 +30,10 @@ public class TilesetToolInspector : InspectorWidget
         Header = new StatusWidget(this);
         Layout.Add(Header);
         UpdateHeader();
+
+        var sheet = new ControlSheet();
+        sheet.AddObject(Tool.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>());
+        Layout.Add(sheet);
 
         Layout.AddStretchCell();
 

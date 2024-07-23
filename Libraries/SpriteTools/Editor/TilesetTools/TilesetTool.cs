@@ -11,6 +11,21 @@ namespace SpriteTools.TilesetTool;
 [Shortcut("editortool.tileset", "Shift+T")]
 public partial class TilesetTool : EditorTool
 {
+    [Property] public TilesetResource SelectedTileset { get; set; }
+
+    public TilesetComponent SelectedComponent
+    {
+        get => _selectedComponent;
+        set
+        {
+            if(_selectedComponent == value) return;
+            _selectedComponent = value;
+
+
+        }
+    }
+    TilesetComponent _selectedComponent;
+
     bool WasGridActive = true;
     int GridSize = 64;
 
@@ -47,7 +62,7 @@ public partial class TilesetTool : EditorTool
 
     void InitComponent()
     {
-
+        
     }
 
     void DoGizmo()
