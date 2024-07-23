@@ -92,6 +92,11 @@ public class TilesetLayerControl : Widget
         }
     }
 
+    void Rename()
+    {
+        labelText.Edit();
+    }
+
     void DeleteLayerPopup()
     {
         var popup = new PopupWidget(ParentList);
@@ -124,6 +129,63 @@ public class TilesetLayerControl : Widget
     void Delete()
     {
         ParentList.DeleteLayer(Layer);
+    }
+
+    void DuplicateLayerPopup()
+    {
+        var popup = new PopupWidget(ParentList);
+        popup.Layout = Layout.Column();
+        popup.Layout.Margin = 16;
+        popup.Layout.Spacing = 8;
+
+        popup.Layout.Add(new Label($"What would you like to name the duplicated Layer?"));
+
+        var entry = new LineEdit(popup);
+        entry.Text = $"{Layer.Name} 2";
+        var button = new Button.Primary("Duplicate");
+
+        button.MouseClick = () =>
+        {
+            Duplicate(entry.Text);
+            popup.Visible = false;
+        };
+
+        entry.ReturnPressed += button.MouseClick;
+
+        popup.Layout.Add(entry);
+
+        var bottomBar = popup.Layout.AddRow();
+        bottomBar.AddStretchCell();
+        bottomBar.Add(button);
+
+        popup.Position = Editor.Application.CursorPosition;
+        popup.Visible = true;
+
+        entry.Focus();
+    }
+
+    void Duplicate(string name)
+    {
+        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+        var index = list.IndexOf(Layer);
+        var layer = Layer.Copy();
+        layer.Name = name;
+        list.Insert(index + 1, layer);
+        ParentList.SerializedProperty.SetValue(list);
+        ParentList.UpdateList();
+    }
+
+    protected override void OnContextMenu(ContextMenuEvent e)
+    {
+        base.OnContextMenu(e);
+
+        var m = new Menu(this);
+
+        m.AddOption("Rename", "edit", Rename);
+        m.AddOption("Duplicate", "content_copy", DuplicateLayerPopup);
+        m.AddOption("Delete", "delete", DeleteLayerPopup);
+
+        m.OpenAtCursor(false);
     }
 
     protected override void OnDragStart()
