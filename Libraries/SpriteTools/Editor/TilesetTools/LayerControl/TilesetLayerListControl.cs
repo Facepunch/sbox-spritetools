@@ -30,6 +30,7 @@ public class TilesetLayerListControl : ControlWidget
         scrollArea.Canvas.HorizontalSizeMode = SizeMode.CanGrow;
         scrollArea.MinimumHeight = 157;
         scrollArea.MaximumHeight = 157;
+        scrollArea.FixedHeight = 157;
         Layout.Add(scrollArea);
 
         // Content list
