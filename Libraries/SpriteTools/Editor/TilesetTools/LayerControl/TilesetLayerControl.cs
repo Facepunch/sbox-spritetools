@@ -62,7 +62,12 @@ public class TilesetLayerControl : Widget
 
     protected override void OnPaint()
     {
-        if (TilesetTool.Active?.SelectedLayer == Layer)
+        if (dragData?.IsValid ?? false)
+        {
+            Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
+            Paint.DrawRect(LocalRect, 4);
+        }
+        else if (TilesetTool.Active?.SelectedLayer == Layer)
         {
             Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
             Paint.DrawRect(LocalRect, 4);
