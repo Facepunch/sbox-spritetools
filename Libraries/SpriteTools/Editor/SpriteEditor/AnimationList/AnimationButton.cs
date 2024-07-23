@@ -72,7 +72,7 @@ internal class AnimationButton : Widget
 
         m.AddOption("Rename", "edit", Rename);
         m.AddOption("Duplicate", "content_copy", DuplicateAnimationPopup);
-        m.AddOption("Delete", "delete", Delete);
+        m.AddOption("Delete", "delete", DeleteAnimationPopup);
 
         m.OpenAtCursor(false);
     }
