@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Editor;
 using Sandbox;
@@ -16,6 +17,7 @@ public partial class TilesetTool : EditorTool
 
     public TilesetComponent SelectedComponent;
     public TilesetComponent.Layer SelectedLayer;
+    internal Action UpdateInspector;
 
     bool WasGridActive = true;
     int GridSize = 32;

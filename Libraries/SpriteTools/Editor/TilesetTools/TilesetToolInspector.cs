@@ -16,6 +16,8 @@ public class TilesetToolInspector : InspectorWidget
         if (so.Targets.FirstOrDefault() is not TilesetTool tool) return;
 
         Tool = tool;
+        Tool.UpdateInspector += Rebuild;
+
         Layout = Layout.Column();
         Layout.Margin = 4;
         Layout.Spacing = 8;
@@ -26,6 +28,7 @@ public class TilesetToolInspector : InspectorWidget
     [EditorEvent.Hotload]
     void Rebuild()
     {
+        if (Layout is null) return;
         Layout.Clear(true);
 
         Header = new StatusWidget(this);
@@ -36,6 +39,10 @@ public class TilesetToolInspector : InspectorWidget
         if (Tool.SelectedComponent.IsValid())
         {
             sheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+        }
+        if (Tool.SelectedLayer is not null)
+        {
+            sheet.AddObject(Tool.SelectedLayer.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
         }
         Layout.Add(sheet);
 

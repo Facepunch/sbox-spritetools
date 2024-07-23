@@ -88,6 +88,7 @@ public class TilesetLayerListControl : ControlWidget
         if (TilesetTool.Active is null) return;
 
         TilesetTool.Active.SelectedLayer = layer;
+        TilesetTool.Active.UpdateInspector?.Invoke();
     }
 
     public void DeleteLayer(TilesetComponent.Layer layer)
