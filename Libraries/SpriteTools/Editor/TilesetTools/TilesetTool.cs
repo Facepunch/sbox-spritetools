@@ -12,17 +12,20 @@ namespace SpriteTools.TilesetTool;
 [Shortcut("editortool.tileset", "Shift+T")]
 public partial class TilesetTool : EditorTool
 {
-    [Property] public TilesetResource SelectedTileset { get; set; }
+    public static TilesetTool Active { get; private set; }
 
     public TilesetComponent SelectedComponent;
+    public TilesetComponent.Layer SelectedLayer;
 
     bool WasGridActive = true;
-    int GridSize = 64;
+    int GridSize = 32;
 
     SceneObject _sceneObject;
 
     public override void OnEnabled()
     {
+        Active = this;
+
         base.OnEnabled();
 
         AllowGameObjectSelection = false;
@@ -35,6 +38,8 @@ public partial class TilesetTool : EditorTool
 
     public override void OnDisabled()
     {
+        Active = null;
+
         base.OnDisabled();
 
         ResetGrid();
@@ -66,6 +71,7 @@ public partial class TilesetTool : EditorTool
         if (component.IsValid())
         {
             SelectedComponent = component;
+            SelectedLayer = SelectedComponent.Layers.FirstOrDefault();
         }
     }
 
