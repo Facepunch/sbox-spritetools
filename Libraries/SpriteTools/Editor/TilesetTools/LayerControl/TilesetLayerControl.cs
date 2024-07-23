@@ -36,10 +36,9 @@ public class TilesetLayerControl : Widget
         labelText = new LabelTextEntry(name);
         Layout.Add(labelText);
 
-        var btnVisible = new IconButton("visibility");
+        var btnVisible = new IconButton(Layer.IsVisible ? "visibility" : "visibility_off");
         btnVisible.ToolTip = "Toggle Visibility";
         btnVisible.StatusTip = "Toggle Visibility of Layer " + Layer.Name;
-        btnVisible.Icon = Layer.IsVisible ? "visibility" : "visibility_off";
         btnVisible.OnClick += () =>
         {
             Layer.IsVisible = !Layer.IsVisible;
@@ -47,14 +46,15 @@ public class TilesetLayerControl : Widget
         };
         Layout.Add(btnVisible);
 
-        var btnDelete = new IconButton("delete");
-        btnDelete.ToolTip = "Delete";
-        btnDelete.StatusTip = "Delete Layer " + Layer.Name;
-        btnDelete.OnClick += () =>
+        var btnLock = new IconButton(Layer.IsLocked ? "lock" : "lock_open");
+        btnLock.ToolTip = "lock";
+        btnLock.StatusTip = "Lock Layer " + Layer.Name;
+        btnLock.OnClick += () =>
         {
-            DeleteLayerPopup();
+            Layer.IsLocked = !Layer.IsLocked;
+            btnLock.Icon = Layer.IsLocked ? "lock" : "lock_open";
         };
-        Layout.Add(btnDelete);
+        Layout.Add(btnLock);
 
         IsDraggable = true;
         AcceptDrops = true;
