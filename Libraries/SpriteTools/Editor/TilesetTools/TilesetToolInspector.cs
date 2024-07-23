@@ -33,7 +33,10 @@ public class TilesetToolInspector : InspectorWidget
         UpdateHeader();
 
         var sheet = new ControlSheet();
-        sheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+        if (Tool.SelectedComponent.IsValid())
+        {
+            sheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+        }
         Layout.Add(sheet);
 
         Layout.AddStretchCell();
