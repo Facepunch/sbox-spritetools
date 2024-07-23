@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Editor;
 using Sandbox;
@@ -32,7 +33,7 @@ public class TilesetToolInspector : InspectorWidget
         UpdateHeader();
 
         var sheet = new ControlSheet();
-        sheet.AddObject(Tool.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>());
+        sheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
         Layout.Add(sheet);
 
         Layout.AddStretchCell();
@@ -42,7 +43,7 @@ public class TilesetToolInspector : InspectorWidget
     void UpdateHeader()
     {
         Header.Text = "Paint Tiles";
-        Header.LeadText = (false) ? "No Tileset Selected" : "Selected Tileset: Test";
+        Header.LeadText = Tool.SelectedLayer == null ? "No Layer Selected" : $"Selected Layer: {Tool.SelectedLayer.Name}";
         Header.Color = (false) ? Theme.Red : Theme.Blue;
         Header.Icon = (false) ? "warning" : "dashboard";
         Header.Update();
