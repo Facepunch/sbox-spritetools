@@ -366,9 +366,24 @@ public partial class MainWindow : DockWindow, IAssetEditor
             var path = x.FirstOrDefault()?.GetSourceFile();
             if (string.IsNullOrEmpty(path)) return;
             var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
+            importer.OnImport += OnSpritesheetImport;
             importer.Window.Show();
         };
         picker.Window.Show();
+    }
+
+    void OnSpritesheetImport(string path, List<Rect> frames)
+    {
+        if (SelectedAnimation is not null)
+        {
+            SelectedAnimation.Frames.Clear();
+            foreach (var frame in frames)
+            {
+                SelectedAnimation.Frames.Add(new SpriteAnimationFrame(path) { SpriteSheetRect = frame });
+            }
+        }
+
+        Timeline.UpdateFrameList();
     }
 
     void PromptSave(Action action)

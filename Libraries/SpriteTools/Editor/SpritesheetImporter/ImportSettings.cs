@@ -2,7 +2,7 @@ using System;
 using Editor;
 using Sandbox;
 
-namespace SpriteTools.SpriteEditor.SpritesheetImporter;
+namespace SpriteTools.SpritesheetImporter;
 
 public class ImportSettings
 {

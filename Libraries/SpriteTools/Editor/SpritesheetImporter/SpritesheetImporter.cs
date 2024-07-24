@@ -4,22 +4,19 @@ using System.Linq;
 using Editor;
 using Sandbox;
 
-namespace SpriteTools.SpriteEditor.SpritesheetImporter;
+namespace SpriteTools.SpritesheetImporter;
 
 public class SpritesheetImporter : Dialog
 {
     public string Path { get; set; }
-
-    MainWindow ParentWindow { get; set; }
     Preview Preview { get; set; }
     public Action<string, List<Rect>> OnImport { get; set; }
     public ImportSettings Settings { get; set; } = new ImportSettings();
 
     ControlSheet ControlSheet { get; set; }
 
-    public SpritesheetImporter(MainWindow parent, string path) : base(parent, false)
+    public SpritesheetImporter(Widget parent, string path) : base(parent, false)
     {
-        ParentWindow = parent;
         Path = path;
 
         Window.Title = "Spritesheet Importer";
@@ -76,16 +73,7 @@ public class SpritesheetImporter : Dialog
             frames.Add(new Rect(x, y, frameWidth, frameHeight));
         }
 
-        if (ParentWindow.SelectedAnimation is not null)
-        {
-            ParentWindow.SelectedAnimation.Frames.Clear();
-            foreach (var frame in frames)
-            {
-                ParentWindow.SelectedAnimation.Frames.Add(new SpriteAnimationFrame(Path) { SpriteSheetRect = frame });
-            }
-        }
-
-        ParentWindow.Timeline.UpdateFrameList();
+        OnImport?.Invoke(Path, frames);
         Close();
     }
 

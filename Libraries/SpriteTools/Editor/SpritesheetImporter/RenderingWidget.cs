@@ -5,7 +5,7 @@ using System.Net.Mail;
 using Editor;
 using Sandbox;
 
-namespace SpriteTools.SpriteEditor.SpritesheetImporter;
+namespace SpriteTools.SpritesheetImporter;
 
 public class RenderingWidget : SpriteRenderingWidget
 {
