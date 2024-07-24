@@ -125,8 +125,6 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 		var layers = Component.Layers;
 		if (layers.Count == 0) return;
 
-		var viewerPosition = Graphics.CameraPosition;
-
 		foreach (var layer in layers)
 		{
 			if (!layer.IsVisible) continue;
