@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
+[Title("2D Tileset Component")]
+[Icon("calendar_view_month")]
 public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 {
 	[Property, Group("Layers")] public List<Layer> Layers { get; set; }
@@ -131,17 +133,18 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			if (!layer.IsVisible) continue;
 
 			int i = 0;
-			var totalTiles = layer.Tiles.Count;
-			var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles * 6);
 
 			var tileset = layer.TilesetResource;
 			if (tileset is null) continue;
 
-			var groups = layer.Tiles.GroupBy(x => (x.Index >= layer.TilesetResource.Tiles.Count) ? "" : layer.TilesetResource.Tiles[x.Index].FilePath);
+			var groups = layer.Tiles.GroupBy(x => layer.TilesetResource.FilePath);
 			foreach (var group in groups)
 			{
 				var atlas = group.Key ?? "";
 				var material = GetMaterial(atlas);
+
+				var totalTiles = group.Count();
+				var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles * 6);
 
 				foreach (var tile in group)
 				{

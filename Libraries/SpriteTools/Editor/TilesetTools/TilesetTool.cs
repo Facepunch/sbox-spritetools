@@ -25,7 +25,7 @@ public partial class TilesetTool : EditorTool
             if (_selectedLayer == value) return;
 
             _selectedLayer = value;
-            _sceneObject?.UpdateTileset(value.TilesetResource, SelectedIndex);
+            _sceneObject?.UpdateTileset(value.TilesetResource);
         }
     }
     TilesetComponent.Layer _selectedLayer;
@@ -121,7 +121,7 @@ public partial class TilesetTool : EditorTool
 
         _sceneObject = new TilesetPreviewObject(this, Scene.SceneWorld);
         if (SelectedLayer is not null)
-            _sceneObject.UpdateTileset(SelectedLayer.TilesetResource, SelectedIndex);
+            _sceneObject.UpdateTileset(SelectedLayer.TilesetResource);
     }
 
     void RemovePreviewObject()
@@ -153,12 +153,11 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
         Tool = tool;
     }
 
-    public void UpdateTileset(TilesetResource tileset, int index)
+    public void UpdateTileset(TilesetResource tileset)
     {
         if (tileset is null) return;
         Material = Material.Load("materials/sprite_2d.vmat").CreateCopy();
-        if (index < 0 || index >= tileset.Tiles.Count) return;
-        Material.Set("Texture", Texture.Load(Sandbox.FileSystem.Mounted, tileset.Tiles[index].FilePath));
+        Material.Set("Texture", Texture.Load(Sandbox.FileSystem.Mounted, tileset.FilePath));
     }
 
     public override void RenderSceneObject()

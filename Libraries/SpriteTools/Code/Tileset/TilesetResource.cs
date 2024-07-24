@@ -4,11 +4,21 @@ using System.Collections.Generic;
 
 namespace SpriteTools;
 
-[GameResource("Tileset", "tileset", "A 2D Tileset atlas", Icon = "calendar_view_month", IconBgColor = "#fab006")]
+[GameResource("2D Tileset", "tileset", "A 2D Tileset atlas", Icon = "calendar_view_month", IconBgColor = "#fab006")]
 public class TilesetResource : GameResource
 {
-	public List<Tile> Tiles { get; set; } = new();
+	public string FilePath { get; set; }
 	public int TileSize { get; set; } = 32;
+	public int AtlasWidth { get; set; } = 16;
+	public List<Tile> Tiles { get; set; } = new();
+
+	public void InitFromAtlas(string filePath, int tileSize, int atlasWidth)
+	{
+		var texture = Texture.Load(FileSystem.Mounted, filePath);
+		FilePath = filePath;
+		TileSize = tileSize;
+		AtlasWidth = atlasWidth;
+	}
 
 	public Vector2 GetTiling()
 	{
@@ -22,24 +32,16 @@ public class TilesetResource : GameResource
 
 	public class Tile
 	{
-		public string FilePath { get; set; }
 		public Rect SheetRect { get; set; }
 
-		public Tile(string filePath)
+		public Tile(Rect sheetRect)
 		{
-			FilePath = filePath;
-			SheetRect = new Rect(0, 0, 0, 0);
-		}
-
-		public Tile(string filePath, Rect sheetRect)
-		{
-			FilePath = filePath;
 			SheetRect = sheetRect;
 		}
 
 		public Tile Copy()
 		{
-			var copy = new Tile(FilePath, SheetRect);
+			var copy = new Tile(SheetRect);
 			return copy;
 		}
 	}
