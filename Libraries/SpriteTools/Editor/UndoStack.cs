@@ -2,7 +2,7 @@ using Sandbox.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpriteTools.SpriteEditor;
+namespace SpriteTools;
 
 public class UndoOp
 {
