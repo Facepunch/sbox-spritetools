@@ -198,7 +198,7 @@ public class TextureAtlas
                     }
                 }
             }
-            catch (Exception e) { }
+            catch (Exception e) { Log.Info(e); }
 
             x += (int)atlas.MaxFrameSize.x;
         }
