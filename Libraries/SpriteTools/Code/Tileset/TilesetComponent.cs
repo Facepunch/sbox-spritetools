@@ -136,6 +136,8 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles * 6);
 
 			var tileset = layer.TilesetResource;
+			if (tileset is null) continue;
+
 			var material = GetMaterial(tileset.Atlas);
 
 			foreach (var tile in layer.Tiles)
@@ -210,7 +212,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 	{
 		if (!Materials.TryGetValue(texturePath, out var material))
 		{
-			material = Material.Load("materials/sprite_2d.vmat");
+			material = Material.Load("materials/sprite_2d.vmat").CreateCopy();
 			material.Set("Texture", Texture.Load(FileSystem.Mounted, texturePath));
 			Materials.Add(texturePath, material);
 		}
