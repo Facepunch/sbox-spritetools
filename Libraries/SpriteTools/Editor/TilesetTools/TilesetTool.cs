@@ -65,11 +65,14 @@ public partial class TilesetTool : EditorTool
 
     public override void OnUpdate()
     {
+        base.OnUpdate();
+
         var state = SceneViewportWidget.LastSelected.State;
+        var gridSize = GridSize;
         using (Gizmo.Scope("grid"))
         {
             Gizmo.Draw.IgnoreDepth = state.Is2D;
-            Gizmo.Draw.Grid(state.GridAxis, GridSize, state.GridOpacity);
+            Gizmo.Draw.Grid(state.GridAxis, gridSize, state.GridOpacity);
         }
 
         if (_sceneObject.IsValid() && SelectedLayer?.TilesetResource is not null)
@@ -79,8 +82,10 @@ public partial class TilesetTool : EditorTool
                 .Ray(cursorRay, 32000f)
                 .Run();
 
-            var size = SelectedLayer.TilesetResource.TileSize;
-            _sceneObject.Position = (tr.EndPosition + new Vector3(size / 2f, size / 2f, 0)).SnapToGrid(GridSize).WithZ(CurrentLayerIndex);
+            _sceneObject.Transform = new Transform(
+                (tr.EndPosition - new Vector3(gridSize / 2f, gridSize / 2f, CurrentLayerIndex + 0.5f)).SnapToGrid(gridSize).WithZ(CurrentLayerIndex),
+                Rotation.Identity, 1
+            );
             _sceneObject.Flags.CastShadows = false;
             _sceneObject.Flags.IsOpaque = false;
             _sceneObject.Flags.IsTranslucent = true;
@@ -110,6 +115,8 @@ public partial class TilesetTool : EditorTool
 
     void InitPreviewObject()
     {
+        RemovePreviewObject();
+
         _sceneObject = new TilesetPreviewObject(this, Scene.SceneWorld);
         if (SelectedLayer is not null)
             _sceneObject.UpdateTileset(SelectedLayer.TilesetResource);
@@ -161,18 +168,19 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 
         var tiling = tileset.GetTiling();
         var offset = tileset.GetOffset(4);
+
+        var position = Vector3.Zero;
         var size = new Vector2(tileset.TileSize, tileset.TileSize);
 
-        var position = Transform.Position;
         var topLeft = new Vector3(position.x, position.y, position.z);
         var topRight = new Vector3(position.x + size.x, position.y, position.z);
         var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
         var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
         var uvTopLeft = new Vector2(offset.x * tiling.x, offset.y * tiling.y);
-        var uvTopRight = new Vector2((offset.x + size.x) * tiling.x, offset.y * tiling.y);
-        var uvBottomRight = new Vector2((offset.x + size.x) * tiling.x, (offset.y + size.y) * tiling.y);
-        var uvBottomLeft = new Vector2(offset.x * tiling.x, (offset.y + size.y) * tiling.y);
+        var uvTopRight = new Vector2((offset.x + 1) * tiling.x, offset.y * tiling.y);
+        var uvBottomRight = new Vector2((offset.x + 1) * tiling.x, (offset.y + 1) * tiling.y);
+        var uvBottomLeft = new Vector2(offset.x * tiling.x, (offset.y + 1) * tiling.y);
 
         var vertex = ArrayPool<Vertex>.Shared.Rent(6);
 
@@ -211,8 +219,6 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
         vertex[5].TexCoord1 = new Vector4(0, 0, 0, 0);
         vertex[5].Color = Color.White;
         vertex[5].Normal = Vector3.Up;
-
-        Log.Info(position);
 
         Graphics.Draw(vertex, 6, Material, Attributes);
     }
