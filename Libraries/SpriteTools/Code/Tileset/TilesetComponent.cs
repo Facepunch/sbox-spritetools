@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
+[Category("2D")]
 [Title("2D Tileset Component")]
 [Icon("calendar_view_month")]
 public sealed class TilesetComponent : Component, Component.ExecuteInEditor
