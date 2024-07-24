@@ -2,6 +2,7 @@ using Sandbox;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
@@ -62,7 +63,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 			for (int i = 0; i < 10; i++)
 			{
-				Tiles.Add(new Tile("Tile " + i, new Transform((Vector3.Random.WithZ(0) * 64).SnapToGrid(1))));
+				Tiles.Add(new Tile(i, new Transform((Vector3.Random.WithZ(0) * 64).SnapToGrid(1))));
 			}
 		}
 
@@ -91,18 +92,18 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 	public class Tile
 	{
-		public string TileName { get; set; }
+		public int Index { get; set; }
 		public Transform Transform { get; set; }
 
-		public Tile(string tileName, Transform transform)
+		public Tile(int index, Transform transform)
 		{
-			TileName = tileName;
+			Index = index;
 			Transform = transform;
 		}
 
 		public Tile Copy()
 		{
-			return new Tile(TileName, Transform);
+			return new Tile(Index, Transform);
 		}
 	}
 
@@ -136,73 +137,78 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			var tileset = layer.TilesetResource;
 			if (tileset is null) continue;
 
-			var material = GetMaterial(tileset.Atlas);
-
-			foreach (var tile in layer.Tiles)
+			var groups = layer.Tiles.GroupBy(x => (x.Index >= layer.TilesetResource.Tiles.Count) ? "" : layer.TilesetResource.Tiles[x.Index].FilePath);
+			foreach (var group in groups)
 			{
-				var tileName = tile.TileName;
-				var transform = tile.Transform;
+				var atlas = group.Key ?? "";
+				var material = GetMaterial(atlas);
 
-				var tiling = tileset.GetTiling();
-				var offset = tileset.GetOffset(4);
+				foreach (var tile in group)
+				{
+					var transform = tile.Transform;
 
-				var position = transform.Position * tileset.TileSize;
-				var size = transform.Scale * tileset.TileSize;
+					var tiling = tileset.GetTiling();
+					var offset = tileset.GetOffset(4);
 
-				var topLeft = new Vector3(position.x, position.y, position.z);
-				var topRight = new Vector3(position.x + size.x, position.y, position.z);
-				var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
-				var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
+					var position = transform.Position * tileset.TileSize;
+					var size = transform.Scale * tileset.TileSize;
 
-				var uvTopLeft = new Vector2(offset.x * tiling.x, offset.y * tiling.y);
-				var uvTopRight = new Vector2((offset.x + 1) * tiling.x, offset.y * tiling.y);
-				var uvBottomRight = new Vector2((offset.x + 1) * tiling.x, (offset.y + 1) * tiling.y);
-				var uvBottomLeft = new Vector2(offset.x * tiling.x, (offset.y + 1) * tiling.y);
+					var topLeft = new Vector3(position.x, position.y, position.z);
+					var topRight = new Vector3(position.x + size.x, position.y, position.z);
+					var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
+					var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
-				vertex[i] = new Vertex(topLeft);
-				vertex[i].TexCoord0 = uvTopLeft;
-				vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
-				vertex[i].Color = Color.White;
-				vertex[i].Normal = Vector3.Up;
-				i++;
+					var uvTopLeft = new Vector2(offset.x * tiling.x, offset.y * tiling.y);
+					var uvTopRight = new Vector2((offset.x + 1) * tiling.x, offset.y * tiling.y);
+					var uvBottomRight = new Vector2((offset.x + 1) * tiling.x, (offset.y + 1) * tiling.y);
+					var uvBottomLeft = new Vector2(offset.x * tiling.x, (offset.y + 1) * tiling.y);
 
-				vertex[i] = new Vertex(topRight);
-				vertex[i].TexCoord0 = uvTopRight;
-				vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
-				vertex[i].Color = Color.White;
-				vertex[i].Normal = Vector3.Up;
-				i++;
+					vertex[i] = new Vertex(topLeft);
+					vertex[i].TexCoord0 = uvTopLeft;
+					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+					vertex[i].Color = Color.White;
+					vertex[i].Normal = Vector3.Up;
+					i++;
 
-				vertex[i] = new Vertex(bottomRight);
-				vertex[i].TexCoord0 = uvBottomRight;
-				vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
-				vertex[i].Color = Color.White;
-				vertex[i].Normal = Vector3.Up;
-				i++;
+					vertex[i] = new Vertex(topRight);
+					vertex[i].TexCoord0 = uvTopRight;
+					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+					vertex[i].Color = Color.White;
+					vertex[i].Normal = Vector3.Up;
+					i++;
 
-				vertex[i] = new Vertex(topLeft);
-				vertex[i].TexCoord0 = uvTopLeft;
-				vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
-				vertex[i].Color = Color.White;
-				vertex[i].Normal = Vector3.Up;
-				i++;
+					vertex[i] = new Vertex(bottomRight);
+					vertex[i].TexCoord0 = uvBottomRight;
+					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+					vertex[i].Color = Color.White;
+					vertex[i].Normal = Vector3.Up;
+					i++;
 
-				vertex[i] = new Vertex(bottomRight);
-				vertex[i].TexCoord0 = uvBottomRight;
-				vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
-				vertex[i].Color = Color.White;
-				vertex[i].Normal = Vector3.Up;
-				i++;
+					vertex[i] = new Vertex(topLeft);
+					vertex[i].TexCoord0 = uvTopLeft;
+					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+					vertex[i].Color = Color.White;
+					vertex[i].Normal = Vector3.Up;
+					i++;
 
-				vertex[i] = new Vertex(bottomLeft);
-				vertex[i].TexCoord0 = uvBottomLeft;
-				vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
-				vertex[i].Color = Color.White;
-				vertex[i].Normal = Vector3.Up;
-				i++;
+					vertex[i] = new Vertex(bottomRight);
+					vertex[i].TexCoord0 = uvBottomRight;
+					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+					vertex[i].Color = Color.White;
+					vertex[i].Normal = Vector3.Up;
+					i++;
+
+					vertex[i] = new Vertex(bottomLeft);
+					vertex[i].TexCoord0 = uvBottomLeft;
+					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+					vertex[i].Color = Color.White;
+					vertex[i].Normal = Vector3.Up;
+					i++;
+				}
+
+				Graphics.Draw(vertex, totalTiles * 6, material, Attributes);
 			}
 
-			Graphics.Draw(vertex, totalTiles * 6, material, Attributes);
 		}
 	}
 
