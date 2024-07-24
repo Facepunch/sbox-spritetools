@@ -11,12 +11,15 @@ public class TilesetToolInspector : InspectorWidget
     TilesetTool Tool;
     StatusWidget Header;
 
+    ControlSheet selectedSheet;
+
     public TilesetToolInspector(SerializedObject so) : base(so)
     {
         if (so.Targets.FirstOrDefault() is not TilesetTool tool) return;
 
         Tool = tool;
-        Tool.UpdateInspector += Rebuild;
+        Tool.UpdateInspector += UpdateHeader;
+        Tool.UpdateInspector += UpdateSelectedSheet;
 
         Layout = Layout.Column();
         Layout.Margin = 4;
@@ -40,11 +43,9 @@ public class TilesetToolInspector : InspectorWidget
         {
             sheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
         }
-        if (Tool.SelectedLayer is not null)
-        {
-            sheet.AddObject(Tool.SelectedLayer.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
-        }
         Layout.Add(sheet);
+
+        UpdateSelectedSheet();
 
         Layout.AddStretchCell();
 
@@ -57,6 +58,21 @@ public class TilesetToolInspector : InspectorWidget
         Header.Color = (false) ? Theme.Red : Theme.Blue;
         Header.Icon = (false) ? "warning" : "dashboard";
         Header.Update();
+    }
+
+    void UpdateSelectedSheet()
+    {
+        if (selectedSheet is null)
+        {
+            selectedSheet = new ControlSheet();
+            Layout.Add(selectedSheet);
+        }
+
+        selectedSheet?.Clear(true);
+        if (Tool.SelectedLayer is not null)
+        {
+            selectedSheet.AddObject(Tool.SelectedLayer.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+        }
     }
 
     private class StatusWidget : Widget
