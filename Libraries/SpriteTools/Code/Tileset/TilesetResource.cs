@@ -7,8 +7,15 @@ namespace SpriteTools;
 [GameResource("2D Tileset", "tileset", "A 2D Tileset atlas", Icon = "calendar_view_month", IconBgColor = "#fab006")]
 public class TilesetResource : GameResource
 {
+	[Property, ImageAssetPath, Title("Tileset Image"), Group("Tileset Setup")]
 	public string FilePath { get; set; }
+
+	[Property, Group("Tileset Setup")]
 	public int TileSize { get; set; } = 32;
+
+	[Property, Group("Tileset Setup")]
+	public Vector2Int TileSeparation { get; set; } = 0;
+
 	public int AtlasWidth { get; set; } = 16;
 	public List<Tile> Tiles { get; set; } = new();
 

@@ -33,12 +33,6 @@ public class Inspector : Widget
 
         var importLayout = scroller.Canvas.Layout.Add(Layout.Row());
         importLayout.Margin = new Sandbox.UI.Margin(16, 8, 16, 0);
-        var importButton = new Button(this);
-        importButton.Text = "Import Tileset";
-        importButton.Icon = "add_to_photos";
-        importButton.ToolTip = "Import a tileset image to split into different tiles.";
-        importButton.MouseClick = MainWindow.PromptImportSpritesheet;
-        importLayout.Add(importButton);
 
         scroller.Canvas.Layout.Add(controlSheet);
         scroller.Canvas.Layout.AddStretchCell();
@@ -53,6 +47,11 @@ public class Inspector : Widget
     void UpdateControlSheet()
     {
         controlSheet?.Clear(true);
+
+        controlSheet.AddObject(MainWindow.Tileset.GetSerialized(), null, (SerializedProperty prop) =>
+        {
+            return prop.HasAttribute<PropertyAttribute>() && !prop.HasAttribute<HideAttribute>();
+        });
     }
 
 
