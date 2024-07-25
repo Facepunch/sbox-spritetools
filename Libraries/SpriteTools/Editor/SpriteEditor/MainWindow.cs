@@ -383,7 +383,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
         picker.Window.Title = $"Import Spritesheet for {SelectedAnimation.Name}";
-        picker.MultiPick = false;
+        picker.MultiSelect = false;
         picker.OnAssetPicked = x =>
         {
             var path = x.FirstOrDefault()?.GetSourceFile();
