@@ -272,10 +272,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
         picker.MultiPick = false;
         picker.OnAssetPicked = x =>
         {
-            // var path = x.FirstOrDefault()?.GetSourceFile();
-            // if (string.IsNullOrEmpty(path)) return;
-            // var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
-            // importer.Window.Show();
+            var path = x.FirstOrDefault()?.GetSourceFile();
+            if (string.IsNullOrEmpty(path)) return;
+            var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
+            importer.Window.Show();
         };
         picker.Window.Show();
     }
