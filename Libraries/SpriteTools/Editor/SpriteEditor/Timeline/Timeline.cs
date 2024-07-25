@@ -174,7 +174,7 @@ public class Timeline : Widget
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
         picker.Window.Title = $"Import Frame - {MainWindow.Sprite.ResourceName} - {MainWindow.SelectedAnimation.Name}";
-        picker.MultiPick = true;
+        picker.MultiSelect = true;
         // picker.Assets = new List<Asset>() { Asset };
         // picker.OnAssetHighlighted = x => Asset = x.First();
         picker.OnAssetPicked = x =>

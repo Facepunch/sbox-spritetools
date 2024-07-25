@@ -265,7 +265,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         picker.Window.StateCookie = "TilesetEditor.Import";
         picker.Window.RestoreFromStateCookie();
         picker.Window.Title = $"Import Spritesheet for {Tileset.ResourceName}";
-        picker.MultiPick = false;
+        picker.MultiSelect = false;
         picker.OnAssetPicked = x =>
         {
             var path = x.FirstOrDefault()?.GetSourceFile();
