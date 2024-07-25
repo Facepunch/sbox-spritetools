@@ -11,6 +11,7 @@ public class Inspector : Widget
     public MainWindow MainWindow { get; }
 
     ControlSheet controlSheet;
+    SegmentedControl segmentedControl;
 
     public Inspector(MainWindow mainWindow) : base(null)
     {
@@ -21,6 +22,8 @@ public class Inspector : Widget
         SetWindowIcon("manage_search");
 
         Layout = Layout.Column();
+        Layout.Margin = 8;
+
         controlSheet = new ControlSheet();
 
         MinimumWidth = 350f;
@@ -33,6 +36,15 @@ public class Inspector : Widget
 
         var importLayout = scroller.Canvas.Layout.Add(Layout.Row());
         importLayout.Margin = new Sandbox.UI.Margin(16, 8, 16, 0);
+
+        segmentedControl = Layout.Add(new SegmentedControl());
+        segmentedControl.AddOption("Setup", "auto_fix_high");
+        segmentedControl.AddOption("Tiles", "grid_on");
+        segmentedControl.SelectedIndex = string.IsNullOrEmpty(MainWindow.Tileset.FilePath) ? 0 : 1;
+        segmentedControl.OnSelectedChanged = (index) =>
+        {
+            UpdateControlSheet();
+        };
 
         scroller.Canvas.Layout.Add(controlSheet);
         scroller.Canvas.Layout.AddStretchCell();
@@ -50,6 +62,8 @@ public class Inspector : Widget
 
         controlSheet.AddObject(MainWindow.Tileset.GetSerialized(), null, (SerializedProperty prop) =>
         {
+            if (segmentedControl.SelectedIndex == 0 && prop.GroupName != "Tileset Setup") return false;
+            if (segmentedControl.SelectedIndex == 1 && prop.GroupName == "Tileset Setup") return false;
             return prop.HasAttribute<PropertyAttribute>() && !prop.HasAttribute<HideAttribute>();
         });
     }
