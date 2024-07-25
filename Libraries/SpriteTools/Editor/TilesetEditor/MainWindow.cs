@@ -22,6 +22,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public TilesetResource Tileset;
 
     ToolBar toolBar;
+    Inspector.Inspector inspector;
 
     Option _undoMenuOption;
     Option _redoMenuOption;
@@ -107,7 +108,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     protected override void RestoreDefaultDockLayout()
     {
-        var inspector = new Inspector.Inspector(this);
+        inspector = new Inspector.Inspector(this);
         var preview = new Preview.Preview(this);
         // Timeline = new Timeline.Timeline(this);
         // var animationList = new AnimationList.AnimationList(this);
@@ -133,6 +134,12 @@ public partial class MainWindow : DockWindow, IAssetEditor
         RebuildUI();
     }
 
+    void UpdateEverything()
+    {
+        UpdateWindowTitle();
+        inspector.UpdateControlSheet();
+    }
+
     public void New()
     {
         PromptSave(() => CreateNew());
@@ -147,7 +154,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _dirty = false;
         _undoStack.Clear();
 
-        UpdateWindowTitle();
+        UpdateEverything();
     }
 
     public void Open()
@@ -192,7 +199,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _dirty = false;
         _undoStack.Clear();
         Tileset = tileset;
-        UpdateWindowTitle();
+        UpdateEverything();
     }
 
     public bool Save(bool saveAs = false)
@@ -298,7 +305,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         confirm.Show();
     }
 
-    public void SetDirty()
+    internal void SetDirty()
     {
         _dirty = true;
         UpdateWindowTitle();
@@ -306,13 +313,13 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     public void PushUndo(string name, string buffer = "")
     {
-        if (string.IsNullOrEmpty(buffer)) buffer = JsonSerializer.Serialize((Tileset.Tiles, Tileset.FilePath, Tileset.AtlasWidth, Tileset.TileSize));
+        if (string.IsNullOrEmpty(buffer)) buffer = Tileset.Serialize();
         _undoStack.PushUndo(name, buffer);
     }
 
     public void PushRedo()
     {
-        _undoStack.PushRedo(JsonSerializer.Serialize((Tileset.Tiles, Tileset.FilePath, Tileset.AtlasWidth, Tileset.TileSize)));
+        _undoStack.PushRedo(Tileset.Serialize());
     }
 
     public void Undo()
@@ -351,12 +358,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     internal void ReloadFromString(string buffer)
     {
-        var json = JsonSerializer.Deserialize<(List<TilesetResource.Tile>, string, int, int)>(buffer);
-
-        Tileset.Tiles = json.Item1;
-        Tileset.FilePath = json.Item2;
-        Tileset.AtlasWidth = json.Item3;
-        Tileset.TileSize = json.Item4;
+        Tileset.Deserialize(buffer);
 
         SetDirty();
     }

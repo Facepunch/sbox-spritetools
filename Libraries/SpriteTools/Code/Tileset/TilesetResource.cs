@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace SpriteTools;
 
@@ -35,6 +36,29 @@ public class TilesetResource : GameResource
 	public Vector2 GetOffset(int index)
 	{
 		return new Vector2(0, 0);
+	}
+
+	public string Serialize()
+	{
+		var obj = new JsonObject()
+		{
+			["FilePath"] = FilePath,
+			["TileSize"] = TileSize,
+			["TileSeparation"] = TileSeparation.ToString(),
+			["AtlasWidth"] = AtlasWidth,
+			["Tiles"] = Json.Serialize(Tiles)
+		};
+		return obj.ToJsonString();
+	}
+
+	public void Deserialize(string json)
+	{
+		var obj = JsonNode.Parse(json);
+		FilePath = obj["FilePath"].GetValue<string>();
+		TileSize = obj["TileSize"].GetValue<int>();
+		TileSeparation = Vector2Int.Parse(obj["TileSeparation"].GetValue<string>());
+		AtlasWidth = obj["AtlasWidth"].GetValue<int>();
+		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"].GetValue<string>());
 	}
 
 	public class Tile

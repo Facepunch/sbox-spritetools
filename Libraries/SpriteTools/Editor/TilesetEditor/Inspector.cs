@@ -56,11 +56,40 @@ public class Inspector : Widget
     }
 
     [EditorEvent.Hotload]
-    void UpdateControlSheet()
+    public void UpdateControlSheet()
     {
         controlSheet?.Clear(true);
 
-        controlSheet.AddObject(MainWindow.Tileset.GetSerialized(), null, (SerializedProperty prop) =>
+        var serializedObject = MainWindow.Tileset.GetSerialized();
+        
+        serializedObject.OnPropertyChanged += (prop) =>
+        {
+            if(prop is null) return;
+            if(!prop.HasAttribute<PropertyAttribute>()) return;
+
+            var undoName = $"Modify {prop.Name}";
+
+            string buffer = "";
+            if (MainWindow.UndoStack.MostRecent is not null)
+            {
+                if (MainWindow.UndoStack.MostRecent.name == undoName)
+                {
+                    buffer = MainWindow.UndoStack.MostRecent.undoBuffer;
+                    MainWindow.UndoStack.PopMostRecent();
+                }
+                else
+                {
+                    buffer = MainWindow.UndoStack.MostRecent.redoBuffer;
+                }
+            }
+
+            MainWindow.PushUndo(undoName, buffer);
+            MainWindow.PushRedo();
+
+            MainWindow.SetDirty();
+        };
+
+        controlSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
         {
             if (segmentedControl.SelectedIndex == 0 && prop.GroupName != "Tileset Setup") return false;
             if (segmentedControl.SelectedIndex == 1 && prop.GroupName == "Tileset Setup") return false;

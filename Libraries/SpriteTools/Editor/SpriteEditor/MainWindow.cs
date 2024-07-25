@@ -439,7 +439,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         CurrentFrameIndex = frame;
     }
 
-    public void SetDirty()
+    internal void SetDirty()
     {
         _dirty = true;
         UpdateWindowTitle();
