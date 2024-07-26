@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Numerics;
 using Editor;
 using Sandbox;
 
@@ -20,6 +21,9 @@ public class RenderingWidget : SpriteRenderingWidget
     float xSeparation;
     float ySeparation;
 
+    Dictionary<Vector2, TilesetResource.Tile> tileDict;
+    RealTimeSince timeSinceLastCornerHover = 0;
+
     public RenderingWidget(MainWindow window, Widget parent) : base(parent)
     {
         MainWindow = window;
@@ -31,7 +35,10 @@ public class RenderingWidget : SpriteRenderingWidget
         SceneInstance.Input.IsHovered = IsUnderMouse;
         SceneInstance.UpdateInputs(Camera, this);
 
-        Dictionary<Vector2, TilesetResource.Tile> tiles = new();
+        if (timeSinceLastCornerHover > 0.025f)
+            Cursor = CursorShape.Arrow;
+
+        tileDict = new();
         foreach (var tile in MainWindow.Tileset.Tiles)
         {
             for (int i = 0; i < tile.SheetRect.Size.x; i++)
@@ -39,7 +46,7 @@ public class RenderingWidget : SpriteRenderingWidget
                 for (int j = 0; j < tile.SheetRect.Size.y; j++)
                 {
                     var realTile = (i == 0 && j == 0) ? tile : null;
-                    tiles.Add(tile.SheetRect.Position + new Vector2(i, j), realTile);
+                    tileDict.Add(tile.SheetRect.Position + new Vector2(i, j), realTile);
                 }
             }
         }
@@ -70,22 +77,17 @@ public class RenderingWidget : SpriteRenderingWidget
                     int xi = 0;
                     int yi = 0;
 
-                    TilesetResource.Tile selectedTile = null;
-
                     if (framesPerRow * framesPerHeight < 2048)
                     {
                         while (yi < framesPerHeight)
                         {
                             while (xi < framesPerRow)
                             {
-                                if (tiles.TryGetValue(new Vector2(xi, yi), out var tile))
+                                if (tileDict.TryGetValue(new Vector2(xi, yi), out var tile))
                                 {
                                     if (tile is not null)
                                     {
-                                        if (MainWindow.SelectedTile == tile)
-                                            selectedTile = tile;
-                                        else
-                                            TileControl(xi, yi, tiles[new Vector2(xi, yi)]);
+                                        TileControl(xi, yi, tileDict[new Vector2(xi, yi)]);
                                     }
                                 }
                                 else
@@ -96,11 +98,6 @@ public class RenderingWidget : SpriteRenderingWidget
                             }
                             xi = 0;
                             yi++;
-                        }
-
-                        if (selectedTile is not null)
-                        {
-                            TileControl((int)selectedTile.SheetRect.Position.x, (int)selectedTile.SheetRect.Position.y, selectedTile);
                         }
                     }
                 }
@@ -144,7 +141,8 @@ public class RenderingWidget : SpriteRenderingWidget
 
     void TileControl(int xi, int yi, TilesetResource.Tile tile)
     {
-        using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero))
+        bool isSelected = MainWindow.SelectedTile == tile;
+        using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
         {
             int sizeX = 1;
             int sizeY = 1;
@@ -157,7 +155,6 @@ public class RenderingWidget : SpriteRenderingWidget
             var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
             Gizmo.Hitbox.BBox(bbox);
 
-            bool isSelected = MainWindow.SelectedTile == tile;
             if (isSelected)
             {
                 Gizmo.Draw.LineThickness = 4;
@@ -183,7 +180,92 @@ public class RenderingWidget : SpriteRenderingWidget
                 }
             }
 
+            if (isSelected)
+            {
+                using (Gizmo.Scope("selected"))
+                {
+                    Gizmo.Draw.Color = Color.Orange;
+                    Gizmo.Draw.LineThickness = 3;
+                    // Draggable Corners
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            if (i == 0 && j == 0) continue;
+                            DraggableCorner(tile, i, j);
+                        }
+                    }
+                }
+            }
+
             DrawBox(x, y, width, height);
+        }
+    }
+
+    void DraggableCorner(TilesetResource.Tile tile, int x, int y)
+    {
+        int currentX = (int)tile.SheetRect.Position.x;
+        int currentY = (int)tile.SheetRect.Position.y;
+        float xi = currentX + x / 2f;
+        float yi = currentY + y / 2f;
+        float width = frameWidth * (int)tile.SheetRect.Size.x;
+        float height = frameHeight * (int)tile.SheetRect.Size.y;
+
+        bool canDrag = true;
+        int nextX = currentX + x;
+        int nextY = currentY + y;
+        if (nextX < 0 || nextY < 0) canDrag = false;
+        else if (nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize) || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize)) canDrag = false;
+        else if (x != 0 && y != 0)
+        {
+            if (tileDict.ContainsKey(new Vector2(nextX, currentY)) || tileDict.ContainsKey(new Vector2(currentX, nextY))) canDrag = false;
+        }
+        else if (tileDict.ContainsKey(new Vector2(nextX, nextY))) canDrag = false;
+
+        using (Gizmo.Scope($"corner_{xi}_{yi}"))
+        {
+            if (!canDrag)
+            {
+                Gizmo.Draw.LineThickness = 1;
+                Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
+            }
+            var xx = startX + ((xi + 0.5f) * width);
+            var yy = startY + ((yi + 0.5f) * height);
+
+            if (canDrag)
+            {
+                var bbox = BBox.FromPositionAndSize(new Vector3(yy, xx, 1f), new Vector3(2, 2, 1f));
+                Gizmo.Hitbox.BBox(bbox);
+
+                if (Gizmo.Pressed.This)
+                {
+                    Gizmo.Draw.Color = Color.Red;
+                }
+            }
+
+            if (canDrag && Gizmo.IsHovered)
+            {
+                Gizmo.Draw.SolidSphere(new Vector3(yy, xx, 10f), 0.5f, 2, 4);
+                Cursor = (x, y) switch
+                {
+                    (-1, -1) => CursorShape.SizeFDiag,
+                    (-1, 0) => CursorShape.SizeH,
+                    (-1, 1) => CursorShape.SizeBDiag,
+                    (0, -1) => CursorShape.SizeV,
+                    (0, 1) => CursorShape.SizeV,
+                    (1, -1) => CursorShape.SizeBDiag,
+                    (1, 0) => CursorShape.SizeH,
+                    (1, 1) => CursorShape.SizeFDiag,
+                    _ => CursorShape.Arrow
+                };
+                timeSinceLastCornerHover = 0f;
+            }
+            else
+            {
+                Gizmo.Draw.LineCircle(new Vector3(yy, xx, 10f), Vector3.Up, 0.5f, 0, 360, 8);
+            }
+
+
         }
     }
 
@@ -191,7 +273,7 @@ public class RenderingWidget : SpriteRenderingWidget
     {
         using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero))
         {
-            Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.1f);
+            Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.04f);
 
             var x = startX + (xi * frameWidth + xi * xSeparation);
             var y = startY + (yi * frameHeight + yi * ySeparation);
