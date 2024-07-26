@@ -20,6 +20,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     private Asset _asset;
     public TilesetResource Tileset;
+    public TilesetResource.Tile SelectedTile;
 
     ToolBar toolBar;
     internal Inspector.Inspector inspector;
@@ -206,7 +207,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _asset = asset;
         _dirty = false;
         _undoStack.Clear();
+
         Tileset = tileset;
+        SelectedTile = Tileset.Tiles?.FirstOrDefault() ?? null;
 
         InitInspector();
         UpdateEverything();

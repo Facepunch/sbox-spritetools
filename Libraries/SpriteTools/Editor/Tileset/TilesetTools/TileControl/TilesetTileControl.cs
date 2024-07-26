@@ -60,19 +60,12 @@ public class TilesetTileControl : Widget
 
     protected override void OnPaint()
     {
-        if (Pixmap is not null)
-        {
-            var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
-            pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 8);
-            Paint.Draw(pixRect, Pixmap);
-        }
-
         if (dragData?.IsValid ?? false)
         {
             Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
             Paint.DrawRect(LocalRect, 4);
         }
-        else if (false) // TODO: IsSelected
+        else if (ParentList.MainWindow is not null && ParentList.MainWindow.SelectedTile == Tile)
         {
             Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
             Paint.DrawRect(LocalRect, 4);
@@ -81,6 +74,13 @@ public class TilesetTileControl : Widget
         {
             Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
             Paint.DrawRect(LocalRect, 4);
+        }
+
+        if (Pixmap is not null)
+        {
+            var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
+            pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 7);
+            Paint.Draw(pixRect, Pixmap);
         }
 
         if (draggingAbove)

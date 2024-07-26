@@ -12,6 +12,8 @@ public class TilesetTileListControl : ControlWidget
     public override bool SupportsMultiEdit => false;
     public override bool IncludeLabel => false;
 
+    internal MainWindow MainWindow;
+
     Layout content;
     ScrollArea scrollArea;
 
@@ -78,7 +80,8 @@ public class TilesetTileListControl : ControlWidget
 
     public void SelectTile(TilesetResource.Tile tile)
     {
-
+        if (MainWindow is null) return;
+        MainWindow.SelectedTile = tile;
     }
 
     public void DeleteTile(TilesetResource.Tile tile)
