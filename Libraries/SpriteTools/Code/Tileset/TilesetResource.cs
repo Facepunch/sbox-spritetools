@@ -84,7 +84,13 @@ public class TilesetResource : GameResource
 		[JsonIgnore]
 		public Guid Id = Guid.NewGuid();
 
+		[JsonIgnore, ReadOnly, Property]
+		public int Index => Tileset?.Tiles?.IndexOf(this) ?? -1;
+
+		[Property]
 		public string Name { get; set; } = "";
+
+		[Property]
 		public Rect SheetRect { get; set; }
 
 		[JsonIgnore]

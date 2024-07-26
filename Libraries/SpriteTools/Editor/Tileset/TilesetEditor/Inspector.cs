@@ -160,7 +160,7 @@ public class Inspector : Widget
         var serializedObject = MainWindow.SelectedTile.GetSerialized();
         selectedTileSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
         {
-            return !prop.HasAttribute<JsonIgnoreAttribute>();
+            return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
         });
     }
 
