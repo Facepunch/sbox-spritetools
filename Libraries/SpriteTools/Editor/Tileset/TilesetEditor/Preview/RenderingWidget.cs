@@ -23,7 +23,6 @@ public class RenderingWidget : SpriteRenderingWidget
 
     Dictionary<Vector2, TilesetResource.Tile> tileDict;
     RealTimeSince timeSinceLastCornerHover = 0;
-    RealTimeSince timeSinceResize = 0;
 
     public RenderingWidget(MainWindow window, Widget parent) : base(parent)
     {
@@ -275,95 +274,91 @@ public class RenderingWidget : SpriteRenderingWidget
                 {
                     Gizmo.Draw.Color = Color.Lerp(Gizmo.Draw.Color, Color.Red, 0.3f);
 
-                    if (timeSinceResize > 0.1f)
+                    var preDelta = bbox.Center - Gizmo.CurrentRay.Position;
+                    var delta = new Vector2(-preDelta.y, -preDelta.x);//Gizmo.Pressed.CursorDelta;
+                    var position = tile.Position;
+                    var size = tile.Size;
+
+                    // Horizontal check
+                    if (x != 0)
                     {
-                        var preDelta = bbox.Center - Gizmo.CurrentRay.Position;
-                        var delta = new Vector2(-preDelta.y, -preDelta.x);//Gizmo.Pressed.CursorDelta;
-                        var position = tile.Position;
-                        var size = tile.Size;
-
-                        // Horizontal check
-                        if (x != 0)
+                        if (Math.Abs(delta.x) > frameWidth / 2f)
                         {
-                            if (Math.Abs(delta.x) > frameWidth / 2f)
+                            // Expanding
+                            if (Math.Sign(delta.x) == Math.Sign(x))
                             {
-                                // Expanding
-                                if (Math.Sign(delta.x) == Math.Sign(x))
+                                if (canExpandX)
                                 {
-                                    if (canExpandX)
+                                    // Expanding Backwards
+                                    if (delta.x < 0)
                                     {
-                                        // Expanding Backwards
-                                        if (delta.x < 0)
-                                        {
-                                            position -= new Vector2Int(1, 0);
-                                            size += new Vector2Int(1, 0);
-                                        }
-                                        else
-                                        {
-                                            size += new Vector2Int(1, 0);
-                                        }
-                                    }
-                                }
-                                // Shinking
-                                else if (canShrinkX)
-                                {
-                                    // Shrinking Backwards
-                                    if (delta.x > 0)
-                                    {
-                                        size -= new Vector2Int(1, 0);
-                                        position += new Vector2Int(1, 0);
+                                        position -= new Vector2Int(1, 0);
+                                        size += new Vector2Int(1, 0);
                                     }
                                     else
                                     {
-                                        size -= new Vector2Int(1, 0);
+                                        size += new Vector2Int(1, 0);
                                     }
                                 }
                             }
-                        }
-
-                        // Vertical check
-                        if (y != 0)
-                        {
-                            if (Math.Abs(delta.y) > frameHeight / 2f)
+                            // Shinking
+                            else if (canShrinkX)
                             {
-                                if (Math.Sign(delta.y) == Math.Sign(y))
+                                // Shrinking Backwards
+                                if (delta.x > 0)
                                 {
-                                    if (canExpandY)
-                                    {
-                                        // Expanding
-                                        if (delta.y < 0)
-                                        {
-                                            position -= new Vector2Int(0, 1);
-                                            size += new Vector2Int(0, 1);
-                                        }
-                                        else
-                                        {
-                                            size += new Vector2Int(0, 1);
-                                        }
-                                    }
+                                    size -= new Vector2Int(1, 0);
+                                    position += new Vector2Int(1, 0);
                                 }
-                                else if (canShrinkY)
+                                else
                                 {
-                                    // Shrink
-                                    if (delta.y > 0)
+                                    size -= new Vector2Int(1, 0);
+                                }
+                            }
+                        }
+                    }
+
+                    // Vertical check
+                    if (y != 0)
+                    {
+                        if (Math.Abs(delta.y) > frameHeight / 2f)
+                        {
+                            if (Math.Sign(delta.y) == Math.Sign(y))
+                            {
+                                if (canExpandY)
+                                {
+                                    // Expanding
+                                    if (delta.y < 0)
                                     {
-                                        size -= new Vector2Int(0, 1);
-                                        position += new Vector2Int(0, 1);
+                                        position -= new Vector2Int(0, 1);
+                                        size += new Vector2Int(0, 1);
                                     }
                                     else
                                     {
-                                        size -= new Vector2Int(0, 1);
+                                        size += new Vector2Int(0, 1);
                                     }
                                 }
                             }
+                            else if (canShrinkY)
+                            {
+                                // Shrink
+                                if (delta.y > 0)
+                                {
+                                    size -= new Vector2Int(0, 1);
+                                    position += new Vector2Int(0, 1);
+                                }
+                                else
+                                {
+                                    size -= new Vector2Int(0, 1);
+                                }
+                            }
                         }
+                    }
 
-                        if (tile.Position != position || tile.Size != size)
-                        {
-                            tile.Position = position;
-                            tile.Size = size;
-                        }
-                        timeSinceResize = 0f;
+                    if (tile.Position != position || tile.Size != size)
+                    {
+                        tile.Position = position;
+                        tile.Size = size;
                     }
                 }
             }
