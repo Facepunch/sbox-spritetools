@@ -63,6 +63,7 @@ public class TilesetTileControl : Widget
         if (Pixmap is not null)
         {
             var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
+            pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 8);
             Paint.Draw(pixRect, Pixmap);
         }
 
