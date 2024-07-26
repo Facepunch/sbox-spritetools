@@ -81,6 +81,9 @@ public class TilesetResource : GameResource
 
 	public class Tile
 	{
+		[JsonIgnore]
+		public Guid Id = Guid.NewGuid();
+
 		public string Name { get; set; } = "";
 		public Rect SheetRect { get; set; }
 
