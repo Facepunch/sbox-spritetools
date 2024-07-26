@@ -171,7 +171,7 @@ public class RenderingWidget : SpriteRenderingWidget
                 }
                 if (Gizmo.WasLeftMousePressed)
                 {
-                    MainWindow.SelectedTile = tile;
+                    MainWindow.SelectTile(tile);
                 }
                 else if (Gizmo.WasRightMousePressed)
                 {

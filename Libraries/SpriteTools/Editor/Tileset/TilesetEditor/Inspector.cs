@@ -2,6 +2,7 @@ using Editor;
 using Sandbox;
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace SpriteTools.TilesetEditor.Inspector;
 
@@ -11,6 +12,7 @@ public class Inspector : Widget
     internal int SelectedTab => segmentedControl.SelectedIndex;
 
     ControlSheet controlSheet;
+    ControlSheet selectedTileSheet;
     internal SegmentedControl segmentedControl;
 
     internal Button btnRegenerate;
@@ -29,6 +31,7 @@ public class Inspector : Widget
         Layout.Margin = 8;
 
         controlSheet = new ControlSheet();
+        selectedTileSheet = new ControlSheet();
 
         MinimumWidth = 350f;
 
@@ -50,6 +53,7 @@ public class Inspector : Widget
         };
 
         scroller.Canvas.Layout.Add(controlSheet);
+        scroller.Canvas.Layout.Add(selectedTileSheet);
 
         btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
         btnRegenerate.Clicked = MainWindow.GenerateTiles;
@@ -66,9 +70,16 @@ public class Inspector : Widget
         SetSizeMode(SizeMode.Default, SizeMode.CanShrink);
 
         UpdateControlSheet();
+        UpdateSelectedSheet();
     }
 
     [EditorEvent.Hotload]
+    void OnHotload()
+    {
+        UpdateControlSheet();
+        UpdateSelectedSheet();
+    }
+
     internal void UpdateControlSheet()
     {
         controlSheet?.Clear(true);
@@ -118,7 +129,6 @@ public class Inspector : Widget
             tileList.MainWindow = MainWindow;
         }
 
-
         var setupVisible = segmentedControl.SelectedIndex == 0;
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
         btnRegenerate.Visible = setupVisible;
@@ -128,6 +138,19 @@ public class Inspector : Widget
         warningBox.Label.Text =
             setupVisible ? "Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window."
             : "No tiles have been generated. You must first generate tiles in the Setup tab.";
+    }
+
+    internal void UpdateSelectedSheet()
+    {
+        selectedTileSheet?.Clear(true);
+
+        if (MainWindow.SelectedTile is null) return;
+
+        var serializedObject = MainWindow.SelectedTile.GetSerialized();
+        selectedTileSheet.AddObject(serializedObject, "Selected Tile", (SerializedProperty prop) =>
+        {
+            return !prop.HasAttribute<JsonIgnoreAttribute>();
+        });
     }
 
 }

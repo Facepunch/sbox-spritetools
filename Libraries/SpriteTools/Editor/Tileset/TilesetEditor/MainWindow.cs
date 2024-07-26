@@ -20,7 +20,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     private Asset _asset;
     public TilesetResource Tileset;
-    public TilesetResource.Tile SelectedTile;
+    [Property] public TilesetResource.Tile SelectedTile { get; private set; }
 
     ToolBar toolBar;
     internal Inspector.Inspector inspector;
@@ -145,6 +145,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     {
         UpdateWindowTitle();
         inspector.UpdateControlSheet();
+        inspector.UpdateSelectedSheet();
         preview.UpdateTexture();
     }
 
@@ -290,8 +291,14 @@ public partial class MainWindow : DockWindow, IAssetEditor
         };
         Tileset.Tiles.Add(tile);
         inspector.UpdateControlSheet();
-        SelectedTile = tile;
+        SelectTile(tile);
         PushRedo();
+    }
+
+    internal void SelectTile(TilesetResource.Tile tile)
+    {
+        SelectedTile = tile;
+        inspector.UpdateSelectedSheet();
     }
 
     internal void DeleteTile(TilesetResource.Tile tile)
@@ -303,7 +310,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         bool isSelected = SelectedTile == tile;
         Tileset.Tiles.Remove(tile);
         inspector.UpdateControlSheet();
-        if (isSelected) SelectedTile = Tileset.Tiles?.FirstOrDefault() ?? null;
+        if (isSelected) SelectTile(Tileset.Tiles?.FirstOrDefault() ?? null);
         PushRedo();
     }
 

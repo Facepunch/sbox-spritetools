@@ -81,7 +81,7 @@ public class TilesetTileListControl : ControlWidget
     public void SelectTile(TilesetResource.Tile tile)
     {
         if (MainWindow is null) return;
-        MainWindow.SelectedTile = tile;
+        MainWindow.SelectTile(tile);
     }
 
     public void DeleteTile(TilesetResource.Tile tile)
