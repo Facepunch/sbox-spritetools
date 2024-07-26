@@ -5,17 +5,8 @@
   "Tiles": [
     {
       "Name": "",
-      "Size": "1,1"
-    },
-    {
-      "Name": "",
       "Position": "1,0",
-      "Size": "1,1"
-    },
-    {
-      "Name": "",
-      "Position": "2,0",
-      "Size": "1,1"
+      "Size": "2,1"
     },
     {
       "Name": "",
@@ -60,21 +51,6 @@
     {
       "Name": "",
       "Position": "11,0",
-      "Size": "1,1"
-    },
-    {
-      "Name": "",
-      "Position": "0,1",
-      "Size": "1,1"
-    },
-    {
-      "Name": "",
-      "Position": "1,1",
-      "Size": "1,1"
-    },
-    {
-      "Name": "",
-      "Position": "2,1",
       "Size": "1,1"
     },
     {
@@ -660,6 +636,11 @@
     {
       "Name": "",
       "Position": "11,10",
+      "Size": "1,1"
+    },
+    {
+      "Name": "",
+      "Position": "2,1",
       "Size": "1,1"
     }
   ],

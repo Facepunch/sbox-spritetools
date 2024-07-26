@@ -37,7 +37,9 @@ public class RenderingWidget : SpriteRenderingWidget
         SceneInstance.UpdateInputs(Camera, this);
 
         if (timeSinceLastCornerHover > 0.025f)
+        {
             Cursor = CursorShape.Arrow;
+        }
 
         tileDict = new();
         foreach (var tile in MainWindow.Tileset.Tiles)
@@ -254,7 +256,7 @@ public class RenderingWidget : SpriteRenderingWidget
         bool canShrinkX = !(x != 0 && tile.Size.x == 1);
         bool canShrinkY = !(y != 0 && tile.Size.y == 1);
 
-        bool canDrag = canExpandX || canExpandY || canShrinkX || canShrinkY;
+        bool canDrag = (canExpandX && x != 0) || (canExpandY && y != 0) || (canShrinkX && x != 0) || (canShrinkY && y != 0);
 
         using (Gizmo.Scope($"corner_{x}_{y}"))
         {
