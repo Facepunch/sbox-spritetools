@@ -175,9 +175,7 @@ public class RenderingWidget : SpriteRenderingWidget
                 }
                 else if (Gizmo.WasRightMousePressed)
                 {
-                    MainWindow.Tileset.Tiles.Remove(tile);
-                    MainWindow.inspector.UpdateControlSheet();
-                    if (isSelected) MainWindow.SelectedTile = MainWindow.Tileset.Tiles?.FirstOrDefault() ?? null;
+                    MainWindow.DeleteTile(tile);
                 }
             }
 
@@ -406,12 +404,7 @@ public class RenderingWidget : SpriteRenderingWidget
                 }
                 if (Gizmo.WasLeftMousePressed)
                 {
-                    var tile = new TilesetResource.Tile(new Rect(new Vector2(xi, yi), 1))
-                    {
-                        Tileset = MainWindow.Tileset
-                    };
-                    MainWindow.Tileset.Tiles.Add(tile);
-                    MainWindow.inspector.UpdateControlSheet();
+                    MainWindow.CreateTile(xi, yi);
                 }
             }
 

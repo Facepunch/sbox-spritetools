@@ -279,6 +279,34 @@ public partial class MainWindow : DockWindow, IAssetEditor
         return fd.SelectedFile;
     }
 
+    internal void CreateTile(int x, int y)
+    {
+        var tileName = $"Tile {x},{y}";
+
+        PushUndo($"Create Tile \"{tileName}\"");
+        var tile = new TilesetResource.Tile(new Rect(new Vector2(x, y), 1))
+        {
+            Tileset = Tileset
+        };
+        Tileset.Tiles.Add(tile);
+        inspector.UpdateControlSheet();
+        SelectedTile = tile;
+        PushRedo();
+    }
+
+    internal void DeleteTile(TilesetResource.Tile tile)
+    {
+        var tileName = tile.Name;
+        if (string.IsNullOrEmpty(tileName)) tileName = $"Tile {tile.SheetRect.Position}";
+
+        PushUndo($"Delete Tile \"{tileName}\"");
+        bool isSelected = SelectedTile == tile;
+        Tileset.Tiles.Remove(tile);
+        inspector.UpdateControlSheet();
+        if (isSelected) SelectedTile = Tileset.Tiles?.FirstOrDefault() ?? null;
+        PushRedo();
+    }
+
     internal void GenerateTiles()
     {
         if (Tileset is null) return;
