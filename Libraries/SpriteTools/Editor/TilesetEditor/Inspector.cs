@@ -11,7 +11,7 @@ public class Inspector : Widget
     internal int SelectedTab => segmentedControl.SelectedIndex;
 
     ControlSheet controlSheet;
-    SegmentedControl segmentedControl;
+    internal SegmentedControl segmentedControl;
 
     Button btnRegenerate;
     WarningBox warningBox;
@@ -43,7 +43,6 @@ public class Inspector : Widget
         segmentedControl = Layout.Add(new SegmentedControl());
         segmentedControl.AddOption("Setup", "auto_fix_high");
         segmentedControl.AddOption("Tiles", "grid_on");
-        segmentedControl.SelectedIndex = string.IsNullOrEmpty(MainWindow.Tileset.FilePath) ? 0 : 1;
         segmentedControl.OnSelectedChanged = (index) =>
         {
             UpdateControlSheet();

@@ -135,6 +135,11 @@ public partial class MainWindow : DockWindow, IAssetEditor
         RebuildUI();
     }
 
+    void InitInspector()
+    {
+        inspector.segmentedControl.SelectedIndex = ((Tileset?.Tiles?.Count ?? 0) == 0) ? 0 : 1;
+    }
+
     void UpdateEverything()
     {
         UpdateWindowTitle();
@@ -156,6 +161,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _dirty = false;
         _undoStack.Clear();
 
+        InitInspector();
         UpdateEverything();
     }
 
@@ -201,6 +207,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _dirty = false;
         _undoStack.Clear();
         Tileset = tileset;
+
+        InitInspector();
         UpdateEverything();
     }
 
