@@ -32,6 +32,7 @@ internal class LabelTextEntry : Widget
     {
         Layout = Layout.Row();
         Property = property;
+        MinimumHeight = 14;
 
         RebuildUI();
     }
@@ -46,12 +47,6 @@ internal class LabelTextEntry : Widget
             stringControl.HorizontalSizeMode = SizeMode.CanShrink;
             stringControl.MaximumWidth = 250;
             Layout.AddStretchCell();
-        }
-        else
-        {
-            var val = Property.GetValue("N/A");
-            if (string.IsNullOrEmpty(val)) val = EmptyValue;
-            Layout.Add(new Label(val));
         }
     }
 
@@ -119,5 +114,16 @@ internal class LabelTextEntry : Widget
                 StopEditing();
             }
         }
+    }
+
+    protected override void OnPaint()
+    {
+        base.OnPaint();
+
+        if (editing) return;
+        Paint.SetPen(Theme.ControlText);
+        var val = Property.GetValue(EmptyValue);
+        if (string.IsNullOrEmpty(val)) val = EmptyValue;
+        Paint.DrawText(LocalRect, val, TextFlag.LeftCenter);
     }
 }
