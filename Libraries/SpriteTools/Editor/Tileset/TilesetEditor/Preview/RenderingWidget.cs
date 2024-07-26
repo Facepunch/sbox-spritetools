@@ -31,6 +31,19 @@ public class RenderingWidget : SpriteRenderingWidget
         SceneInstance.Input.IsHovered = IsUnderMouse;
         SceneInstance.UpdateInputs(Camera, this);
 
+        Dictionary<Vector2, TilesetResource.Tile> tiles = new();
+        foreach (var tile in MainWindow.Tileset.Tiles)
+        {
+            for (int i = 0; i < tile.SheetRect.Size.x; i++)
+            {
+                for (int j = 0; j < tile.SheetRect.Size.y; j++)
+                {
+                    var realTile = (i == 0 && j == 0) ? tile : null;
+                    tiles.Add(tile.SheetRect.Position + new Vector2(i, j), realTile);
+                }
+            }
+        }
+
         using (SceneInstance.Push())
         {
             var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
@@ -51,7 +64,7 @@ public class RenderingWidget : SpriteRenderingWidget
 
                 using (Gizmo.Scope("tiles"))
                 {
-                    Gizmo.Draw.Color = Color.Orange;
+                    Gizmo.Draw.Color = new Color(0.1f, 0.4f, 1f);
                     Gizmo.Draw.LineThickness = 2f;
 
                     int xi = 0;
@@ -63,7 +76,17 @@ public class RenderingWidget : SpriteRenderingWidget
                         {
                             while (xi < framesPerRow)
                             {
-                                TileControl(xi, yi);
+                                if (tiles.TryGetValue(new Vector2(xi, yi), out var tile))
+                                {
+                                    if (tile is not null)
+                                    {
+                                        TileControl(xi, yi, tiles[new Vector2(xi, yi)]);
+                                    }
+                                }
+                                else
+                                {
+                                    EmptyTileControl(xi, yi);
+                                }
                                 xi++;
                             }
                             xi = 0;
@@ -109,7 +132,7 @@ public class RenderingWidget : SpriteRenderingWidget
         }
     }
 
-    void TileControl(int xi, int yi)
+    void TileControl(int xi, int yi, TilesetResource.Tile tile)
     {
         using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero))
         {
@@ -124,11 +147,55 @@ public class RenderingWidget : SpriteRenderingWidget
             var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
             Gizmo.Hitbox.BBox(bbox);
 
+
+            if (MainWindow.SelectedTile == tile)
+            {
+                Gizmo.Draw.LineThickness = 4;
+                Gizmo.Draw.Color = Color.Yellow;
+            }
+
             if (Gizmo.IsHovered)
             {
-                Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
-                Gizmo.Draw.SolidBox(bbox);
-                Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(1f);
+                using (Gizmo.Scope("hover"))
+                {
+                    Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
+                    Gizmo.Draw.SolidBox(bbox);
+                }
+            }
+            else if (MainWindow.SelectedTile == tile)
+            {
+                using (Gizmo.Scope("selected"))
+                {
+                    Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
+                    Gizmo.Draw.SolidBox(bbox);
+                }
+            }
+
+            DrawBox(x, y, width, height);
+        }
+    }
+
+    void EmptyTileControl(int xi, int yi)
+    {
+        using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero))
+        {
+            Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.1f);
+
+            var x = startX + (xi * frameWidth + xi * xSeparation);
+            var y = startY + (yi * frameHeight + yi * ySeparation);
+            var width = frameWidth;
+            var height = frameHeight;
+
+            var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
+            Gizmo.Hitbox.BBox(bbox);
+
+            if (Gizmo.IsHovered)
+            {
+                using (Gizmo.Scope("hover"))
+                {
+                    Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
+                    Gizmo.Draw.SolidBox(bbox);
+                }
             }
 
             DrawBox(x, y, width, height);
