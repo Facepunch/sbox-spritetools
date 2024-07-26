@@ -143,7 +143,7 @@ public class RenderingWidget : SpriteRenderingWidget
     void TileControl(int xi, int yi, TilesetResource.Tile tile)
     {
         bool isSelected = MainWindow.SelectedTile == tile;
-        using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
+        using (Gizmo.Scope($"tile_{tile.Id}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
         {
             float sizeX = tile.SheetRect.Size.x;
             float sizeY = tile.SheetRect.Size.y;
@@ -210,14 +210,14 @@ public class RenderingWidget : SpriteRenderingWidget
         float width = frameWidth * (int)tile.SheetRect.Size.x;
         float height = frameHeight * (int)tile.SheetRect.Size.y;
 
-        bool canExpand = true;
-        bool canShrink = true;
+        bool canExpandX = true;
+        bool canExpandY = true;
 
         // Can Expand Logic
         if (x != 0)
         {
             int nextX = currentX + (x > 0 ? (x * (int)tile.SheetRect.Size.x) : x);
-            if (nextX < 0 || nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize)) canExpand = false;
+            if (nextX < 0 || nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize)) canExpandX = false;
             else
             {
                 for (int i = 0; i < tile.SheetRect.Size.y; i++)
@@ -225,17 +225,17 @@ public class RenderingWidget : SpriteRenderingWidget
                     int nextY = currentY + i;
                     if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
                     {
-                        canExpand = false;
+                        canExpandX = false;
                         break;
                     }
                 }
             }
         }
 
-        if (canExpand && y != 0)
+        if (y != 0)
         {
             int nextY = currentY + (y > 0 ? (y * (int)tile.SheetRect.Size.y) : y);
-            if (nextY < 0 || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize)) canExpand = false;
+            if (nextY < 0 || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize)) canExpandY = false;
             else
             {
                 for (int i = 0; i < tile.SheetRect.Size.x; i++)
@@ -243,7 +243,7 @@ public class RenderingWidget : SpriteRenderingWidget
                     int nextX = currentX + i;
                     if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
                     {
-                        canExpand = false;
+                        canExpandY = false;
                         break;
                     }
                 }
@@ -251,12 +251,12 @@ public class RenderingWidget : SpriteRenderingWidget
         }
 
         // Can Shrink Logic
-        if (x != 0 && tile.SheetRect.Size.x == 1) canShrink = false;
-        if (y != 0 && tile.SheetRect.Size.y == 1) canShrink = false;
+        bool canShrinkX = !(x != 0 && tile.SheetRect.Size.x == 1);
+        bool canShrinkY = !(y != 0 && tile.SheetRect.Size.y == 1);
 
-        bool canDrag = canExpand || canShrink;
+        bool canDrag = canExpandX || canExpandY || canShrinkX || canShrinkY;
 
-        using (Gizmo.Scope($"corner_{xi}_{yi}"))
+        using (Gizmo.Scope($"corner_{x}_{y}"))
         {
             if (!canDrag)
             {
@@ -287,19 +287,22 @@ public class RenderingWidget : SpriteRenderingWidget
                                 // Expanding
                                 if (Math.Sign(delta.x) == Math.Sign(x))
                                 {
-                                    // Expanding Backwards
-                                    if (delta.x < 0)
+                                    if (canExpandX)
                                     {
-                                        rect.Position -= new Vector2(1, 0);
-                                        rect.Size += new Vector2(1, 0);
-                                    }
-                                    else
-                                    {
-                                        rect.Size += new Vector2(1, 0);
+                                        // Expanding Backwards
+                                        if (delta.x < 0)
+                                        {
+                                            rect.Position -= new Vector2(1, 0);
+                                            rect.Size += new Vector2(1, 0);
+                                        }
+                                        else
+                                        {
+                                            rect.Size += new Vector2(1, 0);
+                                        }
                                     }
                                 }
                                 // Shinking
-                                else
+                                else if (canShrinkX)
                                 {
                                     // Shrinking Backwards
                                     if (delta.x > 0)
@@ -322,18 +325,21 @@ public class RenderingWidget : SpriteRenderingWidget
                             {
                                 if (Math.Sign(delta.y) == Math.Sign(y))
                                 {
-                                    // Expanding
-                                    if (delta.y < 0)
+                                    if (canExpandY)
                                     {
-                                        rect.Position -= new Vector2(0, 1);
-                                        rect.Size += new Vector2(0, 1);
-                                    }
-                                    else
-                                    {
-                                        rect.Size += new Vector2(0, 1);
+                                        // Expanding
+                                        if (delta.y < 0)
+                                        {
+                                            rect.Position -= new Vector2(0, 1);
+                                            rect.Size += new Vector2(0, 1);
+                                        }
+                                        else
+                                        {
+                                            rect.Size += new Vector2(0, 1);
+                                        }
                                     }
                                 }
-                                else
+                                else if (canShrinkY)
                                 {
                                     // Shrink
                                     if (delta.y > 0)
@@ -349,7 +355,11 @@ public class RenderingWidget : SpriteRenderingWidget
                             }
                         }
 
-                        tile.SheetRect = rect;
+                        if (tile.SheetRect != rect)
+                        {
+                            tile.SheetRect = rect;
+
+                        }
                         timeSinceResize = 0f;
                     }
                 }
