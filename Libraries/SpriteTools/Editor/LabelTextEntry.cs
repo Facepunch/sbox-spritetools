@@ -1,18 +1,21 @@
 using Editor;
 using Sandbox;
+using System;
 using System.Linq;
 
-namespace SpriteTools.TilesetTool;
+namespace SpriteTools;
 
 internal class LabelTextEntry : Widget
 {
-    SerializedProperty Property;
+    internal SerializedProperty Property;
     string lastValue = "";
-    string lastSafeValue = "";
+    internal string lastSafeValue = "";
 
     bool editing = false;
     RealTimeSince timeSinceLastEdit = 0;
     StringControlWidget stringControl;
+
+    internal Func<string, bool> OnStopEditing;
 
     public LabelTextEntry(SerializedProperty property) : base(null)
     {
@@ -79,7 +82,10 @@ internal class LabelTextEntry : Widget
 
         editing = false;
         var value = Property.GetValue("");
-        Property.SetValue(value);
+        if (OnStopEditing?.Invoke(value) ?? true)
+        {
+            Property.SetValue(value);
+        }
         RebuildUI();
     }
 
