@@ -63,6 +63,7 @@ public class TilesetResource : GameResource
 
 	public class Tile
 	{
+		public string Name { get; set; } = "";
 		public Rect SheetRect { get; set; }
 
 		public Tile(Rect sheetRect)
@@ -72,7 +73,10 @@ public class TilesetResource : GameResource
 
 		public Tile Copy()
 		{
-			var copy = new Tile(SheetRect);
+			var copy = new Tile(SheetRect)
+			{
+				Name = Name
+			};
 			return copy;
 		}
 	}
