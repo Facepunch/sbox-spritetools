@@ -266,21 +266,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
         return fd.SelectedFile;
     }
 
-    internal void PromptImportSpritesheet()
+    internal void RegenerateTiles()
     {
-        var picker = new AssetPicker(this, AssetType.ImageFile);
-        picker.Window.StateCookie = "TilesetEditor.Import";
-        picker.Window.RestoreFromStateCookie();
-        picker.Window.Title = $"Import Spritesheet for {Tileset.ResourceName}";
-        picker.MultiSelect = false;
-        picker.OnAssetPicked = x =>
-        {
-            var path = x.FirstOrDefault()?.GetSourceFile();
-            if (string.IsNullOrEmpty(path)) return;
-            var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
-            importer.Window.Show();
-        };
-        picker.Window.Show();
+
     }
 
     void PromptSave(Action action)
