@@ -287,6 +287,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         Tileset.Tiles ??= new List<TilesetResource.Tile>();
         Tileset.Tiles?.Clear();
         Tileset.CurrentTileSize = Tileset.TileSize;
+        Tileset.CurrentTextureSize = (Vector2Int)preview.TextureSize;
 
         int x = 0;
         int y = 0;

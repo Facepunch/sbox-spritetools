@@ -59,8 +59,8 @@ public class RenderingWidget : SpriteRenderingWidget
 
             if (hasTiles)
             {
-                int framesPerRow = (int)TextureSize.x / MainWindow.Tileset.CurrentTileSize;
-                int framesPerHeight = (int)TextureSize.y / MainWindow.Tileset.CurrentTileSize;
+                int framesPerRow = MainWindow.Tileset.CurrentTextureSize.x / MainWindow.Tileset.CurrentTileSize;
+                int framesPerHeight = MainWindow.Tileset.CurrentTextureSize.y / MainWindow.Tileset.CurrentTileSize;
 
                 using (Gizmo.Scope("tiles"))
                 {
@@ -205,6 +205,15 @@ public class RenderingWidget : SpriteRenderingWidget
                 {
                     Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
                     Gizmo.Draw.SolidBox(bbox);
+                }
+                if (Gizmo.WasLeftMousePressed)
+                {
+                    var tile = new TilesetResource.Tile(new Rect(new Vector2(xi, yi), 1))
+                    {
+                        Tileset = MainWindow.Tileset
+                    };
+                    MainWindow.Tileset.Tiles.Add(tile);
+                    MainWindow.inspector.UpdateControlSheet();
                 }
             }
 

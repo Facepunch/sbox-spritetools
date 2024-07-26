@@ -18,18 +18,11 @@ public class TilesetResource : GameResource
 	[Property, Group("Tileset Setup")]
 	public Vector2Int TileSeparation { get; set; } = 0;
 
-	public int CurrentTileSize { get; set; } = 32;
-
 	[Property, Group("Tiles")]
 	public List<Tile> Tiles { get; set; } = new();
 
-	public void InitFromAtlas(string filePath, int tileSize)
-	{
-		var texture = Texture.Load(FileSystem.Mounted, filePath);
-		FilePath = filePath;
-		TileSize = tileSize;
-		CurrentTileSize = TileSize;
-	}
+	public Vector2Int CurrentTextureSize { get; set; } = Vector2Int.One;
+	public int CurrentTileSize { get; set; } = 32;
 
 	public Vector2 GetTiling()
 	{
