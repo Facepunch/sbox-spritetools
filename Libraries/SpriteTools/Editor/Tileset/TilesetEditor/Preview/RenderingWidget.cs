@@ -70,6 +70,8 @@ public class RenderingWidget : SpriteRenderingWidget
                     int xi = 0;
                     int yi = 0;
 
+                    TilesetResource.Tile selectedTile = null;
+
                     if (framesPerRow * framesPerHeight < 2048)
                     {
                         while (yi < framesPerHeight)
@@ -80,7 +82,10 @@ public class RenderingWidget : SpriteRenderingWidget
                                 {
                                     if (tile is not null)
                                     {
-                                        TileControl(xi, yi, tiles[new Vector2(xi, yi)]);
+                                        if (MainWindow.SelectedTile == tile)
+                                            selectedTile = tile;
+                                        else
+                                            TileControl(xi, yi, tiles[new Vector2(xi, yi)]);
                                     }
                                 }
                                 else
@@ -91,6 +96,11 @@ public class RenderingWidget : SpriteRenderingWidget
                             }
                             xi = 0;
                             yi++;
+                        }
+
+                        if (selectedTile is not null)
+                        {
+                            TileControl((int)selectedTile.SheetRect.Position.x, (int)selectedTile.SheetRect.Position.y, selectedTile);
                         }
                     }
                 }
@@ -170,14 +180,6 @@ public class RenderingWidget : SpriteRenderingWidget
                     MainWindow.Tileset.Tiles.Remove(tile);
                     MainWindow.inspector.UpdateControlSheet();
                     if (isSelected) MainWindow.SelectedTile = MainWindow.Tileset.Tiles?.FirstOrDefault() ?? null;
-                }
-            }
-            else if (MainWindow.SelectedTile == tile)
-            {
-                using (Gizmo.Scope("selected"))
-                {
-                    Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
-                    Gizmo.Draw.SolidBox(bbox);
                 }
             }
 
