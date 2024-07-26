@@ -53,7 +53,18 @@ public class Inspector : Widget
         };
 
         scroller.Canvas.Layout.Add(controlSheet);
-        scroller.Canvas.Layout.Add(selectedTileSheet);
+
+        scroller.Canvas.Layout.AddSpacingCell(8);
+        var selectedTileGroup = scroller.Canvas.Layout.Add(new ExpandGroup(this));
+        selectedTileGroup.Title = "Selected Tile";
+        selectedTileGroup.SetOpenState(true);
+        var w = new Widget();
+        w.Layout = Layout.Column();
+        w.VerticalSizeMode = SizeMode.CanGrow;
+        w.HorizontalSizeMode = SizeMode.Flexible;
+        w.Layout.Add(selectedTileSheet);
+        w.Layout.AddSpacingCell(8);
+        selectedTileGroup.SetWidget(w);
 
         btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
         btnRegenerate.Clicked = MainWindow.GenerateTiles;
@@ -147,7 +158,7 @@ public class Inspector : Widget
         if (MainWindow.SelectedTile is null) return;
 
         var serializedObject = MainWindow.SelectedTile.GetSerialized();
-        selectedTileSheet.AddObject(serializedObject, "Selected Tile", (SerializedProperty prop) =>
+        selectedTileSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<JsonIgnoreAttribute>();
         });
