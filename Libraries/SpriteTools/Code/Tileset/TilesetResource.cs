@@ -91,19 +91,23 @@ public class TilesetResource : GameResource
 		public string Name { get; set; } = "";
 
 		[Property]
-		public Rect SheetRect { get; set; }
+		public Vector2Int Position { get; set; }
+
+		[Property]
+		public Vector2Int Size { get; set; }
 
 		[JsonIgnore]
 		public TilesetResource Tileset;
 
-		public Tile(Rect sheetRect)
+		public Tile(Vector2Int position, Vector2Int size)
 		{
-			SheetRect = sheetRect;
+			Position = position;
+			Size = size;
 		}
 
 		public Tile Copy()
 		{
-			var copy = new Tile(SheetRect)
+			var copy = new Tile(Position, Size)
 			{
 				Name = Name
 			};

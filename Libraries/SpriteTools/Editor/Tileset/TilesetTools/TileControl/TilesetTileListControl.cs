@@ -65,7 +65,7 @@ public class TilesetTileListControl : ControlWidget
         foreach (var tile in tiles)
         {
             var button = content.Add(new TilesetTileControl(this, tile));
-            button.labelText.EmptyValue = $"Tile {tile.SheetRect.Position}";
+            button.labelText.EmptyValue = $"Tile {tile.Position}";
             button.MouseClick = () => SelectTile(tile);
         }
     }

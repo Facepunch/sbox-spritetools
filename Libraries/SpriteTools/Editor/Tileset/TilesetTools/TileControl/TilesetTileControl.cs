@@ -51,7 +51,7 @@ public class TilesetTileControl : Widget
     {
         var tileset = Tile.Tileset;
         if (tileset is null) return;
-        var rect = Tile.SheetRect;
+        var rect = new Rect(Tile.Position, Tile.Size);
         rect.Position = rect.Position * tileset.TileSize + rect.Position * tileset.TileSeparation;
         rect.Width *= tileset.TileSize;
         rect.Height *= tileset.TileSize;

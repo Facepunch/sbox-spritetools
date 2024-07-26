@@ -285,7 +285,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         var tileName = $"Tile {x},{y}";
 
         PushUndo($"Create Tile \"{tileName}\"");
-        var tile = new TilesetResource.Tile(new Rect(new Vector2(x, y), 1))
+        var tile = new TilesetResource.Tile(new Vector2Int(x, y), 1)
         {
             Tileset = Tileset
         };
@@ -304,7 +304,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     internal void DeleteTile(TilesetResource.Tile tile)
     {
         var tileName = tile.Name;
-        if (string.IsNullOrEmpty(tileName)) tileName = $"Tile {tile.SheetRect.Position}";
+        if (string.IsNullOrEmpty(tileName)) tileName = $"Tile {tile.Position}";
 
         PushUndo($"Delete Tile \"{tileName}\"");
         bool isSelected = SelectedTile == tile;
@@ -333,7 +333,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         {
             while (x < framesPerRow)
             {
-                Tileset.Tiles.Add(new TilesetResource.Tile(new Rect(x, y, 1, 1)));
+                Tileset.Tiles.Add(new TilesetResource.Tile(new Vector2Int(x, y), 1));
                 x++;
             }
             x = 0;

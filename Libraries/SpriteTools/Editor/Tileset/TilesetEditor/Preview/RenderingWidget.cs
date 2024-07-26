@@ -42,12 +42,12 @@ public class RenderingWidget : SpriteRenderingWidget
         tileDict = new();
         foreach (var tile in MainWindow.Tileset.Tiles)
         {
-            for (int i = 0; i < tile.SheetRect.Size.x; i++)
+            for (int i = 0; i < tile.Size.x; i++)
             {
-                for (int j = 0; j < tile.SheetRect.Size.y; j++)
+                for (int j = 0; j < tile.Size.y; j++)
                 {
                     var realTile = (i == 0 && j == 0) ? tile : null;
-                    tileDict[tile.SheetRect.Position + new Vector2(i, j)] = realTile;
+                    tileDict[tile.Position + new Vector2(i, j)] = realTile;
                 }
             }
         }
@@ -145,8 +145,8 @@ public class RenderingWidget : SpriteRenderingWidget
         bool isSelected = MainWindow.SelectedTile == tile;
         using (Gizmo.Scope($"tile_{tile.Id}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
         {
-            float sizeX = tile.SheetRect.Size.x;
-            float sizeY = tile.SheetRect.Size.y;
+            float sizeX = tile.Size.x;
+            float sizeY = tile.Size.y;
 
             var x = startX + (xi * frameWidth + xi * xSeparation);
             var y = startY + (yi * frameHeight + yi * ySeparation);
@@ -203,12 +203,12 @@ public class RenderingWidget : SpriteRenderingWidget
 
     void DraggableCorner(TilesetResource.Tile tile, int x, int y, float xx, float yy)
     {
-        int currentX = (int)tile.SheetRect.Position.x;
-        int currentY = (int)tile.SheetRect.Position.y;
+        int currentX = (int)tile.Position.x;
+        int currentY = (int)tile.Position.y;
         float xi = currentX + x / 2f;
         float yi = currentY + y / 2f;
-        float width = frameWidth * (int)tile.SheetRect.Size.x;
-        float height = frameHeight * (int)tile.SheetRect.Size.y;
+        float width = frameWidth * (int)tile.Size.x;
+        float height = frameHeight * (int)tile.Size.y;
 
         bool canExpandX = true;
         bool canExpandY = true;
@@ -216,11 +216,11 @@ public class RenderingWidget : SpriteRenderingWidget
         // Can Expand Logic
         if (x != 0)
         {
-            int nextX = currentX + (x > 0 ? (x * (int)tile.SheetRect.Size.x) : x);
+            int nextX = currentX + (x > 0 ? (x * (int)tile.Size.x) : x);
             if (nextX < 0 || nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize)) canExpandX = false;
             else
             {
-                for (int i = 0; i < tile.SheetRect.Size.y; i++)
+                for (int i = 0; i < tile.Size.y; i++)
                 {
                     int nextY = currentY + i;
                     if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
@@ -234,11 +234,11 @@ public class RenderingWidget : SpriteRenderingWidget
 
         if (y != 0)
         {
-            int nextY = currentY + (y > 0 ? (y * (int)tile.SheetRect.Size.y) : y);
+            int nextY = currentY + (y > 0 ? (y * (int)tile.Size.y) : y);
             if (nextY < 0 || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize)) canExpandY = false;
             else
             {
-                for (int i = 0; i < tile.SheetRect.Size.x; i++)
+                for (int i = 0; i < tile.Size.x; i++)
                 {
                     int nextX = currentX + i;
                     if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
@@ -251,8 +251,8 @@ public class RenderingWidget : SpriteRenderingWidget
         }
 
         // Can Shrink Logic
-        bool canShrinkX = !(x != 0 && tile.SheetRect.Size.x == 1);
-        bool canShrinkY = !(y != 0 && tile.SheetRect.Size.y == 1);
+        bool canShrinkX = !(x != 0 && tile.Size.x == 1);
+        bool canShrinkY = !(y != 0 && tile.Size.y == 1);
 
         bool canDrag = canExpandX || canExpandY || canShrinkX || canShrinkY;
 
@@ -277,7 +277,8 @@ public class RenderingWidget : SpriteRenderingWidget
                     {
                         var preDelta = bbox.Center - Gizmo.CurrentRay.Position;
                         var delta = new Vector2(-preDelta.y, -preDelta.x);//Gizmo.Pressed.CursorDelta;
-                        var rect = tile.SheetRect;
+                        var position = tile.Position;
+                        var size = tile.Size;
 
                         // Horizontal check
                         if (x != 0)
@@ -292,12 +293,12 @@ public class RenderingWidget : SpriteRenderingWidget
                                         // Expanding Backwards
                                         if (delta.x < 0)
                                         {
-                                            rect.Position -= new Vector2(1, 0);
-                                            rect.Size += new Vector2(1, 0);
+                                            position -= new Vector2Int(1, 0);
+                                            size += new Vector2Int(1, 0);
                                         }
                                         else
                                         {
-                                            rect.Size += new Vector2(1, 0);
+                                            size += new Vector2Int(1, 0);
                                         }
                                     }
                                 }
@@ -307,12 +308,12 @@ public class RenderingWidget : SpriteRenderingWidget
                                     // Shrinking Backwards
                                     if (delta.x > 0)
                                     {
-                                        rect.Size -= new Vector2(1, 0);
-                                        rect.Position += new Vector2(1, 0);
+                                        size -= new Vector2Int(1, 0);
+                                        position += new Vector2Int(1, 0);
                                     }
                                     else
                                     {
-                                        rect.Size -= new Vector2(1, 0);
+                                        size -= new Vector2Int(1, 0);
                                     }
                                 }
                             }
@@ -330,12 +331,12 @@ public class RenderingWidget : SpriteRenderingWidget
                                         // Expanding
                                         if (delta.y < 0)
                                         {
-                                            rect.Position -= new Vector2(0, 1);
-                                            rect.Size += new Vector2(0, 1);
+                                            position -= new Vector2Int(0, 1);
+                                            size += new Vector2Int(0, 1);
                                         }
                                         else
                                         {
-                                            rect.Size += new Vector2(0, 1);
+                                            size += new Vector2Int(0, 1);
                                         }
                                     }
                                 }
@@ -344,21 +345,21 @@ public class RenderingWidget : SpriteRenderingWidget
                                     // Shrink
                                     if (delta.y > 0)
                                     {
-                                        rect.Size -= new Vector2(0, 1);
-                                        rect.Position += new Vector2(0, 1);
+                                        size -= new Vector2Int(0, 1);
+                                        position += new Vector2Int(0, 1);
                                     }
                                     else
                                     {
-                                        rect.Size -= new Vector2(0, 1);
+                                        size -= new Vector2Int(0, 1);
                                     }
                                 }
                             }
                         }
 
-                        if (tile.SheetRect != rect)
+                        if (tile.Position != position || tile.Size != size)
                         {
-                            tile.SheetRect = rect;
-
+                            tile.Position = position;
+                            tile.Size = size;
                         }
                         timeSinceResize = 0f;
                     }
