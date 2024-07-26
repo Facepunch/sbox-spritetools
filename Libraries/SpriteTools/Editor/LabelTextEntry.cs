@@ -11,6 +11,17 @@ internal class LabelTextEntry : Widget
     string lastValue = "";
     internal string lastSafeValue = "";
 
+    public string EmptyValue
+    {
+        get => _emptyValue;
+        set
+        {
+            _emptyValue = value;
+            RebuildUI();
+        }
+    }
+    string _emptyValue = "N/A";
+
     bool editing = false;
     RealTimeSince timeSinceLastEdit = 0;
     StringControlWidget stringControl;
@@ -38,7 +49,9 @@ internal class LabelTextEntry : Widget
         }
         else
         {
-            Layout.Add(new Label(Property.GetValue("N/A")));
+            var val = Property.GetValue("N/A");
+            if (string.IsNullOrEmpty(val)) val = EmptyValue;
+            Layout.Add(new Label(val));
         }
     }
 
