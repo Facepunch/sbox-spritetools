@@ -12,6 +12,8 @@ public class Inspector : Widget
 
     ControlSheet controlSheet;
     SegmentedControl segmentedControl;
+
+    Button btnRegenerate;
     WarningBox warningBox;
 
     public Inspector(MainWindow mainWindow) : base(null)
@@ -48,7 +50,8 @@ public class Inspector : Widget
         };
 
         scroller.Canvas.Layout.Add(controlSheet);
-        scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh")).Clicked = MainWindow.RegenerateTiles;
+        btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
+        btnRegenerate.Clicked = MainWindow.RegenerateTiles;
         scroller.Canvas.Layout.AddSpacingCell(8);
         warningBox = scroller.Canvas.Layout.Add(new WarningBox("Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window.", this));
         scroller.Canvas.Layout.AddStretchCell();
@@ -91,6 +94,9 @@ public class Inspector : Widget
             MainWindow.PushRedo();
 
             MainWindow.SetDirty();
+
+            if (prop.Name == "FilePath")
+                MainWindow.preview.UpdateTexture();
         };
 
         controlSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
@@ -100,7 +106,9 @@ public class Inspector : Widget
             return prop.HasAttribute<PropertyAttribute>() && !prop.HasAttribute<HideAttribute>();
         });
 
-        warningBox.Visible = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
+        var setupVisible = segmentedControl.SelectedIndex == 0;
+        btnRegenerate.Visible = setupVisible;
+        warningBox.Visible = setupVisible && (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
     }
 
 }

@@ -23,6 +23,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     ToolBar toolBar;
     Inspector.Inspector inspector;
+    internal Preview.Preview preview;
 
     Option _undoMenuOption;
     Option _redoMenuOption;
@@ -109,7 +110,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     protected override void RestoreDefaultDockLayout()
     {
         inspector = new Inspector.Inspector(this);
-        var preview = new Preview.Preview(this);
+        preview = new Preview.Preview(this);
         // Timeline = new Timeline.Timeline(this);
         // var animationList = new AnimationList.AnimationList(this);
 
@@ -138,6 +139,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     {
         UpdateWindowTitle();
         inspector.UpdateControlSheet();
+        preview.UpdateTexture();
     }
 
     public void New()
