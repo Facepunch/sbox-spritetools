@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
@@ -18,6 +19,8 @@ public class TilesetResource : GameResource
 	public Vector2Int TileSeparation { get; set; } = 0;
 
 	public int CurrentTileSize { get; set; } = 32;
+
+	[Property, Group("Tiles")]
 	public List<Tile> Tiles { get; set; } = new();
 
 	public void InitFromAtlas(string filePath, int tileSize)
@@ -61,10 +64,35 @@ public class TilesetResource : GameResource
 		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"]?.GetValue<string>() ?? "[]");
 	}
 
+	protected override void PostLoad()
+	{
+		base.PostLoad();
+
+		InternalUpdateTiles();
+	}
+
+	protected override void PostReload()
+	{
+		base.PostReload();
+
+		InternalUpdateTiles();
+	}
+
+	public void InternalUpdateTiles()
+	{
+		foreach (var tile in Tiles)
+		{
+			tile.Tileset = this;
+		}
+	}
+
 	public class Tile
 	{
 		public string Name { get; set; } = "";
 		public Rect SheetRect { get; set; }
+
+		[JsonIgnore]
+		public TilesetResource Tileset;
 
 		public Tile(Rect sheetRect)
 		{
