@@ -23,6 +23,7 @@ public class RenderingWidget : SpriteRenderingWidget
 
     Dictionary<Vector2, TilesetResource.Tile> tileDict;
     RealTimeSince timeSinceLastCornerHover = 0;
+    RealTimeSince timeSinceResize = 0;
 
     public RenderingWidget(MainWindow window, Widget parent) : base(parent)
     {
@@ -46,7 +47,7 @@ public class RenderingWidget : SpriteRenderingWidget
                 for (int j = 0; j < tile.SheetRect.Size.y; j++)
                 {
                     var realTile = (i == 0 && j == 0) ? tile : null;
-                    tileDict.Add(tile.SheetRect.Position + new Vector2(i, j), realTile);
+                    tileDict[tile.SheetRect.Position + new Vector2(i, j)] = realTile;
                 }
             }
         }
@@ -144,11 +145,11 @@ public class RenderingWidget : SpriteRenderingWidget
         bool isSelected = MainWindow.SelectedTile == tile;
         using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
         {
-            int sizeX = 1;
-            int sizeY = 1;
+            float sizeX = tile.SheetRect.Size.x;
+            float sizeY = tile.SheetRect.Size.y;
 
-            var x = startX + (xi * frameWidth * sizeX + xi * xSeparation);
-            var y = startY + (yi * frameHeight * sizeY + yi * ySeparation);
+            var x = startX + (xi * frameWidth + xi * xSeparation);
+            var y = startY + (yi * frameHeight + yi * ySeparation);
             var width = frameWidth * sizeX;
             var height = frameHeight * sizeY;
 
@@ -192,7 +193,7 @@ public class RenderingWidget : SpriteRenderingWidget
                         for (int j = -1; j <= 1; j++)
                         {
                             if (i == 0 && j == 0) continue;
-                            DraggableCorner(tile, i, j);
+                            DraggableCorner(tile, i, j, x + width * (i + 1) / 2f, y + height * (j + 1) / 2f);
                         }
                     }
                 }
@@ -202,7 +203,7 @@ public class RenderingWidget : SpriteRenderingWidget
         }
     }
 
-    void DraggableCorner(TilesetResource.Tile tile, int x, int y)
+    void DraggableCorner(TilesetResource.Tile tile, int x, int y, float xx, float yy)
     {
         int currentX = (int)tile.SheetRect.Position.x;
         int currentY = (int)tile.SheetRect.Position.y;
@@ -211,16 +212,51 @@ public class RenderingWidget : SpriteRenderingWidget
         float width = frameWidth * (int)tile.SheetRect.Size.x;
         float height = frameHeight * (int)tile.SheetRect.Size.y;
 
-        bool canDrag = true;
-        int nextX = currentX + x;
-        int nextY = currentY + y;
-        if (nextX < 0 || nextY < 0) canDrag = false;
-        else if (nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize) || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize)) canDrag = false;
-        else if (x != 0 && y != 0)
+        bool canExpand = true;
+        bool canShrink = true;
+
+        // Can Expand Logic
+        if (x != 0)
         {
-            if (tileDict.ContainsKey(new Vector2(nextX, currentY)) || tileDict.ContainsKey(new Vector2(currentX, nextY))) canDrag = false;
+            int nextX = currentX + (x > 0 ? (x * (int)tile.SheetRect.Size.x) : x);
+            if (nextX < 0 || nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize)) canExpand = false;
+            else
+            {
+                for (int i = 0; i < tile.SheetRect.Size.y; i++)
+                {
+                    int nextY = currentY + i;
+                    if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
+                    {
+                        canExpand = false;
+                        break;
+                    }
+                }
+            }
         }
-        else if (tileDict.ContainsKey(new Vector2(nextX, nextY))) canDrag = false;
+
+        if (canExpand && y != 0)
+        {
+            int nextY = currentY + (y > 0 ? (y * (int)tile.SheetRect.Size.y) : y);
+            if (nextY < 0 || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize)) canExpand = false;
+            else
+            {
+                for (int i = 0; i < tile.SheetRect.Size.x; i++)
+                {
+                    int nextX = currentX + i;
+                    if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
+                    {
+                        canExpand = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Can Shrink Logic
+        if (x != 0 && tile.SheetRect.Size.x == 1) canShrink = false;
+        if (y != 0 && tile.SheetRect.Size.y == 1) canShrink = false;
+
+        bool canDrag = canExpand || canShrink;
 
         using (Gizmo.Scope($"corner_{xi}_{yi}"))
         {
@@ -229,8 +265,6 @@ public class RenderingWidget : SpriteRenderingWidget
                 Gizmo.Draw.LineThickness = 1;
                 Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
             }
-            var xx = startX + ((xi + 0.5f) * width);
-            var yy = startY + ((yi + 0.5f) * height);
 
             if (canDrag)
             {
@@ -239,7 +273,87 @@ public class RenderingWidget : SpriteRenderingWidget
 
                 if (Gizmo.Pressed.This)
                 {
-                    Gizmo.Draw.Color = Color.Red;
+                    Gizmo.Draw.Color = Color.Lerp(Gizmo.Draw.Color, Color.Red, 0.3f);
+
+                    if (timeSinceResize > 0.1f)
+                    {
+                        var preDelta = bbox.Center - Gizmo.CurrentRay.Position;
+                        var delta = new Vector2(-preDelta.y, -preDelta.x);//Gizmo.Pressed.CursorDelta;
+                        var rect = tile.SheetRect;
+
+                        // Horizontal check
+                        if (x != 0)
+                        {
+                            if (Math.Abs(delta.x) > frameWidth / 2f)
+                            {
+                                // Expanding
+                                if (Math.Sign(delta.x) == Math.Sign(x))
+                                {
+                                    // Expanding Backwards
+                                    if (delta.x < 0)
+                                    {
+                                        rect.Position -= new Vector2(1, 0);
+                                        rect.Size += new Vector2(1, 0);
+                                    }
+                                    else
+                                    {
+                                        rect.Size += new Vector2(1, 0);
+                                    }
+                                }
+                                // Shinking
+                                else
+                                {
+                                    // Shrinking Backwards
+                                    if (delta.x > 0)
+                                    {
+                                        rect.Size -= new Vector2(1, 0);
+                                        rect.Position += new Vector2(1, 0);
+                                    }
+                                    else
+                                    {
+                                        rect.Size -= new Vector2(1, 0);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Vertical check
+                        if (y != 0)
+                        {
+                            if (Math.Abs(delta.y) > frameHeight / 2f)
+                            {
+                                if (Math.Sign(delta.y) == Math.Sign(y))
+                                {
+                                    // Expanding
+                                    if (delta.y < 0)
+                                    {
+                                        rect.Position -= new Vector2(0, 1);
+                                        rect.Size += new Vector2(0, 1);
+                                    }
+                                    else
+                                    {
+                                        rect.Size += new Vector2(0, 1);
+                                    }
+                                }
+                                else
+                                {
+                                    // Shrink
+                                    if (delta.y > 0)
+                                    {
+                                        rect.Size -= new Vector2(0, 1);
+                                        rect.Position += new Vector2(0, 1);
+                                    }
+                                    else
+                                    {
+                                        rect.Size -= new Vector2(0, 1);
+                                    }
+                                }
+                            }
+                        }
+
+                        tile.SheetRect = rect;
+                        timeSinceResize = 0f;
+                    }
                 }
             }
 
