@@ -17,15 +17,15 @@ public class TilesetResource : GameResource
 	[Property, Group("Tileset Setup")]
 	public Vector2Int TileSeparation { get; set; } = 0;
 
-	public int AtlasWidth { get; set; } = 16;
+	public int CurrentTileSize { get; set; } = 32;
 	public List<Tile> Tiles { get; set; } = new();
 
-	public void InitFromAtlas(string filePath, int tileSize, int atlasWidth)
+	public void InitFromAtlas(string filePath, int tileSize)
 	{
 		var texture = Texture.Load(FileSystem.Mounted, filePath);
 		FilePath = filePath;
 		TileSize = tileSize;
-		AtlasWidth = atlasWidth;
+		CurrentTileSize = TileSize;
 	}
 
 	public Vector2 GetTiling()
@@ -44,8 +44,8 @@ public class TilesetResource : GameResource
 		{
 			["FilePath"] = FilePath,
 			["TileSize"] = TileSize,
+			["CurrentTileSize"] = CurrentTileSize,
 			["TileSeparation"] = TileSeparation.ToString(),
-			["AtlasWidth"] = AtlasWidth,
 			["Tiles"] = Json.Serialize(Tiles)
 		};
 		return obj.ToJsonString();
@@ -54,11 +54,11 @@ public class TilesetResource : GameResource
 	public void Deserialize(string json)
 	{
 		var obj = JsonNode.Parse(json);
-		FilePath = obj["FilePath"].GetValue<string>();
-		TileSize = obj["TileSize"].GetValue<int>();
-		TileSeparation = Vector2Int.Parse(obj["TileSeparation"].GetValue<string>());
-		AtlasWidth = obj["AtlasWidth"].GetValue<int>();
-		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"].GetValue<string>());
+		FilePath = obj["FilePath"]?.GetValue<string>() ?? "";
+		TileSize = obj["TileSize"]?.GetValue<int>() ?? 32;
+		CurrentTileSize = obj["CurrentTileSize"]?.GetValue<int>() ?? 32;
+		TileSeparation = Vector2Int.Parse(obj["TileSeparation"]?.GetValue<string>() ?? "0,0");
+		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"]?.GetValue<string>() ?? "[]");
 	}
 
 	public class Tile

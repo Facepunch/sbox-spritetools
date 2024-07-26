@@ -283,6 +283,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         PushUndo("Generate Tiles");
         Tileset.Tiles ??= new List<TilesetResource.Tile>();
         Tileset.Tiles?.Clear();
+        Tileset.CurrentTileSize = Tileset.TileSize;
 
         int x = 0;
         int y = 0;
@@ -293,11 +294,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         {
             while (x < framesPerRow)
             {
-                Tileset.Tiles.Add(new TilesetResource.Tile(new Rect(
-                    x * Tileset.TileSize + Tileset.TileSeparation.x * x,
-                    y * Tileset.TileSize + Tileset.TileSeparation.y * y,
-                    Tileset.TileSize, Tileset.TileSize
-                )));
+                Tileset.Tiles.Add(new TilesetResource.Tile(new Rect(x, y, 1, 1)));
                 x++;
             }
             x = 0;

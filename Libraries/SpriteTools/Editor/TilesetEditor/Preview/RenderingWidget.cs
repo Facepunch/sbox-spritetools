@@ -11,6 +11,15 @@ public class RenderingWidget : SpriteRenderingWidget
 {
     MainWindow MainWindow;
 
+    float planeWidth;
+    float planeHeight;
+    float startX;
+    float startY;
+    float frameWidth;
+    float frameHeight;
+    float xSeparation;
+    float ySeparation;
+
     public RenderingWidget(MainWindow window, Widget parent) : base(parent)
     {
         MainWindow = window;
@@ -19,55 +28,110 @@ public class RenderingWidget : SpriteRenderingWidget
     [EditorEvent.Frame]
     public void Frame()
     {
+        SceneInstance.Input.IsHovered = IsUnderMouse;
+        SceneInstance.UpdateInputs(Camera, this);
+
         using (SceneInstance.Push())
         {
+            var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
 
-            if ((MainWindow?.Tileset?.Tiles?.Count ?? 0) == 0 || MainWindow.inspector.btnRegenerate.IsUnderMouse)
+            planeWidth = 100f * TextureRect.Transform.Scale.y;
+            planeHeight = 100f * TextureRect.Transform.Scale.x;
+            startX = -(planeWidth / 2f);
+            startY = -(planeHeight / 2f);
+            frameWidth = MainWindow.Tileset.TileSize / TextureSize.x * planeWidth;
+            frameHeight = MainWindow.Tileset.TileSize / TextureSize.y * planeHeight;
+            xSeparation = MainWindow.Tileset.TileSeparation.x / TextureSize.x * planeWidth;
+            ySeparation = MainWindow.Tileset.TileSeparation.y / TextureSize.y * planeHeight;
+
+            if (hasTiles)
             {
+                int framesPerRow = (int)TextureSize.x / MainWindow.Tileset.CurrentTileSize;
+                int framesPerHeight = (int)TextureSize.y / MainWindow.Tileset.CurrentTileSize;
+
+                using (Gizmo.Scope("tiles"))
+                {
+                    Gizmo.Draw.Color = Color.Orange;
+                    Gizmo.Draw.LineThickness = 2f;
+
+                    int xi = 0;
+                    int yi = 0;
+
+                    if (framesPerRow * framesPerHeight < 2048)
+                    {
+                        while (yi < framesPerHeight)
+                        {
+                            while (xi < framesPerRow)
+                            {
+                                TileControl(xi, yi);
+                                xi++;
+                            }
+                            xi = 0;
+                            yi++;
+                        }
+                    }
+                }
+            }
+
+            if (!hasTiles || MainWindow.inspector.btnRegenerate.IsUnderMouse)
+            {
+                int framesPerRow = (int)TextureSize.x / MainWindow.Tileset.TileSize;
+                int framesPerHeight = (int)TextureSize.y / MainWindow.Tileset.TileSize;
+
                 using (Gizmo.Scope("setup"))
                 {
                     Gizmo.Draw.Color = Color.White.WithAlpha(0.4f);
                     Gizmo.Draw.LineThickness = 1f;
 
-                    var planeWidth = 100f * TextureRect.Transform.Scale.y;
-                    var planeHeight = 100f * TextureRect.Transform.Scale.x;
-
-                    float startX = 0;
-                    float startY = 0;
                     int xi = 0;
                     int yi = 0;
-                    startX = (startX / TextureSize.x * planeWidth) - (planeWidth / 2f);
-                    startY = (startY / TextureSize.y * planeHeight) - (planeHeight / 2f);
-                    float frameWidth = MainWindow.Tileset.TileSize / TextureSize.x * planeWidth;
-                    float frameHeight = MainWindow.Tileset.TileSize / TextureSize.y * planeHeight;
-                    float xSeparation = MainWindow.Tileset.TileSeparation.x / TextureSize.x * planeWidth;
-                    float ySeparation = MainWindow.Tileset.TileSeparation.y / TextureSize.y * planeHeight;
-                    int framesPerRow = (int)TextureSize.x / MainWindow.Tileset.TileSize;
-                    int framesPerHeight = (int)TextureSize.y / MainWindow.Tileset.TileSize;
 
-                    if (framesPerRow * framesPerHeight > 2048) return;
-
-                    while (yi < framesPerHeight)
+                    if (framesPerRow * framesPerHeight < 2048)
                     {
-                        while (xi < framesPerRow)
+
+                        while (yi < framesPerHeight)
                         {
-                            var x = startX + (xi * frameWidth) + (xi * xSeparation);
-                            var y = startY + (yi * frameHeight) + (yi * ySeparation);
-                            DrawBox(x, y, frameWidth, frameHeight);
-                            xi++;
+                            while (xi < framesPerRow)
+                            {
+                                var x = startX + (xi * frameWidth) + (xi * xSeparation);
+                                var y = startY + (yi * frameHeight) + (yi * ySeparation);
+                                DrawBox(x, y, frameWidth, frameHeight);
+                                xi++;
+                            }
+                            xi = 0;
+                            yi++;
                         }
-                        xi = 0;
-                        yi++;
                     }
 
-                    //ControlBox();
                 }
             }
-            else
-            {
 
+        }
+    }
+
+    void TileControl(int xi, int yi)
+    {
+        using (Gizmo.Scope($"tile_{xi}_{yi}", Transform.Zero))
+        {
+            int sizeX = 1;
+            int sizeY = 1;
+
+            var x = startX + (xi * frameWidth * sizeX + xi * xSeparation);
+            var y = startY + (yi * frameHeight * sizeY + yi * ySeparation);
+            var width = frameWidth * sizeX;
+            var height = frameHeight * sizeY;
+
+            var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
+            Gizmo.Hitbox.BBox(bbox);
+
+            if (Gizmo.IsHovered)
+            {
+                Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
+                Gizmo.Draw.SolidBox(bbox);
+                Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(1f);
             }
 
+            DrawBox(x, y, width, height);
         }
     }
 
