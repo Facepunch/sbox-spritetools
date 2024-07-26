@@ -12,6 +12,7 @@ public class Inspector : Widget
 
     ControlSheet controlSheet;
     SegmentedControl segmentedControl;
+    WarningBox warningBox;
 
     public Inspector(MainWindow mainWindow) : base(null)
     {
@@ -49,7 +50,7 @@ public class Inspector : Widget
         scroller.Canvas.Layout.Add(controlSheet);
         scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh")).Clicked = MainWindow.RegenerateTiles;
         scroller.Canvas.Layout.AddSpacingCell(8);
-        scroller.Canvas.Layout.Add(new WarningBox("Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window.", this));
+        warningBox = scroller.Canvas.Layout.Add(new WarningBox("Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window.", this));
         scroller.Canvas.Layout.AddStretchCell();
         Layout.Add(scroller);
 
@@ -59,7 +60,7 @@ public class Inspector : Widget
     }
 
     [EditorEvent.Hotload]
-    public void UpdateControlSheet()
+    internal void UpdateControlSheet()
     {
         controlSheet?.Clear(true);
 
@@ -98,6 +99,8 @@ public class Inspector : Widget
             if (segmentedControl.SelectedIndex == 1 && prop.GroupName == "Tileset Setup") return false;
             return prop.HasAttribute<PropertyAttribute>() && !prop.HasAttribute<HideAttribute>();
         });
+
+        warningBox.Visible = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
     }
 
 }
