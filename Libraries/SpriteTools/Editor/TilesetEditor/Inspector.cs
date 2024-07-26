@@ -14,6 +14,7 @@ public class Inspector : Widget
     internal SegmentedControl segmentedControl;
 
     internal Button btnRegenerate;
+    Button btnDeleteAll;
     WarningBox warningBox;
 
     public Inspector(MainWindow mainWindow) : base(null)
@@ -49,9 +50,15 @@ public class Inspector : Widget
         };
 
         scroller.Canvas.Layout.Add(controlSheet);
+
         btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
         btnRegenerate.Clicked = MainWindow.GenerateTiles;
         scroller.Canvas.Layout.AddSpacingCell(8);
+
+        btnDeleteAll = scroller.Canvas.Layout.Add(new Button("Delete All Tiles", icon: "delete"));
+        btnDeleteAll.Clicked = MainWindow.DeleteAllTiles;
+        scroller.Canvas.Layout.AddSpacingCell(8);
+
         warningBox = scroller.Canvas.Layout.Add(new WarningBox("", this));
         scroller.Canvas.Layout.AddStretchCell();
         Layout.Add(scroller);
@@ -109,6 +116,7 @@ public class Inspector : Widget
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
         btnRegenerate.Visible = setupVisible;
         btnRegenerate.Text = hasTiles ? "Regenerate Tiles" : "Generate Tiles";
+        btnDeleteAll.Visible = setupVisible && hasTiles;
         warningBox.Visible = setupVisible == hasTiles;
         warningBox.Label.Text =
             setupVisible ? "Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window."

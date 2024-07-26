@@ -308,6 +308,18 @@ public partial class MainWindow : DockWindow, IAssetEditor
         UpdateEverything();
     }
 
+    internal void DeleteAllTiles()
+    {
+        if (Tileset is null) return;
+
+        PushUndo("Delete All Tiles");
+        Tileset.Tiles ??= new List<TilesetResource.Tile>();
+        Tileset.Tiles?.Clear();
+        PushRedo();
+
+        UpdateEverything();
+    }
+
     void PromptSave(Action action)
     {
         if (!_dirty)
@@ -386,6 +398,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         Tileset.Deserialize(buffer);
 
         SetDirty();
+        UpdateEverything();
     }
 
     private Option _undoOption;
