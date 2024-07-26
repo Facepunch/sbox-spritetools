@@ -16,8 +16,6 @@ public class Preview : Widget
     Widget Overlay;
     WidgetWindow overlayWindowZoom;
 
-    Vector2 attachmentCreatePosition;
-
     public Preview(MainWindow mainWindow) : base(null)
     {
         MainWindow = mainWindow;
