@@ -13,7 +13,7 @@ public class Inspector : Widget
     ControlSheet controlSheet;
     internal SegmentedControl segmentedControl;
 
-    Button btnRegenerate;
+    internal Button btnRegenerate;
     WarningBox warningBox;
 
     public Inspector(MainWindow mainWindow) : base(null)

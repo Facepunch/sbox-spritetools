@@ -22,7 +22,7 @@ public class RenderingWidget : SpriteRenderingWidget
         using (SceneInstance.Push())
         {
 
-            if (MainWindow.inspector.SelectedTab == 0)
+            if ((MainWindow?.Tileset?.Tiles?.Count ?? 0) == 0 || MainWindow.inspector.btnRegenerate.IsUnderMouse)
             {
                 using (Gizmo.Scope("setup"))
                 {
