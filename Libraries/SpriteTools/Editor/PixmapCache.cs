@@ -18,6 +18,11 @@ public static class PixmapCache
         }
 
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, filePath);
+        if (rect.Width == 0 || rect.Height == 0)
+        {
+            rect = new Rect(0, 0, texture.Width, texture.Height);
+        }
+
         var pixmap = new Pixmap((int)rect.Width, (int)rect.Height);
         var pixels = texture.GetPixels();
         List<Color32> span = new();
