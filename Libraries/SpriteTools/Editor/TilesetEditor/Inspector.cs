@@ -51,7 +51,7 @@ public class Inspector : Widget
 
         scroller.Canvas.Layout.Add(controlSheet);
         btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
-        btnRegenerate.Clicked = MainWindow.RegenerateTiles;
+        btnRegenerate.Clicked = MainWindow.GenerateTiles;
         scroller.Canvas.Layout.AddSpacingCell(8);
         warningBox = scroller.Canvas.Layout.Add(new WarningBox("", this));
         scroller.Canvas.Layout.AddStretchCell();
@@ -110,7 +110,7 @@ public class Inspector : Widget
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
         btnRegenerate.Visible = setupVisible;
         btnRegenerate.Text = hasTiles ? "Regenerate Tiles" : "Generate Tiles";
-        warningBox.Visible = setupVisible || !hasTiles;
+        warningBox.Visible = setupVisible == hasTiles;
         warningBox.Label.Text =
             setupVisible ? "Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window."
             : "No tiles have been generated. You must first generate tiles in the Setup tab.";

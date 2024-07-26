@@ -11,6 +11,8 @@ public class Preview : Widget
     public MainWindow MainWindow { get; }
     private readonly RenderingWidget Rendering;
 
+    internal Vector2 TextureSize => Rendering.TextureSize;
+
     Widget Overlay;
     WidgetWindow overlayWindowZoom;
 

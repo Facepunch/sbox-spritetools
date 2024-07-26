@@ -268,9 +268,36 @@ public partial class MainWindow : DockWindow, IAssetEditor
         return fd.SelectedFile;
     }
 
-    internal void RegenerateTiles()
+    internal void GenerateTiles()
     {
+        if (Tileset is null) return;
 
+        PushUndo("Generate Tiles");
+        Tileset.Tiles ??= new List<TilesetResource.Tile>();
+        Tileset.Tiles?.Clear();
+
+        int x = 0;
+        int y = 0;
+        int framesPerRow = (int)preview.TextureSize.x / Tileset.TileSize;
+        int framesPerHeight = (int)preview.TextureSize.y / Tileset.TileSize;
+
+        while (y < framesPerHeight)
+        {
+            while (x < framesPerRow)
+            {
+                Tileset.Tiles.Add(new TilesetResource.Tile(new Rect(
+                    x * Tileset.TileSize + Tileset.TileSeparation.x * x,
+                    y * Tileset.TileSize + Tileset.TileSeparation.y * y,
+                    Tileset.TileSize, Tileset.TileSize
+                )));
+                x++;
+            }
+            x = 0;
+            y++;
+        }
+        PushRedo();
+
+        UpdateEverything();
     }
 
     void PromptSave(Action action)
