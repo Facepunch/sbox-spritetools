@@ -147,8 +147,8 @@ public class RenderingWidget : SpriteRenderingWidget
             var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
             Gizmo.Hitbox.BBox(bbox);
 
-
-            if (MainWindow.SelectedTile == tile)
+            bool isSelected = MainWindow.SelectedTile == tile;
+            if (isSelected)
             {
                 Gizmo.Draw.LineThickness = 4;
                 Gizmo.Draw.Color = Color.Yellow;
@@ -160,6 +160,16 @@ public class RenderingWidget : SpriteRenderingWidget
                 {
                     Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
                     Gizmo.Draw.SolidBox(bbox);
+                }
+                if (Gizmo.WasLeftMousePressed)
+                {
+                    MainWindow.SelectedTile = tile;
+                }
+                else if (Gizmo.WasRightMousePressed)
+                {
+                    MainWindow.Tileset.Tiles.Remove(tile);
+                    MainWindow.inspector.UpdateControlSheet();
+                    if (isSelected) MainWindow.SelectedTile = MainWindow.Tileset.Tiles?.FirstOrDefault() ?? null;
                 }
             }
             else if (MainWindow.SelectedTile == tile)
