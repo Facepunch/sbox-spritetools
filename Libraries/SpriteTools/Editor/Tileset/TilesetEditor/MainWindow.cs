@@ -20,7 +20,23 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     private Asset _asset;
     public TilesetResource Tileset;
-    [Property] public TilesetResource.Tile SelectedTile { get; private set; }
+    [Property]
+    public List<TilesetResource.Tile> SelectedTiles
+    {
+        get => inspector.tileList.Selected.Select(x => x.Tile).ToList();
+        set
+        {
+            inspector.tileList.Selected.Clear();
+            foreach (var tile in value)
+            {
+                var control = inspector.tileList.Buttons.FirstOrDefault(x => x.Tile == tile);
+                if (control != null)
+                {
+                    inspector.tileList.Selected.Add(control);
+                }
+            }
+        }
+    }
 
     ToolBar toolBar;
     internal Inspector.Inspector inspector;
@@ -210,7 +226,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _undoStack.Clear();
 
         Tileset = tileset;
-        SelectedTile = Tileset.Tiles?.FirstOrDefault() ?? null;
+        var firstTile = Tileset.Tiles?.FirstOrDefault();
+        if(firstTile is not null)
+            inspector?.tileList?.Selected?.Add(inspector.tileList.Buttons.FirstOrDefault(x => x.Tile == firstTile));
 
         InitInspector();
         UpdateEverything();
@@ -295,9 +313,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
         PushRedo();
     }
 
-    internal void SelectTile(TilesetResource.Tile tile)
+    internal void SelectTile(TilesetResource.Tile tile, bool add = false)
     {
-        SelectedTile = tile;
+        if (!add) inspector.tileList.Selected.Clear();
+        inspector.tileList.Selected.Add(inspector.tileList.Buttons.FirstOrDefault(x => x.Tile == tile));
         inspector.UpdateSelectedSheet();
     }
 
@@ -307,7 +326,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         if (string.IsNullOrEmpty(tileName)) tileName = $"Tile {tile.Position}";
 
         PushUndo($"Delete Tile \"{tileName}\"");
-        bool isSelected = SelectedTile == tile;
+        bool isSelected = inspector.tileList.Selected.Any(x => x.Tile == tile);
         Tileset.Tiles.Remove(tile);
         inspector.UpdateControlSheet();
         if (isSelected) SelectTile(Tileset.Tiles?.FirstOrDefault() ?? null);

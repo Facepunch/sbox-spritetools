@@ -55,6 +55,7 @@ public class TilesetResource : GameResource
 		CurrentTileSize = obj["CurrentTileSize"]?.GetValue<int>() ?? 32;
 		TileSeparation = Vector2Int.Parse(obj["TileSeparation"]?.GetValue<string>() ?? "0,0");
 		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"]?.GetValue<string>() ?? "[]");
+		InternalUpdateTiles();
 	}
 
 	protected override void PostLoad()

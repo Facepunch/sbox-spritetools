@@ -1,6 +1,7 @@
 using Editor;
 using Sandbox;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -18,6 +19,8 @@ public class Inspector : Widget
     internal Button btnRegenerate;
     Button btnDeleteAll;
     WarningBox warningBox;
+    ExpandGroup selectedTileGroup;
+    internal TilesetTileListControl tileList;
 
     public Inspector(MainWindow mainWindow) : base(null)
     {
@@ -55,7 +58,7 @@ public class Inspector : Widget
         scroller.Canvas.Layout.Add(controlSheet);
 
         scroller.Canvas.Layout.AddSpacingCell(8);
-        var selectedTileGroup = scroller.Canvas.Layout.Add(new ExpandGroup(this));
+        selectedTileGroup = scroller.Canvas.Layout.Add(new ExpandGroup(this));
         selectedTileGroup.Title = "Selected Tile";
         selectedTileGroup.SetOpenState(true);
         var w = new Widget();
@@ -136,12 +139,14 @@ public class Inspector : Widget
 
         foreach (var group in props)
         {
-            if (group.Value is not TilesetTileListControl tileList) continue;
-            tileList.MainWindow = MainWindow;
+            if (group.Value is not TilesetTileListControl newTileList) continue;
+            newTileList.MainWindow = MainWindow;
+            tileList = newTileList;
         }
 
         var setupVisible = segmentedControl.SelectedIndex == 0;
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
+        selectedTileGroup.Visible = !setupVisible && hasTiles;
         btnRegenerate.Visible = setupVisible;
         btnRegenerate.Text = hasTiles ? "Regenerate Tiles" : "Generate Tiles";
         btnDeleteAll.Visible = setupVisible && hasTiles;
@@ -155,10 +160,16 @@ public class Inspector : Widget
     {
         selectedTileSheet?.Clear(true);
 
-        if (MainWindow.SelectedTile is null) return;
+        if (MainWindow.SelectedTiles.Count == 0) return;
 
-        var serializedObject = MainWindow.SelectedTile.GetSerialized();
-        selectedTileSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
+        MultiSerializedObject objs = new();
+        foreach (var tile in MainWindow.SelectedTiles)
+        {
+            objs.Add(tile.GetSerialized());
+        }
+        objs.Rebuild();
+
+        selectedTileSheet.AddObject(objs, null, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
         });

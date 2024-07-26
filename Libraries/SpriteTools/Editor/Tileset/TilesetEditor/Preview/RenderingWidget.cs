@@ -143,7 +143,7 @@ public class RenderingWidget : SpriteRenderingWidget
 
     void TileControl(int xi, int yi, TilesetResource.Tile tile)
     {
-        bool isSelected = MainWindow.SelectedTile == tile;
+        bool isSelected = MainWindow.inspector.tileList.Selected.Any(x => x.Tile == tile);
         using (Gizmo.Scope($"tile_{tile.Id}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
         {
             float sizeX = tile.Size.x;

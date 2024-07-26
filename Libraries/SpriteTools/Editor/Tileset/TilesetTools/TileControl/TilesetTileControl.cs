@@ -11,7 +11,7 @@ namespace SpriteTools.TilesetEditor;
 public class TilesetTileControl : Widget
 {
     TilesetTileListControl ParentList;
-    TilesetResource.Tile Tile;
+    internal TilesetResource.Tile Tile;
 
     internal LabelTextEntry labelText;
 
@@ -47,6 +47,13 @@ public class TilesetTileControl : Widget
         AcceptDrops = true;
     }
 
+    public override void OnDestroyed()
+    {
+        base.OnDestroyed();
+
+        ParentList.Selected.Remove(this);
+    }
+
     void LoadPixmap()
     {
         var tileset = Tile.Tileset;
@@ -65,7 +72,7 @@ public class TilesetTileControl : Widget
             Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
             Paint.DrawRect(LocalRect, 4);
         }
-        else if (ParentList.MainWindow is not null && ParentList.MainWindow.SelectedTile == Tile)
+        else if (ParentList.Selected.Contains(this))
         {
             Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
             Paint.DrawRect(LocalRect, 4);
@@ -133,7 +140,17 @@ public class TilesetTileControl : Widget
 
     void Delete()
     {
-        ParentList.DeleteTile(Tile);
+        if (ParentList.Selected.Contains(this))
+        {
+            foreach (var selected in ParentList.Selected)
+            {
+                ParentList.DeleteTile(selected.Tile);
+            }
+        }
+        else
+        {
+            ParentList.DeleteTile(Tile);
+        }
     }
 
     protected override void OnContextMenu(ContextMenuEvent e)

@@ -2,6 +2,7 @@ using Sandbox;
 using Editor;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace SpriteTools.TilesetEditor;
 
@@ -14,8 +15,13 @@ public class TilesetTileListControl : ControlWidget
 
     internal MainWindow MainWindow;
 
+    internal List<TilesetTileControl> Selected = new();
+    internal List<TilesetTileControl> Buttons = new();
+
     Layout content;
     ScrollArea scrollArea;
+
+    KeyboardModifiers modifiers;
 
     public TilesetTileListControl(SerializedProperty property) : base(property)
     {
@@ -59,6 +65,7 @@ public class TilesetTileListControl : ControlWidget
     public void UpdateList()
     {
         content.Clear(true);
+        Buttons.Clear();
 
         var tiles = SerializedProperty.GetValue<List<TilesetResource.Tile>>();
 
@@ -66,7 +73,8 @@ public class TilesetTileListControl : ControlWidget
         {
             var button = content.Add(new TilesetTileControl(this, tile));
             button.labelText.EmptyValue = $"Tile {tile.Position}";
-            button.MouseClick = () => SelectTile(tile);
+            button.MouseClick = () => SelectTile(button, tile);
+            Buttons.Add(button);
         }
     }
 
@@ -78,10 +86,44 @@ public class TilesetTileListControl : ControlWidget
         UpdateList();
     }
 
-    public void SelectTile(TilesetResource.Tile tile)
+    public void SelectTile(TilesetTileControl button, TilesetResource.Tile tile)
     {
         if (MainWindow is null) return;
-        MainWindow.SelectTile(tile);
+        var buttonIndex = Buttons.IndexOf(button);
+        if (modifiers.HasFlag(KeyboardModifiers.Shift))
+        {
+            var minIndex = Selected.Min(x => Buttons.IndexOf(x));
+            var maxIndex = Selected.Max(x => Buttons.IndexOf(x));
+
+            if (buttonIndex >= minIndex && buttonIndex <= maxIndex)
+            {
+                Selected.Clear();
+                for (int i = minIndex; i <= buttonIndex; i++)
+                {
+                    if (!Selected.Contains(Buttons[i])) Selected.Add(Buttons[i]);
+                }
+            }
+            else if (buttonIndex < minIndex)
+            {
+                for (int i = buttonIndex; i < minIndex; i++)
+                {
+                    if (!Selected.Contains(Buttons[i])) Selected.Add(Buttons[i]);
+                }
+            }
+            else if (buttonIndex > maxIndex)
+            {
+                for (int i = maxIndex + 1; i <= buttonIndex; i++)
+                {
+                    if (!Selected.Contains(Buttons[i])) Selected.Add(Buttons[i]);
+                }
+            }
+        }
+        else
+        {
+            if (!modifiers.HasFlag(KeyboardModifiers.Ctrl)) Selected.Clear();
+            if (!Selected.Contains(button)) Selected.Add(button);
+        }
+        MainWindow.inspector.UpdateSelectedSheet();
     }
 
     public void DeleteTile(TilesetResource.Tile tile)
@@ -90,6 +132,18 @@ public class TilesetTileListControl : ControlWidget
         tiles.Remove(tile);
         SerializedProperty.SetValue(tiles);
         UpdateList();
+    }
+
+    protected override void OnKeyPress(KeyEvent e)
+    {
+        base.OnKeyPress(e);
+        modifiers = e.KeyboardModifiers;
+    }
+
+    protected override void OnKeyRelease(KeyEvent e)
+    {
+        base.OnKeyRelease(e);
+        modifiers = e.KeyboardModifiers;
     }
 
 }
