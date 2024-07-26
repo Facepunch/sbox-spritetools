@@ -7,8 +7,8 @@ namespace SpriteTools.TilesetEditor.Inspector;
 
 public class Inspector : Widget
 {
-    public SpriteResource Sprite { get; set; }
-    public MainWindow MainWindow { get; }
+    internal MainWindow MainWindow { get; }
+    internal int SelectedTab => segmentedControl.SelectedIndex;
 
     ControlSheet controlSheet;
     SegmentedControl segmentedControl;
@@ -53,7 +53,7 @@ public class Inspector : Widget
         btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
         btnRegenerate.Clicked = MainWindow.RegenerateTiles;
         scroller.Canvas.Layout.AddSpacingCell(8);
-        warningBox = scroller.Canvas.Layout.Add(new WarningBox("Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window.", this));
+        warningBox = scroller.Canvas.Layout.Add(new WarningBox("", this));
         scroller.Canvas.Layout.AddStretchCell();
         Layout.Add(scroller);
 
@@ -107,8 +107,13 @@ public class Inspector : Widget
         });
 
         var setupVisible = segmentedControl.SelectedIndex == 0;
+        var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
         btnRegenerate.Visible = setupVisible;
-        warningBox.Visible = setupVisible && (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
+        btnRegenerate.Text = hasTiles ? "Regenerate Tiles" : "Generate Tiles";
+        warningBox.Visible = setupVisible || !hasTiles;
+        warningBox.Label.Text =
+            setupVisible ? "Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window."
+            : "No tiles have been generated. You must first generate tiles in the Setup tab.";
     }
 
 }

@@ -22,7 +22,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public TilesetResource Tileset;
 
     ToolBar toolBar;
-    Inspector.Inspector inspector;
+    internal Inspector.Inspector inspector;
     internal Preview.Preview preview;
 
     Option _undoMenuOption;
