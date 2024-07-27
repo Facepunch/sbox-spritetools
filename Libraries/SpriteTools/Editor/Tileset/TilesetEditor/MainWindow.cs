@@ -298,7 +298,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         return fd.SelectedFile;
     }
 
-    internal void CreateTile(int x, int y)
+    internal void CreateTile(int x, int y, bool add = false)
     {
         var tileName = $"Tile {x},{y}";
 
@@ -313,14 +313,25 @@ public partial class MainWindow : DockWindow, IAssetEditor
         inspector.tileList.content.Add(control);
         inspector.tileList.Buttons.Add(control);
 
-        SelectTile(tile);
+        SelectTile(tile, add);
         PushRedo();
     }
 
     internal void SelectTile(TilesetResource.Tile tile, bool add = false)
     {
-        if (!add) inspector.tileList.Selected.Clear();
-        inspector.tileList.Selected.Add(inspector.tileList.Buttons.FirstOrDefault(x => x.Tile == tile));
+        var btn = inspector.tileList.Buttons.FirstOrDefault(x => x.Tile == tile);
+        if (add)
+        {
+            if (inspector.tileList.Selected.Contains(btn))
+                inspector.tileList.Selected.Remove(btn);
+            else
+                inspector.tileList.Selected.Add(btn);
+        }
+        else
+        {
+            inspector.tileList.Selected.Clear();
+            inspector.tileList.Selected.Add(btn);
+        }
         inspector.UpdateSelectedSheet();
     }
 

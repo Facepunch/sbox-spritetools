@@ -175,7 +175,7 @@ public class RenderingWidget : SpriteRenderingWidget
                     }
                     if (Gizmo.WasLeftMousePressed)
                     {
-                        MainWindow.SelectTile(tile);
+                        MainWindow.SelectTile(tile, Gizmo.IsCtrlPressed || Gizmo.IsShiftPressed);
                     }
                     else if (Gizmo.WasRightMousePressed)
                     {
@@ -418,7 +418,7 @@ public class RenderingWidget : SpriteRenderingWidget
                     }
                     if (Gizmo.WasLeftMousePressed)
                     {
-                        MainWindow.CreateTile(xi, yi);
+                        MainWindow.CreateTile(xi, yi, Gizmo.IsCtrlPressed || Gizmo.IsShiftPressed);
                     }
                 }
             }
