@@ -66,10 +66,14 @@ public class RenderingWidget : SpriteRenderingWidget
             xSeparation = MainWindow.Tileset.TileSeparation.x / TextureSize.x * planeWidth;
             ySeparation = MainWindow.Tileset.TileSeparation.y / TextureSize.y * planeHeight;
 
-            if (hasTiles)
             {
                 int framesPerRow = MainWindow.Tileset.CurrentTextureSize.x / MainWindow.Tileset.CurrentTileSize;
                 int framesPerHeight = MainWindow.Tileset.CurrentTextureSize.y / MainWindow.Tileset.CurrentTileSize;
+                if (!hasTiles)
+                {
+                    framesPerRow = (int)TextureSize.x / MainWindow.Tileset.TileSize;
+                    framesPerHeight = (int)TextureSize.y / MainWindow.Tileset.TileSize;
+                }
 
                 using (Gizmo.Scope("tiles"))
                 {

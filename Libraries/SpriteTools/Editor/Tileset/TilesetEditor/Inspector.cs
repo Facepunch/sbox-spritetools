@@ -153,7 +153,7 @@ public class Inspector : Widget
         warningBox.Visible = setupVisible == hasTiles;
         warningBox.Label.Text =
             setupVisible ? "Pressing \"Regenerate Tiles\" will regenerate all tiles in the tileset. This will remove all your existing tiles. You can undo this action at any time before you close the window."
-            : "No tiles have been generated. You must first generate tiles in the Setup tab.";
+            : "No tiles have been generated. Make sure you visit the Setup tab to slice the sheet accordingly.";
     }
 
     internal void UpdateSelectedSheet()
@@ -163,8 +163,9 @@ public class Inspector : Widget
         if (MainWindow.SelectedTiles.Count == 0) return;
 
         MultiSerializedObject objs = new();
-        foreach (var tile in MainWindow.SelectedTiles)
+        foreach (var tile in (MainWindow?.SelectedTiles ?? new()))
         {
+            if (tile is null) continue;
             objs.Add(tile.GetSerialized());
         }
         objs.Rebuild();

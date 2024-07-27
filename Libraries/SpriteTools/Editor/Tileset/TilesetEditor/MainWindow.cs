@@ -23,7 +23,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     [Property]
     public List<TilesetResource.Tile> SelectedTiles
     {
-        get => inspector?.tileList?.Selected?.Select(x => x.Tile)?.ToList() ?? new();
+        get => inspector?.tileList?.Selected?.Select(x => x?.Tile)?.ToList() ?? new();
         set
         {
             inspector.tileList.Selected.Clear();
@@ -309,9 +309,18 @@ public partial class MainWindow : DockWindow, IAssetEditor
         };
         Tileset.Tiles.Add(tile);
 
-        var control = new TilesetTileControl(inspector.tileList, tile);
-        inspector.tileList.content.Add(control);
-        inspector.tileList.Buttons.Add(control);
+        if (Tileset.Tiles.Count == 1)
+        {
+            Tileset.CurrentTileSize = Tileset.TileSize;
+            Tileset.CurrentTextureSize = (Vector2Int)preview.TextureSize;
+            inspector.UpdateControlSheet();
+        }
+        else
+        {
+            var control = new TilesetTileControl(inspector.tileList, tile);
+            inspector.tileList.content.Add(control);
+            inspector.tileList.Buttons.Add(control);
+        }
 
         SelectTile(tile, add);
         PushRedo();
@@ -343,17 +352,26 @@ public partial class MainWindow : DockWindow, IAssetEditor
         PushUndo($"Delete Tile \"{tileName}\"");
         bool isSelected = inspector.tileList.Selected.Any(x => x.Tile == tile);
         Tileset.Tiles.Remove(tile);
-        var btns = inspector.tileList.Buttons.ToList();
-        foreach (var btn in btns)
-        {
-            if (btn.Tile == tile)
-            {
-                inspector.tileList.Buttons.Remove(btn);
-                btn.Destroy();
-            }
-        }
+
         if (isSelected) SelectTile(Tileset.Tiles?.FirstOrDefault() ?? null);
         PushRedo();
+
+        if (Tileset.Tiles.Count == 0)
+        {
+            inspector.UpdateControlSheet();
+        }
+        else
+        {
+            var btns = inspector.tileList.Buttons.ToList();
+            foreach (var btn in btns)
+            {
+                if (btn.Tile == tile)
+                {
+                    inspector.tileList.Buttons.Remove(btn);
+                    btn.Destroy();
+                }
+            }
+        }
     }
 
     internal void GenerateTiles()
