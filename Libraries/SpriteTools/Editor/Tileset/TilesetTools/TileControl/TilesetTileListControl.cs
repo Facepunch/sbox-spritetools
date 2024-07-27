@@ -118,8 +118,16 @@ public class TilesetTileListControl : ControlWidget
         }
         else
         {
-            if (!modifiers.HasFlag(KeyboardModifiers.Ctrl)) Selected.Clear();
-            if (!Selected.Contains(button)) Selected.Add(button);
+            if (modifiers.HasFlag(KeyboardModifiers.Ctrl))
+            {
+                if (Selected.Contains(button)) Selected.Remove(button);
+                else Selected.Add(button);
+            }
+            else
+            {
+                Selected.Clear();
+                Selected.Add(button);
+            }
         }
         MainWindow.inspector.UpdateSelectedSheet();
     }
