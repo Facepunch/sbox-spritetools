@@ -18,7 +18,7 @@ public class TilesetTileListControl : ControlWidget
     internal List<TilesetTileControl> Selected = new();
     internal List<TilesetTileControl> Buttons = new();
 
-    Layout content;
+    internal Layout content;
     ScrollArea scrollArea;
 
     KeyboardModifiers modifiers;
@@ -72,8 +72,6 @@ public class TilesetTileListControl : ControlWidget
         foreach (var tile in tiles)
         {
             var button = content.Add(new TilesetTileControl(this, tile));
-            button.labelText.EmptyValue = $"Tile {tile.Position}";
-            button.MouseClick = () => SelectTile(button, tile);
             Buttons.Add(button);
         }
     }
@@ -86,7 +84,7 @@ public class TilesetTileListControl : ControlWidget
         UpdateList();
     }
 
-    public void SelectTile(TilesetTileControl button, TilesetResource.Tile tile)
+    internal void SelectTile(TilesetTileControl button, TilesetResource.Tile tile)
     {
         if (MainWindow is null) return;
         var buttonIndex = Buttons.IndexOf(button);
@@ -124,6 +122,13 @@ public class TilesetTileListControl : ControlWidget
             if (!Selected.Contains(button)) Selected.Add(button);
         }
         MainWindow.inspector.UpdateSelectedSheet();
+    }
+
+    public void DeleteAll()
+    {
+        var tiles = new List<TilesetResource.Tile>();
+        SerializedProperty.SetValue(tiles);
+        UpdateList();
     }
 
     public void DeleteTile(TilesetResource.Tile tile)

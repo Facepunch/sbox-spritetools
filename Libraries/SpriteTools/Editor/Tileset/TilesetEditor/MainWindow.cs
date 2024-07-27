@@ -23,7 +23,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     [Property]
     public List<TilesetResource.Tile> SelectedTiles
     {
-        get => inspector.tileList.Selected.Select(x => x.Tile).ToList();
+        get => inspector?.tileList?.Selected?.Select(x => x.Tile)?.ToList() ?? new();
         set
         {
             inspector.tileList.Selected.Clear();
@@ -227,7 +227,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         Tileset = tileset;
         var firstTile = Tileset.Tiles?.FirstOrDefault();
-        if(firstTile is not null)
+        if (firstTile is not null)
             inspector?.tileList?.Selected?.Add(inspector.tileList.Buttons.FirstOrDefault(x => x.Tile == firstTile));
 
         InitInspector();
@@ -308,7 +308,11 @@ public partial class MainWindow : DockWindow, IAssetEditor
             Tileset = Tileset
         };
         Tileset.Tiles.Add(tile);
-        inspector.UpdateControlSheet();
+
+        var control = new TilesetTileControl(inspector.tileList, tile);
+        inspector.tileList.content.Add(control);
+        inspector.tileList.Buttons.Add(control);
+
         SelectTile(tile);
         PushRedo();
     }
@@ -328,7 +332,15 @@ public partial class MainWindow : DockWindow, IAssetEditor
         PushUndo($"Delete Tile \"{tileName}\"");
         bool isSelected = inspector.tileList.Selected.Any(x => x.Tile == tile);
         Tileset.Tiles.Remove(tile);
-        inspector.UpdateControlSheet();
+        var btns = inspector.tileList.Buttons.ToList();
+        foreach (var btn in btns)
+        {
+            if (btn.Tile == tile)
+            {
+                inspector.tileList.Buttons.Remove(btn);
+                btn.Destroy();
+            }
+        }
         if (isSelected) SelectTile(Tileset.Tiles?.FirstOrDefault() ?? null);
         PushRedo();
     }

@@ -143,7 +143,7 @@ public class RenderingWidget : SpriteRenderingWidget
 
     void TileControl(int xi, int yi, TilesetResource.Tile tile)
     {
-        bool isSelected = MainWindow.inspector.tileList.Selected.Any(x => x.Tile == tile);
+        bool isSelected = MainWindow?.inspector?.tileList?.Selected?.Any(x => x.Tile == tile) ?? false;
         using (Gizmo.Scope($"tile_{tile.Id}", Transform.Zero.WithPosition(isSelected ? (Vector3.Up * 5f) : Vector3.Zero)))
         {
             float sizeX = tile.Size.x;
@@ -157,42 +157,46 @@ public class RenderingWidget : SpriteRenderingWidget
             var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
             Gizmo.Hitbox.BBox(bbox);
 
-            if (isSelected)
+            if (MainWindow.inspector.SelectedTab == 1)
             {
-                Gizmo.Draw.LineThickness = 4;
-                Gizmo.Draw.Color = Color.Yellow;
-            }
 
-            if (Gizmo.IsHovered)
-            {
-                using (Gizmo.Scope("hover"))
+                if (isSelected)
                 {
-                    Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
-                    Gizmo.Draw.SolidBox(bbox);
+                    Gizmo.Draw.LineThickness = 4;
+                    Gizmo.Draw.Color = Color.Yellow;
                 }
-                if (Gizmo.WasLeftMousePressed)
-                {
-                    MainWindow.SelectTile(tile);
-                }
-                else if (Gizmo.WasRightMousePressed)
-                {
-                    MainWindow.DeleteTile(tile);
-                }
-            }
 
-            if (isSelected)
-            {
-                using (Gizmo.Scope("selected"))
+                if (Gizmo.IsHovered)
                 {
-                    Gizmo.Draw.Color = Color.Orange;
-                    Gizmo.Draw.LineThickness = 3;
-                    // Draggable Corners
-                    for (int i = -1; i <= 1; i++)
+                    using (Gizmo.Scope("hover"))
                     {
-                        for (int j = -1; j <= 1; j++)
+                        Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
+                        Gizmo.Draw.SolidBox(bbox);
+                    }
+                    if (Gizmo.WasLeftMousePressed)
+                    {
+                        MainWindow.SelectTile(tile);
+                    }
+                    else if (Gizmo.WasRightMousePressed)
+                    {
+                        MainWindow.DeleteTile(tile);
+                    }
+                }
+
+                if (isSelected)
+                {
+                    using (Gizmo.Scope("selected"))
+                    {
+                        Gizmo.Draw.Color = Color.Orange;
+                        Gizmo.Draw.LineThickness = 3;
+                        // Draggable Corners
+                        for (int i = -1; i <= 1; i++)
                         {
-                            if (i == 0 && j == 0) continue;
-                            DraggableCorner(tile, i, j, x + width * (i + 1) / 2f, y + height * (j + 1) / 2f);
+                            for (int j = -1; j <= 1; j++)
+                            {
+                                if (i == 0 && j == 0) continue;
+                                DraggableCorner(tile, i, j, x + width * (i + 1) / 2f, y + height * (j + 1) / 2f);
+                            }
                         }
                     }
                 }
@@ -400,19 +404,22 @@ public class RenderingWidget : SpriteRenderingWidget
             var width = frameWidth;
             var height = frameHeight;
 
-            var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
-            Gizmo.Hitbox.BBox(bbox);
-
-            if (Gizmo.IsHovered)
+            if (MainWindow.inspector.SelectedTab == 1)
             {
-                using (Gizmo.Scope("hover"))
+                var bbox = BBox.FromPositionAndSize(new Vector3(y + height / 2f, x + width / 2f, 1f), new Vector3(height, width, 1f));
+                Gizmo.Hitbox.BBox(bbox);
+
+                if (Gizmo.IsHovered)
                 {
-                    Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
-                    Gizmo.Draw.SolidBox(bbox);
-                }
-                if (Gizmo.WasLeftMousePressed)
-                {
-                    MainWindow.CreateTile(xi, yi);
+                    using (Gizmo.Scope("hover"))
+                    {
+                        Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.2f);
+                        Gizmo.Draw.SolidBox(bbox);
+                    }
+                    if (Gizmo.WasLeftMousePressed)
+                    {
+                        MainWindow.CreateTile(xi, yi);
+                    }
                 }
             }
 

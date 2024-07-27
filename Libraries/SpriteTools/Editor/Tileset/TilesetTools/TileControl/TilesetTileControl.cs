@@ -26,6 +26,11 @@ public class TilesetTileControl : Widget
         ParentList = list;
         Tile = tile;
 
+        MouseClick = () =>
+        {
+            ParentList.SelectTile(this, Tile);
+        };
+
         VerticalSizeMode = SizeMode.Flexible;
 
         StatusTip = $"Select Tile \"{Tile.Name}\"";
@@ -39,8 +44,9 @@ public class TilesetTileControl : Widget
         LoadPixmap();
 
         var serializedObject = Tile.GetSerialized();
-        serializedObject.TryGetProperty(nameof(TilesetComponent.Layer.Name), out var name);
+        serializedObject.TryGetProperty(nameof(TilesetResource.Tile.Name), out var name);
         labelText = new LabelTextEntry(name);
+        labelText.EmptyValue = $"Tile {tile.Position}";
         Layout.Add(labelText);
 
         IsDraggable = true;
@@ -142,9 +148,16 @@ public class TilesetTileControl : Widget
     {
         if (ParentList.Selected.Contains(this))
         {
-            foreach (var selected in ParentList.Selected)
+            if (ParentList.Selected.Count == ParentList.Buttons.Count)
             {
-                ParentList.DeleteTile(selected.Tile);
+                ParentList.DeleteAll();
+            }
+            else
+            {
+                foreach (var selected in ParentList.Selected)
+                {
+                    ParentList.DeleteTile(selected.Tile);
+                }
             }
         }
         else
