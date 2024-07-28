@@ -18,6 +18,7 @@ public class RenderingWidget : SpriteRenderingWidget
 	float frameHeight;
 	float xSeparation;
 	float ySeparation;
+	Vector3 startMovePosition;
 
 	Dictionary<Vector2, TilesetResource.Tile> tileDict;
 	RealTimeSince timeSinceLastCornerHover = 0;
@@ -76,7 +77,7 @@ public class RenderingWidget : SpriteRenderingWidget
 				using (Gizmo.Scope("tiles"))
 				{
 					Gizmo.Draw.Color = new Color(0.1f, 0.4f, 1f);
-					Gizmo.Draw.LineThickness = 2f;
+					Gizmo.Draw.LineThickness = 3f;
 
 					int xi = 0;
 					int yi = 0;
@@ -162,10 +163,38 @@ public class RenderingWidget : SpriteRenderingWidget
 			if (MainWindow.inspector.SelectedTab == 1)
 			{
 
-				if (isSelected)
+				if (isSelected || Gizmo.Pressed.This)
 				{
 					Gizmo.Draw.LineThickness = 4;
 					Gizmo.Draw.Color = Color.Yellow;
+				}
+
+				if (Gizmo.WasLeftMousePressed) startMovePosition = Gizmo.CurrentRay.Position;
+
+				if (Gizmo.Pressed.This)
+				{
+					Cursor = CursorShape.SizeAll;
+					timeSinceLastCornerHover = 0f;
+					var preDelta = startMovePosition - Gizmo.CurrentRay.Position;
+					var deltaf = new Vector2(-preDelta.y, -preDelta.x);
+					if (Math.Abs(deltaf.x) >= frameWidth / 2f)
+					{
+						int xx = Math.Sign(deltaf.x);
+						if (xx != 0 && CanExpand(tile, xx, 0))
+						{
+							startMovePosition += new Vector3(0, xx * frameWidth);
+							tile.Position += new Vector2Int(xx, 0);
+						}
+					}
+					if (Math.Abs(deltaf.y) >= frameHeight / 2f)
+					{
+						int yy = Math.Sign(deltaf.y);
+						if (yy != 0 && CanExpand(tile, 0, yy))
+						{
+							startMovePosition += new Vector3(yy * frameHeight, 0);
+							tile.Position += new Vector2Int(0, yy);
+						}
+					}
 				}
 
 				if (Gizmo.IsHovered)
@@ -217,45 +246,9 @@ public class RenderingWidget : SpriteRenderingWidget
 		float width = frameWidth * (int)tile.Size.x;
 		float height = frameHeight * (int)tile.Size.y;
 
-		bool canExpandX = true;
-		bool canExpandY = true;
-
 		// Can Expand Logic
-		if (x != 0)
-		{
-			int nextX = currentX + (x > 0 ? (x * (int)tile.Size.x) : x);
-			if (nextX < 0 || nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize.x)) canExpandX = false;
-			else
-			{
-				for (int i = 0; i < tile.Size.y; i++)
-				{
-					int nextY = currentY + i;
-					if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
-					{
-						canExpandX = false;
-						break;
-					}
-				}
-			}
-		}
-
-		if (y != 0)
-		{
-			int nextY = currentY + (y > 0 ? (y * (int)tile.Size.y) : y);
-			if (nextY < 0 || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize.y)) canExpandY = false;
-			else
-			{
-				for (int i = 0; i < tile.Size.x; i++)
-				{
-					int nextX = currentX + i;
-					if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
-					{
-						canExpandY = false;
-						break;
-					}
-				}
-			}
-		}
+		bool canExpandX = CanExpand(tile, x, 0);
+		bool canExpandY = CanExpand(tile, 0, y);
 
 		// Can Shrink Logic
 		bool canShrinkX = !(x != 0 && tile.Size.x == 1);
@@ -435,5 +428,47 @@ public class RenderingWidget : SpriteRenderingWidget
 		Gizmo.Draw.Line(new Vector3(y, x, 0), new Vector3(y + height, x, 0));
 		Gizmo.Draw.Line(new Vector3(y + height, x, 0), new Vector3(y + height, x + width, 0));
 		Gizmo.Draw.Line(new Vector3(y + height, x + width, 0), new Vector3(y, x + width, 0));
+	}
+
+	bool CanExpand(TilesetResource.Tile tile, int x, int y)
+	{
+		int currentX = tile.Position.x;
+		int currentY = tile.Position.y;
+
+		if (x != 0)
+		{
+			int nextX = currentX + (x > 0 ? (x * (int)tile.Size.x) : x);
+			if (nextX < 0 || nextX >= (TextureSize.x / MainWindow.Tileset.CurrentTileSize.x)) return false;
+			else
+			{
+				for (int i = 0; i < tile.Size.y; i++)
+				{
+					int nextY = currentY + i;
+					if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
+					{
+						return false;
+					}
+				}
+			}
+		}
+
+		if (y != 0)
+		{
+			int nextY = currentY + (y > 0 ? (y * (int)tile.Size.y) : y);
+			if (nextY < 0 || nextY >= (TextureSize.y / MainWindow.Tileset.CurrentTileSize.y)) return false;
+			else
+			{
+				for (int i = 0; i < tile.Size.x; i++)
+				{
+					int nextX = currentX + i;
+					if (tileDict.ContainsKey(new Vector2(nextX, nextY)))
+					{
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 }
