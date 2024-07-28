@@ -1,5 +1,5 @@
 {
-  "__guid": "90f05830-8833-489a-a165-4f5c0aa4b883",
+  "__guid": "d36a127e-db43-4262-bb71-cef50f6c9086",
   "GameObjects": [
     {
       "__guid": "c618736a-6fdc-4fbb-9b21-3d4278254026",
@@ -1682,6 +1682,566 @@
           "IsTrigger": false,
           "Scale": "50,50,50",
           "Static": false
+        }
+      ]
+    },
+    {
+      "__guid": "89f4da17-3c21-4d8c-b98d-3c086b1c2f37",
+      "Flags": 0,
+      "Name": "Tileset Object",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "SpriteTools.TilesetComponent",
+          "__guid": "46ad3d0a-385b-41bc-b71e-60cc4322b0d9",
+          "Layers": [
+            {
+              "Name": "Layer 1",
+              "IsVisible": true,
+              "TilesetResource": "tilesets/testset_01.tileset",
+              "Tiles": [
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "13,-11,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "13,-11,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-14,8,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-14,8,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-62,15,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-62,15,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "6,9,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "6,9,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "18,11,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "18,11,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "52,-28,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "52,-28,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-25,4,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-25,4,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-19,15,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-19,15,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "36,11,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "36,11,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "38,-51,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "38,-51,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Untitled Layer",
+              "IsVisible": true,
+              "TilesetResource": "tilesets/testset_01.tileset",
+              "Tiles": [
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "26,26,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "26,26,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "21,5,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "21,5,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "5,2,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "5,2,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-28,32,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-28,32,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "49,6,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "49,6,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "34,5,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "34,5,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "40,14,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "40,14,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-13,41,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-13,41,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "10,-17,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "10,-17,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "14,23,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "14,23,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Untitled Layer",
+              "IsVisible": true,
+              "Tiles": [
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-17,23,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-17,23,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-25,38,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-25,38,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "16,-45,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "16,-45,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "48,-26,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "48,-26,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-55,25,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-55,25,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "17,37,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "17,37,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-12,37,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-12,37,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "35,4,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "35,4,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "3,-22,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "3,-22,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-15,-36,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-15,-36,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                }
+              ]
+            },
+            {
+              "Name": "Untitled Layer",
+              "IsVisible": true,
+              "Tiles": [
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "51,32,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "51,32,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-2,57,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-2,57,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-28,-21,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-28,-21,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "52,25,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "52,25,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-2,-32,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-2,-32,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "14,23,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "14,23,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-35,1,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-35,1,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-31,-13,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-31,-13,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "-10,-2,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "-10,-2,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                },
+                {
+                  "Transform": {
+                    "UniformScale": 1,
+                    "IsValid": true,
+                    "ForwardRay": {
+                      "Position": "19,2,0",
+                      "Forward": "1,0,0"
+                    },
+                    "Position": "19,2,0",
+                    "Scale": "1,1,1",
+                    "Rotation": "0,0,0,1"
+                  }
+                }
+              ]
+            }
+          ]
         }
       ]
     }
