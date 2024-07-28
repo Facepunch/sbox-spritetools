@@ -2,7 +2,6 @@ using Sandbox;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
@@ -154,7 +153,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 					var tiling = tileset.GetTiling();
 					var offset = tileset.GetOffset(4);
 
-					var position = transform.Position * tileset.TileSize;
+					var position = transform.Position * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
 					var size = transform.Scale * tileset.TileSize;
 
 					var topLeft = new Vector3(position.x, position.y, position.z);

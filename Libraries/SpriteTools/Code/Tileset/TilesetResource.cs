@@ -13,7 +13,7 @@ public class TilesetResource : GameResource
 	public string FilePath { get; set; }
 
 	[Property, Group("Tileset Setup")]
-	public int TileSize { get; set; } = 32;
+	public Vector2Int TileSize { get; set; } = new Vector2Int(32, 32);
 
 	[Property, Group("Tileset Setup")]
 	public Vector2Int TileSeparation { get; set; } = 0;
@@ -22,7 +22,7 @@ public class TilesetResource : GameResource
 	public List<Tile> Tiles { get; set; } = new();
 
 	public Vector2Int CurrentTextureSize { get; set; } = Vector2Int.One;
-	public int CurrentTileSize { get; set; } = 32;
+	public Vector2Int CurrentTileSize { get; set; } = new Vector2Int(32, 32);
 
 	public Vector2 GetTiling()
 	{
@@ -39,8 +39,8 @@ public class TilesetResource : GameResource
 		var obj = new JsonObject()
 		{
 			["FilePath"] = FilePath,
-			["TileSize"] = TileSize,
-			["CurrentTileSize"] = CurrentTileSize,
+			["TileSize"] = TileSize.ToString(),
+			["CurrentTileSize"] = CurrentTileSize.ToString(),
 			["TileSeparation"] = TileSeparation.ToString(),
 			["Tiles"] = Json.Serialize(Tiles)
 		};
@@ -51,8 +51,8 @@ public class TilesetResource : GameResource
 	{
 		var obj = JsonNode.Parse(json);
 		FilePath = obj["FilePath"]?.GetValue<string>() ?? "";
-		TileSize = obj["TileSize"]?.GetValue<int>() ?? 32;
-		CurrentTileSize = obj["CurrentTileSize"]?.GetValue<int>() ?? 32;
+		TileSize = Vector2Int.Parse(obj["TileSize"]?.GetValue<string>() ?? "32,32");
+		CurrentTileSize = Vector2Int.Parse(obj["CurrentTileSize"]?.GetValue<string>() ?? "32,32");
 		TileSeparation = Vector2Int.Parse(obj["TileSeparation"]?.GetValue<string>() ?? "0,0");
 		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"]?.GetValue<string>() ?? "[]");
 		InternalUpdateTiles();
