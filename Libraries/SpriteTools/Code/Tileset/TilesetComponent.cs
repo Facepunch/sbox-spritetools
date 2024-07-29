@@ -1,4 +1,5 @@
 using Sandbox;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +66,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 			for (int i = 0; i < 10; i++)
 			{
-				Tiles.Add(new Tile(i, new Transform((Vector3.Random.WithZ(0) * 64).SnapToGrid(1))));
+				Tiles.Add(new Tile(new Vector2Int(Random.Shared.Int(10), Random.Shared.Int(10)), new Transform((Vector3.Random.WithZ(0) * 64).SnapToGrid(1))));
 			}
 		}
 
@@ -94,18 +95,18 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 	public class Tile
 	{
-		public int Index { get; set; }
+		public Vector2Int CellPosition { get; set; }
 		public Transform Transform { get; set; }
 
-		public Tile(int index, Transform transform)
+		public Tile(Vector2Int cellPosition, Transform transform)
 		{
-			Index = index;
+			CellPosition = cellPosition;
 			Transform = transform;
 		}
 
 		public Tile Copy()
 		{
-			return new Tile(Index, Transform);
+			return new Tile(CellPosition, Transform);
 		}
 	}
 
@@ -151,7 +152,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 					var transform = tile.Transform;
 
 					var tiling = tileset.GetTiling();
-					var offset = tileset.GetOffset(4);
+					var offset = tileset.GetOffset(tile.CellPosition);
 
 					var position = transform.Position * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
 					var size = transform.Scale * tileset.TileSize;
@@ -161,10 +162,10 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 					var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
 					var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
-					var uvTopLeft = new Vector2(offset.x * tiling.x, offset.y * tiling.y);
-					var uvTopRight = new Vector2((offset.x + 1) * tiling.x, offset.y * tiling.y);
-					var uvBottomRight = new Vector2((offset.x + 1) * tiling.x, (offset.y + 1) * tiling.y);
-					var uvBottomLeft = new Vector2(offset.x * tiling.x, (offset.y + 1) * tiling.y);
+					var uvTopLeft = new Vector2(offset.x, offset.y);
+					var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
+					var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
+					var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
 
 					vertex[i] = new Vertex(topLeft);
 					vertex[i].TexCoord0 = uvTopLeft;

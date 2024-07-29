@@ -26,12 +26,12 @@ public class TilesetResource : GameResource
 
 	public Vector2 GetTiling()
 	{
-		return new Vector2(1, 1);
+		return (Vector2)CurrentTileSize / CurrentTextureSize;
 	}
 
-	public Vector2 GetOffset(int index)
+	public Vector2 GetOffset(Vector2Int cellPosition)
 	{
-		return new Vector2(0, 0);
+		return new Vector2(cellPosition.x * CurrentTileSize.y, cellPosition.x * CurrentTileSize.y) / CurrentTextureSize;
 	}
 
 	public string Serialize()

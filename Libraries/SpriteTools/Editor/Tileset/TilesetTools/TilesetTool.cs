@@ -171,7 +171,7 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		if (tileset is null) return;
 
 		var tiling = tileset.GetTiling();
-		var offset = tileset.GetOffset(4);
+		var offset = tileset.GetOffset(new Vector2Int(0, 0));
 
 		var position = Vector3.Zero;
 		var size = tileset.TileSize;
@@ -181,10 +181,10 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
 		var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
-		var uvTopLeft = new Vector2(offset.x * tiling.x, offset.y * tiling.y);
-		var uvTopRight = new Vector2((offset.x + 1) * tiling.x, offset.y * tiling.y);
-		var uvBottomRight = new Vector2((offset.x + 1) * tiling.x, (offset.y + 1) * tiling.y);
-		var uvBottomLeft = new Vector2(offset.x * tiling.x, (offset.y + 1) * tiling.y);
+		var uvTopLeft = new Vector2(offset.x, offset.y);
+		var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
+		var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
+		var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
 
 		var vertex = ArrayPool<Vertex>.Shared.Rent(6);
 
