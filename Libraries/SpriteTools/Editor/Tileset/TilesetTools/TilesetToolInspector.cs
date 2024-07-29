@@ -62,6 +62,8 @@ public class TilesetToolInspector : InspectorWidget
 
     void UpdateSelectedSheet()
     {
+        if (!(Layout?.IsValid ?? false)) return;
+
         if (!(selectedSheet?.IsValid ?? false))
         {
             selectedSheet = new ControlSheet();
