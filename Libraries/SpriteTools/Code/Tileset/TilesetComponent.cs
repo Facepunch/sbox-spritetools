@@ -142,7 +142,8 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 	{
 		if (Component?.Layers is null) return;
 
-		var layers = Component.Layers;
+		var layers = Component.Layers.ToList();
+		layers.Reverse();
 		if (layers.Count == 0) return;
 
 		foreach (var layer in layers)
@@ -150,6 +151,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			if (!layer.IsVisible) continue;
 
 			int i = 0;
+			int layerIndex = layers.IndexOf(layer);
 
 			var tileset = layer.TilesetResource;
 			if (tileset is null) continue;
@@ -170,7 +172,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 					var tiling = tileset.GetTiling();
 					var offset = tileset.GetOffset(tile.CellPosition);
 
-					var position = transform.Position * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
+					var position = transform.Position.WithZ(layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
 					var size = transform.Scale * tileset.TileSize;
 
 					var topLeft = new Vector3(position.x, position.y, position.z);
@@ -185,42 +187,36 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 					vertex[i] = new Vertex(topLeft);
 					vertex[i].TexCoord0 = uvTopLeft;
-					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
 					vertex[i].Color = Color.White;
 					vertex[i].Normal = Vector3.Up;
 					i++;
 
 					vertex[i] = new Vertex(topRight);
 					vertex[i].TexCoord0 = uvTopRight;
-					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
 					vertex[i].Color = Color.White;
 					vertex[i].Normal = Vector3.Up;
 					i++;
 
 					vertex[i] = new Vertex(bottomRight);
 					vertex[i].TexCoord0 = uvBottomRight;
-					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
 					vertex[i].Color = Color.White;
 					vertex[i].Normal = Vector3.Up;
 					i++;
 
 					vertex[i] = new Vertex(topLeft);
 					vertex[i].TexCoord0 = uvTopLeft;
-					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
 					vertex[i].Color = Color.White;
 					vertex[i].Normal = Vector3.Up;
 					i++;
 
 					vertex[i] = new Vertex(bottomRight);
 					vertex[i].TexCoord0 = uvBottomRight;
-					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
 					vertex[i].Color = Color.White;
 					vertex[i].Normal = Vector3.Up;
 					i++;
 
 					vertex[i] = new Vertex(bottomLeft);
 					vertex[i].TexCoord0 = uvBottomLeft;
-					vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
 					vertex[i].Color = Color.White;
 					vertex[i].Normal = Vector3.Up;
 					i++;

@@ -29,7 +29,7 @@ public abstract class BaseTileTool : EditorTool
         var pos = (tr.EndPosition - new Vector3(tileSize.x / 2f, tileSize.y / 2f, 0))
                     .SnapToGrid(tileSize.x, true, false, false)
                     .SnapToGrid(tileSize.y, false, true, false)
-                    .WithZ(layerIndex + 0.5f);
+                    .WithZ(-layerIndex + 0.5f);
 
         return pos;
     }
