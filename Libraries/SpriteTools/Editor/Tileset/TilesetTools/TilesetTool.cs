@@ -1,7 +1,9 @@
 using Editor;
 using Sandbox;
+using SpriteTools.TilesetTool.Tools;
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SpriteTools.TilesetTool;
@@ -38,7 +40,7 @@ public partial class TilesetTool : EditorTool
 	Vector2Int GridSize => SelectedLayer?.TilesetResource?.TileSize ?? new Vector2Int(32, 32);
 	int CurrentLayerIndex => SelectedComponent.Layers.IndexOf(SelectedLayer);
 
-	TilesetPreviewObject _sceneObject;
+	internal TilesetPreviewObject _sceneObject;
 
 	public override void OnEnabled()
 	{
@@ -79,21 +81,11 @@ public partial class TilesetTool : EditorTool
 
 		if (_sceneObject.IsValid() && SelectedLayer?.TilesetResource is not null)
 		{
-			var cursorRay = Gizmo.CurrentRay;
-			var tr = SceneEditorSession.Active.Scene.Trace
-				.Ray(cursorRay, 32000f)
-				.Run();
-
-			_sceneObject.Transform = new Transform(
-				(tr.EndPosition - new Vector3(gridSize.x / 2f, gridSize.y / 2f, CurrentLayerIndex + 0.5f))
-					.SnapToGrid(gridSize.x, true, false, false)
-					.SnapToGrid(gridSize.y, false, true, false)
-					.WithZ(CurrentLayerIndex),
-				Rotation.Identity, 1);
-			_sceneObject.Flags.CastShadows = false;
-			_sceneObject.Flags.IsOpaque = false;
-			_sceneObject.Flags.IsTranslucent = true;
 			_sceneObject.RenderingEnabled = true;
+		}
+		else
+		{
+			_sceneObject.RenderingEnabled = false;
 		}
 	}
 
@@ -117,6 +109,13 @@ public partial class TilesetTool : EditorTool
 		}
 	}
 
+	internal void PlaceTile(Vector2 position)
+	{
+		if (SelectedLayer is null) return;
+
+		SelectedLayer.SetTile(new Vector2Int(0, 1), new Transform(new Vector3(position.x, position.y, 0), Rotation.Identity, 1));
+	}
+
 	void InitPreviewObject()
 	{
 		RemovePreviewObject();
@@ -124,6 +123,11 @@ public partial class TilesetTool : EditorTool
 		_sceneObject = new TilesetPreviewObject(this, Scene.SceneWorld);
 		if (SelectedLayer is not null)
 			_sceneObject.UpdateTileset(SelectedLayer.TilesetResource);
+
+		_sceneObject.Flags.CastShadows = false;
+		_sceneObject.Flags.IsOpaque = false;
+		_sceneObject.Flags.IsTranslucent = true;
+		_sceneObject.RenderingEnabled = true;
 	}
 
 	void RemovePreviewObject()

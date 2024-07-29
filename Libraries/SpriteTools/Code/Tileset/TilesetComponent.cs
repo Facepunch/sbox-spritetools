@@ -87,9 +87,25 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			return layer;
 		}
 
-		public void AddTile(Tile tile)
+		public bool SetTile(Vector2Int cellPosition, Transform transform)
 		{
-			Tiles.Add(tile);
+			var tile = Tiles.FirstOrDefault(x => x.Transform.Position == transform.Position);
+			if (tile is not null)
+			{
+				if (tile.CellPosition == cellPosition) return false;
+				tile.CellPosition = cellPosition;
+				return true;
+			}
+			else
+			{
+				Tiles.Add(new Tile(cellPosition, transform));
+				return true;
+			}
+		}
+
+		public Tile GetTile(Vector3 position)
+		{
+			return Tiles.FirstOrDefault(x => x.Transform.Position == position);
 		}
 	}
 
