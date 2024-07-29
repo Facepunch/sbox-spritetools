@@ -18,6 +18,11 @@ public partial class TilesetTool : EditorTool
 {
 	public static TilesetTool Active { get; private set; }
 
+	public override IEnumerable<EditorTool> GetSubtools()
+	{
+		yield return new PaintTileTool(this);
+	}
+
 	public TilesetComponent SelectedComponent;
 	public TilesetComponent.Layer SelectedLayer
 	{
