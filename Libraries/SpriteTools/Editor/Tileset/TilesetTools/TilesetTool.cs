@@ -21,6 +21,7 @@ public partial class TilesetTool : EditorTool
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
 		yield return new PaintTileTool(this);
+		yield return new EraserTileTool(this);
 	}
 
 	public TilesetComponent SelectedComponent;
@@ -43,7 +44,6 @@ public partial class TilesetTool : EditorTool
 
 	bool WasGridActive = true;
 	Vector2Int GridSize => SelectedLayer?.TilesetResource?.TileSize ?? new Vector2Int(32, 32);
-	int CurrentLayerIndex => SelectedComponent.Layers.IndexOf(SelectedLayer);
 
 	internal TilesetPreviewObject _sceneObject;
 
@@ -83,15 +83,6 @@ public partial class TilesetTool : EditorTool
 			Gizmo.Draw.IgnoreDepth = state.Is2D;
 			Gizmo.Draw.Grid(state.GridAxis, gridSize, state.GridOpacity);
 		}
-
-		if (_sceneObject.IsValid() && SelectedLayer?.TilesetResource is not null)
-		{
-			_sceneObject.RenderingEnabled = true;
-		}
-		else
-		{
-			_sceneObject.RenderingEnabled = false;
-		}
 	}
 
 	void UpdateComponent()
@@ -119,6 +110,17 @@ public partial class TilesetTool : EditorTool
 		if (SelectedLayer is null) return;
 
 		SelectedLayer.SetTile(new Vector2Int(0, 1), new Transform(new Vector3(position.x, position.y, 0), Rotation.Identity, 1));
+	}
+
+	internal void EraseTile(Vector2 position)
+	{
+		if (SelectedLayer is null) return;
+
+		var tile = SelectedLayer.GetTile(new Vector3(position.x, position.y, 0));
+		if (tile is not null)
+		{
+			SelectedLayer.Tiles.Remove(tile);
+		}
 	}
 
 	void InitPreviewObject()
