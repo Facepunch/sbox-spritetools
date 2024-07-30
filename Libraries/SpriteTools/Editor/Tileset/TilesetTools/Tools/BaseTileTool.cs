@@ -25,11 +25,11 @@ public abstract class BaseTileTool : EditorTool
             .Run();
 
         var tileSize = Parent.SelectedLayer.TilesetResource.TileSize;
-        var layerIndex = Parent.SelectedIndex;
+        var layerIndex = (Parent.SelectedComponent.Layers.Count - 1) - Parent.SelectedComponent.Layers.IndexOf(Parent.SelectedLayer);
         var pos = (tr.EndPosition - new Vector3(tileSize.x / 2f, tileSize.y / 2f, 0))
                     .SnapToGrid(tileSize.x, true, false, false)
                     .SnapToGrid(tileSize.y, false, true, false)
-                    .WithZ(-layerIndex + 0.5f);
+                    .WithZ(layerIndex + 0.5f);
 
         return pos;
     }
