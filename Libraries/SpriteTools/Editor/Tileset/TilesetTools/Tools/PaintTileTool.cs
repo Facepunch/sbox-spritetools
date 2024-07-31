@@ -8,9 +8,8 @@ namespace SpriteTools.TilesetTool.Tools;
 /// </summary>
 [Title("Paint")]
 [Icon("brush")]
-[Alias("tilesettool.paint")]
+[Alias("tileset-tools.paint-tool")]
 [Group("1")]
-[Shortcut("editortool.tileset.paint", "b")]
 [Order(0)]
 public class PaintTileTool : BaseTileTool
 {
@@ -27,5 +26,12 @@ public class PaintTileTool : BaseTileTool
         {
             Parent.PlaceTile(tilePos);
         }
+    }
+
+    [Shortcut("tileset-tools.paint-tool", "b")]
+    public static void ActivateSubTool()
+    {
+        if (EditorToolManager.CurrentModeName != nameof(TilesetTool)) return;
+        EditorToolManager.SetSubTool(nameof(PaintTileTool));
     }
 }

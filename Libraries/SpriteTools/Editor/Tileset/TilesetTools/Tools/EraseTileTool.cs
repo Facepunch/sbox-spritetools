@@ -8,9 +8,8 @@ namespace SpriteTools.TilesetTool.Tools;
 /// </summary>
 [Title("Erase")]
 [Icon("delete")]
-[Alias("tilesettool.eraser")]
+[Alias("tileset-tools.erase-tool")]
 [Group("2")]
-[Shortcut("editortool.tileset.eraser", "e")]
 [Order(1)]
 public class EraserTileTool : BaseTileTool
 {
@@ -33,5 +32,12 @@ public class EraserTileTool : BaseTileTool
             Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
             Gizmo.Draw.SolidBox(new BBox(pos, pos + new Vector3(tileSize.x, tileSize.y, 0)));
         }
+    }
+
+    [Shortcut("tileset-tools.erase-tool", "e")]
+    public static void ActivateSubTool()
+    {
+        if (EditorToolManager.CurrentModeName != nameof(TilesetTool)) return;
+        EditorToolManager.SetSubTool(nameof(EraserTileTool));
     }
 }

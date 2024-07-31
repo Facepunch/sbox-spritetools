@@ -237,4 +237,10 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 
 		Graphics.Draw(vertex, 6, Material, Attributes);
 	}
+
+	[Shortcut("tileset-tools.tileset-tool", "SHIFT+T")]
+	public static void ActivateSubTool()
+	{
+		EditorToolManager.SetTool(nameof(TilesetTool));
+	}
 }
