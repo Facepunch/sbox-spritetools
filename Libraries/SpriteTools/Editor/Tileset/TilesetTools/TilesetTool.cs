@@ -76,6 +76,11 @@ public partial class TilesetTool : EditorTool
 	{
 		base.OnUpdate();
 
+		if (SceneViewportWidget.LastSelected.SceneView.Tools.CurrentTool.CurrentTool is null)
+		{
+			_sceneObject.RenderingEnabled = false;
+		}
+
 		var state = SceneViewportWidget.LastSelected.State;
 		var gridSize = GridSize;
 		using (Gizmo.Scope("grid"))
