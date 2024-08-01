@@ -34,7 +34,7 @@ public class EraserTileTool : BaseTileTool
         }
     }
 
-    [Shortcut("tileset-tools.erase-tool", "e")]
+    [Shortcut("tileset-tools.erase-tool", "e", typeof(SceneViewportWidget))]
     public static void ActivateSubTool()
     {
         if (EditorToolManager.CurrentModeName != nameof(TilesetTool)) return;

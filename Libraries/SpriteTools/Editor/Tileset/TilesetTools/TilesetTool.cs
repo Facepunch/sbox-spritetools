@@ -13,7 +13,6 @@ namespace SpriteTools.TilesetTool;
 [Description("Paint 2D tiles from a tileset")]
 [Icon("dashboard")]
 [Group("7")]
-[Shortcut("editortool.tileset", "Shift+T")]
 public partial class TilesetTool : EditorTool
 {
 	public static TilesetTool Active { get; private set; }
@@ -157,6 +156,12 @@ public partial class TilesetTool : EditorTool
 	void ResetGrid()
 	{
 		SceneViewportWidget.LastSelected.State.ShowGrid = WasGridActive;
+	}
+
+	[Shortcut("tileset-tools.tileset-tool", "SHIFT+T", typeof(SceneViewportWidget))]
+	public static void ActivateSubTool()
+	{
+		EditorToolManager.SetTool(nameof(TilesetTool));
 	}
 
 }

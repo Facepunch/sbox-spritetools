@@ -28,7 +28,7 @@ public class PaintTileTool : BaseTileTool
         }
     }
 
-    [Shortcut("tileset-tools.paint-tool", "b")]
+    [Shortcut("tileset-tools.paint-tool", "b", typeof(SceneViewportWidget))]
     public static void ActivateSubTool()
     {
         if (EditorToolManager.CurrentModeName != nameof(TilesetTool)) return;
