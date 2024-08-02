@@ -12,6 +12,13 @@ public abstract class BaseTileTool : EditorTool
         Parent = parent;
     }
 
+    public override void OnEnabled()
+    {
+        base.OnEnabled();
+
+        TilesetToolInspector.Active.UpdateMainSheet();
+    }
+
     public override void OnUpdate()
     {
         var pos = GetGizmoPos();

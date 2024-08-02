@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Editor;
 using Sandbox;
 
@@ -8,9 +9,11 @@ namespace SpriteTools.TilesetTool;
 [CanEdit(typeof(TilesetTool))]
 public class TilesetToolInspector : InspectorWidget
 {
+    public static TilesetToolInspector Active { get; private set; }
     TilesetTool Tool;
     StatusWidget Header;
 
+    ControlSheet mainSheet;
     ControlSheet selectedSheet;
 
     public TilesetToolInspector(SerializedObject so) : base(so)
@@ -25,6 +28,7 @@ public class TilesetToolInspector : InspectorWidget
         Layout.Margin = 4;
         Layout.Spacing = 8;
 
+        Active = this;
         Rebuild();
     }
 
@@ -38,12 +42,9 @@ public class TilesetToolInspector : InspectorWidget
         Layout.Add(Header);
         UpdateHeader();
 
-        var sheet = new ControlSheet();
-        if (Tool.SelectedComponent.IsValid())
-        {
-            sheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
-        }
-        Layout.Add(sheet);
+        mainSheet = new ControlSheet();
+        Layout.Add(mainSheet);
+        UpdateMainSheet();
 
         UpdateSelectedSheet();
 
@@ -51,7 +52,7 @@ public class TilesetToolInspector : InspectorWidget
 
     }
 
-    void UpdateHeader()
+    internal void UpdateHeader()
     {
         Header.Text = "Paint Tiles";
         Header.LeadText = Tool.SelectedLayer == null ? "No Layer Selected" : $"Selected Layer: {Tool.SelectedLayer.Name}";
@@ -60,7 +61,25 @@ public class TilesetToolInspector : InspectorWidget
         Header.Update();
     }
 
-    void UpdateSelectedSheet()
+    internal void UpdateMainSheet()
+    {
+        if (!(Layout?.IsValid ?? false)) return;
+        if (mainSheet is null) return;
+
+        mainSheet?.Clear(true);
+
+        if (Tool?.CurrentTool is not null)
+        {
+            var toolName = (Tool.CurrentTool.GetType()?.GetCustomAttribute<TitleAttribute>()?.Value ?? "Unknown") + " Tool";
+            mainSheet.AddObject(Tool.CurrentTool.GetSerialized(), toolName, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+        }
+        if (Tool.SelectedComponent.IsValid())
+        {
+            mainSheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+        }
+    }
+
+    internal void UpdateSelectedSheet()
     {
         if (!(Layout?.IsValid ?? false)) return;
 
