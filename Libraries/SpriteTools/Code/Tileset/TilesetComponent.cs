@@ -56,18 +56,13 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		public bool IsLocked { get; set; }
 		[Property, Group("Selected Layer")] public TilesetResource TilesetResource { get; set; }
 
-		public List<Tile> Tiles { get; set; } = new();
+		public Dictionary<string, Tile> Tiles { get; set; } = new();
 
 		public Layer(string name = "Untitled Layer")
 		{
 			Name = name;
 			IsVisible = true;
 			IsLocked = false;
-
-			for (int i = 0; i < 10; i++)
-			{
-				Tiles.Add(new Tile(new Vector2Int(Random.Shared.Int(10), Random.Shared.Int(10)), new Transform((Vector3.Random.WithZ(0) * 64).SnapToGrid(1))));
-			}
 		}
 
 		public Layer Copy()
@@ -76,53 +71,59 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			{
 				IsVisible = IsVisible,
 				IsLocked = IsLocked,
-				Tiles = new List<Tile>()
+				Tiles = new()
 			};
 
 			foreach (var tile in Tiles)
 			{
-				layer.Tiles.Add(tile.Copy());
+				layer.Tiles[tile.Key] = tile.Value.Copy();
 			}
 
 			return layer;
 		}
 
-		public bool SetTile(Vector2Int cellPosition, Transform transform)
+		public void SetTile(Vector2Int position, Vector2Int cellPosition, Transform transform)
 		{
-			var tile = Tiles.FirstOrDefault(x => x.Transform.Position == transform.Position);
-			if (tile is not null)
-			{
-				if (tile.CellPosition == cellPosition) return false;
-				tile.CellPosition = cellPosition;
-				return true;
-			}
-			else
-			{
-				Tiles.Add(new Tile(cellPosition, transform));
-				return true;
-			}
+			var tile = new Tile(cellPosition, transform);
+			Tiles[position.ToString()] = tile;
 		}
 
 		public Tile GetTile(Vector3 position)
 		{
-			return Tiles.FirstOrDefault(x => x.Transform.Position == position);
+			return Tiles[new Vector2Int((int)position.x, (int)position.y).ToString()];
+		}
+
+		public void RemoveTile(Vector2Int position)
+		{
+			Tiles.Remove(position.ToString());
 		}
 	}
 
 	public class Tile
 	{
 		public Vector2Int CellPosition { get; set; }
-		public Transform Transform { get; set; }
+		bool HorizontalFlip { get; set; }
+		bool VerticalFlip { get; set; }
+		int Rotation { get; set; }
 
 		public Tile(Vector2Int cellPosition, Transform transform)
 		{
 			CellPosition = cellPosition;
-			Transform = transform;
+			HorizontalFlip = transform.Scale.x < 0;
+			VerticalFlip = transform.Scale.y < 0;
+			Rotation = (int)(transform.Rotation.Yaw() / 90f);
+		}
+
+		public Transform GetTransform()
+		{
+			var scale = new Vector3(HorizontalFlip ? -1 : 1, VerticalFlip ? -1 : 1, 1);
+			var rotation = Rotation * 90;
+			return new Transform(new Vector3(CellPosition.x, CellPosition.y, 0), new Angles(0, rotation, 0), scale);
 		}
 
 		public Tile Copy()
 		{
-			return new Tile(CellPosition, Transform);
+			return new Tile(CellPosition, GetTransform());
 		}
 	}
 
@@ -168,10 +169,11 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 				foreach (var tile in group)
 				{
-					var transform = tile.Transform;
-					var offset = tileset.GetOffset(tile.CellPosition);
+					var transform = tile.Value.GetTransform();
+					var offset = tileset.GetOffset(tile.Value.CellPosition);
 
-					var position = transform.Position.WithZ(layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
+					var pos = Vector2Int.Parse(tile.Key);
+					var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
 					var size = transform.Scale * tileset.TileSize;
 
 					var topLeft = new Vector3(position.x, position.y, position.z);

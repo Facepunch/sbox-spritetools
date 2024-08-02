@@ -57,7 +57,7 @@ public class LineTileTool : BaseTileTool
 
                 foreach (var ppos in positions)
                 {
-                    Parent.PlaceTile(tilePos + ppos);
+                    Parent.PlaceTile((Vector2Int)(tilePos + ppos), TilesetTool.Active.SelectedTile.Position);
                 }
             }
         }

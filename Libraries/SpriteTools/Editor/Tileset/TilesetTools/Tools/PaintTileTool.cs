@@ -21,10 +21,10 @@ public class PaintTileTool : BaseTileTool
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
 
-        var tilePos = pos / Parent.SelectedLayer.TilesetResource.TileSize;
+        var tilePos = (Vector2Int)(pos / Parent.SelectedLayer.TilesetResource.TileSize);
         if (Gizmo.IsLeftMouseDown)
         {
-            Parent.PlaceTile(tilePos);
+            Parent.PlaceTile(tilePos, TilesetTool.Active.SelectedTile.Position);
         }
     }
 

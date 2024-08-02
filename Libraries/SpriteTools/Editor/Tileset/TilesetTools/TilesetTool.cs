@@ -122,26 +122,22 @@ public partial class TilesetTool : EditorTool
 		if (component.IsValid())
 		{
 			SelectedComponent = component;
-			SelectedLayer = SelectedComponent.Layers.FirstOrDefault();
+			SelectedLayer = SelectedComponent?.Layers?.FirstOrDefault();
 		}
 	}
 
-	internal void PlaceTile(Vector2 position)
+	internal void PlaceTile(Vector2Int position, Vector2Int cellPosition)
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetTile(new Vector2Int(0, 1), new Transform(new Vector3(position.x, position.y, 0), Rotation.Identity, 1));
+		SelectedLayer.SetTile(position, cellPosition, new Transform(0, Rotation.Identity, 1));
 	}
 
 	internal void EraseTile(Vector2 position)
 	{
 		if (SelectedLayer is null) return;
 
-		var tile = SelectedLayer.GetTile(new Vector3(position.x, position.y, 0));
-		if (tile is not null)
-		{
-			SelectedLayer.Tiles.Remove(tile);
-		}
+		SelectedLayer.RemoveTile((Vector2Int)position);
 	}
 
 	void InitPreviewObject()
