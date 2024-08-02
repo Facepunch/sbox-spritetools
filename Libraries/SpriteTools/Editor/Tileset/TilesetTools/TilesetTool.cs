@@ -24,6 +24,7 @@ public partial class TilesetTool : EditorTool
 		yield return new PaintTileTool(this);
 		yield return new EraserTileTool(this);
 		yield return new LineTileTool(this);
+		yield return new RectangleTileTool(this);
 	}
 
 	public TilesetComponent SelectedComponent;
