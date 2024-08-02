@@ -14,6 +14,19 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 	[Property, Group("Layers")] public List<Layer> Layers { get; set; }
 
 	[Property, Group("Collision")]
+	public bool HasCollider
+	{
+		get => _hasCollider;
+		set
+		{
+			if (value == _hasCollider) return;
+			_hasCollider = value;
+			BuildMesh();
+		}
+	}
+	bool _hasCollider = false;
+
+	[Property, Group("Collision")]
 	public float ColliderWidth
 	{
 		get => _colliderWidth;
@@ -94,6 +107,17 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 	[Button("Test Build Mesh")]
 	void BuildMesh()
 	{
+		if (!HasCollider)
+		{
+			if (CollisionMesh is not null)
+			{
+				CollisionMesh = null;
+				CollisionVertices.Clear();
+				CollisionFaces.Clear();
+			}
+			return;
+		}
+
 		var tilePositions = new Dictionary<Vector2Int, bool>();
 		foreach (var layer in Layers)
 		{
