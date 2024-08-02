@@ -44,8 +44,8 @@ public class LineTileTool : BaseTileTool
             {
                 var x = startPos.x + i * dx / delta / sep;
                 var y = startPos.y + i * dy / delta / sep;
-                x = (int)x;
-                y = (int)y;
+                x = (int)Math.Round(x);
+                y = (int)Math.Round(y);
                 positions.Add(new Vector2(x, y) - tilePos);
             }
             Parent._sceneObject.SetPositions(positions);
