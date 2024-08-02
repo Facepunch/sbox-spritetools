@@ -36,16 +36,9 @@ public class RectangleTileTool : BaseTileTool
         {
             var positions = new List<Vector2>();
 
-            var min = Vector2.Min(startPos, tilePos);
-            var max = Vector2.Max(startPos, tilePos);
-            for (int x = (int)min.x; x <= (int)max.x; x++)
-            {
-                for (int y = (int)min.y; y <= (int)max.y; y++)
-                {
-                    if (Hollow && (x != min.x && x != max.x && y != min.y && y != max.y)) continue;
-                    positions.Add(new Vector2(x, y) - tilePos);
-                }
-            }
+            var min = Vector2.Min(startPos - tilePos, 0);
+            var max = Vector2.Max(startPos - tilePos, 0);
+
 
             if (deleting)
             {
@@ -53,11 +46,12 @@ public class RectangleTileTool : BaseTileTool
                 using (Gizmo.Scope("delete"))
                 {
                     Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
-                    Gizmo.Draw.SolidBox(new BBox(min * tileSize, max * tileSize + tileSize));
+                    Gizmo.Draw.SolidBox(new BBox(tilePos * tileSize + min * tileSize, tilePos * tileSize + max * tileSize + tileSize));
                 }
             }
             else
             {
+                positions = GetPositions(min, max);
                 Parent._sceneObject.RenderingEnabled = true;
                 Parent._sceneObject.SetPositions(positions);
             }
@@ -69,6 +63,7 @@ public class RectangleTileTool : BaseTileTool
 
                 if (deleting)
                 {
+                    positions = GetPositions(min, max);
                     foreach (var ppos in positions)
                     {
                         Parent.EraseTile(tilePos + ppos);
@@ -91,6 +86,24 @@ public class RectangleTileTool : BaseTileTool
         }
     }
 
+    List<Vector2> GetPositions(Vector2 min, Vector2 max)
+    {
+        var positions = new List<Vector2>();
+
+        if (Vector2.Distance(min, max) < 2_500)
+        {
+            for (int x = (int)min.x; x <= (int)max.x; x++)
+            {
+                for (int y = (int)min.y; y <= (int)max.y; y++)
+                {
+                    if (Hollow && (x != min.x && x != max.x && y != min.y && y != max.y)) continue;
+                    positions.Add(new Vector2(x, y));
+                }
+            }
+        }
+
+        return positions;
+    }
 
     [Shortcut("tileset-tools.rectangle-tool", "r", typeof(SceneViewportWidget))]
     public static void ActivateSubTool()
