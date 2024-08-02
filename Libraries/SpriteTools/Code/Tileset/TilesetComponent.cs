@@ -13,6 +13,24 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 {
 	[Property, Group("Layers")] public List<Layer> Layers { get; set; }
 
+	[Property, Group("Collision")]
+	public float ColliderWidth
+	{
+		get => _colliderWidth;
+		set
+		{
+			if (value < 0f) _colliderWidth = 0f;
+			else if (value == _colliderWidth) return;
+			_colliderWidth = value;
+			BuildMesh();
+		}
+	}
+	float _colliderWidth = 0f;
+
+	private Model CollisionMesh { get; set; }
+	private List<Vector3> CollisionVertices { get; set; }
+	private List<int[]> CollisionFaces { get; set; }
+
 	TilesetSceneObject _so;
 
 	protected override void OnEnabled()
@@ -47,6 +65,217 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		_so.Flags.CastShadows = false;
 		_so.Flags.IsOpaque = false;
 		_so.Flags.IsTranslucent = true;
+	}
+
+	protected override void DrawGizmos()
+	{
+		base.DrawGizmos();
+
+		if (CollisionMesh is not null)
+		{
+			using (Gizmo.Scope("tile_collisions"))
+			{
+				Gizmo.Draw.Color = Color.Green;
+				Gizmo.Draw.LineThickness = 2f;
+
+				foreach (var face in CollisionFaces)
+				{
+					for (int i = 0; i < face.Length; i++)
+					{
+						var a = CollisionVertices[face[i]];
+						var b = CollisionVertices[face[(i + 1) % face.Length]];
+						Gizmo.Draw.Line(a, b);
+					}
+				}
+			}
+		}
+	}
+
+	[Button("Test Build Mesh")]
+	void BuildMesh()
+	{
+		var tilePositions = new Dictionary<Vector2Int, bool>();
+		foreach (var layer in Layers)
+		{
+			foreach (var tile in layer.Tiles)
+			{
+				tilePositions[Vector2Int.Parse(tile.Key)] = true;
+			}
+		}
+		var minPosition = tilePositions.Keys.Aggregate((min, next) => Vector2Int.Min(min, next));
+		var maxPosition = tilePositions.Keys.Aggregate((max, next) => Vector2Int.Max(max, next));
+		var totalSize = maxPosition - minPosition + Vector2Int.One;
+
+		bool[,] tiles = new bool[totalSize.x, totalSize.y];
+		foreach (var tile in tilePositions)
+		{
+			var pos = tile.Key - minPosition;
+			tiles[pos.x, pos.y] = true;
+		}
+
+		// Generate mesh from tiles
+		var tileSize = Layers[0].TilesetResource.TileSize;
+		var mesh = new PolygonMesh();
+		CollisionVertices = new List<Vector3>();
+		CollisionFaces = new List<int[]>();
+
+		var min3d = new Vector3(minPosition.x * tileSize.x, minPosition.y * tileSize.y, 0);
+
+		bool[,] visited = new bool[totalSize.x, totalSize.y];
+		for (int x = 0; x < totalSize.x; x++)
+		{
+			for (int y = 0; y < totalSize.y; y++)
+			{
+
+				if (tiles[x, y] && !visited[x, y])
+				{
+					int width = 1;
+					int height = 1;
+
+					// Check width
+					while (x + width < totalSize.x && tiles[x + width, y] && !visited[x + width, y])
+					{
+						width++;
+					}
+
+					// Check height
+					while (y + height < totalSize.y && IsRectangle(tiles, visited, x, y, width, height))
+					{
+						height++;
+					}
+
+					// Mark the cells of this rectangle as visited
+					for (int i = 0; i < width; i++)
+					{
+						for (int j = 0; j < height; j++)
+						{
+							visited[x + i, y + j] = true;
+						}
+					}
+
+					AddRectangle(CollisionVertices, CollisionFaces, tiles, x, y, width, height, tileSize, ColliderWidth, minPosition);
+				}
+
+				// if (!tiles[x, y]) continue;
+
+				// var position = new Vector3(x * tileSize.x, y * tileSize.y, 0);
+				// var size = new Vector3(tileSize.x, tileSize.y, 1);
+
+				// var topLeft = new Vector3(position.x, position.y, position.z) + min3d;
+				// var topRight = new Vector3(position.x + size.x, position.y, position.z) + min3d;
+				// var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z) + min3d;
+				// var bottomLeft = new Vector3(position.x, position.y + size.y, position.z) + min3d;
+
+				// CollisionVertices.AddRange(new[] { topLeft, topRight, bottomRight, topLeft, bottomRight, bottomLeft });
+				// CollisionFaces.Add(new[] { CollisionVertices.Count - 6, CollisionVertices.Count - 5, CollisionVertices.Count - 4, CollisionVertices.Count - 3, CollisionVertices.Count - 2, CollisionVertices.Count - 1 });
+			}
+		}
+
+		var hVertices = mesh.AddVertices(CollisionVertices.ToArray());
+
+		foreach (var face in CollisionFaces)
+		{
+			mesh.AddFace(face.Select(x => hVertices[x]).ToArray());
+		}
+
+		CollisionMesh = mesh.Rebuild();
+	}
+
+	static bool IsRectangle(bool[,] grid, bool[,] visited, int x, int y, int width, int height)
+	{
+		for (int i = 0; i < width; i++)
+		{
+			if (!grid[x + i, y + height] || visited[x + i, y + height])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	static void AddRectangle(List<Vector3> vertices, List<int[]> faces, bool[,] grid, int x, int y, int width, int height, Vector2Int tileSize, float depth, Vector2Int minPosition)
+	{
+		int startIndex = vertices.Count;
+
+		// Bottom face (y == 0)
+		vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y) * tileSize.x, 0));
+		vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y) * tileSize.y, 0));
+		vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, 0));
+		vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, 0));
+
+		// Top face (y == depth)
+		if (depth != 0)
+		{
+			vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y) * tileSize.y, depth));
+			vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y) * tileSize.y, depth));
+			vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, depth));
+			vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, depth));
+		}
+
+		// Add indices for two triangles per face (bottom and top) if not inner
+		faces.Add(new int[]{
+			startIndex, startIndex + 2, startIndex + 1,
+			startIndex, startIndex + 3, startIndex + 2
+		});
+		if (depth != 0) // Top
+		{
+			faces.Add(new int[]{
+				startIndex + 4, startIndex + 5, startIndex + 6,
+				startIndex + 4, startIndex + 6, startIndex + 7
+			});
+		}
+
+		// Add indices for the sides if not inner
+		if (depth == 0) return;
+		if (IsExposedFace(grid, x, y, 1, height, -1, 0)) // Left
+		{
+			faces.Add(new int[]{
+				startIndex, startIndex + 4, startIndex + 7,
+				startIndex, startIndex + 7, startIndex + 3
+			});
+		}
+		if (IsExposedFace(grid, x + width - 1, y, 1, height, 1, 0)) // Right
+		{
+			faces.Add(new int[]{
+				startIndex + 1, startIndex + 2, startIndex + 6,
+				startIndex + 1, startIndex + 6, startIndex + 5
+			});
+		}
+		if (IsExposedFace(grid, x, y, width, 1, 0, -1)) // Front
+		{
+			faces.Add(new int[]{
+				startIndex, startIndex + 1, startIndex + 5,
+				startIndex, startIndex + 5, startIndex + 4
+			});
+		}
+		if (IsExposedFace(grid, x, y + height - 1, width, 1, 0, 1)) // Back
+		{
+			faces.Add(new int[]{
+				startIndex + 3, startIndex + 7, startIndex + 6,
+				startIndex + 3, startIndex + 6, startIndex + 2
+			});
+		}
+	}
+
+	static bool IsExposedFace(bool[,] grid, int x, int y, int width, int height, int dx, int dy)
+	{
+		int rows = grid.GetLength(0);
+		int cols = grid.GetLength(1);
+
+		for (int i = 0; i < width; i++)
+		{
+			for (int j = 0; j < height; j++)
+			{
+				int nx = x + i + dx;
+				int ny = y + j + dy;
+
+				if (nx < 0 || nx >= rows || ny < 0 || ny >= cols || !grid[nx, ny])
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public class Layer
