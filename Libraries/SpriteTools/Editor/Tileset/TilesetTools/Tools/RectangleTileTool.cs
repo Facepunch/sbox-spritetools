@@ -53,7 +53,7 @@ public class RectangleTileTool : BaseTileTool
                 using (Gizmo.Scope("delete"))
                 {
                     Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
-                    Gizmo.Draw.SolidBox(new BBox(startPos * tileSize, tilePos * tileSize + tileSize));
+                    Gizmo.Draw.SolidBox(new BBox(min * tileSize, max * tileSize + tileSize));
                 }
             }
             else
