@@ -126,18 +126,20 @@ public partial class TilesetTool : EditorTool
 		}
 	}
 
-	internal void PlaceTile(Vector2Int position, Vector2Int cellPosition)
+	internal void PlaceTile(Vector2Int position, Vector2Int cellPosition, bool rebuild = true)
 	{
 		if (SelectedLayer is null) return;
 
 		SelectedLayer.SetTile(position, cellPosition, new Transform(0, Rotation.Identity, 1));
+		if (rebuild) SelectedComponent.BuildMesh();
 	}
 
-	internal void EraseTile(Vector2 position)
+	internal void EraseTile(Vector2 position, bool rebuild = true)
 	{
 		if (SelectedLayer is null) return;
 
 		SelectedLayer.RemoveTile((Vector2Int)position);
+		if (rebuild) SelectedComponent.BuildMesh();
 	}
 
 	void InitPreviewObject()

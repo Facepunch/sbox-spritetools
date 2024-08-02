@@ -57,8 +57,9 @@ public class LineTileTool : BaseTileTool
 
                 foreach (var ppos in positions)
                 {
-                    Parent.PlaceTile((Vector2Int)(tilePos + ppos), TilesetTool.Active.SelectedTile.Position);
+                    Parent.PlaceTile((Vector2Int)(tilePos + ppos), TilesetTool.Active.SelectedTile.Position, false);
                 }
+                Parent.SelectedComponent.BuildMesh();
             }
         }
         else if (Gizmo.IsLeftMouseDown)

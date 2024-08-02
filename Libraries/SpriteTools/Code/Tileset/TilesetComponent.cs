@@ -104,8 +104,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		}
 	}
 
-	[Button("Test Build Mesh")]
-	void BuildMesh()
+	public void BuildMesh()
 	{
 		if (!HasCollider)
 		{

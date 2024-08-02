@@ -66,15 +66,17 @@ public class RectangleTileTool : BaseTileTool
                     positions = GetPositions(min, max);
                     foreach (var ppos in positions)
                     {
-                        Parent.EraseTile(tilePos + ppos);
+                        Parent.EraseTile(tilePos + ppos, false);
                     }
+                    Parent.SelectedComponent.BuildMesh();
                 }
                 else
                 {
                     foreach (var ppos in positions)
                     {
-                        Parent.PlaceTile((Vector2Int)(tilePos + ppos), TilesetTool.Active.SelectedTile.Position);
+                        Parent.PlaceTile((Vector2Int)(tilePos + ppos), TilesetTool.Active.SelectedTile.Position, false);
                     }
+                    Parent.SelectedComponent.BuildMesh();
                 }
             }
         }
