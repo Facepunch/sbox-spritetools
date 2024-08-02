@@ -155,6 +155,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 			var tileset = layer.TilesetResource;
 			if (tileset is null) continue;
+			var tiling = tileset.GetTiling();
 
 			var groups = layer.Tiles.GroupBy(x => layer.TilesetResource.FilePath);
 			foreach (var group in groups)
@@ -168,8 +169,6 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 				foreach (var tile in group)
 				{
 					var transform = tile.Transform;
-
-					var tiling = tileset.GetTiling();
 					var offset = tileset.GetOffset(tile.CellPosition);
 
 					var position = transform.Position.WithZ(layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);

@@ -17,10 +17,13 @@ public partial class TilesetTool : EditorTool
 {
 	public static TilesetTool Active { get; private set; }
 
+	List<TilesetComponent.Tile> Tiles = new();
+
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
 		yield return new PaintTileTool(this);
 		yield return new EraserTileTool(this);
+		yield return new LineTileTool(this);
 	}
 
 	public TilesetComponent SelectedComponent;
@@ -33,11 +36,24 @@ public partial class TilesetTool : EditorTool
 
 			_selectedLayer = value;
 			_sceneObject?.UpdateTileset(value.TilesetResource);
+			SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
 		}
 	}
 	TilesetComponent.Layer _selectedLayer;
 
-	public int SelectedIndex { get; set; } = 0;
+	public TilesetResource.Tile SelectedTile
+	{
+		get => _selectedTile;
+		set
+		{
+			if (_selectedTile == value) return;
+
+			_selectedTile = value;
+			_sceneObject.MultiTilePositions.Clear();
+			UpdateInspector?.Invoke();
+		}
+	}
+	TilesetResource.Tile _selectedTile;
 
 	internal Action UpdateInspector;
 
@@ -171,81 +187,117 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 	TilesetTool Tool;
 	Material Material;
 
+	internal List<Vector2Int> MultiTilePositions = new();
+
 	public TilesetPreviewObject(TilesetTool tool, SceneWorld world) : base(world)
 	{
 		Tool = tool;
 	}
 
-	public void UpdateTileset(TilesetResource tileset)
+	internal void UpdateTileset(TilesetResource tileset)
 	{
 		if (tileset is null) return;
 		Material = Material.Load("materials/sprite_2d.vmat").CreateCopy();
 		Material.Set("Texture", Texture.Load(Sandbox.FileSystem.Mounted, tileset.FilePath));
 	}
 
+	internal void ClearPositions()
+	{
+		MultiTilePositions.Clear();
+	}
+
+	internal void SetPositions(List<Vector2Int> positions)
+	{
+		MultiTilePositions = positions;
+	}
+
+	internal void SetPositions(List<Vector2> positions)
+	{
+		MultiTilePositions = positions.Select(x => new Vector2Int((int)x.x, (int)x.y)).ToList();
+	}
+
 	public override void RenderSceneObject()
 	{
+		var selectedTile = Tool?.SelectedTile;
+		if (selectedTile is null) return;
+
 		var layer = Tool?.SelectedLayer;
 		if (layer is null) return;
 
-		var tileset = layer.TilesetResource;
+		var tileset = selectedTile.Tileset;
 		if (tileset is null) return;
 
-		var tiling = tileset.GetTiling();
-		var offset = tileset.GetOffset(new Vector2Int(0, 0));
+		var tileSize = tileset.TileSize;
+		var tiling = tileset.GetTiling() / (Vector2)tileSize;
+		var offset = tileset.GetOffset(selectedTile.Position);
+		var scale = selectedTile.Size;
 
-		var position = Vector3.Zero;
-		var size = tileset.TileSize;
+		var positions = MultiTilePositions.ToList();
+		if (positions.Count == 0) positions.Add(Vector2Int.Zero);
 
-		var topLeft = new Vector3(position.x, position.y, position.z);
-		var topRight = new Vector3(position.x + size.x, position.y, position.z);
-		var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
-		var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
+		int i = 0;
+		var vertexCount = positions.Count * 6;
+		var vertex = ArrayPool<Vertex>.Shared.Rent(vertexCount);
 
-		var uvTopLeft = new Vector2(offset.x, offset.y);
-		var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
-		var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
-		var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
+		foreach (var pos in positions)
+		{
+			var position = new Vector3(pos.x * tileSize.x, pos.y * tileSize.y, 0);
+			var size = tileSize * scale;
 
-		var vertex = ArrayPool<Vertex>.Shared.Rent(6);
+			var topLeft = new Vector3(position.x, position.y, position.z);
+			var topRight = new Vector3(position.x + size.x, position.y, position.z);
+			var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
+			var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
-		vertex[0] = new Vertex(topLeft);
-		vertex[0].TexCoord0 = uvTopLeft;
-		vertex[0].TexCoord1 = new Vector4(0, 0, 0, 0);
-		vertex[0].Color = Color.White;
-		vertex[0].Normal = Vector3.Up;
+			var uvTopLeft = new Vector2(offset.x, offset.y);
+			var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
+			var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
+			var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
 
-		vertex[1] = new Vertex(topRight);
-		vertex[1].TexCoord0 = uvTopRight;
-		vertex[1].TexCoord1 = new Vector4(0, 0, 0, 0);
-		vertex[1].Color = Color.White;
-		vertex[1].Normal = Vector3.Up;
+			vertex[i] = new Vertex(topLeft);
+			vertex[i].TexCoord0 = uvTopLeft;
+			vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+			vertex[i].Color = Color.White;
+			vertex[i].Normal = Vector3.Up;
+			i++;
 
-		vertex[2] = new Vertex(bottomRight);
-		vertex[2].TexCoord0 = uvBottomRight;
-		vertex[2].TexCoord1 = new Vector4(0, 0, 0, 0);
-		vertex[2].Color = Color.White;
-		vertex[2].Normal = Vector3.Up;
+			vertex[i] = new Vertex(topRight);
+			vertex[i].TexCoord0 = uvTopRight;
+			vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+			vertex[i].Color = Color.White;
+			vertex[i].Normal = Vector3.Up;
+			i++;
 
-		vertex[3] = new Vertex(bottomRight);
-		vertex[3].TexCoord0 = uvBottomRight;
-		vertex[3].TexCoord1 = new Vector4(0, 0, 0, 0);
-		vertex[3].Color = Color.White;
-		vertex[3].Normal = Vector3.Up;
+			vertex[i] = new Vertex(bottomRight);
+			vertex[i].TexCoord0 = uvBottomRight;
+			vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+			vertex[i].Color = Color.White;
+			vertex[i].Normal = Vector3.Up;
+			i++;
 
-		vertex[4] = new Vertex(bottomLeft);
-		vertex[4].TexCoord0 = uvBottomLeft;
-		vertex[4].TexCoord1 = new Vector4(0, 0, 0, 0);
-		vertex[4].Color = Color.White;
-		vertex[4].Normal = Vector3.Up;
+			vertex[i] = new Vertex(bottomRight);
+			vertex[i].TexCoord0 = uvBottomRight;
+			vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+			vertex[i].Color = Color.White;
+			vertex[i].Normal = Vector3.Up;
+			i++;
 
-		vertex[5] = new Vertex(topLeft);
-		vertex[5].TexCoord0 = uvTopLeft;
-		vertex[5].TexCoord1 = new Vector4(0, 0, 0, 0);
-		vertex[5].Color = Color.White;
-		vertex[5].Normal = Vector3.Up;
+			vertex[i] = new Vertex(bottomLeft);
+			vertex[i].TexCoord0 = uvBottomLeft;
+			vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+			vertex[i].Color = Color.White;
+			vertex[i].Normal = Vector3.Up;
+			i++;
 
-		Graphics.Draw(vertex, 6, Material, Attributes);
+			vertex[i] = new Vertex(topLeft);
+			vertex[i].TexCoord0 = uvTopLeft;
+			vertex[i].TexCoord1 = new Vector4(0, 0, 0, 0);
+			vertex[i].Color = Color.White;
+			vertex[i].Normal = Vector3.Up;
+			i++;
+		}
+
+		Graphics.Draw(vertex, vertexCount, Material, Attributes);
 	}
 
 	[Shortcut("tileset-tools.tileset-tool", "SHIFT+T")]
