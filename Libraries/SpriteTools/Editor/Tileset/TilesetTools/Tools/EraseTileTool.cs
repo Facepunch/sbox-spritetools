@@ -20,7 +20,8 @@ public class EraserTileTool : BaseTileTool
         var pos = GetGizmoPos();
         Parent._sceneObject.RenderingEnabled = false;
 
-        var tilePos = pos / Parent.SelectedLayer.TilesetResource.TileSize;
+        var tileSize = Parent.SelectedLayer.TilesetResource.TileSize;
+        var tilePos = pos / tileSize;
         if (Gizmo.IsLeftMouseDown)
         {
             Parent.EraseTile(tilePos);
@@ -28,7 +29,6 @@ public class EraserTileTool : BaseTileTool
 
         using (Gizmo.Scope("eraser"))
         {
-            var tileSize = Parent.SelectedLayer.TilesetResource.TileSize;
             Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
             Gizmo.Draw.SolidBox(new BBox(pos, pos + new Vector3(tileSize.x, tileSize.y, 0)));
         }

@@ -21,6 +21,7 @@ public class RectangleTileTool : BaseTileTool
 
     Vector2 startPos;
     bool holding = false;
+    bool deleting = false;
 
     public override void OnUpdate()
     {
@@ -28,7 +29,8 @@ public class RectangleTileTool : BaseTileTool
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
 
-        var tilePos = pos / Parent.SelectedLayer.TilesetResource.TileSize;
+        var tileSize = Parent.SelectedLayer.TilesetResource.TileSize;
+        var tilePos = pos / tileSize;
 
         if (holding)
         {
@@ -44,26 +46,51 @@ public class RectangleTileTool : BaseTileTool
                     positions.Add(new Vector2(x, y) - tilePos);
                 }
             }
-            Parent._sceneObject.SetPositions(positions);
 
-            if (!Gizmo.IsLeftMouseDown)
+            if (deleting)
+            {
+                Parent._sceneObject.RenderingEnabled = false;
+                using (Gizmo.Scope("delete"))
+                {
+                    Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
+                    Gizmo.Draw.SolidBox(new BBox(startPos * tileSize, tilePos * tileSize + tileSize));
+                }
+            }
+            else
+            {
+                Parent._sceneObject.RenderingEnabled = true;
+                Parent._sceneObject.SetPositions(positions);
+            }
+
+            if (!Gizmo.IsLeftMouseDown && !Gizmo.IsRightMouseDown)
             {
                 holding = false;
                 Parent._sceneObject.ClearPositions();
 
-                foreach (var ppos in positions)
+                if (deleting)
                 {
-                    Parent.PlaceTile(tilePos + ppos);
+                    foreach (var ppos in positions)
+                    {
+                        Parent.EraseTile(tilePos + ppos);
+                    }
+                }
+                else
+                {
+                    foreach (var ppos in positions)
+                    {
+                        Parent.PlaceTile(tilePos + ppos);
+                    }
                 }
             }
         }
-        else if (Gizmo.IsLeftMouseDown)
+        else if (Gizmo.IsLeftMouseDown || Gizmo.IsRightMouseDown)
         {
             startPos = tilePos;
             holding = true;
+            deleting = Gizmo.IsRightMouseDown;
         }
-
     }
+
 
     [Shortcut("tileset-tools.rectangle-tool", "r", typeof(SceneViewportWidget))]
     public static void ActivateSubTool()
