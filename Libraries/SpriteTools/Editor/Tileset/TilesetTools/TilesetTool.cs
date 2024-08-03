@@ -139,7 +139,7 @@ public partial class TilesetTool : EditorTool
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetTile(position, tileId, cellPosition, new Transform(0, Rotation.Identity, 1));
+		SelectedLayer.SetTile(position, tileId, cellPosition, Angle, HorizontalFlip, VerticalFlip);
 		if (rebuild) SelectedComponent.BuildMesh();
 	}
 

@@ -369,9 +369,9 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			return layer;
 		}
 
-		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition, Transform transform)
+		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition, int angle, bool flipX, bool flipY)
 		{
-			var tile = new Tile(tileId, cellPosition, transform);
+			var tile = new Tile(tileId, cellPosition, angle, flipX, flipY);
 			Tiles[position.ToString()] = tile;
 		}
 
@@ -397,25 +397,18 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 		public Tile() { }
 
-		public Tile(Guid tileId, Vector2Int cellPosition, Transform transform)
+		public Tile(Guid tileId, Vector2Int cellPosition, int rotation, bool flipX, bool flipY)
 		{
 			TileId = tileId;
 			CellPosition = cellPosition;
-			HorizontalFlip = transform.Scale.x < 0;
-			VerticalFlip = transform.Scale.y < 0;
-			Rotation = (int)(transform.Rotation.Yaw() / 90f);
-		}
-
-		public Transform GetTransform()
-		{
-			var scale = new Vector3(HorizontalFlip ? -1 : 1, VerticalFlip ? -1 : 1, 1);
-			var rotation = Rotation * 90;
-			return new Transform(new Vector3(CellPosition.x, CellPosition.y, 0), new Angles(0, rotation, 0), scale);
+			HorizontalFlip = flipX;
+			VerticalFlip = flipY;
+			Rotation = rotation;
 		}
 
 		public Tile Copy()
 		{
-			return new Tile(TileId, CellPosition, GetTransform());
+			return new Tile(TileId, CellPosition, Rotation, HorizontalFlip, VerticalFlip);
 		}
 	}
 
@@ -469,7 +462,6 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 						if (!tilemap.ContainsKey(tile.Value.TileId)) continue;
 						offsetPos = tilemap[tile.Value.TileId].Position;
 					}
-					var transform = tile.Value.GetTransform();
 					var offset = tileset.GetOffset(offsetPos + tile.Value.CellPosition);
 					if (tile.Value.HorizontalFlip)
 						offset.x = -offset.x - tiling.x;
@@ -478,7 +470,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 					var pos = Vector2Int.Parse(tile.Key);
 					var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
-					var size = transform.Scale * tileset.TileSize;
+					var size = tileset.TileSize;
 
 					var topLeft = new Vector3(position.x, position.y, position.z);
 					var topRight = new Vector3(position.x + size.x, position.y, position.z);
@@ -489,6 +481,32 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 					var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
 					var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
 					var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
+
+					if (tile.Value.Rotation == 90)
+					{
+						var tempUv = uvTopLeft;
+						uvTopLeft = uvBottomLeft;
+						uvBottomLeft = uvBottomRight;
+						uvBottomRight = uvTopRight;
+						uvTopRight = tempUv;
+					}
+					else if (tile.Value.Rotation == 180)
+					{
+						var tempUv = uvTopLeft;
+						uvTopLeft = uvBottomRight;
+						uvBottomRight = tempUv;
+						tempUv = uvTopRight;
+						uvTopRight = uvBottomLeft;
+						uvBottomLeft = tempUv;
+					}
+					else if (tile.Value.Rotation == 270)
+					{
+						var tempUv = uvTopLeft;
+						uvTopLeft = uvTopRight;
+						uvTopRight = uvBottomRight;
+						uvBottomRight = uvBottomLeft;
+						uvBottomLeft = tempUv;
+					}
 
 					vertex[i] = new Vertex(topLeft);
 					vertex[i].TexCoord0 = uvTopLeft;
