@@ -17,7 +17,7 @@ public abstract class BaseTileTool : EditorTool
     {
         base.OnEnabled();
 
-        TilesetToolInspector.Active.UpdateMainSheet();
+        TilesetToolInspector.Active?.UpdateMainSheet();
     }
 
     public override void OnUpdate()
