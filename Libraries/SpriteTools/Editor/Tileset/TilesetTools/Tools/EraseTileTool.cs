@@ -17,6 +17,8 @@ public class EraserTileTool : BaseTileTool
 
     public override void OnUpdate()
     {
+        if (!CanUseTool()) return;
+
         var pos = GetGizmoPos();
         Parent._sceneObject.RenderingEnabled = false;
 

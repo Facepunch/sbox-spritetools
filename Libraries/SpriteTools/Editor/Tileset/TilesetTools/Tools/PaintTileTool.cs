@@ -1,3 +1,4 @@
+using System.Linq;
 using Editor;
 using Sandbox;
 
@@ -17,8 +18,7 @@ public class PaintTileTool : BaseTileTool
 
     public override void OnUpdate()
     {
-        if (TilesetTool.Active?.SelectedTile is null) return;
-        if (Parent?.SelectedLayer?.TilesetResource is null) return;
+        if (!CanUseTool()) return;
 
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);

@@ -1,3 +1,4 @@
+using System.Linq;
 using Editor;
 using Sandbox;
 
@@ -21,6 +22,8 @@ public abstract class BaseTileTool : EditorTool
 
     public override void OnUpdate()
     {
+        if (!CanUseTool()) return;
+
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
     }
@@ -41,5 +44,22 @@ public abstract class BaseTileTool : EditorTool
                     .WithZ(layerIndex + 0.5f);
 
         return pos;
+    }
+
+    protected bool CanUseTool()
+    {
+        if (Parent?.SelectedLayer?.TilesetResource is null) return false;
+        if (TilesetTool.Active?.SelectedTile is null)
+        {
+            if (Parent.SelectedLayer.TilesetResource.Tiles.Count > 0)
+            {
+                Parent.SelectedTile = Parent.SelectedLayer.TilesetResource.Tiles.FirstOrDefault();
+                Parent._sceneObject.UpdateTileset(Parent.SelectedLayer.TilesetResource);
+            }
+            else
+                return false;
+        }
+
+        return true;
     }
 }

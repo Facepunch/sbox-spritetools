@@ -25,7 +25,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 		}
 	}
-	List<Layer> _layers;
+	List<Layer> _layers = new();
 
 	[Property, Group("Collision")]
 	public bool HasCollider
@@ -91,6 +91,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 	protected override void OnPreRender()
 	{
 		if (_so is null) return;
+		if (Layers is null) return;
 		if (Layers.Count == 0)
 		{
 			_so.RenderingEnabled = false;
@@ -138,6 +139,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		}
 
 		if (!HasCollider) return;
+		if (Layers is null) return;
 
 		var collisionLayer = Layers.FirstOrDefault(x => x.IsCollisionLayer);
 		if (collisionLayer is null) collisionLayer = Layers.FirstOrDefault();

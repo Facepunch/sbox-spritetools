@@ -91,6 +91,12 @@ public class TilesetLayerListControl : ControlWidget
         layers.Add(new TilesetComponent.Layer());
         SerializedProperty.SetValue(layers);
         UpdateList();
+
+        if (EditorToolManager.CurrentModeName == nameof(TilesetTool))
+        {
+            TilesetTool.Active.SelectedLayer = layers.Last();
+            TilesetTool.Active.UpdateInspector?.Invoke();
+        }
     }
 
     public void SelectLayer(TilesetComponent.Layer layer)
@@ -103,10 +109,17 @@ public class TilesetLayerListControl : ControlWidget
 
     public void DeleteLayer(TilesetComponent.Layer layer)
     {
+        bool isSelected = TilesetTool.Active.SelectedLayer == layer;
         var layers = SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
         layers.Remove(layer);
         SerializedProperty.SetValue(layers);
         UpdateList();
+
+        if (EditorToolManager.CurrentModeName == nameof(TilesetTool) && isSelected)
+        {
+            TilesetTool.Active.SelectedLayer = layers.FirstOrDefault();
+            TilesetTool.Active.UpdateInspector?.Invoke();
+        }
     }
 
 }

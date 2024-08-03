@@ -36,8 +36,11 @@ public partial class TilesetTool : EditorTool
 			if (_selectedLayer == value) return;
 
 			_selectedLayer = value;
-			_sceneObject?.UpdateTileset(value.TilesetResource);
-			SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
+			if (value is not null)
+			{
+				_sceneObject?.UpdateTileset(value.TilesetResource);
+				SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
+			}
 		}
 	}
 	TilesetComponent.Layer _selectedLayer;
@@ -92,7 +95,7 @@ public partial class TilesetTool : EditorTool
 	{
 		base.OnUpdate();
 
-		if (SceneViewportWidget.LastSelected.SceneView.Tools.CurrentTool.CurrentTool is null)
+		if (SceneViewportWidget.LastSelected?.SceneView?.Tools?.CurrentTool?.CurrentTool is null)
 		{
 			_sceneObject.RenderingEnabled = false;
 		}
@@ -217,6 +220,8 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 
 	public override void RenderSceneObject()
 	{
+		if (Material is null) return;
+
 		var selectedTile = Tool?.SelectedTile;
 		if (selectedTile is null) return;
 

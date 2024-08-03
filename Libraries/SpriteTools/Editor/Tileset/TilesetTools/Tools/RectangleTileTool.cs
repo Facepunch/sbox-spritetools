@@ -25,6 +25,8 @@ public class RectangleTileTool : BaseTileTool
 
     public override void OnUpdate()
     {
+        if (!CanUseTool()) return;
+
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
