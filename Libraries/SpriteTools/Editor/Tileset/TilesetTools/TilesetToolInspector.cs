@@ -13,8 +13,11 @@ public class TilesetToolInspector : InspectorWidget
     TilesetTool Tool;
     StatusWidget Header;
 
+    ScrollArea scrollArea;
     ControlSheet mainSheet;
     ControlSheet selectedSheet;
+
+    internal Preview.Preview Preview;
 
     public TilesetToolInspector(SerializedObject so) : base(so)
     {
@@ -38,17 +41,28 @@ public class TilesetToolInspector : InspectorWidget
         if (Layout is null) return;
         Layout.Clear(true);
 
+        scrollArea = new ScrollArea(this);
+        scrollArea.Canvas = new Widget();
+        scrollArea.Canvas.Layout = Layout.Column();
+        scrollArea.Canvas.VerticalSizeMode = SizeMode.CanGrow;
+        scrollArea.Canvas.HorizontalSizeMode = SizeMode.Flexible;
+        scrollArea.Canvas.Layout.Spacing = 8;
+        Layout.Add(scrollArea);
+
         Header = new StatusWidget(this);
-        Layout.Add(Header);
+        scrollArea.Canvas.Layout.Add(Header);
         UpdateHeader();
 
         mainSheet = new ControlSheet();
-        Layout.Add(mainSheet);
+        scrollArea.Canvas.Layout.Add(mainSheet);
         UpdateMainSheet();
 
         UpdateSelectedSheet();
 
-        Layout.AddStretchCell();
+        Preview = new Preview.Preview(this);
+        scrollArea.Canvas.Layout.Add(Preview);
+
+        scrollArea.Canvas.Layout.AddStretchCell();
 
     }
 
@@ -86,7 +100,7 @@ public class TilesetToolInspector : InspectorWidget
         if (!(selectedSheet?.IsValid ?? false))
         {
             selectedSheet = new ControlSheet();
-            Layout.Add(selectedSheet);
+            scrollArea.Canvas.Layout.Add(selectedSheet);
         }
 
         selectedSheet?.Clear(true);

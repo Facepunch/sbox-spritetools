@@ -82,11 +82,9 @@ public class Preview : Widget
         MainWindow.Moved -= DoLayout;
     }
 
-    internal void UpdateTexture()
+    internal void UpdateTexture(string filePath)
     {
-        if (MainWindow.Tileset is null) return;
-
-        var texture = Texture.Load(Sandbox.FileSystem.Mounted, MainWindow.Tileset.FilePath);
+        var texture = Texture.Load(Sandbox.FileSystem.Mounted, filePath);
         if (texture is null) return;
         Rendering.SetTexture(texture);
     }

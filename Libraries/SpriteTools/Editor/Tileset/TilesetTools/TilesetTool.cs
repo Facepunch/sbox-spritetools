@@ -40,6 +40,10 @@ public partial class TilesetTool : EditorTool
 			{
 				_sceneObject?.UpdateTileset(value.TilesetResource);
 				SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
+				if (!string.IsNullOrEmpty(_selectedLayer?.TilesetResource?.FilePath))
+				{
+					TilesetToolInspector.Active.Preview.UpdateTexture(_selectedLayer.TilesetResource.FilePath);
+				}
 			}
 		}
 	}

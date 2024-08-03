@@ -127,7 +127,7 @@ public class Inspector : Widget
             MainWindow.SetDirty();
 
             if (prop.Name == "FilePath")
-                MainWindow.preview.UpdateTexture();
+                MainWindow.preview.UpdateTexture(prop.GetValue<string>());
         };
 
         var props = controlSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>

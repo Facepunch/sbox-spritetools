@@ -24,6 +24,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     Vector2 cameraGrabPos = Vector2.Zero;
     bool cameraGrabbing = false;
 
+    protected virtual bool CanZoom => false;
+
     public SpriteRenderingWidget(Widget parent) : base(parent)
     {
         MouseTracking = true;
@@ -68,7 +70,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     {
         base.OnWheel(e);
 
-        Zoom(e.Delta);
+        if (CanZoom)
+            Zoom(e.Delta);
     }
 
     protected override void OnMousePress(MouseEvent e)
@@ -150,6 +153,9 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 
     void ResizeQuads()
     {
+        if (!BackgroundRect.IsValid() || !TextureRect.IsValid())
+            return;
+
         // Scale the quad to be the same aspect ratio as the texture
         AspectRatio = TextureSize.x / TextureSize.y;
         var size = new Vector3(1f / AspectRatio, 1f, 1f);

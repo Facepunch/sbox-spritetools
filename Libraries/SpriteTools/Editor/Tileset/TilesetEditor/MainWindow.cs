@@ -160,7 +160,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		UpdateWindowTitle();
 		inspector.UpdateControlSheet();
 		inspector.UpdateSelectedSheet();
-		preview.UpdateTexture();
+		preview.UpdateTexture(Tileset.FilePath);
 	}
 
 	public void New()
