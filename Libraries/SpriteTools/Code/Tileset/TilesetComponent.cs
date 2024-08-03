@@ -25,7 +25,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 		}
 	}
-	List<Layer> _layers = new();
+	List<Layer> _layers;
 
 	[Property, Group("Collision")]
 	public bool HasCollider
@@ -38,7 +38,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			BuildMesh();
 		}
 	}
-	bool _hasCollider = false;
+	bool _hasCollider;
 
 	[Property, Group("Collision")]
 	public float ColliderWidth
@@ -52,7 +52,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			BuildMesh();
 		}
 	}
-	float _colliderWidth = 0f;
+	float _colliderWidth;
 
 	private Model CollisionMesh { get; set; }
 	private List<Vector3> CollisionVertices { get; set; } = new();
@@ -71,6 +71,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		_so.Transform = Transform.World;
 		_so.Tags.SetFrom(Tags);
 
+		if (Layers is null) return;
 		foreach (var layer in Layers)
 		{
 			layer.TilesetComponent = this;
@@ -336,7 +337,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		public bool IsCollisionLayer { get; set; }
 		[Property, Group("Selected Layer")] public TilesetResource TilesetResource { get; set; }
 
-		public Dictionary<string, Tile> Tiles { get; set; } = new();
+		public Dictionary<string, Tile> Tiles { get; set; }
 
 		[JsonIgnore, Hide] public TilesetComponent TilesetComponent { get; set; }
 
@@ -345,6 +346,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			Name = name;
 			IsVisible = true;
 			IsLocked = false;
+			Tiles = new();
 		}
 
 		public Layer Copy()
@@ -390,6 +392,8 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		public bool HorizontalFlip { get; set; }
 		public bool VerticalFlip { get; set; }
 		public int Rotation { get; set; }
+
+		public Tile() { }
 
 		public Tile(Guid tileId, Vector2Int cellPosition, Transform transform)
 		{
