@@ -470,7 +470,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 						offsetPos = tilemap[tile.Value.TileId].Position;
 					}
 					var transform = tile.Value.GetTransform();
-					var offset = tileset.GetOffset(offsetPos);
+					var offset = tileset.GetOffset(offsetPos + tile.Value.CellPosition);
 					if (tile.Value.HorizontalFlip)
 						offset.x = -offset.x - tiling.x;
 					if (!tile.Value.VerticalFlip)

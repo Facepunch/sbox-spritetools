@@ -28,7 +28,20 @@ public class PaintTileTool : BaseTileTool
         if (Gizmo.IsLeftMouseDown)
         {
             var tile = TilesetTool.Active.SelectedTile;
-            Parent.PlaceTile(tilePos, tile.Id, Vector2Int.Zero); // TODO: Paint multitiles when non 1x1 size
+            if (tile.Size.x > 1 || tile.Size.y > 1)
+            {
+                for (int x = 0; x < tile.Size.x; x++)
+                {
+                    for (int y = 0; y < tile.Size.y; y++)
+                    {
+                        Parent.PlaceTile(tilePos + new Vector2Int(x, -y), tile.Id, new Vector2Int(x, y));
+                    }
+                }
+            }
+            else
+            {
+                Parent.PlaceTile(tilePos, tile.Id, Vector2Int.Zero);
+            }
         }
     }
 
