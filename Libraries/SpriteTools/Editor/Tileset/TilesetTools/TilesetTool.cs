@@ -17,7 +17,9 @@ public partial class TilesetTool : EditorTool
 {
 	public static TilesetTool Active { get; private set; }
 
-	List<TilesetComponent.Tile> Tiles = new();
+	[Property] public int Angle { get; set; } = 0;
+	[Property] public bool HorizontalFlip { get; set; } = false;
+	[Property] public bool VerticalFlip { get; set; } = false;
 
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
@@ -186,6 +188,38 @@ public partial class TilesetTool : EditorTool
 		EditorToolManager.SetTool(nameof(TilesetTool));
 	}
 
+	[Shortcut("tileset-tools.rotate-left", "Q", typeof(SceneViewportWidget))]
+	public static void RotateLeft()
+	{
+		if (Active is null) return;
+		Active.Angle = (Active.Angle + 90) % 360;
+	}
+
+	[Shortcut("tileset-tools.rotate-right", "W", typeof(SceneViewportWidget))]
+	public static void RotateRight()
+	{
+		if (Active is null) return;
+		Active.Angle -= 90;
+		if (Active.Angle < 0)
+		{
+			Active.Angle += 360;
+		}
+	}
+
+	[Shortcut("tileset-tools.flip-horizontal", "A", typeof(SceneViewportWidget))]
+	public static void FlipHorizontal()
+	{
+		if (Active is null) return;
+		Active.HorizontalFlip = !Active.HorizontalFlip;
+	}
+
+	[Shortcut("tileset-tools.flip-vertical", "S", typeof(SceneViewportWidget))]
+	public static void FlipVertical()
+	{
+		if (Active is null) return;
+		Active.VerticalFlip = !Active.VerticalFlip;
+	}
+
 }
 
 internal sealed class TilesetPreviewObject : SceneCustomObject
@@ -240,7 +274,8 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		if (TilesetTool.Active.CurrentTool is PaintTileTool) scale = selectedTile.Size;
 		var tiling = tileset.GetTiling() * scale;
 		var offset = tileset.GetOffset(selectedTile.Position);
-		offset.y = -offset.y - tiling.y;
+		if (Tool.HorizontalFlip) offset.x = -offset.x - tiling.x;
+		if (!Tool.VerticalFlip) offset.y = -offset.y - tiling.y;
 
 		var positions = MultiTilePositions.ToList();
 		if (positions.Count == 0) positions.Add(Vector2Int.Zero);
@@ -263,6 +298,32 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 			var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
 			var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
 			var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
+
+			if (Tool.Angle == 90)
+			{
+				var tempUv = uvTopLeft;
+				uvTopLeft = uvBottomLeft;
+				uvBottomLeft = uvBottomRight;
+				uvBottomRight = uvTopRight;
+				uvTopRight = tempUv;
+			}
+			else if (Tool.Angle == 180)
+			{
+				var tempUv = uvTopLeft;
+				uvTopLeft = uvBottomRight;
+				uvBottomRight = tempUv;
+				tempUv = uvTopRight;
+				uvTopRight = uvBottomLeft;
+				uvBottomLeft = tempUv;
+			}
+			else if (Tool.Angle == 270)
+			{
+				var tempUv = uvTopLeft;
+				uvTopLeft = uvTopRight;
+				uvTopRight = uvBottomRight;
+				uvBottomRight = uvBottomLeft;
+				uvBottomLeft = tempUv;
+			}
 
 			vertex[i] = new Vertex(topLeft);
 			vertex[i].TexCoord0 = uvTopLeft;
@@ -308,11 +369,5 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		}
 
 		Graphics.Draw(vertex, vertexCount, Material, Attributes);
-	}
-
-	[Shortcut("tileset-tools.tileset-tool", "SHIFT+T")]
-	public static void ActivateSubTool()
-	{
-		EditorToolManager.SetTool(nameof(TilesetTool));
 	}
 }
