@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
@@ -11,7 +12,20 @@ namespace SpriteTools;
 [Icon("calendar_view_month")]
 public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 {
-	[Property, Group("Layers")] public List<Layer> Layers { get; set; }
+	[Property, Group("Layers")]
+	public List<Layer> Layers
+	{
+		get => _layers;
+		set
+		{
+			_layers = value;
+			foreach (var layer in _layers)
+			{
+				layer.TilesetComponent = this;
+			}
+		}
+	}
+	List<Layer> _layers;
 
 	[Property, Group("Collision")]
 	public bool HasCollider
@@ -41,16 +55,26 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 	float _colliderWidth = 0f;
 
 	private Model CollisionMesh { get; set; }
-	private List<Vector3> CollisionVertices { get; set; }
-	private List<int[]> CollisionFaces { get; set; }
+	private List<Vector3> CollisionVertices { get; set; } = new();
+	private List<int[]> CollisionFaces { get; set; } = new();
 
 	TilesetSceneObject _so;
+
+	protected override void OnStart()
+	{
+		BuildMesh();
+	}
 
 	protected override void OnEnabled()
 	{
 		_so = new TilesetSceneObject(this, Scene.SceneWorld);
 		_so.Transform = Transform.World;
 		_so.Tags.SetFrom(Tags);
+
+		foreach (var layer in Layers)
+		{
+			layer.TilesetComponent = this;
+		}
 	}
 
 	protected override void OnDisabled()
@@ -106,25 +130,26 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 	public void BuildMesh()
 	{
-		if (!HasCollider)
+		if (CollisionMesh is not null)
 		{
-			if (CollisionMesh is not null)
-			{
-				CollisionMesh = null;
-				CollisionVertices.Clear();
-				CollisionFaces.Clear();
-			}
-			return;
+			CollisionMesh = null;
+			CollisionVertices.Clear();
+			CollisionFaces.Clear();
 		}
 
+		if (!HasCollider) return;
+
+		var collisionLayer = Layers.FirstOrDefault(x => x.IsCollisionLayer);
+		if (collisionLayer is null) collisionLayer = Layers.FirstOrDefault();
+		if (collisionLayer is null) return;
+
 		var tilePositions = new Dictionary<Vector2Int, bool>();
-		foreach (var layer in Layers)
+		foreach (var tile in collisionLayer.Tiles)
 		{
-			foreach (var tile in layer.Tiles)
-			{
-				tilePositions[Vector2Int.Parse(tile.Key)] = true;
-			}
+			tilePositions[Vector2Int.Parse(tile.Key)] = true;
 		}
+		if (tilePositions.Count == 0) return;
+
 		var minPosition = tilePositions.Keys.Aggregate((min, next) => Vector2Int.Min(min, next));
 		var maxPosition = tilePositions.Keys.Aggregate((max, next) => Vector2Int.Max(max, next));
 		var totalSize = maxPosition - minPosition + Vector2Int.One;
@@ -306,9 +331,12 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		public string Name { get; set; }
 		public bool IsVisible { get; set; }
 		public bool IsLocked { get; set; }
+		public bool IsCollisionLayer { get; set; }
 		[Property, Group("Selected Layer")] public TilesetResource TilesetResource { get; set; }
 
 		public Dictionary<string, Tile> Tiles { get; set; } = new();
+
+		[JsonIgnore, Hide] public TilesetComponent TilesetComponent { get; set; }
 
 		public Layer(string name = "Untitled Layer")
 		{
@@ -323,7 +351,9 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			{
 				IsVisible = IsVisible,
 				IsLocked = IsLocked,
-				Tiles = new()
+				Tiles = new(),
+				IsCollisionLayer = false,
+				TilesetComponent = TilesetComponent,
 			};
 
 			foreach (var tile in Tiles)

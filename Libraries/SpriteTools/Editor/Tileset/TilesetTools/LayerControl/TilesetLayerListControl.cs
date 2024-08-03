@@ -1,6 +1,7 @@
 using Sandbox;
 using Editor;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpriteTools.TilesetTool;
 
@@ -10,6 +11,8 @@ public class TilesetLayerListControl : ControlWidget
 {
     public override bool SupportsMultiEdit => false;
     public override bool IncludeLabel => false;
+
+    internal List<TilesetLayerControl> LayerControls = new();
 
     Layout content;
     ScrollArea scrollArea;
@@ -65,13 +68,20 @@ public class TilesetLayerListControl : ControlWidget
     public void UpdateList()
     {
         content.Clear(true);
+        LayerControls.Clear();
 
         var layers = SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
 
+        var collisionLayer = layers.FirstOrDefault(x => x.IsCollisionLayer);
+        int index = 0;
         foreach (var layer in layers)
         {
             var button = content.Add(new TilesetLayerControl(this, layer));
+            if (collisionLayer is null && index == 0) button.icoCollisionLayer.Visible = true;
+            else if (layer == collisionLayer) button.icoCollisionLayer.Visible = true;
             button.MouseClick = () => SelectLayer(layer);
+            LayerControls.Add(button);
+            index++;
         }
     }
 

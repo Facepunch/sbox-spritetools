@@ -17,6 +17,8 @@ public class TilesetLayerControl : Widget
     bool draggingAbove = false;
     bool draggingBelow = false;
 
+    internal Widget icoCollisionLayer;
+
     public TilesetLayerControl(TilesetLayerListControl list, TilesetComponent.Layer layer)
     {
         ParentList = list;
@@ -35,6 +37,24 @@ public class TilesetLayerControl : Widget
         serializedObject.TryGetProperty(nameof(TilesetComponent.Layer.Name), out var name);
         labelText = new LabelTextEntry(name);
         Layout.Add(labelText);
+
+        icoCollisionLayer = new Widget(this)
+        {
+            FixedSize = new Vector2(16, 16),
+            OnPaintOverride = () =>
+            {
+                Paint.SetPen(Color.Transparent);
+                Paint.SetBrush(Pixmap.FromTexture(Texture.Load(Editor.FileSystem.Mounted, "images/collision-bounce.png")));
+                Paint.Scale(0.5f, 0.5f);
+                Paint.DrawRect(LocalRect);
+                Paint.Scale(1, 1);
+
+                return true;
+            },
+            ToolTip = "Collision Layer",
+            Visible = false
+        };
+        Layout.Add(icoCollisionLayer);
 
         var btnVisible = new IconButton(Layer.IsVisible ? "visibility" : "visibility_off");
         btnVisible.ToolTip = "Toggle Visibility";
@@ -92,6 +112,23 @@ public class TilesetLayerControl : Widget
         }
     }
 
+    void SetAsCollisionLayer()
+    {
+        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+        foreach (var layer in list)
+        {
+            layer.IsCollisionLayer = false;
+        }
+        Layer.IsCollisionLayer = true;
+
+        foreach (var layerControl in ParentList.LayerControls)
+        {
+            layerControl.icoCollisionLayer.Visible = layerControl.Layer.IsCollisionLayer;
+        }
+
+        
+    }
+
     void Rename()
     {
         labelText.Edit();
@@ -107,7 +144,6 @@ public class TilesetLayerControl : Widget
         popup.Layout.Add(new Label($"Are you sure you want to delete this Layer?"));
 
         var button = new Button.Primary("Delete");
-
 
         button.MouseClick = () =>
         {
@@ -181,6 +217,14 @@ public class TilesetLayerControl : Widget
 
         var m = new Menu(this);
 
+        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+        var collisionLayer = list.FirstOrDefault(x => x.IsCollisionLayer);
+        var firstLayer = list.FirstOrDefault();
+        if (!Layer.IsCollisionLayer && (collisionLayer is not null || Layer != firstLayer))
+        {
+            m.AddOption("Set as Collision Layer", "touch_app", SetAsCollisionLayer);
+            m.AddSeparator();
+        }
         m.AddOption("Rename", "edit", Rename);
         m.AddOption("Duplicate", "content_copy", DuplicateLayerPopup);
         m.AddOption("Delete", "delete", Delete);

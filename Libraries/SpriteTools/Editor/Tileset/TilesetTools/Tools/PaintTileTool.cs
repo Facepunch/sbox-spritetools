@@ -17,6 +17,9 @@ public class PaintTileTool : BaseTileTool
 
     public override void OnUpdate()
     {
+        if (TilesetTool.Active?.SelectedTile is null) return;
+        if (Parent?.SelectedLayer?.TilesetResource is null) return;
+
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
