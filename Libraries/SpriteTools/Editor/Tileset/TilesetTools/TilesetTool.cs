@@ -236,10 +236,11 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		if (tileset is null) return;
 
 		var tileSize = tileset.TileSize;
-		var tiling = tileset.GetTiling() * selectedTile.Size;
+		var scale = Vector2Int.One;
+		if (TilesetTool.Active.CurrentTool is PaintTileTool) scale = selectedTile.Size;
+		var tiling = tileset.GetTiling() * scale;
 		var offset = tileset.GetOffset(selectedTile.Position);
 		offset.y = -offset.y - tiling.y;
-		var scale = selectedTile.Size;
 
 		var positions = MultiTilePositions.ToList();
 		if (positions.Count == 0) positions.Add(Vector2Int.Zero);
