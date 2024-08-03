@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text.Json.Serialization;
 
 namespace SpriteTools;
@@ -392,6 +393,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		public bool HorizontalFlip { get; set; }
 		public bool VerticalFlip { get; set; }
 		public int Rotation { get; set; }
+		public Vector2Int BakedPosition { get; set; }
 
 		public Tile() { }
 
@@ -460,10 +462,15 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 				foreach (var tile in group)
 				{
-					if (!tilemap.ContainsKey(tile.Value.TileId)) continue;
-					var tileRef = tilemap[tile.Value.TileId];
+					Vector2Int offsetPos = Vector2Int.Zero;
+					if (tile.Value.TileId == default) offsetPos = tile.Value.BakedPosition;
+					else
+					{
+						if (!tilemap.ContainsKey(tile.Value.TileId)) continue;
+						offsetPos = tilemap[tile.Value.TileId].Position;
+					}
 					var transform = tile.Value.GetTransform();
-					var offset = tileset.GetOffset(tileRef.Position);
+					var offset = tileset.GetOffset(offsetPos);
 					if (tile.Value.HorizontalFlip)
 						offset.x = -offset.x - tiling.x;
 					if (!tile.Value.VerticalFlip)

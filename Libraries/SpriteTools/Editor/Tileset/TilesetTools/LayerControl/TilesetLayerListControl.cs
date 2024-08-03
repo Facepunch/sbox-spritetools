@@ -2,6 +2,7 @@ using Sandbox;
 using Editor;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace SpriteTools.TilesetTool;
 
@@ -50,6 +51,10 @@ public class TilesetLayerListControl : ControlWidget
         btnAdd.HorizontalSizeMode = SizeMode.CanGrow;
         btnAdd.Clicked = CreateNewLayer;
         row.AddStretchCell();
+        var btnBake = row.Add(new Button("Bake Selected Layer", "palette"));
+        btnBake.HorizontalSizeMode = SizeMode.CanGrow;
+        btnBake.Clicked = BakeSelectedLayerPopup;
+        row.AddStretchCell();
 
         scrollArea.Canvas.Layout.AddStretchCell();
 
@@ -96,6 +101,37 @@ public class TilesetLayerListControl : ControlWidget
         {
             TilesetTool.Active.SelectedLayer = layers.Last();
             TilesetTool.Active.UpdateInspector?.Invoke();
+        }
+    }
+
+    void BakeSelectedLayerPopup()
+    {
+        var layer = TilesetTool.Active?.SelectedLayer;
+        if (layer is null) return;
+
+        var confirm = new PopupWindow(
+            $"Bake Selected Layer",
+            $"Are you sure you want to Bake the Tiles on Layer \"{layer.Name}\"?\nThis will detach all tiles from their current references.", "No",
+            new Dictionary<string, Action>() { { "Yes", BakeSelectedLayer } }
+        );
+        confirm.Show();
+    }
+
+    void BakeSelectedLayer()
+    {
+        var layer = TilesetTool.Active?.SelectedLayer;
+        if (layer is null) return;
+
+        var tilemap = layer?.TilesetResource?.TileMap;
+        if (tilemap is null) return;
+
+        foreach (var tile in layer.Tiles)
+        {
+            if (tile.Value.TileId == Guid.Empty || !tilemap.ContainsKey(tile.Value.TileId)) continue;
+            var tileRef = tilemap[tile.Value.TileId];
+            tile.Value.TileId = default;
+            tile.Value.CellPosition = default;
+            tile.Value.BakedPosition = tileRef.Position + tile.Value.CellPosition;
         }
     }
 
