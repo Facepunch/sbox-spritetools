@@ -457,7 +457,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 				var atlas = group.Key ?? "";
 				var material = GetMaterial(atlas);
 
-				var totalTiles = group.Count();
+				var totalTiles = group.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId)).Count();
 				var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles * 6);
 
 				foreach (var tile in group)
