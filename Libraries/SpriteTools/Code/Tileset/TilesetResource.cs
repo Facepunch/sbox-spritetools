@@ -21,8 +21,11 @@ public class TilesetResource : GameResource
 	[Property, Group("Tiles")]
 	public List<Tile> Tiles { get; set; } = new();
 
-	public Vector2Int CurrentTextureSize { get; set; } = Vector2Int.One;
-	public Vector2Int CurrentTileSize { get; set; } = new Vector2Int(32, 32);
+	[JsonIgnore, Hide]
+	public Dictionary<Guid, Tile> TileMap { get; set; } = new();
+
+	[Hide] public Vector2Int CurrentTextureSize { get; set; } = Vector2Int.One;
+	[Hide] public Vector2Int CurrentTileSize { get; set; } = new Vector2Int(32, 32);
 
 	public Vector2 GetTiling()
 	{
@@ -31,7 +34,20 @@ public class TilesetResource : GameResource
 
 	public Vector2 GetOffset(Vector2Int cellPosition)
 	{
-		return new Vector2(cellPosition.x * CurrentTileSize.y, cellPosition.x * CurrentTileSize.y) / CurrentTextureSize;
+		return new Vector2(cellPosition.x * CurrentTileSize.x, cellPosition.y * CurrentTileSize.y) / CurrentTextureSize;
+	}
+
+	public void AddTile(Tile tile)
+	{
+		Tiles.Add(tile);
+		TileMap[tile.Id] = tile;
+		tile.Tileset = this;
+	}
+
+	public void RemoveTile(Tile tile)
+	{
+		TileMap.Remove(tile.Id);
+		Tiles.Remove(tile);
 	}
 
 	public string Serialize()
@@ -77,13 +93,13 @@ public class TilesetResource : GameResource
 		foreach (var tile in Tiles)
 		{
 			tile.Tileset = this;
+			TileMap[tile.Id] = tile;
 		}
 	}
 
 	public class Tile
 	{
-		[JsonIgnore]
-		public Guid Id = Guid.NewGuid();
+		public Guid Id { get; set; }
 
 		[JsonIgnore, ReadOnly, Property]
 		public int Index => Tileset?.Tiles?.IndexOf(this) ?? -1;
@@ -102,6 +118,7 @@ public class TilesetResource : GameResource
 
 		public Tile(Vector2Int position, Vector2Int size)
 		{
+			Id = Guid.NewGuid();
 			Position = position;
 			Size = size;
 		}

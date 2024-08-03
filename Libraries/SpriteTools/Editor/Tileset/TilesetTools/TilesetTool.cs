@@ -129,11 +129,11 @@ public partial class TilesetTool : EditorTool
 		}
 	}
 
-	internal void PlaceTile(Vector2Int position, Vector2Int cellPosition, bool rebuild = true)
+	internal void PlaceTile(Vector2Int position, Guid tileId, Vector2Int cellPosition, bool rebuild = true)
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetTile(position, cellPosition, new Transform(0, Rotation.Identity, 1));
+		SelectedLayer.SetTile(position, tileId, cellPosition, new Transform(0, Rotation.Identity, 1));
 		if (rebuild) SelectedComponent.BuildMesh();
 	}
 
@@ -232,8 +232,9 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		if (tileset is null) return;
 
 		var tileSize = tileset.TileSize;
-		var tiling = tileset.GetTiling() / (Vector2)tileSize;
+		var tiling = tileset.GetTiling() * selectedTile.Size;
 		var offset = tileset.GetOffset(selectedTile.Position);
+		offset.y = -offset.y - tiling.y;
 		var scale = selectedTile.Size;
 
 		var positions = MultiTilePositions.ToList();

@@ -74,9 +74,10 @@ public class RectangleTileTool : BaseTileTool
                 }
                 else
                 {
+                    var tile = TilesetTool.Active.SelectedTile;
                     foreach (var ppos in positions)
                     {
-                        Parent.PlaceTile((Vector2Int)(tilePos + ppos), TilesetTool.Active.SelectedTile.Position, false);
+                        Parent.PlaceTile((Vector2Int)(tilePos + ppos), tile.Id, Vector2Int.Zero, false);
                     }
                     Parent.SelectedComponent.BuildMesh();
                 }

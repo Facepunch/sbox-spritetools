@@ -366,9 +366,9 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			return layer;
 		}
 
-		public void SetTile(Vector2Int position, Vector2Int cellPosition, Transform transform)
+		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition, Transform transform)
 		{
-			var tile = new Tile(cellPosition, transform);
+			var tile = new Tile(tileId, cellPosition, transform);
 			Tiles[position.ToString()] = tile;
 		}
 
@@ -385,13 +385,15 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 	public class Tile
 	{
+		public Guid TileId { get; set; } = Guid.NewGuid();
 		public Vector2Int CellPosition { get; set; }
-		bool HorizontalFlip { get; set; }
-		bool VerticalFlip { get; set; }
-		int Rotation { get; set; }
+		public bool HorizontalFlip { get; set; }
+		public bool VerticalFlip { get; set; }
+		public int Rotation { get; set; }
 
-		public Tile(Vector2Int cellPosition, Transform transform)
+		public Tile(Guid tileId, Vector2Int cellPosition, Transform transform)
 		{
+			TileId = tileId;
 			CellPosition = cellPosition;
 			HorizontalFlip = transform.Scale.x < 0;
 			VerticalFlip = transform.Scale.y < 0;
@@ -407,7 +409,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 		public Tile Copy()
 		{
-			return new Tile(CellPosition, GetTransform());
+			return new Tile(TileId, CellPosition, GetTransform());
 		}
 	}
 
@@ -441,6 +443,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			var tileset = layer.TilesetResource;
 			if (tileset is null) continue;
 			var tiling = tileset.GetTiling();
+			var tilemap = tileset.TileMap;
 
 			var groups = layer.Tiles.GroupBy(x => layer.TilesetResource.FilePath);
 			foreach (var group in groups)
@@ -453,8 +456,14 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 				foreach (var tile in group)
 				{
+					if (!tilemap.ContainsKey(tile.Value.TileId)) continue;
+					var tileRef = tilemap[tile.Value.TileId];
 					var transform = tile.Value.GetTransform();
-					var offset = tileset.GetOffset(tile.Value.CellPosition);
+					var offset = tileset.GetOffset(tileRef.Position);
+					if (tile.Value.HorizontalFlip)
+						offset.x = -offset.x - tiling.x;
+					if (!tile.Value.VerticalFlip)
+						offset.y = -offset.y - tiling.y;
 
 					var pos = Vector2Int.Parse(tile.Key);
 					var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);

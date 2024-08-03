@@ -305,7 +305,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		{
 			Tileset = Tileset
 		};
-		Tileset.Tiles.Add(tile);
+		Tileset.AddTile(tile);
 
 		if (Tileset.Tiles.Count == 1)
 		{
@@ -349,7 +349,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 		PushUndo($"Delete Tile \"{tileName}\"");
 		bool isSelected = inspector.tileList.Selected.Any(x => x.Tile == tile);
-		Tileset.Tiles.Remove(tile);
+		Tileset.RemoveTile(tile);
 
 		if (isSelected) SelectTile(Tileset.Tiles?.FirstOrDefault() ?? null);
 		PushRedo();
@@ -377,8 +377,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		if (Tileset is null) return;
 
 		PushUndo("Generate Tiles");
-		Tileset.Tiles ??= new List<TilesetResource.Tile>();
-		Tileset.Tiles?.Clear();
+		Tileset.Tiles.Clear();
+		Tileset.TileMap.Clear();
 		Tileset.CurrentTileSize = Tileset.TileSize;
 		Tileset.CurrentTextureSize = (Vector2Int)preview.TextureSize;
 
@@ -391,7 +391,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		{
 			while (x < framesPerRow)
 			{
-				Tileset.Tiles.Add(new TilesetResource.Tile(new Vector2Int(x, y), 1));
+				Tileset.AddTile(new TilesetResource.Tile(new Vector2Int(x, y), 1));
 				x++;
 			}
 			x = 0;
