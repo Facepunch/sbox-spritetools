@@ -44,7 +44,7 @@ public partial class TilesetTool : EditorTool
 				SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
 				if (!string.IsNullOrEmpty(_selectedLayer?.TilesetResource?.FilePath))
 				{
-					TilesetToolInspector.Active.Preview.UpdateTexture(_selectedLayer.TilesetResource.FilePath);
+					TilesetToolInspector.Active?.Preview?.UpdateTexture(_selectedLayer.TilesetResource.FilePath);
 				}
 			}
 		}
