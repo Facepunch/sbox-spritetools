@@ -434,6 +434,8 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 		layers.Reverse();
 		if (layers.Count == 0) return;
 
+		Dictionary<Vector2Int, TilesetComponent.Tile> missingTiles = new();
+
 		foreach (var layer in layers)
 		{
 			if (!layer.IsVisible) continue;
@@ -446,110 +448,136 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			var tiling = tileset.GetTiling();
 			var tilemap = tileset.TileMap;
 
-			var groups = layer.Tiles.GroupBy(x => layer.TilesetResource.FilePath);
-			foreach (var group in groups)
+			var material = GetMaterial(tileset.FilePath);
+			var totalTiles = layer.Tiles.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId));
+			var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles.Count() * 6);
+
+			foreach (var tile in layer.Tiles)
 			{
-				var atlas = group.Key ?? "";
-				var material = GetMaterial(atlas);
-
-				var totalTiles = group.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId)).Count();
-				var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles * 6);
-
-				foreach (var tile in group)
+				var pos = Vector2Int.Parse(tile.Key);
+				Vector2Int offsetPos = Vector2Int.Zero;
+				if (tile.Value.TileId == default) offsetPos = tile.Value.BakedPosition;
+				else
 				{
-					Vector2Int offsetPos = Vector2Int.Zero;
-					if (tile.Value.TileId == default) offsetPos = tile.Value.BakedPosition;
-					else
+					if (!tilemap.ContainsKey(tile.Value.TileId))
 					{
-						if (!tilemap.ContainsKey(tile.Value.TileId)) continue;
-						offsetPos = tilemap[tile.Value.TileId].Position;
+						missingTiles[pos] = tile.Value;
+						continue;
 					}
-					var offset = tileset.GetOffset(offsetPos + tile.Value.CellPosition);
-					if (tile.Value.HorizontalFlip)
-						offset.x = -offset.x - tiling.x;
-					if (!tile.Value.VerticalFlip)
-						offset.y = -offset.y - tiling.y;
+					offsetPos = tilemap[tile.Value.TileId].Position;
+				}
+				var offset = tileset.GetOffset(offsetPos + tile.Value.CellPosition);
+				if (tile.Value.HorizontalFlip)
+					offset.x = -offset.x - tiling.x;
+				if (!tile.Value.VerticalFlip)
+					offset.y = -offset.y - tiling.y;
 
-					var pos = Vector2Int.Parse(tile.Key);
-					var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
-					var size = tileset.TileSize;
 
-					var topLeft = new Vector3(position.x, position.y, position.z);
-					var topRight = new Vector3(position.x + size.x, position.y, position.z);
-					var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
-					var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
+				var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(tileset.TileSize.x, tileset.TileSize.y, 1);
+				var size = tileset.TileSize;
 
-					var uvTopLeft = new Vector2(offset.x, offset.y);
-					var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
-					var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
-					var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
+				var topLeft = new Vector3(position.x, position.y, position.z);
+				var topRight = new Vector3(position.x + size.x, position.y, position.z);
+				var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
+				var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
-					if (tile.Value.Rotation == 90)
-					{
-						var tempUv = uvTopLeft;
-						uvTopLeft = uvBottomLeft;
-						uvBottomLeft = uvBottomRight;
-						uvBottomRight = uvTopRight;
-						uvTopRight = tempUv;
-					}
-					else if (tile.Value.Rotation == 180)
-					{
-						var tempUv = uvTopLeft;
-						uvTopLeft = uvBottomRight;
-						uvBottomRight = tempUv;
-						tempUv = uvTopRight;
-						uvTopRight = uvBottomLeft;
-						uvBottomLeft = tempUv;
-					}
-					else if (tile.Value.Rotation == 270)
-					{
-						var tempUv = uvTopLeft;
-						uvTopLeft = uvTopRight;
-						uvTopRight = uvBottomRight;
-						uvBottomRight = uvBottomLeft;
-						uvBottomLeft = tempUv;
-					}
+				var uvTopLeft = new Vector2(offset.x, offset.y);
+				var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
+				var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
+				var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
 
-					vertex[i] = new Vertex(topLeft);
-					vertex[i].TexCoord0 = uvTopLeft;
-					vertex[i].Color = Color.White;
-					vertex[i].Normal = Vector3.Up;
-					i++;
-
-					vertex[i] = new Vertex(topRight);
-					vertex[i].TexCoord0 = uvTopRight;
-					vertex[i].Color = Color.White;
-					vertex[i].Normal = Vector3.Up;
-					i++;
-
-					vertex[i] = new Vertex(bottomRight);
-					vertex[i].TexCoord0 = uvBottomRight;
-					vertex[i].Color = Color.White;
-					vertex[i].Normal = Vector3.Up;
-					i++;
-
-					vertex[i] = new Vertex(topLeft);
-					vertex[i].TexCoord0 = uvTopLeft;
-					vertex[i].Color = Color.White;
-					vertex[i].Normal = Vector3.Up;
-					i++;
-
-					vertex[i] = new Vertex(bottomRight);
-					vertex[i].TexCoord0 = uvBottomRight;
-					vertex[i].Color = Color.White;
-					vertex[i].Normal = Vector3.Up;
-					i++;
-
-					vertex[i] = new Vertex(bottomLeft);
-					vertex[i].TexCoord0 = uvBottomLeft;
-					vertex[i].Color = Color.White;
-					vertex[i].Normal = Vector3.Up;
-					i++;
+				if (tile.Value.Rotation == 90)
+				{
+					var tempUv = uvTopLeft;
+					uvTopLeft = uvBottomLeft;
+					uvBottomLeft = uvBottomRight;
+					uvBottomRight = uvTopRight;
+					uvTopRight = tempUv;
+				}
+				else if (tile.Value.Rotation == 180)
+				{
+					var tempUv = uvTopLeft;
+					uvTopLeft = uvBottomRight;
+					uvBottomRight = tempUv;
+					tempUv = uvTopRight;
+					uvTopRight = uvBottomLeft;
+					uvBottomLeft = tempUv;
+				}
+				else if (tile.Value.Rotation == 270)
+				{
+					var tempUv = uvTopLeft;
+					uvTopLeft = uvTopRight;
+					uvTopRight = uvBottomRight;
+					uvBottomRight = uvBottomLeft;
+					uvBottomLeft = tempUv;
 				}
 
-				Graphics.Draw(vertex, totalTiles * 6, material, Attributes);
+				vertex[i] = new Vertex(topLeft);
+				vertex[i].TexCoord0 = uvTopLeft;
+				vertex[i].Normal = Vector3.Up;
+				i++;
+
+				vertex[i] = new Vertex(topRight);
+				vertex[i].TexCoord0 = uvTopRight;
+				vertex[i].Normal = Vector3.Up;
+				i++;
+
+				vertex[i] = new Vertex(bottomRight);
+				vertex[i].TexCoord0 = uvBottomRight;
+				vertex[i].Normal = Vector3.Up;
+				i++;
+
+				vertex[i] = new Vertex(topLeft);
+				vertex[i].TexCoord0 = uvTopLeft;
+				vertex[i].Normal = Vector3.Up;
+				i++;
+
+				vertex[i] = new Vertex(bottomRight);
+				vertex[i].TexCoord0 = uvBottomRight;
+				vertex[i].Normal = Vector3.Up;
+				i++;
+
+				vertex[i] = new Vertex(bottomLeft);
+				vertex[i].TexCoord0 = uvBottomLeft;
+				vertex[i].Normal = Vector3.Up;
+				i++;
 			}
 
+			Graphics.Draw(vertex, totalTiles.Count() * 6, material, Attributes);
+			ArrayPool<Vertex>.Shared.Return(vertex);
+		}
+
+		if (missingTiles.Count > 0)
+		{
+			var uvTopLeft = new Vector2(0, 0);
+			var uvTopRight = new Vector2(1, 0);
+			var uvBottomRight = new Vector2(1, 1);
+			var uvBottomLeft = new Vector2(0, 1);
+
+			foreach (var tile in missingTiles)
+			{
+				var material = GetMaterial("/images/missing-tile.png");
+				var pos = tile.Key;
+				var size = Component.Layers[0].TilesetResource.TileSize;
+				var position = new Vector3(pos.x, pos.y, 0) * new Vector3(size.x, size.y, 1);
+
+				var topLeft = new Vector3(position.x, position.y, position.z);
+				var topRight = new Vector3(position.x + size.x, position.y, position.z);
+				var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z);
+				var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
+
+				var vertex = new Vertex[]
+				{
+				new Vertex(topLeft) { TexCoord0 = uvTopLeft, Normal = Vector3.Up },
+				new Vertex(topRight) { TexCoord0 = uvTopRight, Normal = Vector3.Up },
+				new Vertex(bottomRight) { TexCoord0 = uvBottomRight, Normal = Vector3.Up },
+				new Vertex(topLeft) { TexCoord0 = uvTopLeft, Normal = Vector3.Up },
+				new Vertex(bottomRight) { TexCoord0 = uvBottomRight, Normal = Vector3.Up },
+				new Vertex(bottomLeft) { TexCoord0 = uvBottomLeft, Normal = Vector3.Up },
+				};
+
+				Graphics.Draw(vertex, 6, material, Attributes);
+			}
 		}
 	}
 

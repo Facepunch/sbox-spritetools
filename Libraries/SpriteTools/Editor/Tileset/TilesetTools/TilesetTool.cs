@@ -85,6 +85,14 @@ public partial class TilesetTool : EditorTool
 		InitGrid();
 		InitPreviewObject();
 		UpdateComponent();
+
+		if (SelectedComponent.IsValid())
+		{
+			foreach (var layer in SelectedComponent.Layers)
+			{
+				layer?.TilesetResource?.InternalUpdateTiles();
+			}
+		}
 	}
 
 	public override void OnDisabled()
@@ -369,5 +377,6 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		}
 
 		Graphics.Draw(vertex, vertexCount, Material, Attributes);
+		ArrayPool<Vertex>.Shared.Return(vertex);
 	}
 }
