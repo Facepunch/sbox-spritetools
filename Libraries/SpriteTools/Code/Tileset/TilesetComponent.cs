@@ -111,6 +111,8 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 	{
 		base.DrawGizmos();
 
+		if (!Gizmo.IsSelected) return;
+
 		if (CollisionMesh is not null)
 		{
 			using (Gizmo.Scope("tile_collisions"))
