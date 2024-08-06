@@ -84,6 +84,8 @@ PS
 	float g_flSmoothStepMin < UiGroup( "Translucent,1/,0/1" ); Default1( 0 ); Range1( 0, 1 ); >;
 	float g_flSmoothStepMax < UiGroup( "Translucent,1/,0/2" ); Default1( 1 ); Range1( 0, 1 ); >;
 		
+	RenderState(DepthWriteEnable, true);
+
 	float3 RGB2HSV( float3 c )
 	{
 	    float4 K = float4( 0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0 );
@@ -156,6 +158,8 @@ PS
 		m.WorldTangentU = i.vTangentUWs;
 		m.WorldTangentV = i.vTangentVWs;
         m.TextureCoords = i.vTextureCoords.xy;
+
+		clip(m.Opacity - 0.0001);
 		
 		return ShadingModelStandard::Shade( i, m );
 	}
