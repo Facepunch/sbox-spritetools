@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace SpriteTools;
 
 [Category("2D")]
 [Title("2D Tileset Component")]
 [Icon("calendar_view_month")]
-public sealed class TilesetComponent : Component, Component.ExecuteInEditor
+public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 {
 	[Property, Group("Layers")]
 	public List<Layer> Layers
@@ -36,7 +37,7 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 		{
 			if (value == _hasCollider) return;
 			_hasCollider = value;
-			BuildMesh();
+			RebuildMesh();
 		}
 	}
 	bool _hasCollider;
@@ -50,10 +51,12 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 			if (value < 0f) _colliderWidth = 0f;
 			else if (value == _colliderWidth) return;
 			_colliderWidth = value;
-			BuildMesh();
+			RebuildMesh();
 		}
 	}
 	float _colliderWidth;
+
+	public bool IsDirty = false;
 
 	private Model CollisionMesh { get; set; }
 	private List<Vector3> CollisionVertices { get; set; } = new();
@@ -63,11 +66,15 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 	protected override void OnStart()
 	{
-		BuildMesh();
+		base.OnStart();
+
+		RebuildMesh();
 	}
 
 	protected override void OnEnabled()
 	{
+		base.OnEnabled();
+
 		_so = new TilesetSceneObject(this, Scene.SceneWorld);
 		_so.Transform = Transform.World;
 		_so.Tags.SetFrom(Tags);
@@ -81,17 +88,34 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 	protected override void OnDisabled()
 	{
+		base.OnDisabled();
+
 		_so?.Delete();
 		_so = null;
 	}
 
+	protected override void OnUpdate()
+	{
+		base.OnUpdate();
+
+		if (IsDirty)
+		{
+			IsDirty = false;
+			RebuildMesh();
+		}
+	}
+
 	protected override void OnTagsChanged()
 	{
+		base.OnTagsChanged();
+
 		_so?.Tags.SetFrom(Tags);
 	}
 
 	protected override void OnPreRender()
 	{
+		base.OnPreRender();
+
 		if (_so is null) return;
 		if (Layers is null) return;
 		if (Layers.Count == 0)
@@ -129,11 +153,16 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 						Gizmo.Draw.Line(a, b);
 					}
 				}
+
+				Gizmo.Draw.Color = Color.Yellow;
+				var bbox = CollisionMesh.Bounds;
+				if (bbox.Size.Length < 0.1f) bbox = new BBox(bbox.Center - Vector3.One * 0.1f, bbox.Center + Vector3.One * 0.1f);
+				Gizmo.Draw.LineBBox(bbox);
 			}
 		}
 	}
 
-	public void BuildMesh()
+	void RebuildMesh()
 	{
 		if (CollisionMesh is not null)
 		{
@@ -209,30 +238,42 @@ public sealed class TilesetComponent : Component, Component.ExecuteInEditor
 
 					AddRectangle(CollisionVertices, CollisionFaces, tiles, x, y, width, height, tileSize, ColliderWidth, minPosition);
 				}
-
-				// if (!tiles[x, y]) continue;
-
-				// var position = new Vector3(x * tileSize.x, y * tileSize.y, 0);
-				// var size = new Vector3(tileSize.x, tileSize.y, 1);
-
-				// var topLeft = new Vector3(position.x, position.y, position.z) + min3d;
-				// var topRight = new Vector3(position.x + size.x, position.y, position.z) + min3d;
-				// var bottomRight = new Vector3(position.x + size.x, position.y + size.y, position.z) + min3d;
-				// var bottomLeft = new Vector3(position.x, position.y + size.y, position.z) + min3d;
-
-				// CollisionVertices.AddRange(new[] { topLeft, topRight, bottomRight, topLeft, bottomRight, bottomLeft });
-				// CollisionFaces.Add(new[] { CollisionVertices.Count - 6, CollisionVertices.Count - 5, CollisionVertices.Count - 4, CollisionVertices.Count - 3, CollisionVertices.Count - 2, CollisionVertices.Count - 1 });
 			}
 		}
 
 		var hVertices = mesh.AddVertices(CollisionVertices.ToArray());
+		var faceMat = Material.Load("materials/dev/reflectivity_30.vmat");
 
 		foreach (var face in CollisionFaces)
 		{
-			mesh.AddFace(face.Select(x => hVertices[x]).ToArray());
+			var faceIndex = mesh.AddFace(face.Select(x => hVertices[x]).ToArray());
+			mesh.SetFaceMaterial(faceIndex, faceMat);
 		}
+		mesh.Transform = Transform.World;
 
 		CollisionMesh = mesh.Rebuild();
+		RebuildImmediately();
+	}
+
+	protected override IEnumerable<PhysicsShape> CreatePhysicsShapes(PhysicsBody targetBody)
+	{
+		if (!HasCollider) yield break;
+		if (CollisionMesh is null || CollisionMesh.Physics is null) yield break;
+
+		var bodyTransform = targetBody.Transform.ToLocal(Transform.World);
+
+		foreach (var part in CollisionMesh.Physics.Parts)
+		{
+			var bx = bodyTransform.ToWorld(part.Transform);
+
+			foreach (var mesh in part.Meshes)
+			{
+				var shape = targetBody.AddShape(mesh, bx, false, true);
+				shape.Surface = mesh.Surface;
+				shape.Surfaces = mesh.Surfaces;
+				yield return shape;
+			}
+		}
 	}
 
 	static bool IsRectangle(bool[,] grid, bool[,] visited, int x, int y, int width, int height)

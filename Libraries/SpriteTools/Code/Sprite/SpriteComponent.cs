@@ -347,7 +347,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         SceneObject.RenderingEnabled = true;
         SceneObject.Flags.ExcludeGameLayer = CastShadows == ShadowRenderType.ShadowsOnly;
-        SceneObject.Flags.CastShadows = CastShadows == ShadowRenderType.On || CastShadows == ShadowRenderType.ShadowsOnly;
+        SceneObject.Flags.CastShadows = CastShadows != ShadowRenderType.Off;
 
         if (CurrentAnimation == null)
         {

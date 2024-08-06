@@ -130,8 +130,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		// var animationList = new AnimationList.AnimationList(this);
 
 		DockManager.Clear();
-		DockManager.RegisterDockType("Inspector", "edit", () => new Inspector.Inspector(this));
-		DockManager.RegisterDockType("Preview", "emoji_emotions", () => new Preview.Preview(this));
+		DockManager.RegisterDockType("Inspector", "edit", () => inspector = new Inspector.Inspector(this));
+		DockManager.RegisterDockType("Preview", "emoji_emotions", () => preview = new Preview.Preview(this));
 		// DockManager.RegisterDockType("Animations", "directions_walk", () => new AnimationList.AnimationList(this));
 		// DockManager.RegisterDockType("Timeline", "view_column", () =>
 		// {

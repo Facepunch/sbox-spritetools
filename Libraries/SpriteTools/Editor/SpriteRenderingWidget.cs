@@ -37,7 +37,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         {
             World = World,
             AmbientLightColor = Color.White * 1f,
-            ZNear = 0.1f,
+            ZNear = 1f,
             ZFar = 4000,
             EnablePostProcessing = true,
             Position = new Vector3(0, 0, targetZoom),

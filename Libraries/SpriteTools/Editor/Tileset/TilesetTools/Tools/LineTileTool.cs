@@ -62,7 +62,7 @@ public class LineTileTool : BaseTileTool
                 {
                     Parent.PlaceTile((Vector2Int)(tilePos + ppos), tile.Id, Vector2Int.Zero, false);
                 }
-                Parent.SelectedComponent.BuildMesh();
+                Parent.SelectedComponent.IsDirty = true;
             }
         }
         else if (Gizmo.IsLeftMouseDown)
