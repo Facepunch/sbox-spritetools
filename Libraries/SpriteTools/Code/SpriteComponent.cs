@@ -518,7 +518,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             var pos = (new Vector3(attachPos.y, attachPos.x, 0) - (Vector3.One.WithZ(0) / 2f) - new Vector3(origin.y, origin.x, 0)) * 100f;
             pos *= new Vector3(1f, ratio, 1f);
             pos = pos.RotateAround(Vector3.Zero, _rotationOffset);
-            pos *= Transform.LocalScale;
 
             if (SpriteFlags.HasFlag(SpriteFlags.HorizontalFlip)) rot *= Rotation.From(180, 0, 0);
             if (SpriteFlags.HasFlag(SpriteFlags.VerticalFlip)) rot *= Rotation.From(0, 0, 180);
