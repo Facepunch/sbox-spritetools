@@ -375,7 +375,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 if (CurrentAnimation.Looping && frame >= lastFrame)
                     frame = 0;
                 else if (frame >= lastFrame - 1 && Game.IsPlaying)
-                    OnAnimationComplete?.Invoke(CurrentAnimation.Name);
+                    _queuedAnimations.Add(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
                 _timeSinceLastFrame = 0;
             }
@@ -558,6 +558,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     }
 
     List<string> _queuedEvents = new();
+    List<string> _queuedAnimations = new();
     void QueueEvent(string tag)
     {
         _queuedEvents.Add(tag);
@@ -568,6 +569,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         foreach (var tag in _queuedEvents)
         {
             BroadcastEvent(tag);
+        }
+        foreach (var anim in _queuedAnimations)
+        {
+            OnAnimationComplete?.Invoke(anim);
         }
         _queuedEvents.Clear();
     }
