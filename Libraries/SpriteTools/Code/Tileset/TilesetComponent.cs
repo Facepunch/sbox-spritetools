@@ -258,7 +258,8 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	protected override IEnumerable<PhysicsShape> CreatePhysicsShapes(PhysicsBody targetBody)
 	{
 		if (!HasCollider) yield break;
-		if (CollisionMesh is null || CollisionMesh.Physics is null) yield break;
+		if (CollisionMesh is null) yield break;
+		if (CollisionMesh.Physics is null) yield break;
 
 		var bodyTransform = targetBody.Transform.ToLocal(Transform.World);
 
@@ -291,65 +292,51 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	static void AddRectangle(List<Vector3> vertices, List<int[]> faces, bool[,] grid, int x, int y, int width, int height, Vector2Int tileSize, float depth, Vector2Int minPosition)
 	{
 		int startIndex = vertices.Count;
+		float currentDepth = MathF.Abs(depth);
+		float z = currentDepth / 2f;
 
-		// Bottom face (y == 0)
-		vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y) * tileSize.x, 0));
-		vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y) * tileSize.y, 0));
-		vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, 0));
-		vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, 0));
+		// Top Face
+		var v0 = new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y) * tileSize.x, z);
+		var v1 = new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y) * tileSize.y, z);
+		var v2 = new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, z);
+		var v3 = new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, z);
+		AddFace(vertices, faces, v0, v1, v2, v3);
 
-		// Top face (y == depth)
-		if (depth != 0)
-		{
-			vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y) * tileSize.y, depth));
-			vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y) * tileSize.y, depth));
-			vertices.Add(new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, depth));
-			vertices.Add(new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, depth));
-		}
+		if (depth == 0) return;
 
-		// Add indices for two triangles per face (bottom and top) if not inner
-		faces.Add(new int[]{
-			startIndex, startIndex + 2, startIndex + 1,
-			startIndex, startIndex + 3, startIndex + 2
-		});
-		if (depth != 0) // Top
-		{
-			faces.Add(new int[]{
-				startIndex + 4, startIndex + 5, startIndex + 6,
-				startIndex + 4, startIndex + 6, startIndex + 7
-			});
-		}
+		// Bottom Face
+		z -= currentDepth;
+		var v4 = new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y) * tileSize.y, z);
+		var v5 = new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y) * tileSize.y, z);
+		var v6 = new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, z);
+		var v7 = new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, z);
+		AddFace(vertices, faces, v4, v5, v6, v7);
 
 		// Add indices for the sides if not inner
-		if (depth == 0) return;
 		if (IsExposedFace(grid, x, y, 1, height, -1, 0)) // Left
 		{
-			faces.Add(new int[]{
-				startIndex, startIndex + 4, startIndex + 7,
-				startIndex, startIndex + 7, startIndex + 3
-			});
+			AddFace(vertices, faces, v0, v3, v7, v4);
 		}
 		if (IsExposedFace(grid, x + width - 1, y, 1, height, 1, 0)) // Right
 		{
-			faces.Add(new int[]{
-				startIndex + 1, startIndex + 2, startIndex + 6,
-				startIndex + 1, startIndex + 6, startIndex + 5
-			});
+			AddFace(vertices, faces, v1, v2, v6, v5);
 		}
 		if (IsExposedFace(grid, x, y, width, 1, 0, -1)) // Front
 		{
-			faces.Add(new int[]{
-				startIndex, startIndex + 1, startIndex + 5,
-				startIndex, startIndex + 5, startIndex + 4
-			});
+			AddFace(vertices, faces, v0, v1, v5, v4);
 		}
 		if (IsExposedFace(grid, x, y + height - 1, width, 1, 0, 1)) // Back
 		{
-			faces.Add(new int[]{
-				startIndex + 3, startIndex + 7, startIndex + 6,
-				startIndex + 3, startIndex + 6, startIndex + 2
-			});
+			AddFace(vertices, faces, v3, v2, v6, v7);
 		}
+	}
+
+	static void AddFace(List<Vector3> vertices, List<int[]> faces, Vector3 a, Vector3 b, Vector3 c, Vector3 d)
+	{
+		var startIndex = vertices.Count;
+		vertices.AddRange(new Vector3[] { a, b, c, d });
+		faces.Add(new int[] { startIndex, startIndex + 1, startIndex + 2 });
+		faces.Add(new int[] { startIndex + 2, startIndex + 3, startIndex + 0 });
 	}
 
 	static bool IsExposedFace(bool[,] grid, int x, int y, int width, int height, int dx, int dy)
