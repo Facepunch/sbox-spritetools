@@ -447,11 +447,15 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 internal sealed class TilesetSceneObject : SceneCustomObject
 {
 	TilesetComponent Component;
-	Dictionary<string, Material> Materials = new();
+	Dictionary<TilesetResource, (TileAtlas, Material)> Materials = new();
+	Material MissingMaterial;
 
 	public TilesetSceneObject(TilesetComponent component, SceneWorld world) : base(world)
 	{
 		Component = component;
+
+		MissingMaterial = Material.Load("materials/sprite_2d.vmat").CreateCopy();
+		MissingMaterial.Set("Texture", Texture.Load("images/missing-tile.png"));
 	}
 
 	public override void RenderSceneObject()
@@ -473,10 +477,10 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 			var tileset = layer.TilesetResource;
 			if (tileset is null) continue;
-			var tiling = tileset.GetTiling();
 			var tilemap = tileset.TileMap;
 
-			var material = GetMaterial(tileset.FilePath);
+			var combo = GetMaterial(tileset);
+			var tiling = combo.Item1.GetTiling();
 			var totalTiles = layer.Tiles.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId));
 			var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles.Count() * 6);
 
@@ -494,7 +498,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 					}
 					offsetPos = tilemap[tile.Value.TileId].Position;
 				}
-				var offset = tileset.GetOffset(offsetPos + tile.Value.CellPosition);
+				var offset = combo.Item1.GetOffset(offsetPos + tile.Value.CellPosition);
 				if (tile.Value.HorizontalFlip)
 					offset.x = -offset.x - tiling.x;
 				if (!tile.Value.VerticalFlip)
@@ -571,7 +575,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 				i++;
 			}
 
-			Graphics.Draw(vertex, totalTiles.Count() * 6, material, Attributes);
+			Graphics.Draw(vertex, totalTiles.Count() * 6, combo.Item2, Attributes);
 			ArrayPool<Vertex>.Shared.Return(vertex);
 		}
 
@@ -584,7 +588,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 			foreach (var tile in missingTiles)
 			{
-				var material = GetMaterial("/images/missing-tile.png");
+				var material = MissingMaterial;
 				var pos = tile.Key;
 				var size = Component.Layers[0].TilesetResource.TileSize;
 				var position = new Vector3(pos.x, pos.y, 0) * new Vector3(size.x, size.y, 1);
@@ -609,15 +613,18 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 		}
 	}
 
-	Material GetMaterial(string texturePath)
+	(TileAtlas, Material) GetMaterial(TilesetResource resource)
 	{
-		if (!Materials.TryGetValue(texturePath, out var material))
+		if (!Materials.TryGetValue(resource, out var combo))
 		{
-			material = Material.Load("materials/sprite_2d.vmat").CreateCopy();
-			material.Set("Texture", Texture.Load(FileSystem.Mounted, texturePath));
-			Materials.Add(texturePath, material);
+			var texture = TileAtlas.FromTileset(resource);
+			var material = Material.Load("materials/sprite_2d.vmat").CreateCopy();
+			material.Set("Texture", texture);
+			combo.Item1 = texture;
+			combo.Item2 = material;
+			Materials.Add(resource, combo);
 		}
 
-		return material;
+		return combo;
 	}
 }
