@@ -18,6 +18,9 @@ public class TilesetResource : GameResource
 	[Property, Group("Tileset Setup")]
 	public Vector2Int TileSeparation { get; set; } = 0;
 
+	[Property, Group("Additional Settings")]
+	public float TileScale { get; set; } = 1.0f;
+
 	[Property, Group("Tiles")]
 	public List<Tile> Tiles { get; set; } = new();
 
@@ -35,6 +38,11 @@ public class TilesetResource : GameResource
 	public Vector2 GetOffset(Vector2Int cellPosition)
 	{
 		return new Vector2(cellPosition.x * CurrentTileSize.x, cellPosition.y * CurrentTileSize.y) / CurrentTextureSize;
+	}
+
+	public Vector2 GetTileSize()
+	{
+		return TileSize * TileScale;
 	}
 
 	public void AddTile(Tile tile)
