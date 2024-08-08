@@ -89,7 +89,21 @@ public class TilesetToolInspector : InspectorWidget
         }
         if (Tool.SelectedComponent.IsValid())
         {
-            mainSheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+            mainSheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x =>
+            {
+                if (!x.HasAttribute<PropertyAttribute>()) return false;
+                if (x.PropertyType == typeof(Action)) return false;
+                switch (x.Name)
+                {
+                    case nameof(Collider.Static):
+                    case nameof(Collider.Surface):
+                    case nameof(Collider.IsTrigger):
+                    case nameof(Collider.OnTriggerEnter):
+                    case nameof(Collider.OnTriggerExit):
+                        return false;
+                }
+                return true;
+            });
         }
     }
 
