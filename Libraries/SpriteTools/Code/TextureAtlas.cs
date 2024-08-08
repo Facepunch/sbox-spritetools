@@ -20,7 +20,7 @@ public class TextureAtlas
     /// <summary>
     /// Returns the aspect ratio of a frame from the texture atlas.
     /// </summary>
-    public float AspectRatio => (MaxFrameSize.y == 0) ? 1f : (MaxFrameSize.x / MaxFrameSize.y);
+    public float AspectRatio => (MaxFrameSize.y == 0) ? (Texture.Width / Texture.Height) : (MaxFrameSize.x / MaxFrameSize.y);
 
     /// <summary>
     /// Returns the UV tiling for the texture atlas.
