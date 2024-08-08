@@ -66,23 +66,34 @@ public class TileAtlas
 
         foreach (var tile in tilesetResource.Tiles)
         {
-            var tSize = tileSize * tile.Size;
-            var tPos = tile.Position * atlas.TileSize + Vector2Int.One;
-            var sampleX = tile.Position.x * tileSize.x;
-            var sampleY = tile.Position.y * tileSize.y;
-            for (int i = -1; i <= tSize.x; i++)
+            for (int n = 0; n < tile.Size.x; n++)
             {
-                for (int j = -1; j <= tSize.y; j++)
+                for (int m = 0; m < tile.Size.y; m++)
                 {
-                    var sampleInd = (int)((sampleY + Math.Clamp(j, 0, tSize.y - 1)) * texture.Size.x + sampleX + Math.Clamp(i, 0, tSize.x - 1));
-                    var color = pixels[sampleInd];
-                    var ind = ((tPos.y + j) * textureSize.x + tPos.x + i) * 4;
-                    textureData[ind + 0] = color.r;
-                    textureData[ind + 1] = color.g;
-                    textureData[ind + 2] = color.b;
-                    textureData[ind + 3] = color.a;
+                    var cellPos = tile.Position + new Vector2Int(n, m);
+
+                    var tSize = tileSize * tile.Size;
+                    var tPos = cellPos * atlas.TileSize + Vector2Int.One;
+                    var sampleX = cellPos.x * tileSize.x;
+                    var sampleY = cellPos.y * tileSize.y;
+                    for (int i = -1; i <= tSize.x; i++)
+                    {
+                        for (int j = -1; j <= tSize.y; j++)
+                        {
+                            var sampleInd = (int)((sampleY + Math.Clamp(j, 0, tSize.y - 1)) * texture.Size.x + sampleX + Math.Clamp(i, 0, tSize.x - 1));
+                            var color = pixels[sampleInd];
+                            var ind = ((tPos.y + j) * textureSize.x + tPos.x + i) * 4;
+                            textureData[ind + 0] = color.r;
+                            textureData[ind + 1] = color.g;
+                            textureData[ind + 2] = color.b;
+                            textureData[ind + 3] = color.a;
+                        }
+                    }
+
+
                 }
             }
+
         }
 
         var builder = Texture.Create(textureSize.x, textureSize.y);
