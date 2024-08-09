@@ -170,6 +170,7 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 			CollisionVertices.Clear();
 			CollisionFaces.Clear();
 		}
+		CollisionBoxes.Clear();
 
 		if (!HasCollider) return;
 		if (Layers is null) return;
@@ -237,7 +238,7 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 						}
 					}
 
-					AddRectangle(CollisionVertices, CollisionFaces, tiles, x, y, width, height, tileSize, ColliderWidth, minPosition);
+					AddRectangle(CollisionVertices, CollisionFaces, tiles, x, y, width, height, tileSize, ColliderWidth, minPosition, CollisionBoxes);
 				}
 			}
 		}
@@ -256,24 +257,37 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 		RebuildImmediately();
 	}
 
+	List<BBox> CollisionBoxes = new();
 	protected override IEnumerable<PhysicsShape> CreatePhysicsShapes(PhysicsBody targetBody)
 	{
 		if (!HasCollider) yield break;
-		if (CollisionMesh is null) yield break;
-		if (CollisionMesh.Physics is null) yield break;
 
-		var bodyTransform = targetBody.Transform.ToLocal(Transform.World);
-
-		foreach (var part in CollisionMesh.Physics.Parts)
+		if (CollisionBoxes.Count > 0)
 		{
-			var bx = bodyTransform.ToWorld(part.Transform);
-
-			foreach (var mesh in part.Meshes)
+			foreach (var box in CollisionBoxes)
 			{
-				var shape = targetBody.AddShape(mesh, bx, false, true);
-				shape.Surface = mesh.Surface;
-				shape.Surfaces = mesh.Surfaces;
+				var shape = targetBody.AddBoxShape(box, Rotation.Identity, true);
 				yield return shape;
+			}
+		}
+		else
+		{
+			if (CollisionMesh is null) yield break;
+			if (CollisionMesh.Physics is null) yield break;
+
+			var bodyTransform = targetBody.Transform.ToLocal(Transform.World);
+
+			foreach (var part in CollisionMesh.Physics.Parts)
+			{
+				var bx = bodyTransform.ToWorld(part.Transform);
+
+				foreach (var mesh in part.Meshes)
+				{
+					var shape = targetBody.AddShape(mesh, bx, false, true);
+					shape.Surface = mesh.Surface;
+					shape.Surfaces = mesh.Surfaces;
+					yield return shape;
+				}
 			}
 		}
 	}
@@ -290,7 +304,7 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 		return true;
 	}
 
-	static void AddRectangle(List<Vector3> vertices, List<int[]> faces, bool[,] grid, int x, int y, int width, int height, Vector2 tileSize, float depth, Vector2Int minPosition)
+	static void AddRectangle(List<Vector3> vertices, List<int[]> faces, bool[,] grid, int x, int y, int width, int height, Vector2 tileSize, float depth, Vector2Int minPosition, List<BBox> boxes)
 	{
 		int startIndex = vertices.Count;
 		float currentDepth = MathF.Abs(depth);
@@ -312,6 +326,8 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 		var v6 = new Vector3((minPosition.x + x + width) * tileSize.x, (minPosition.y + y + height) * tileSize.y, z);
 		var v7 = new Vector3((minPosition.x + x) * tileSize.x, (minPosition.y + y + height) * tileSize.y, z);
 		AddFace(vertices, faces, v4, v5, v6, v7);
+
+		boxes.Add(new BBox(v0, v6));
 
 		// Add indices for the sides if not inner
 		if (IsExposedFace(grid, x, y, 1, height, -1, 0)) // Left
