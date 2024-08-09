@@ -17,6 +17,8 @@ public class PaintTileTool : BaseTileTool
 {
     public PaintTileTool(TilesetTool parent) : base(parent) { }
 
+    bool isPainting = false;
+
     public override void OnUpdate()
     {
         if (!CanUseTool()) return;
@@ -68,6 +70,12 @@ public class PaintTileTool : BaseTileTool
             {
                 Parent.PlaceTile(tilePos, tile.Id, Vector2Int.Zero);
             }
+            isPainting = true;
+        }
+        else if (isPainting)
+        {
+            SceneEditorSession.Active.FullUndoSnapshot($"Paint Tiles");
+            isPainting = false;
         }
     }
 
