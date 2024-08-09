@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Editor;
 using Sandbox;
@@ -24,6 +25,16 @@ public class PaintTileTool : BaseTileTool
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
 
+        List<(Vector2Int, Vector2Int)> positions = new();
+        for (int i = 0; i < Parent.SelectedTile.Size.x; i++)
+        {
+            for (int j = 0; j < Parent.SelectedTile.Size.y; j++)
+            {
+                positions.Add((new Vector2Int(i, -j), Parent.SelectedTile.Position + new Vector2Int(i, j)));
+            }
+        }
+        Parent._sceneObject.SetPositions(positions);
+
         var tilePos = (Vector2Int)(pos / Parent.SelectedLayer.TilesetResource.GetTileSize());
         if (Gizmo.IsLeftMouseDown)
         {
@@ -39,16 +50,16 @@ public class PaintTileTool : BaseTileTool
                     {
                         var uy = y;
                         var yy = -y;
-                        if (Parent.VerticalFlip) uy = tile.Size.y - y - 1;
+                        var offsetPos = new Vector2Int(xx, yy);
 
                         if (Parent.Angle == 90)
-                        {
-                            var temp = ux;
-                            ux = uy;
-                            uy = -temp;
-                        }
+                            offsetPos = new Vector2Int(-offsetPos.y, offsetPos.x);
+                        else if (Parent.Angle == 180)
+                            offsetPos = new Vector2Int(-offsetPos.x, -offsetPos.y);
+                        else if (Parent.Angle == 270)
+                            offsetPos = new Vector2Int(offsetPos.y, -offsetPos.x);
 
-                        Parent.PlaceTile(tilePos + new Vector2Int(xx, yy), tile.Id, new Vector2Int(ux, uy), false);
+                        Parent.PlaceTile(tilePos + offsetPos, tile.Id, new Vector2Int(ux, uy), false);
                     }
                 }
                 Parent.SelectedComponent.IsDirty = true;
