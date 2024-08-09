@@ -5,7 +5,7 @@ using System.Net.Mail;
 using Editor;
 using Sandbox;
 
-namespace SpriteTools.SpriteEditor;
+namespace SpriteTools;
 
 public class SpriteRenderingWidget : NativeRenderingWidget
 {
@@ -24,6 +24,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     Vector2 cameraGrabPos = Vector2.Zero;
     bool cameraGrabbing = false;
 
+    protected virtual bool CanZoom => false;
+
     public SpriteRenderingWidget(Widget parent) : base(parent)
     {
         MouseTracking = true;
@@ -35,7 +37,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         {
             World = World,
             AmbientLightColor = Color.White * 1f,
-            ZNear = 0.1f,
+            ZNear = 1f,
             ZFar = 4000,
             EnablePostProcessing = true,
             Position = new Vector3(0, 0, targetZoom),
@@ -68,7 +70,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     {
         base.OnWheel(e);
 
-        Zoom(e.Delta);
+        if (CanZoom)
+            Zoom(e.Delta);
     }
 
     protected override void OnMousePress(MouseEvent e)
@@ -150,6 +153,9 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 
     void ResizeQuads()
     {
+        if (!BackgroundRect.IsValid() || !TextureRect.IsValid())
+            return;
+
         // Scale the quad to be the same aspect ratio as the texture
         AspectRatio = TextureSize.x / TextureSize.y;
         var size = new Vector3(1f / AspectRatio, 1f, 1f);

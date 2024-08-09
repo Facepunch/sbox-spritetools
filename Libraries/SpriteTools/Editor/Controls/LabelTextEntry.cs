@@ -1,25 +1,38 @@
 using Editor;
 using Sandbox;
+using System;
 using System.Linq;
 
-namespace SpriteTools.SpriteEditor.AnimationList;
+namespace SpriteTools;
 
 internal class LabelTextEntry : Widget
 {
-    MainWindow MainWindow;
-    SerializedProperty Property;
+    internal SerializedProperty Property;
     string lastValue = "";
-    string lastSafeValue = "";
+    internal string lastSafeValue = "";
+
+    public string EmptyValue
+    {
+        get => _emptyValue;
+        set
+        {
+            _emptyValue = value;
+            RebuildUI();
+        }
+    }
+    string _emptyValue = "N/A";
 
     bool editing = false;
     RealTimeSince timeSinceLastEdit = 0;
     StringControlWidget stringControl;
 
-    public LabelTextEntry(MainWindow window, SerializedProperty property) : base(null)
+    internal Func<string, bool> OnStopEditing;
+
+    public LabelTextEntry(SerializedProperty property) : base(null)
     {
         Layout = Layout.Row();
-        MainWindow = window;
         Property = property;
+        MinimumHeight = 14;
 
         RebuildUI();
     }
@@ -31,10 +44,9 @@ internal class LabelTextEntry : Widget
         if (editing)
         {
             stringControl = Layout.Add(new StringControlWidget(Property));
-        }
-        else
-        {
-            Layout.Add(new Label(Property.GetValue("N/A")));
+            stringControl.HorizontalSizeMode = SizeMode.CanShrink;
+            stringControl.MaximumWidth = 250;
+            Layout.AddStretchCell();
         }
     }
 
@@ -78,17 +90,9 @@ internal class LabelTextEntry : Widget
 
         editing = false;
         var value = Property.GetValue("");
-        if (string.IsNullOrEmpty(value) || MainWindow.Sprite.Animations.Where(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant()).Count() > 1)
+        if (OnStopEditing?.Invoke(value) ?? true)
         {
-            Property.SetValue(lastSafeValue);
-            AnimationList.ShowNamingError(value);
-        }
-        else
-        {
-            Property.SetValue(lastSafeValue);
-            MainWindow.PushUndo("Rename Animation");
             Property.SetValue(value);
-            MainWindow.PushRedo();
         }
         RebuildUI();
     }
@@ -110,5 +114,16 @@ internal class LabelTextEntry : Widget
                 StopEditing();
             }
         }
+    }
+
+    protected override void OnPaint()
+    {
+        base.OnPaint();
+
+        if (editing) return;
+        Paint.SetPen(Theme.ControlText);
+        var val = Property.GetValue(EmptyValue);
+        if (string.IsNullOrEmpty(val)) val = EmptyValue;
+        Paint.DrawText(LocalRect, val, TextFlag.LeftCenter);
     }
 }

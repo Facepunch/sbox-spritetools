@@ -1,0 +1,15 @@
+{
+  "FilePath": "images/tiles/tilemap_packed.png",
+  "TileSize": "16,16",
+  "TileSeparation": "0,0",
+  "Tiles": [
+    {
+      "Name": "",
+      "Size": "1,1"
+    }
+  ],
+  "CurrentTextureSize": "192,176",
+  "CurrentTileSize": "16,16",
+  "__references": [],
+  "__version": 0
+}

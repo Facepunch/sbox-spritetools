@@ -36,7 +36,23 @@ internal class AnimationButton : Widget
 
         var serializedObject = Animation.GetSerialized();
         serializedObject.TryGetProperty(nameof(SpriteAnimation.Name), out var name);
-        labelText = new LabelTextEntry(MainWindow, name);
+        labelText = new LabelTextEntry(name);
+        labelText.OnStopEditing = (value) =>
+        {
+            if (string.IsNullOrEmpty(value) || MainWindow.Sprite.Animations.Where(a => a.Name.ToLowerInvariant() == value.ToLowerInvariant()).Count() > 1)
+            {
+                labelText.Property.SetValue(labelText.lastSafeValue);
+                AnimationList.ShowNamingError(value);
+            }
+            else
+            {
+                labelText.Property.SetValue(labelText.lastSafeValue);
+                MainWindow.PushUndo("Rename Animation");
+                labelText.Property.SetValue(value);
+                MainWindow.PushRedo();
+            }
+            return false;
+        };
 
         Layout.Add(labelText);
 
@@ -72,7 +88,7 @@ internal class AnimationButton : Widget
 
         m.AddOption("Rename", "edit", Rename);
         m.AddOption("Duplicate", "content_copy", DuplicateAnimationPopup);
-        m.AddOption("Delete", "delete", Delete);
+        m.AddOption("Delete", "delete", DeleteAnimationPopup);
 
         m.OpenAtCursor(false);
     }

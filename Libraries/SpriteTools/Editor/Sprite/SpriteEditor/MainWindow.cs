@@ -18,7 +18,6 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public Action OnAnimationSelected;
     public Action OnPlayPause;
 
-    internal static List<MainWindow> AllWindows { get; } = new List<MainWindow>();
     public bool CanOpenMultipleAssets => false;
 
     private readonly UndoStack _undoStack = new();
@@ -77,27 +76,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         SetWindowIcon("emoji_emotions");
 
-        AllWindows.Add(this);
-
         RestoreDefaultDockLayout();
-    }
-
-    protected override void OnClosed()
-    {
-        base.OnClosed();
-
-        AllWindows.Remove(this);
-    }
-
-    protected override void OnFocus(FocusChangeReason reason)
-    {
-        base.OnFocus(reason);
-
-        // Move this window to the end of the list, so it has priority
-        // when opening a new graph
-
-        AllWindows.Remove(this);
-        AllWindows.Add(this);
     }
 
     protected override void OnKeyPress(KeyEvent e)
@@ -253,9 +232,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     {
         if (!string.IsNullOrEmpty(path))
         {
-            Log.Info($"Opening sprite at path {path}");
             asset ??= AssetSystem.FindByPath(path);
-            Log.Info(asset);
         }
         if (asset == null) return;
 
@@ -272,7 +249,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
             return;
         }
 
-        StateCookie = "sprite-editor-window";
+        StateCookie = "sprite-editor-window-" + sprite.ResourceId;
 
         _asset = asset;
         _dirty = false;
@@ -389,9 +366,24 @@ public partial class MainWindow : DockWindow, IAssetEditor
             var path = x.FirstOrDefault()?.GetSourceFile();
             if (string.IsNullOrEmpty(path)) return;
             var importer = new SpritesheetImporter.SpritesheetImporter(this, path);
+            importer.OnImport += OnSpritesheetImport;
             importer.Window.Show();
         };
         picker.Window.Show();
+    }
+
+    void OnSpritesheetImport(string path, List<Rect> frames)
+    {
+        if (SelectedAnimation is not null)
+        {
+            SelectedAnimation.Frames.Clear();
+            foreach (var frame in frames)
+            {
+                SelectedAnimation.Frames.Add(new SpriteAnimationFrame(path) { SpriteSheetRect = frame });
+            }
+        }
+
+        Timeline.UpdateFrameList();
     }
 
     void PromptSave(Action action)
@@ -447,7 +439,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         CurrentFrameIndex = frame;
     }
 
-    public void SetDirty()
+    internal void SetDirty()
     {
         _dirty = true;
         UpdateWindowTitle();
