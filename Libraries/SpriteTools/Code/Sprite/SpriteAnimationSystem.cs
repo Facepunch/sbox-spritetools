@@ -11,6 +11,15 @@ public class SpriteAnimationSystem : GameObjectSystem
     public SpriteAnimationSystem(Scene scene) : base(scene)
     {
         Listen(Stage.UpdateBones, 15, UpdateSpriteAnimation, "UpdateSpriteAnimation");
+
+        var sprites = ResourceLibrary.GetAll<SpriteResource>().ToArray();
+        foreach (var sprite in sprites)
+        {
+            foreach (var anim in sprite.Animations)
+            {
+                TextureAtlas.FromAnimation(anim);
+            }
+        }
     }
 
     void UpdateSpriteAnimation()

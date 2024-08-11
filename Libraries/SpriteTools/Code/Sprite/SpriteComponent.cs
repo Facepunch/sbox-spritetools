@@ -550,8 +550,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         _currentFrameIndex = 0;
         _timeSinceLastFrame = 0;
 
-        var atlas = TextureAtlas.FromAnimation(animation);
-        CurrentTexture = atlas;
+        CurrentTexture = TextureAtlas.FromAnimation(animation);
         SpriteMaterial?.Set("Texture", CurrentTexture);
         ApplyMaterialOffset();
     }
