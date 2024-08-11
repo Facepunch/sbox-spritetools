@@ -565,15 +565,23 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
     internal void RunBroadcastQueue()
     {
-        foreach (var tag in _queuedEvents)
+        if (_queuedEvents.Count > 0)
         {
-            BroadcastEvent(tag);
+            foreach (var tag in _queuedEvents)
+            {
+                BroadcastEvent(tag);
+            }
+            _queuedEvents.Clear();
         }
-        foreach (var anim in _queuedAnimations)
+
+        if (_queuedAnimations.Count > 0)
         {
-            OnAnimationComplete?.Invoke(anim);
+            foreach (var anim in _queuedAnimations)
+            {
+                OnAnimationComplete?.Invoke(anim);
+            }
+            _queuedAnimations.Clear();
         }
-        _queuedEvents.Clear();
     }
 
     void BroadcastEvent(string tag)
