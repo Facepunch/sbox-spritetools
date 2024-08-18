@@ -41,7 +41,6 @@ public class RectangleTileTool : BaseTileTool
             var min = Vector2.Min(startPos - tilePos, 0);
             var max = Vector2.Max(startPos - tilePos, 0);
 
-
             if (deleting)
             {
                 Parent._sceneObject.RenderingEnabled = false;
@@ -96,6 +95,12 @@ public class RectangleTileTool : BaseTileTool
     List<Vector2> GetPositions(Vector2 min, Vector2 max)
     {
         var positions = new List<Vector2>();
+
+        if (min == max)
+        {
+            positions.Add(min);
+            return positions;
+        }
 
         if (Vector2.Distance(min, max) < 2_500)
         {

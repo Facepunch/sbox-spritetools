@@ -34,7 +34,7 @@ public class LineTileTool : BaseTileTool
 
         if (holding)
         {
-            var positions = new List<Vector2>();
+            var positions = new List<Vector2>() { startPos - tilePos };
 
             float sep = 1f / (Separation + 1f);
             var dx = tilePos.x - startPos.x;
@@ -48,7 +48,9 @@ public class LineTileTool : BaseTileTool
                 var y = startPos.y + i * dy / delta / sep;
                 x = (int)Math.Round(x);
                 y = (int)Math.Round(y);
-                positions.Add(new Vector2(x, y) - tilePos);
+                var thisPos = new Vector2(x, y) - tilePos;
+                if (!positions.Contains(thisPos))
+                    positions.Add(thisPos);
             }
             Parent._sceneObject.SetPositions(positions);
 
