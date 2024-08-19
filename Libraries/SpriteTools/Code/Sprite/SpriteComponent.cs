@@ -365,12 +365,6 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (CurrentAnimation.Looping || CurrentFrameIndex < lastFrame - 1)
             {
                 var frame = CurrentFrameIndex;
-                var currentFrame = CurrentAnimation.Frames[frame];
-                foreach (var tag in currentFrame.Events)
-                {
-                    QueueEvent(tag);
-                }
-
                 frame++;
                 if (CurrentAnimation.Looping && frame >= lastFrame)
                     frame = 0;
@@ -378,6 +372,12 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                     _queuedAnimations.Add(CurrentAnimation.Name);
                 CurrentFrameIndex = frame;
                 _timeSinceLastFrame = 0;
+
+                var currentFrame = CurrentAnimation.Frames[frame];
+                foreach (var tag in currentFrame.Events)
+                {
+                    QueueEvent(tag);
+                }
             }
         }
         else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
