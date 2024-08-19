@@ -115,7 +115,8 @@ public class SpriteAnimation
 
 	public Vector2 GetAttachmentPosition(string attachment, int index)
 	{
-		var attach = Attachments.FirstOrDefault(x => x.Name == attachment);
+		var attach = Attachments?.FirstOrDefault(x => x.Name == attachment);
+		if (attach is null) return Vector2.Zero;
 		if (index < 0) return attach.Points.FirstOrDefault();
 		if (index >= attach.Points.Count) return attach.Points.LastOrDefault();
 		return attach.Points[index];
