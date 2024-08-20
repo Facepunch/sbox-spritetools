@@ -116,6 +116,9 @@ public class TilesetResource : GameResource
 		public string Name { get; set; } = "";
 
 		[Property]
+		public TagSet Tags { get; set; }
+
+		[Property]
 		public Vector2Int Position { get; set; }
 
 		[Property]
