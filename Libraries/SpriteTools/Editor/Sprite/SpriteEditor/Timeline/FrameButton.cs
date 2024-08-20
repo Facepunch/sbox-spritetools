@@ -43,7 +43,7 @@ public class FrameButton : Widget
         var frame = MainWindow.SelectedAnimation.Frames[FrameIndex];
         var rect = frame.SpriteSheetRect;
         Pixmap = PixmapCache.Get(frame.FilePath, rect);
-        
+
         StatusTip = $"Frame {FrameIndex + 1} - {frame.FilePath}";
         if (frame.SpriteSheetRect.Width != 0 && frame.SpriteSheetRect.Height != 0)
         {
@@ -109,9 +109,19 @@ public class FrameButton : Widget
         //Log.Info( MainWindow.SelectedAnimation.Frames[FrameIndex] );
 
         var pixRect = new Rect(LocalRect.TopLeft + Vector2.Up * 16f, LocalRect.BottomRight - Vector2.Up * 16f).Shrink(4);
-        pixRect.Height = pixRect.Height / (Pixmap.Width / Pixmap.Height);
-        pixRect.Top -= (pixRect.Height - pixRect.Width) / 2f;
-        pixRect.Bottom += (pixRect.Height - pixRect.Width) / 2f;
+        var aspectRatio = Pixmap.Width / (float)Pixmap.Height;
+        if (aspectRatio > 1f)
+        {
+            pixRect.Height = pixRect.Height / aspectRatio;
+            pixRect.Top -= (pixRect.Height - pixRect.Width) / 2f;
+            pixRect.Bottom += (pixRect.Height - pixRect.Width) / 2f;
+        }
+        else
+        {
+            pixRect.Width = pixRect.Width / ((float)Pixmap.Height / Pixmap.Width);
+            pixRect.Left -= (pixRect.Width - pixRect.Height) / 2f;
+            pixRect.Right -= (pixRect.Width - pixRect.Height) / 2f;
+        }
         Paint.Draw(pixRect, Pixmap);
 
         if (MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Count > 0)

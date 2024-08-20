@@ -159,6 +159,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
         // Scale the quad to be the same aspect ratio as the texture
         AspectRatio = TextureSize.x / TextureSize.y;
         var size = new Vector3(1f / AspectRatio, 1f, 1f);
+        if (AspectRatio < 1f)
+            size = new Vector3(1f, AspectRatio, 1f);
 
         BackgroundRect.Transform = Transform.Zero.WithScale(size).WithPosition(new Vector3(0, 0, -1));
         TextureRect.Transform = Transform.Zero.WithScale(size);

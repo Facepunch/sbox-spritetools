@@ -40,6 +40,8 @@ public class RenderingWidget : SpriteRenderingWidget
         if (MainWindow.SelectedAnimation is null) return;
 
         var origin = (pos / new Vector2(100, 100 / AspectRatio)) + (Vector2.One * 0.5f);
+        if (AspectRatio < 1f)
+            origin = (pos / new Vector2(100 * AspectRatio, 100)) + (Vector2.One * 0.5f);
         if (!holdingControl)
         {
             origin = origin.SnapToGrid(1f / TextureSize.x, true, false);
@@ -119,6 +121,8 @@ public class RenderingWidget : SpriteRenderingWidget
     {
         base.PreFrame();
         var sizeVec = new Vector2(100, 100 / AspectRatio);
+        if (AspectRatio < 1f)
+            sizeVec = new Vector2(100 * AspectRatio, 100);
 
         float scale = Camera.OrthoHeight / 1024f;
         if (MainWindow.SelectedAnimation is not null)
