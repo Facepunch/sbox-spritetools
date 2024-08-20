@@ -24,7 +24,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
     Vector2 cameraGrabPos = Vector2.Zero;
     bool cameraGrabbing = false;
 
-    protected virtual bool CanZoom => false;
+    protected virtual bool CanZoom => true;
 
     public SpriteRenderingWidget(Widget parent) : base(parent)
     {
