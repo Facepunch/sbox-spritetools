@@ -255,6 +255,29 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 
 		CollisionMesh = mesh.Rebuild();
 		RebuildImmediately();
+		RebuildBounds();
+	}
+
+	void RebuildBounds()
+	{
+		var minPosition = Vector3.One * float.MaxValue;
+		var maxPosition = Vector3.One * float.MinValue;
+
+		foreach (var layer in Layers)
+		{
+			var size = layer.TilesetResource.GetCurrentTileSize();
+			foreach (var tile in layer.Tiles)
+			{
+				var pos = Vector2Int.Parse(tile.Key);
+				var position = new Vector3(pos.x * size.x, pos.y * size.y, 0);
+
+				minPosition = Vector3.Min(minPosition, position);
+				maxPosition = Vector3.Max(maxPosition, position + new Vector3(size.x, size.y, 0));
+			}
+		}
+
+		minPosition.z -= 2;
+		_so.Bounds = new BBox(minPosition, maxPosition).Translate(Transform.Position);
 	}
 
 	List<BBox> CollisionBoxes = new();
