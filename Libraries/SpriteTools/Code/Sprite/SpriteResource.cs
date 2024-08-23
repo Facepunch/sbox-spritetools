@@ -58,6 +58,24 @@ public class SpriteResource : GameResource
 		return atlas.GetTextureFromFrame(0);
 	}
 
+	/// <summary>
+	/// Returns a list of all the texture paths used by this sprite.
+	/// </summary>
+	/// <returns></returns>
+	public List<string> GetAllTexturePaths()
+	{
+		var paths = new List<string>();
+		foreach (var animation in Animations)
+		{
+			foreach (var frame in animation.Frames)
+			{
+				if (paths.Contains(frame.FilePath)) continue;
+				paths.Add(frame.FilePath);
+			}
+		}
+		return paths;
+	}
+
 }
 
 public class SpriteAnimation
