@@ -201,6 +201,8 @@ public class RenderingWidget : SpriteRenderingWidget
 
 				if (Gizmo.IsHovered)
 				{
+					Cursor = CursorShape.Finger;
+					timeSinceLastCornerHover = 0f;
 					using (Gizmo.Scope("hover"))
 					{
 						Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
