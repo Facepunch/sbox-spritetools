@@ -30,6 +30,11 @@ public class TilesetResource : GameResource
 	[Hide] public Vector2Int CurrentTextureSize { get; set; } = Vector2Int.One;
 	[Hide] public Vector2Int CurrentTileSize { get; set; } = new Vector2Int(32, 32);
 
+	[JsonIgnore, Hide] internal Dictionary<Guid, TileTextureData> TextureData { get; set; } = new();
+	[JsonIgnore, Hide] internal Dictionary<Guid, string> TextureHashes { get; set; } = new();
+	[JsonIgnore, Hide] public Dictionary<Guid, Texture> TileTextures { get; set; } = new();
+	[JsonIgnore, Hide] internal Dictionary<string, (Vector2Int, Color32[])> TilesetPixels { get; set; } = new();
+
 	public Vector2 GetTiling()
 	{
 		return (Vector2)CurrentTileSize / CurrentTextureSize;
@@ -55,12 +60,105 @@ public class TilesetResource : GameResource
 		Tiles.Add(tile);
 		TileMap[tile.Id] = tile;
 		tile.Tileset = this;
+		InternalUpdateTileTexture(tile);
 	}
 
 	public void RemoveTile(Tile tile)
 	{
 		TileMap.Remove(tile.Id);
 		Tiles.Remove(tile);
+	}
+
+	public void InternalUpdateTileTextures()
+	{
+		TextureData ??= new();
+
+		foreach (var tile in Tiles)
+		{
+			InternalUpdateTileTexture(tile);
+		}
+
+		foreach (var texture in TileTextures)
+		{
+			if (!Tiles.Exists(x => x.Id == texture.Key))
+			{
+				texture.Value?.Dispose();
+				TileTextures.Remove(texture.Key);
+				TextureData.Remove(texture.Key);
+				TextureHashes.Remove(texture.Key);
+			}
+		}
+	}
+
+	public void InternalUpdateTileTexture(Tile tile)
+	{
+		TextureData ??= new();
+		Log.Info($"Trying to update tile {tile.Name}");
+
+		InternalUpdateTileData(tile);
+		if (TileTextures.TryGetValue(tile.Id, out var texture))
+		{
+			texture?.Dispose();
+		}
+
+		var tileData = TextureData[tile.Id];
+		var builder = Texture.Create(tileData.Size.x, tileData.Size.y);
+		builder.WithData(tileData.Data);
+		builder.WithMips(0);
+		var tileTexture = builder.Finish();
+
+		TileTextures[tile.Id] = tileTexture;
+	}
+
+	public void InternalUpdateTileData(Tile tile)
+	{
+		var hash = $"{FilePath}_{tile.Position}_{tile.Size}";
+		if (TextureHashes.TryGetValue(tile.Id, out var oldHash))
+		{
+			if (hash == oldHash)
+			{
+				return;
+			}
+		}
+
+		var rect = new Rect(tile.Position, tile.Size);
+		rect.Position = rect.Position * TileSize + rect.Position * TileSeparation;
+		rect.Width *= TileSize.x;
+		rect.Height *= TileSize.y;
+
+		var textureSize = new Vector2Int(8, 8);
+		var pixels = new Color32[1];
+		if (TilesetPixels.TryGetValue(FilePath, out var cachedPixels))
+		{
+			(textureSize, pixels) = cachedPixels;
+		}
+		else
+		{
+			var texture = Texture.Load(Sandbox.FileSystem.Mounted, FilePath);
+			textureSize = new Vector2Int(texture.Width, texture.Height);
+			pixels = texture.GetPixels();
+			TilesetPixels[FilePath] = (textureSize, pixels);
+		}
+
+		int size = (int)(rect.Width * rect.Height * 4);
+		var data = new byte[size];
+
+		for (int i = 0; i < rect.Width; i++)
+		{
+			for (int j = 0; j < rect.Height; j++)
+			{
+				var index = (int)(rect.Left + i + (rect.Top + j) * textureSize.x);
+				var pixel = pixels[index];
+				data[(int)(i + j * rect.Width) * 4] = pixel.r;
+				data[(int)(i + j * rect.Width) * 4 + 1] = pixel.g;
+				data[(int)(i + j * rect.Width) * 4 + 2] = pixel.b;
+				data[(int)(i + j * rect.Width) * 4 + 3] = pixel.a;
+			}
+		}
+
+
+		TextureData[tile.Id] = new TilesetResource.TileTextureData((Vector2Int)rect.Size, data);
+		TextureHashes[tile.Id] = hash;
 	}
 
 	public string Serialize()
@@ -107,6 +205,18 @@ public class TilesetResource : GameResource
 		{
 			tile.Tileset = this;
 			TileMap[tile.Id] = tile;
+		}
+	}
+
+	public class TileTextureData
+	{
+		public Vector2Int Size { get; set; }
+		public byte[] Data { get; set; }
+
+		public TileTextureData(Vector2Int size, byte[] data)
+		{
+			Size = size;
+			Data = data;
 		}
 	}
 

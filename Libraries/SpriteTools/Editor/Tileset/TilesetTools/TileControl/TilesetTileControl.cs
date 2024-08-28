@@ -38,8 +38,6 @@ public class TilesetTileControl : Widget
 		Layout.Margin = 4;
 		Layout.Spacing = 4;
 
-		LoadPixmap();
-
 		var serializedObject = Tile.GetSerialized();
 		serializedObject.TryGetProperty(nameof(TilesetResource.Tile.Name), out var name);
 		labelText = new LabelTextEntry(name);
@@ -86,11 +84,20 @@ public class TilesetTileControl : Widget
 			Paint.DrawRect(LocalRect, 4);
 		}
 
-		if (Pixmap is not null)
+		// if (Pixmap is null) LoadPixmap();
+		// if (Pixmap is not null)
+		// {
+		// 	var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
+		// 	pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 7);
+		// 	Paint.Draw(pixRect, Pixmap);
+		// }
+
+		if (Tile.Tileset.TileTextures.TryGetValue(Tile.Id, out var texture))
 		{
 			var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
 			pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 7);
-			Paint.Draw(pixRect, Pixmap);
+			var pixmap = Pixmap.FromTexture(texture);
+			Paint.Draw(pixRect, pixmap);
 		}
 
 		if (draggingAbove)

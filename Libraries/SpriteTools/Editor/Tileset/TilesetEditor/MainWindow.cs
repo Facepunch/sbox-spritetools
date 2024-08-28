@@ -243,6 +243,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 			_asset = null;
 		}
 
+		Tileset?.InternalUpdateTileTextures();
+
 		// Register the asset if we haven't already
 		_asset ??= AssetSystem.RegisterFile(savePath);
 		_asset.SaveToDisk(Tileset);
@@ -400,6 +402,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		PushRedo();
 
 		Tileset.InternalUpdateTiles();
+		Tileset.InternalUpdateTileTextures();
 
 		UpdateEverything();
 	}
