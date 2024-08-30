@@ -422,8 +422,6 @@ public class RenderingWidget : SpriteRenderingWidget
 					}
 				}
 			}
-
-			DrawBox(x, y, width, height);
 		}
 	}
 
