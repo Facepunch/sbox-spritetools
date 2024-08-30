@@ -520,6 +520,8 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 			var tilemap = tileset.TileMap;
 
 			var combo = GetMaterial(tileset);
+			if (combo.Item1 is null || combo.Item2 is null) continue;
+
 			var tiling = combo.Item1.GetTiling();
 			var totalTiles = layer.Tiles.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId));
 			var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles.Count() * 6);

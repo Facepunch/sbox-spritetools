@@ -35,6 +35,11 @@ public class TileAtlas
             return Cache[tilesetResource];
         }
 
+        if (tilesetResource.Tiles.Count() == 0)
+        {
+            return null;
+        }
+
         var path = tilesetResource.FilePath;
         var texture = Texture.Load(FileSystem.Mounted, path);
         var atlas = new TileAtlas();
