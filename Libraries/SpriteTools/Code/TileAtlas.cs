@@ -53,6 +53,7 @@ public class TileAtlas
         atlas.TileCounts = new Vector2Int(hTiles, vTiles);
 
         var textureSize = new Vector2Int(hTiles * (tileSize.x + 2), vTiles * (tileSize.y + 2));
+        Log.Info($"Creating atlas of size {textureSize.x}x{textureSize.y}");
 
         byte[] textureData = new byte[textureSize.x * textureSize.y * 4];
         for (int i = 0; i < textureSize.x; i++)
@@ -88,6 +89,7 @@ public class TileAtlas
                             var sampleInd = (int)((sampleY + Math.Clamp(j, 0, tSize.y - 1)) * texture.Size.x + sampleX + Math.Clamp(i, 0, tSize.x - 1));
                             var color = pixels[sampleInd];
                             var ind = ((tPos.y + j) * textureSize.x + tPos.x + i) * 4;
+                            if (ind < 0 || ind >= textureData.Length) continue;
                             textureData[ind + 0] = color.r;
                             textureData[ind + 1] = color.g;
                             textureData[ind + 2] = color.b;
