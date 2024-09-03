@@ -11,6 +11,7 @@ namespace SpriteTools;
 public class TextureAtlas
 {
     public int Size { get; private set; } = 1;
+    public Vector2 FrameSize => (MaxFrameSize.y == 0) ? new Vector2(Texture.Width, Texture.Height) : MaxFrameSize - (Vector2.One * 2);
 
     Texture Texture;
     Vector2 MaxFrameSize = Vector2.Zero;

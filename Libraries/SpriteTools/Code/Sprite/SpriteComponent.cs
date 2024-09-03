@@ -128,6 +128,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     /// </summary>
     [Property] public float PlaybackSpeed { get; set; } = 1.0f;
 
+    /// <summary>
+    /// Whether or not the object should scale based on the resolution of the Sprite.
+    /// </summary>
+    [Property] public bool UsePixelScale { get; set; } = false;
+
 
     /// <summary>
     /// Whether or not the sprite should render itself/its shadows.
@@ -235,9 +240,12 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get
         {
             var ratio = CurrentTexture?.AspectRatio ?? 1;
-            BBox bbox = new BBox(new Vector3(-50, -50 * ratio, -0.1f), new Vector3(50, 50 * ratio, 0.1f));
+            var size = new Vector2(50, 50);
+            if (UsePixelScale)
+                size *= CurrentTexture.FrameSize / 200f;
+            BBox bbox = new BBox(new Vector3(-size.x, -size.y * ratio, -0.1f), new Vector3(size.x, size.y * ratio, 0.1f));
             var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
-            bbox = bbox.Translate(new Vector3(origin.y, origin.x, 0) * -100f);
+            bbox = bbox.Translate(new Vector3(origin.y, origin.x, 0) * new Vector3(-size.x * 2f, -size.y * 2f, 1f));
             return bbox;
         }
     }
@@ -409,6 +417,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         var pos = Transform.Position;
         var rot = Transform.Rotation * _rotationOffset;
         var scale = Transform.Scale * new Vector3(1f, 1f * (CurrentTexture?.AspectRatio ?? 1f), 1f);
+        if (UsePixelScale)
+            scale *= (new Vector3(CurrentTexture.FrameSize.x, CurrentTexture.FrameSize.y, 1f)) / 200f;
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
         pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
         pos = pos.RotateAround(Transform.Position, rot);
