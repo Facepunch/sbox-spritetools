@@ -242,7 +242,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             var ratio = CurrentTexture?.AspectRatio ?? 1;
             var size = new Vector2(50, 50);
             if (UsePixelScale)
-                size *= CurrentTexture.FrameSize / 200f;
+            {
+                var scl = CurrentTexture.FrameSize.x < CurrentTexture.FrameSize.x ? CurrentTexture.FrameSize.y : CurrentTexture.FrameSize.y;
+                size *= new Vector2(scl, scl) / 200f;
+            }
             BBox bbox = new BBox(new Vector3(-size.x, -size.y * ratio, -0.1f), new Vector3(size.x, size.y * ratio, 0.1f));
             var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
             bbox = bbox.Translate(new Vector3(origin.y, origin.x, 0) * new Vector3(-size.x * 2f, -size.y * 2f, 1f));
@@ -418,7 +421,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         var rot = Transform.Rotation * _rotationOffset;
         var scale = Transform.Scale * new Vector3(1f, 1f * (CurrentTexture?.AspectRatio ?? 1f), 1f);
         if (UsePixelScale)
-            scale *= (new Vector3(CurrentTexture.FrameSize.x, CurrentTexture.FrameSize.y, 1f)) / 200f;
+        {
+            var scl = CurrentTexture.FrameSize.x < CurrentTexture.FrameSize.x ? CurrentTexture.FrameSize.y : CurrentTexture.FrameSize.y;
+            scale *= (new Vector3(scl, scl, 1f)) / 200f;
+        }
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
         pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
         pos = pos.RotateAround(Transform.Position, rot);
