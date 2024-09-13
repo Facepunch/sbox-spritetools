@@ -130,19 +130,12 @@ public class Inspector : Widget
                 MainWindow.preview.UpdateTexture(prop.GetValue<string>());
         };
 
-        var props = controlSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
+        controlSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
         {
             if (segmentedControl.SelectedIndex == 0 && prop.GroupName != "Tileset Setup") return false;
             if (segmentedControl.SelectedIndex == 1 && prop.GroupName == "Tileset Setup") return false;
             return prop.HasAttribute<PropertyAttribute>() && !prop.HasAttribute<HideAttribute>();
         });
-
-        foreach (var group in props)
-        {
-            if (group.Value is not TilesetTileListControl newTileList) continue;
-            newTileList.MainWindow = MainWindow;
-            tileList = newTileList;
-        }
 
         var setupVisible = segmentedControl.SelectedIndex == 0;
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
