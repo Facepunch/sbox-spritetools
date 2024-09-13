@@ -57,6 +57,19 @@ public class TilesetTileListControl : ControlWidget
 
     protected override void OnPaint()
     {
+        if (MainWindow is null)
+        {
+            foreach (var window in MainWindow.OpenWindows)
+            {
+                if (IsDescendantOf(window.inspector))
+                {
+                    MainWindow = window;
+                    window.inspector.tileList = this;
+                    break;
+                }
+            }
+        }
+
         Paint.SetBrush(Theme.ControlBackground);
         Paint.SetPen(Theme.ControlBackground);
         Paint.DrawRect(scrollArea.LocalRect, 4);
