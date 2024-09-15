@@ -439,10 +439,12 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 			return layer;
 		}
 
-		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition, int angle, bool flipX, bool flipY)
+		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition = default, int angle = 0, bool flipX = false, bool flipY = false, bool rebuild = true)
 		{
 			var tile = new Tile(tileId, cellPosition, angle, flipX, flipY);
 			Tiles[position.ToString()] = tile;
+			if (rebuild && TilesetComponent.IsValid())
+				TilesetComponent.IsDirty = true;
 		}
 
 		public Tile GetTile(Vector3 position)

@@ -147,8 +147,7 @@ public partial class TilesetTool : EditorTool
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetTile(position, tileId, cellPosition, Angle, HorizontalFlip, VerticalFlip);
-		if (rebuild) SelectedComponent.IsDirty = true;
+		SelectedLayer.SetTile(position, tileId, cellPosition, Angle, HorizontalFlip, VerticalFlip, rebuild);
 	}
 
 	internal void EraseTile(Vector2 position, bool rebuild = true)
