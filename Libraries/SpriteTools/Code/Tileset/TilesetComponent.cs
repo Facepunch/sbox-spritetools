@@ -29,6 +29,14 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	}
 	List<Layer> _layers;
 
+	/// <summary>
+	/// The distance between layers, this is useful when you want to position things between layers.
+	/// </summary>
+	[Property, Group("Layers"), ShowIf(nameof(TilesetComponent.HasMultipleLayers), true)]
+	public float LayerDistance { get; set; } = 1f;
+
+	bool HasMultipleLayers => Layers.Count > 1;
+
 	[Property, Group("Collision")]
 	public bool HasCollider
 	{
@@ -550,7 +558,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 
 				var size = tileset.GetTileSize();
-				var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(size.x, size.y, 1);
+				var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(size.x, size.y, Component.LayerDistance);
 
 				var topLeft = new Vector3(position.x, position.y, position.z);
 				var topRight = new Vector3(position.x + size.x, position.y, position.z);
