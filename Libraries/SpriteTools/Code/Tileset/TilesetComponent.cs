@@ -70,7 +70,7 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	private List<Vector3> CollisionVertices { get; set; } = new();
 	private List<int[]> CollisionFaces { get; set; } = new();
 
-	TilesetSceneObject _so;
+	List<TilesetSceneObject> _sos = new();
 
 	protected override void OnStart()
 	{
@@ -83,10 +83,6 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	{
 		base.OnEnabled();
 
-		_so = new TilesetSceneObject(this, Scene.SceneWorld);
-		_so.Transform = Transform.World;
-		_so.Tags.SetFrom(Tags);
-
 		if (Layers is null) return;
 		foreach (var layer in Layers)
 		{
@@ -98,13 +94,21 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	{
 		base.OnDisabled();
 
-		_so?.Delete();
-		_so = null;
+		foreach (var _so in _sos)
+		{
+			_so.Delete();
+		}
 	}
 
 	protected override void OnUpdate()
 	{
 		base.OnUpdate();
+
+		_sos ??= new();
+		if (Layers.Count != _sos.Count)
+		{
+			RebuildSceneObjects();
+		}
 
 		if (IsDirty)
 		{
@@ -117,26 +121,29 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 	{
 		base.OnTagsChanged();
 
-		_so?.Tags.SetFrom(Tags);
+		foreach (var _so in _sos)
+			_so?.Tags.SetFrom(Tags);
 	}
 
 	protected override void OnPreRender()
 	{
 		base.OnPreRender();
 
-		if (_so is null) return;
 		if (Layers is null) return;
 		if (Layers.Count == 0)
 		{
-			_so.RenderingEnabled = false;
 			return;
 		}
 
-		_so.RenderingEnabled = true;
-		_so.Transform = Transform.World;
-		_so.Flags.CastShadows = false;
-		_so.Flags.IsOpaque = false;
-		_so.Flags.IsTranslucent = true;
+		foreach (var _so in _sos)
+		{
+			if (!_so.IsValid()) continue;
+			_so.RenderingEnabled = true;
+			_so.Transform = Transform.World;
+			_so.Flags.CastShadows = false;
+			_so.Flags.IsOpaque = false;
+			_so.Flags.IsTranslucent = true;
+		}
 	}
 
 	protected override void DrawGizmos()
@@ -161,12 +168,32 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 						Gizmo.Draw.Line(a, b);
 					}
 				}
-
-				Gizmo.Draw.Color = Color.Yellow;
-				var bbox = CollisionMesh.Bounds;
-				if (bbox.Size.Length < 0.1f) bbox = new BBox(bbox.Center - Vector3.One * 0.1f, bbox.Center + Vector3.One * 0.1f);
-				Gizmo.Draw.LineBBox(bbox);
 			}
+		}
+
+		foreach (var _so in _sos)
+		{
+			if (!_so.IsValid()) continue;
+			using (Gizmo.Scope("tileset"))
+			{
+				Gizmo.Draw.Color = Color.Yellow;
+				Gizmo.Draw.LineThickness = 1f;
+				Gizmo.Draw.LineBBox(_so.Bounds);
+			}
+		}
+	}
+
+	void RebuildSceneObjects()
+	{
+		foreach (var _so in _sos)
+		{
+			_so.Delete();
+		}
+
+		_sos = new List<TilesetSceneObject>();
+		foreach (var layer in Layers)
+		{
+			_sos.Add(new TilesetSceneObject(this, Scene.SceneWorld, layer));
 		}
 	}
 
@@ -263,29 +290,6 @@ public sealed class TilesetComponent : Collider, Component.ExecuteInEditor
 
 		CollisionMesh = mesh.Rebuild();
 		RebuildImmediately();
-		RebuildBounds();
-	}
-
-	void RebuildBounds()
-	{
-		var minPosition = Vector3.One * float.MaxValue;
-		var maxPosition = Vector3.One * float.MinValue;
-
-		foreach (var layer in Layers)
-		{
-			var size = layer.TilesetResource.GetCurrentTileSize();
-			foreach (var tile in layer.Tiles)
-			{
-				var pos = Vector2Int.Parse(tile.Key);
-				var position = new Vector3(pos.x * size.x, pos.y * size.y, 0);
-
-				minPosition = Vector3.Min(minPosition, position);
-				maxPosition = Vector3.Max(maxPosition, position + new Vector3(size.x, size.y, 0));
-			}
-		}
-
-		minPosition.z -= 2;
-		_so.Bounds = new BBox(minPosition, maxPosition).Translate(Transform.Position);
 	}
 
 	List<BBox> CollisionBoxes = new();
@@ -499,10 +503,12 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 	TilesetComponent Component;
 	Dictionary<TilesetResource, (TileAtlas, Material)> Materials = new();
 	Material MissingMaterial;
+	TilesetComponent.Layer Layer;
 
-	public TilesetSceneObject(TilesetComponent component, SceneWorld world) : base(world)
+	public TilesetSceneObject(TilesetComponent component, SceneWorld world, TilesetComponent.Layer layer) : base(world)
 	{
 		Component = component;
+		Layer = layer;
 
 		MissingMaterial = Material.Load("materials/sprite_2d.vmat").CreateCopy();
 		MissingMaterial.Set("Texture", Texture.Load("images/missing-tile.png"));
@@ -518,25 +524,27 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 		Dictionary<Vector2Int, TilesetComponent.Tile> missingTiles = new();
 
-		foreach (var layer in layers)
+		if (Layer?.IsVisible != true) return;
+
+		int i = 0;
+		int layerIndex = layers.IndexOf(Layer);
+
 		{
-			if (!layer.IsVisible) continue;
-
-			int i = 0;
-			int layerIndex = layers.IndexOf(layer);
-
-			var tileset = layer.TilesetResource;
-			if (tileset is null) continue;
+			var tileset = Layer.TilesetResource;
+			if (tileset is null) return;
 			var tilemap = tileset.TileMap;
 
 			var combo = GetMaterial(tileset);
-			if (combo.Item1 is null || combo.Item2 is null) continue;
+			if (combo.Item1 is null || combo.Item2 is null) return;
 
 			var tiling = combo.Item1.GetTiling();
-			var totalTiles = layer.Tiles.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId));
+			var totalTiles = Layer.Tiles.Where(x => x.Value.TileId == default || tilemap.ContainsKey(x.Value.TileId));
 			var vertex = ArrayPool<Vertex>.Shared.Rent(totalTiles.Count() * 6);
 
-			foreach (var tile in layer.Tiles)
+			var minPosition = new Vector3(int.MaxValue, int.MaxValue, int.MaxValue);
+			var maxPosition = new Vector3(int.MinValue, int.MinValue, int.MinValue);
+
+			foreach (var tile in Layer.Tiles)
 			{
 				var pos = Vector2Int.Parse(tile.Key);
 				Vector2Int offsetPos = Vector2Int.Zero;
@@ -559,6 +567,9 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 				var size = tileset.GetTileSize();
 				var position = new Vector3(pos.x, pos.y, layerIndex) * new Vector3(size.x, size.y, Component.LayerDistance);
+
+				minPosition = Vector3.Min(minPosition, position);
+				maxPosition = Vector3.Max(maxPosition, position);
 
 				var topLeft = new Vector3(position.x, position.y, position.z);
 				var topRight = new Vector3(position.x + size.x, position.y, position.z);
@@ -629,6 +640,12 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 			Graphics.Draw(vertex, totalTiles.Count() * 6, combo.Item2, Attributes);
 			ArrayPool<Vertex>.Shared.Return(vertex);
+
+			var siz = tileset.GetTileSize();
+			maxPosition += new Vector3(siz.x, siz.y, 0);
+			Bounds = new BBox(minPosition, maxPosition + Vector3.Down * 0.01f);
+
+
 		}
 
 		if (missingTiles.Count > 0)
