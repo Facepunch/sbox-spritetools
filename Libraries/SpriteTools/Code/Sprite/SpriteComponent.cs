@@ -244,7 +244,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             if (UsePixelScale)
             {
                 var scl = CurrentTexture.FrameSize.x < CurrentTexture.FrameSize.x ? CurrentTexture.FrameSize.y : CurrentTexture.FrameSize.y;
-                size *= new Vector2(scl, scl) / 200f;
+                size *= new Vector2(scl, scl) / 100f;
             }
             BBox bbox = new BBox(new Vector3(-size.x, -size.y * ratio, -0.1f), new Vector3(size.x, size.y * ratio, 0.1f));
             var origin = (CurrentAnimation?.Origin ?? new Vector2(0.5f, 0.5f)) - new Vector2(0.5f, 0.5f);
@@ -423,7 +423,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (UsePixelScale)
         {
             var scl = CurrentTexture.FrameSize.x < CurrentTexture.FrameSize.x ? CurrentTexture.FrameSize.y : CurrentTexture.FrameSize.y;
-            scale *= (new Vector3(scl, scl, 1f)) / 200f;
+            scale *= (new Vector3(scl, scl, 1f)) / 100f;
         }
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
         pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
