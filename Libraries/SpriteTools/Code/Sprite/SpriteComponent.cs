@@ -80,6 +80,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _tint;
         set
         {
+            if (_tint == value) return;
             _tint = value;
             if (SceneObject != null)
                 SceneObject.ColorTint = value;
@@ -97,6 +98,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _flashTint;
         set
         {
+            if (_flashTint == value) return;
             _flashTint = value;
             SpriteMaterial?.Set("g_vFlashColor", value);
             SpriteMaterial?.Set("g_flFlashAmount", value.a);
