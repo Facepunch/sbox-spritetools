@@ -1,0 +1,222 @@
+{
+  "FilePath": "images/tiles/other_tiles.png",
+  "TileSize": "64,64",
+  "TileSeparation": "0,0",
+  "TileScale": 1,
+  "Tiles": [
+    {
+      "Id": "ca37ea7f-5a3d-431e-a5d3-0c9755c0948f",
+      "Name": "",
+      "Position": "0,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "3b5e28cf-e152-4325-bb5f-9b7ec558d82c",
+      "Name": "",
+      "Position": "2,0",
+      "Size": "1,1"
+    },
+    {
+      "Id": "2c9a21f1-9c83-41c7-bd0d-3865d5141115",
+      "Name": "",
+      "Position": "3,0",
+      "Size": "1,1"
+    },
+    {
+      "Id": "b29bf302-2bed-4b68-8bf2-07a7b3a7c32f",
+      "Name": "",
+      "Position": "4,0",
+      "Size": "1,1"
+    },
+    {
+      "Id": "926b8ebd-821e-41cd-a73d-10fa2cd3e484",
+      "Name": "",
+      "Position": "4,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "7c66dad2-39b8-4200-9e56-83b6c8836beb",
+      "Name": "",
+      "Position": "3,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "c30d4cc4-d313-45f9-9d30-49c91154f217",
+      "Name": "",
+      "Position": "2,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "14954ff4-1590-4238-a54b-886ba46d7562",
+      "Name": "",
+      "Position": "2,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "5183516b-2b4a-432b-8388-e421ea55a4ed",
+      "Name": "",
+      "Position": "3,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "1be67394-aaa3-4924-8a7d-13bb8a28610b",
+      "Name": "",
+      "Position": "4,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "6e868642-f9bb-4c65-92c6-3521d916327e",
+      "Name": "",
+      "Position": "4,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "d14d757d-b3b3-4b0b-ac1b-a1dce094c491",
+      "Name": "",
+      "Position": "3,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "e4243aef-c415-41e0-aca5-9888e804d4ca",
+      "Name": "",
+      "Position": "2,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "b5955b84-195f-4496-8687-ea111f5ec462",
+      "Name": "",
+      "Position": "1,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "ac62271b-3567-4df3-9780-955b5e2a331e",
+      "Name": "",
+      "Position": "0,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "c7218b05-bd3c-4a9d-a4f9-c81f39ec0914",
+      "Name": "",
+      "Position": "1,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "eb0d6009-4cf8-4db6-b1c3-843ade2f234a",
+      "Name": "",
+      "Position": "2,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "9a36d772-d3aa-46f2-b812-fb903fcc9530",
+      "Name": "",
+      "Position": "0,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "6c6de972-c4d5-4e32-b520-f2b3dbb0b779",
+      "Name": "",
+      "Position": "3,4",
+      "Size": "1,2"
+    },
+    {
+      "Id": "8d11c014-2d1d-493e-974a-4ae7a8c8329c",
+      "Name": "",
+      "Position": "4,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "3ba8b9d3-88ff-46a1-a6b9-c032e7e1d25b",
+      "Name": "",
+      "Position": "6,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "d9ff8b53-7545-4cc3-9467-efe428bf6b0e",
+      "Name": "",
+      "Position": "6,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "7ab5d29a-0183-48b1-9aaa-454274f926ec",
+      "Name": "",
+      "Position": "6,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "9359d741-8107-406c-b6ce-902de4941020",
+      "Name": "",
+      "Position": "8,0",
+      "Size": "1,1"
+    },
+    {
+      "Id": "92cfd4a1-fdb7-4896-bcbe-d12ffc0c7d8d",
+      "Name": "",
+      "Position": "11,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "99060f42-1948-4983-8b17-f24c5b6845d5",
+      "Name": "",
+      "Position": "12,1",
+      "Size": "1,1"
+    },
+    {
+      "Id": "981aaf4b-21bd-4157-8877-cde2f8256b5a",
+      "Name": "",
+      "Position": "12,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "4822be99-c25c-476f-94b0-844b28e9e7a7",
+      "Name": "",
+      "Position": "11,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "1c7d6933-1b54-40af-9359-2371caa53500",
+      "Name": "",
+      "Position": "12,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "0837f0a4-ad53-469c-a385-82bf5c6acadd",
+      "Name": "",
+      "Position": "12,4",
+      "Size": "1,2"
+    },
+    {
+      "Id": "9e0a39b7-7ea4-4732-8519-2050a75f5f3e",
+      "Name": "",
+      "Position": "10,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "028ce03e-7f70-4a62-9149-6ae0120a25a5",
+      "Name": "",
+      "Position": "8,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "69bb0efd-a115-46c3-8a99-bd683a1293b8",
+      "Name": "",
+      "Position": "8,2",
+      "Size": "1,1"
+    },
+    {
+      "Id": "e9d5f5fc-d9ea-49a9-9e61-2cf49d070c9a",
+      "Name": "",
+      "Position": "6,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "84097cdf-9dd5-49bd-a800-8a797b3a30e4",
+      "Name": "",
+      "Position": "9,5",
+      "Size": "1,1"
+    }
+  ],
+  "CurrentTextureSize": "960,1536",
+  "CurrentTileSize": "64,64",
+  "__references": [],
+  "__version": 0
+}

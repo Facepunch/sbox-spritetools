@@ -61,6 +61,7 @@
           "ColliderWidth": 0,
           "HasCollider": true,
           "IsTrigger": false,
+          "LayerDistance": 1,
           "Layers": [
             {
               "Name": "Walls",
@@ -1770,5 +1771,6 @@
   "Description": "",
   "ResourceVersion": 1,
   "__references": [],
+  "IsValid": true,
   "__version": 1
 }

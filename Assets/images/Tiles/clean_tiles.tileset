@@ -1,0 +1,204 @@
+{
+  "FilePath": "images/tiles/clean_tiles_reloaded.png",
+  "TileSize": "64,64",
+  "TileSeparation": "0,0",
+  "TileScale": 1,
+  "Tiles": [
+    {
+      "Id": "fb047dbc-d9e5-48ab-8775-a63132d36c74",
+      "Name": "",
+      "Position": "11,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "a7f8d50b-f2b1-45fa-8e1b-59dbc445c9dc",
+      "Name": "",
+      "Position": "11,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "46453256-3445-4701-b500-4cd588b25fc9",
+      "Name": "",
+      "Position": "7,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "71a5f87a-d628-4f7e-86d9-13482a2f8028",
+      "Name": "",
+      "Position": "7,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "5393cd99-6033-4192-b6eb-a705c228179a",
+      "Name": "",
+      "Position": "8,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "3d9b2ff9-5bcf-45e8-a3d3-a950b3c722ed",
+      "Name": "",
+      "Position": "9,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "f82a88d9-07e8-4a1c-99f1-82694a3730a0",
+      "Name": "",
+      "Position": "8,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "935dc04c-d558-4d7c-bc20-751183f886cd",
+      "Name": "",
+      "Position": "9,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "2152c0ec-c2df-491a-beb3-7ae24ba004e6",
+      "Name": "",
+      "Position": "7,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "d26b101f-48c6-475c-9637-125ba57af01d",
+      "Name": "",
+      "Position": "8,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "fe4d4d56-6def-441e-b3c9-167d7ac3d88c",
+      "Name": "",
+      "Position": "9,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "144e641f-4669-4fe1-be09-91737d00e4be",
+      "Name": "",
+      "Position": "7,10",
+      "Size": "1,1"
+    },
+    {
+      "Id": "2dab6294-817c-4445-ba87-a0c614ebc4d2",
+      "Name": "",
+      "Position": "7,11",
+      "Size": "1,1"
+    },
+    {
+      "Id": "0e62760d-7d91-4b2e-b668-046369696155",
+      "Name": "",
+      "Position": "8,10",
+      "Size": "1,1"
+    },
+    {
+      "Id": "eafac036-6bef-408e-81ea-b62969524067",
+      "Name": "",
+      "Position": "8,11",
+      "Size": "1,1"
+    },
+    {
+      "Id": "64fa0a59-ce6c-481b-baae-bf3b2644a854",
+      "Name": "",
+      "Position": "9,10",
+      "Size": "1,1"
+    },
+    {
+      "Id": "b94eb68b-91a1-4d68-b74f-8d3f29b65c77",
+      "Name": "",
+      "Position": "9,11",
+      "Size": "1,1"
+    },
+    {
+      "Id": "6d8dfa5b-afd3-48c1-bf5a-5793774f1766",
+      "Name": "",
+      "Position": "9,12",
+      "Size": "1,1"
+    },
+    {
+      "Id": "901f5bd1-ab89-4d53-bc89-1f2612fbe488",
+      "Name": "",
+      "Position": "8,12",
+      "Size": "1,1"
+    },
+    {
+      "Id": "505b9d84-c1a6-4c65-bf67-a2bf0d0be3db",
+      "Name": "",
+      "Position": "7,12",
+      "Size": "1,1"
+    },
+    {
+      "Id": "569b152c-7bf5-48ea-b218-02f0895ccfb7",
+      "Name": "",
+      "Position": "16,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "a9e5827a-5f94-405c-8c97-05b1f290c64d",
+      "Name": "",
+      "Position": "17,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "05126ace-deac-4694-b51b-9cdd97e4b0b6",
+      "Name": "",
+      "Position": "18,3",
+      "Size": "1,1"
+    },
+    {
+      "Id": "af69b7eb-53ca-45c2-81c2-5d224cd5826e",
+      "Name": "",
+      "Position": "16,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "ff8b4bf9-8e43-4f01-8554-2e713e2226a0",
+      "Name": "",
+      "Position": "16,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "56047acc-3a7d-44a1-a2f9-1ab8084b5de7",
+      "Name": "",
+      "Position": "17,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "0788b692-4a94-4745-bd41-bd2136fa44d5",
+      "Name": "",
+      "Position": "18,4",
+      "Size": "1,1"
+    },
+    {
+      "Id": "2be97266-9f4f-482f-9fd3-f40d0aa9dd56",
+      "Name": "",
+      "Position": "18,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "5813d782-5406-4784-9a8a-b49554e16912",
+      "Name": "",
+      "Position": "17,5",
+      "Size": "1,1"
+    },
+    {
+      "Id": "f542ceb6-5243-4051-b896-fa58108259da",
+      "Name": "",
+      "Position": "16,10",
+      "Size": "3,3"
+    },
+    {
+      "Id": "210b4cfb-a199-499f-bce8-8380141543b4",
+      "Name": "",
+      "Position": "7,18",
+      "Size": "3,3"
+    },
+    {
+      "Id": "518f3dd5-f06e-43ab-9b28-e3a636fd040c",
+      "Name": "",
+      "Position": "16,18",
+      "Size": "3,3"
+    }
+  ],
+  "CurrentTextureSize": "1856,2624",
+  "CurrentTileSize": "64,64",
+  "__references": [],
+  "__version": 0
+}
