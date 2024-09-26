@@ -122,6 +122,7 @@ public class Preview : Widget
         if (MainWindow.SelectedAnimation.Frames.Count <= 0) return;
         var frame = MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex];
         if (frame is null) return;
+        if (!Sandbox.FileSystem.Mounted.FileExists(frame.FilePath)) return;
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, frame.FilePath);
         if (texture is null) return;
         Rendering.SetTexture(texture, frame.SpriteSheetRect);

@@ -17,6 +17,11 @@ public static class PixmapCache
             return cachedPixmap;
         }
 
+        if (!Sandbox.FileSystem.Mounted.FileExists(filePath))
+        {
+            return null;
+        }
+
         var texture = Texture.Load(Sandbox.FileSystem.Mounted, filePath);
         if (rect.Width == 0 || rect.Height == 0)
         {
