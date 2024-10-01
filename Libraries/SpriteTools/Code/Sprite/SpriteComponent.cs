@@ -340,6 +340,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     {
         base.DrawGizmos();
         if (Game.IsPlaying) return;
+        if (Sprite is null) return;
 
         Gizmo.Transform = Gizmo.Transform.WithRotation(Transform.Rotation * _rotationOffset);
         var bbox = Bounds;
@@ -369,48 +370,51 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             return;
         }
 
-        var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(PlaybackSpeed))));
-        _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
-
-        var lastFrame = CurrentAnimation.Frames.Count;
-        if (PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate)
+        var frameCount = CurrentAnimation.Frames.Count;
+        if (frameCount > 1)
         {
-            if (CurrentAnimation.Looping || CurrentFrameIndex < lastFrame - 1)
-            {
-                var frame = CurrentFrameIndex;
-                frame++;
-                if (CurrentAnimation.Looping && frame >= lastFrame)
-                    frame = 0;
-                else if (frame >= lastFrame - 1 && Game.IsPlaying)
-                    _queuedAnimations.Add(CurrentAnimation.Name);
-                CurrentFrameIndex = frame;
-                _timeSinceLastFrame = 0;
+            var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(PlaybackSpeed))));
+            _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
 
-                var currentFrame = CurrentAnimation.Frames[frame];
-                foreach (var tag in currentFrame.Events)
+            if (PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate)
+            {
+                if (CurrentAnimation.Looping || CurrentFrameIndex < frameCount - 1)
                 {
-                    QueueEvent(tag);
+                    var frame = CurrentFrameIndex;
+                    frame++;
+                    if (CurrentAnimation.Looping && frame >= frameCount)
+                        frame = 0;
+                    else if (frame >= frameCount - 1 && Game.IsPlaying)
+                        _queuedAnimations.Add(CurrentAnimation.Name);
+                    CurrentFrameIndex = frame;
+                    _timeSinceLastFrame = 0;
+
+                    var currentFrame = CurrentAnimation.Frames[frame];
+                    foreach (var tag in currentFrame.Events)
+                    {
+                        QueueEvent(tag);
+                    }
                 }
             }
-        }
-        else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
-        {
-            if (CurrentAnimation.Looping || CurrentFrameIndex > 0)
+            else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
             {
-                var frame = CurrentFrameIndex;
-                var currentFrame = CurrentAnimation.Frames[frame];
-                foreach (var tag in currentFrame.Events)
+                if (CurrentAnimation.Looping || CurrentFrameIndex > 0)
                 {
-                    QueueEvent(tag);
-                }
+                    var frame = CurrentFrameIndex;
+                    var currentFrame = CurrentAnimation.Frames[frame];
+                    foreach (var tag in currentFrame.Events)
+                    {
+                        QueueEvent(tag);
+                    }
 
-                frame--;
-                if (CurrentAnimation.Looping && frame < 0)
-                    frame = lastFrame - 1;
-                else if (frame <= 0 && Game.IsPlaying)
-                    OnAnimationComplete?.Invoke(CurrentAnimation.Name);
-                CurrentFrameIndex = frame;
-                _timeSinceLastFrame = 0;
+                    frame--;
+                    if (CurrentAnimation.Looping && frame < 0)
+                        frame = frameCount - 1;
+                    else if (frame <= 0 && Game.IsPlaying)
+                        OnAnimationComplete?.Invoke(CurrentAnimation.Name);
+                    CurrentFrameIndex = frame;
+                    _timeSinceLastFrame = 0;
+                }
             }
         }
 
