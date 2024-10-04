@@ -19,9 +19,18 @@ public class SpriteResource : GameResource
 	};
 
 	/// <summary>
+	/// Returns a specific animation by name (or null if it doesn't exist).
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	public SpriteAnimation GetAnimation(string name)
+	{
+		return Animations.FirstOrDefault(x => x.Name == name);
+	}
+
+	/// <summary>
 	/// Returns a list of names for every attachment this Sprite has.
 	/// </summary>
-	/// <returns>A list of names for every attachment this Sprite has</returns>
 	public List<string> GetAttachmentNames()
 	{
 		var attachmentNames = new List<string>();
