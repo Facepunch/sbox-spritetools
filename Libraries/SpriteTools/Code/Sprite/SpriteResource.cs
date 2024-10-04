@@ -76,6 +76,33 @@ public class SpriteResource : GameResource
 		return paths;
 	}
 
+	/// <summary>
+	/// Copies all the data from another sprite resource into this one.
+	/// </summary>
+	/// <param name="otherSprite"></param>
+	public void CopyFrom(SpriteResource otherSprite)
+	{
+		Animations = new List<SpriteAnimation>();
+		foreach (var otherAnimation in otherSprite.Animations)
+		{
+			var newAnimation = new SpriteAnimation(otherAnimation.Name)
+			{
+				FrameRate = otherAnimation.FrameRate,
+				Looping = otherAnimation.Looping,
+				Origin = otherAnimation.Origin
+			};
+			foreach (var otherFrame in otherAnimation.Frames)
+			{
+				newAnimation.Frames.Add(otherFrame.Copy());
+			}
+			foreach (var otherAttachment in otherAnimation.Attachments)
+			{
+				newAnimation.Attachments.Add(otherAttachment.Copy());
+			}
+			Animations.Add(newAnimation);
+		}
+	}
+
 }
 
 public class SpriteAnimation
