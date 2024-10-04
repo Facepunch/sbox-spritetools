@@ -107,16 +107,18 @@ public class AnimationList : Widget
     [EditorEvent.Hotload]
     public void UpdateAnimationList()
     {
-        content.Clear(true);
-        Animations.Clear();
+        content?.Clear(true);
+        Animations?.Clear();
 
-        var animations = MainWindow.Sprite.Animations;
-
-        foreach (var animation in animations)
+        var animations = MainWindow?.Sprite?.Animations;
+        if (animations is not null)
         {
-            var button = content.Add(new AnimationButton(this, MainWindow, animation));
-            button.MouseClick = () => SelectAnimation(button);
-            Animations.Add(button);
+            foreach (var animation in animations)
+            {
+                var button = content.Add(new AnimationButton(this, MainWindow, animation));
+                button.MouseClick = () => SelectAnimation(button);
+                Animations.Add(button);
+            }
         }
     }
 
