@@ -3,6 +3,7 @@ using Editor.NodeEditor;
 using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 
@@ -102,7 +103,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     void UpdateWindowTitle()
     {
-        Title = ($"{_asset.Name} - Sprite Editor" ?? "Untitled Sprite - Sprite Editor") + (_dirty ? "*" : "");
+        Title = $"{_asset?.Name ?? "Untitled Sprite"} - Sprite Editor" + (_dirty ? "*" : "");
     }
 
     public void RebuildUI()
@@ -193,9 +194,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
         PromptSave(() => CreateNew());
     }
 
-    public void CreateNew()
+    public void CreateNew(string savePath = null)
     {
-        var savePath = GetSavePath("New Sprite");
+        if (string.IsNullOrEmpty(savePath)) savePath = GetSavePath("New Sprite");
 
         _asset = null;
         Sprite = AssetSystem.CreateResource("sprite", savePath).LoadResource<SpriteResource>();
@@ -279,6 +280,11 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
 
         // Register the asset if we haven't already
+        if (_asset is null)
+        {
+            var newSprite = AssetSystem.CreateResource("sprite", savePath).LoadResource<SpriteResource>();
+            newSprite.CopyFrom(Sprite);
+        }
         _asset ??= AssetSystem.RegisterFile(savePath);
         _asset.SaveToDisk(Sprite);
         _dirty = false;
