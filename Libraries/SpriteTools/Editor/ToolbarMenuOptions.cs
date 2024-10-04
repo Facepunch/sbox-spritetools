@@ -11,6 +11,7 @@ public static class ToolbarMenuOptions
     public static void FlushTextureCache()
     {
         TextureAtlas.ClearCache();
+        TileAtlas.ClearCache();
         PixmapCache.ClearCache();
     }
 
