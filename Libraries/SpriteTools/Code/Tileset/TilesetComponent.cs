@@ -760,9 +760,14 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 	(TileAtlas, Material) GetMaterial(TilesetResource resource)
 	{
-		if (!Materials.TryGetValue(resource, out var combo))
+		var texture = TileAtlas.FromTileset(resource);
+
+		if (Materials.TryGetValue(resource, out var combo))
 		{
-			var texture = TileAtlas.FromTileset(resource);
+			combo.Item2.Set("Texture", texture);
+		}
+		else
+		{
 			var material = Material.Load("materials/sprite_2d.vmat").CreateCopy();
 			material.Set("Texture", texture);
 			combo.Item1 = texture;

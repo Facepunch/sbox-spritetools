@@ -25,6 +25,7 @@ public static class ContentHotloader
         else if (path.Contains("."))
         {
             TextureAtlas.ClearCache(path);
+            TileAtlas.ClearCache(path);
 
             await Task.Delay(100);
 

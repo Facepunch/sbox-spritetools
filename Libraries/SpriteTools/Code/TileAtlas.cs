@@ -119,8 +119,16 @@ public class TileAtlas
         return atlas?.Texture ?? null;
     }
 
-    public static void ClearCache()
+    public static void ClearCache(string path = "")
     {
-        Cache.Clear();
+        if (path.StartsWith("/")) path = path.Substring(1);
+        if (string.IsNullOrEmpty(path))
+        {
+            Cache.Clear();
+        }
+        else
+        {
+            Cache = Cache.Where(x => x.Key.FilePath != path).ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 }
