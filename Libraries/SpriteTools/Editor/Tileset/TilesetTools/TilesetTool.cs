@@ -114,6 +114,7 @@ public partial class TilesetTool : EditorTool
 			_sceneObject.RenderingEnabled = false;
 		}
 
+		if (SelectedLayer is null) return;
 		var state = SceneViewportWidget.LastSelected.State;
 		var gridSize = GridSize * (SelectedLayer.TilesetResource?.TileScale ?? 1f);
 		using (Gizmo.Scope("grid"))
