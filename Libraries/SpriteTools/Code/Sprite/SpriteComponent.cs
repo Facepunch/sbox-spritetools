@@ -342,7 +342,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (Game.IsPlaying) return;
         if (Sprite is null) return;
 
-        Gizmo.Transform = Gizmo.Transform.WithRotation(Transform.Rotation * _rotationOffset);
+        Gizmo.Transform = Gizmo.Transform.WithRotation(WorldRotation * _rotationOffset);
         var bbox = Bounds;
         Gizmo.Hitbox.BBox(bbox);
 
@@ -365,7 +365,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 
         if (CurrentAnimation == null)
         {
-            SceneObject.Transform = new Transform(Transform.Position, Transform.Rotation, Transform.Scale);
+            SceneObject.Transform = WorldTransform;
             SceneObject.RenderingEnabled = false;
             return;
         }
@@ -423,9 +423,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         //     SpriteMaterial.Set("Texture", texture);
 
         // Add pivot to transform
-        var pos = Transform.Position;
-        var rot = Transform.Rotation * _rotationOffset;
-        var scale = Transform.Scale * new Vector3(1f, 1f * (CurrentTexture?.AspectRatio ?? 1f), 1f);
+        var pos = WorldPosition;
+        var rot = WorldRotation * _rotationOffset;
+        var scale = WorldScale * new Vector3(1f, 1f * (CurrentTexture?.AspectRatio ?? 1f), 1f);
         if (UsePixelScale)
         {
             var scl = CurrentTexture.FrameSize.x < CurrentTexture.FrameSize.x ? CurrentTexture.FrameSize.y : CurrentTexture.FrameSize.y;
@@ -433,7 +433,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         }
         var origin = CurrentAnimation.Origin - new Vector2(0.5f, 0.5f);
         pos -= new Vector3(origin.y, origin.x, 0) * 100f * scale;
-        pos = pos.RotateAround(Transform.Position, rot);
+        pos = pos.RotateAround(WorldPosition, rot);
         SceneObject.Transform = new Transform(pos, rot, scale);
     }
 
@@ -445,8 +445,8 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             {
                 var transform = GetAttachmentTransform(attachment.Key);
 
-                attachment.Value.Transform.LocalPosition = transform.Position;
-                attachment.Value.Transform.LocalRotation = transform.Rotation;
+                attachment.Value.LocalPosition = transform.Position;
+                attachment.Value.LocalRotation = transform.Rotation;
             }
         }
     }

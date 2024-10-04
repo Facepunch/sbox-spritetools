@@ -33,7 +33,7 @@ public sealed class Player : Component
 			var size = new Vector3(HitboxSize.y, HitboxSize.x, 1);
 			mins *= size;
 			maxs *= size;
-			return new BBox(mins, maxs).Rotate(Sprite.Transform.LocalRotation);
+			return new BBox(mins, maxs).Rotate(Sprite.LocalRotation);
 		}
 	}
 
@@ -57,9 +57,9 @@ public sealed class Player : Component
 		UpdateCamera();
 
 		var targetScale = GetTargetScale();
-		Sprite.Transform.LocalScale = new Vector3(
-			MathX.Lerp(Sprite.Transform.LocalScale.x, targetScale.x, Time.Delta * 10f),
-			MathX.Lerp(Sprite.Transform.LocalScale.y, targetScale.y, Time.Delta * 10f),
+		Sprite.LocalScale = new Vector3(
+			MathX.Lerp(Sprite.LocalScale.x, targetScale.x, Time.Delta * 10f),
+			MathX.Lerp(Sprite.LocalScale.y, targetScale.y, Time.Delta * 10f),
 			1
 		);
 	}
@@ -128,19 +128,19 @@ public sealed class Player : Component
 
 			if (tr.Hit)
 			{
-				Transform.Position = Transform.Position.WithX(tr.EndPosition.x);
+				WorldPosition = WorldPosition.WithX(tr.EndPosition.x);
 				WishVelocity.x = 0;
 			}
 			else
 			{
-				Transform.LocalPosition += xVel;
+				LocalPosition += xVel;
 			}
 		}
 
 
 		// Vertical Collision Check
 		{
-			var tr = Scene.Trace.Box(Bounds, Transform.Local.Position, Transform.Local.Position + yVel)
+			var tr = Scene.Trace.Box(Bounds, LocalPosition, LocalPosition + yVel)
 				.WithoutTags("player", "trigger")
 				.Run();
 
@@ -156,12 +156,12 @@ public sealed class Player : Component
 					}
 				}
 
-				Transform.Position = Transform.Position.WithZ(tr.EndPosition.z);
+				WorldPosition = WorldPosition.WithZ(tr.EndPosition.z);
 				Velocity.y = 0;
 			}
 			else
 			{
-				Transform.LocalPosition += yVel;
+				LocalPosition += yVel;
 				IsGrounded = false;
 			}
 		}
@@ -184,7 +184,7 @@ public sealed class Player : Component
 
 	void Land()
 	{
-		Sprite.Transform.LocalScale = new Vector3(0.5f, 1.5f, 1f);
+		Sprite.LocalScale = new Vector3(0.5f, 1.5f, 1f);
 	}
 
 	Vector3 GetTargetScale()
@@ -218,12 +218,12 @@ public sealed class Player : Component
 
 	void UpdateCamera()
 	{
-		var camPos = Transform.Position;
+		var camPos = WorldPosition;
 
 		camPos += Vector3.Up * 120f;
-		camPos = camPos.WithY(Scene.Camera.Transform.Position.y);
+		camPos = camPos.WithY(Scene.Camera.WorldPosition.y);
 
-		Scene.Camera.Transform.Position = Scene.Camera.Transform.Position.LerpTo(camPos, 10 * Time.Delta);
+		Scene.Camera.WorldPosition = Scene.Camera.WorldPosition.LerpTo(camPos, 10 * Time.Delta);
 	}
 
 }
