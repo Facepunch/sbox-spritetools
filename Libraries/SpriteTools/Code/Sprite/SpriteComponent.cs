@@ -559,9 +559,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     public void PlayAnimation(string animationName, bool force = false)
     {
         if (Sprite == null) return;
-        if (!force && _currentAnimation?.Name == animationName) return;
+        if (!force && string.Equals(_currentAnimation?.Name, animationName, StringComparison.OrdinalIgnoreCase)) return;
 
-        var animation = Sprite.Animations.FirstOrDefault(a => a.Name.ToLowerInvariant() == animationName.ToLowerInvariant());
+        var animation = Sprite.Animations.FirstOrDefault(a => string.Equals(a.Name, animationName, StringComparison.OrdinalIgnoreCase));
         if (animation == null)
         {
             Log.Warning($"Could not find animation \"{animationName}\" in sprite \"{Sprite.ResourceName}\".");
