@@ -265,7 +265,11 @@ public class Preview : Widget
             FixedSize = 26;
             Cursor = CursorShape.Finger;
             MouseClick = onClick;
-            pixmap = Pixmap.FromFile(Editor.FileSystem.Content.GetFullPath(Icon));
+            var fullPath = Editor.FileSystem.Content.GetFullPath(Icon);
+            if (fullPath is not null)
+            {
+                pixmap = Pixmap.FromFile(fullPath);
+            }
         }
 
         protected override void OnPaint()
@@ -279,7 +283,10 @@ public class Preview : Widget
                 Paint.SetBrush(bg);
                 Paint.DrawRect(LocalRect, Theme.ControlRadius);
             }
-            Paint.Draw(LocalRect.Shrink(5), pixmap);
+            if (pixmap is not null)
+            {
+                Paint.Draw(LocalRect.Shrink(5), pixmap);
+            }
         }
     }
 }
