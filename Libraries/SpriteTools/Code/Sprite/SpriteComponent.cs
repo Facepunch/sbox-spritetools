@@ -24,6 +24,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         {
             if (_sprite == value) return;
             _sprite = value;
+            _currentAnimation = null;
             if (_sprite != null)
             {
                 PlayAnimation(StartingAnimationName, true);
