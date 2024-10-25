@@ -85,11 +85,11 @@ public class TilesetToolInspector : InspectorWidget
         if (Tool?.CurrentTool is not null)
         {
             var toolName = (Tool.CurrentTool.GetType()?.GetCustomAttribute<TitleAttribute>()?.Value ?? "Unknown") + " Tool";
-            mainSheet.AddObject(Tool.CurrentTool.GetSerialized(), toolName, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+            mainSheet.AddObject(Tool.CurrentTool.GetSerialized(), x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
         }
         if (Tool.SelectedComponent.IsValid())
         {
-            mainSheet.AddObject(Tool.SelectedComponent.GetSerialized(), null, x =>
+            mainSheet.AddObject(Tool.SelectedComponent.GetSerialized(), x =>
             {
                 if (!x.HasAttribute<PropertyAttribute>()) return false;
                 if (x.PropertyType == typeof(Action)) return false;
@@ -120,7 +120,7 @@ public class TilesetToolInspector : InspectorWidget
         selectedSheet?.Clear(true);
         if (Tool.SelectedLayer is not null)
         {
-            selectedSheet.AddObject(Tool.SelectedLayer.GetSerialized(), null, x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
+            selectedSheet.AddObject(Tool.SelectedLayer.GetSerialized(), x => x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action));
         }
     }
 

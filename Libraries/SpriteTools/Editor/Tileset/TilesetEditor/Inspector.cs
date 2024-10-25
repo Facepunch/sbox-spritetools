@@ -130,7 +130,7 @@ public class Inspector : Widget
                 MainWindow.preview.UpdateTexture(prop.GetValue<string>());
         };
 
-        controlSheet.AddObject(serializedObject, null, (SerializedProperty prop) =>
+        controlSheet.AddObject(serializedObject, (SerializedProperty prop) =>
         {
             if (segmentedControl.SelectedIndex == 0 && prop.GroupName != "Tileset Setup") return false;
             if (segmentedControl.SelectedIndex == 1 && prop.GroupName == "Tileset Setup") return false;
@@ -163,7 +163,7 @@ public class Inspector : Widget
         }
         objs.Rebuild();
 
-        selectedTileSheet.AddObject(objs, null, (SerializedProperty prop) =>
+        selectedTileSheet.AddObject(objs, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
         });
