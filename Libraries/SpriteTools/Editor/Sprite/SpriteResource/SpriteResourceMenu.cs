@@ -13,7 +13,7 @@ internal static class SpriteResourceMenu
     public static void OnSpriteResourceAssetContext(AssetContextMenu e)
     {
         // Are all the files we have selected image assets?
-        if (!e.SelectedList.All(x => x.AssetType == AssetType.ImageFile))
+        if (!e.SelectedList.All(x => x.TypeName == AssetType.ImageFile.FriendlyName))
             return;
 
         e.Menu.AddOption($"Create 2D Sprite", "emoji_emotions", action: () => CreateSpriteResourceUsingImageFiles(e.SelectedList));
@@ -24,9 +24,9 @@ internal static class SpriteResourceMenu
         }
     }
 
-    private static void CreateSpriteResourceUsingImageFiles(IEnumerable<Asset> assets)
+    private static void CreateSpriteResourceUsingImageFiles(IEnumerable<AssetEntry> assets)
     {
-        var asset = assets.First();
+        var asset = assets.First().Asset;
         var assetName = asset.Name;
 
         var fd = new FileDialog(null);
@@ -41,7 +41,7 @@ internal static class SpriteResourceMenu
         if (!fd.Execute())
             return;
 
-        var paths = assets.Select(x => System.IO.Path.ChangeExtension(x.Path, System.IO.Path.GetExtension(x.AbsolutePath)));
+        var paths = assets.Select(x => System.IO.Path.ChangeExtension(x.Asset.Path, System.IO.Path.GetExtension(x.Asset.AbsolutePath)));
         asset = AssetSystem.CreateResource("sprite", fd.SelectedFile);
         var sprite = asset.LoadResource<SpriteResource>();
         var anim = sprite.Animations.FirstOrDefault();
@@ -61,10 +61,11 @@ internal static class SpriteResourceMenu
         EditorUtility.InspectorObject = asset;
     }
 
-    private static void CreateSpriteResourcesUsingImageFiles(IEnumerable<Asset> assets)
+    private static void CreateSpriteResourcesUsingImageFiles(IEnumerable<AssetEntry> assets)
     {
-        foreach (var asset in assets)
+        foreach (var entry in assets)
         {
+            var asset = entry.Asset;
             var newAsset = AssetSystem.CreateResource("sprite", System.IO.Path.ChangeExtension(asset.AbsolutePath, ".sprite"));
             var sprite = newAsset.LoadResource<SpriteResource>();
             var anim = sprite.Animations.FirstOrDefault();
@@ -82,7 +83,7 @@ internal static class SpriteResourceMenu
         MainAssetBrowser.Instance?.UpdateAssetList();
     }
 
-    private static void CreateSpriteResourcesPopup(IEnumerable<Asset> assets)
+    private static void CreateSpriteResourcesPopup(IEnumerable<AssetEntry> assets)
     {
         ImportSettings = new();
 
