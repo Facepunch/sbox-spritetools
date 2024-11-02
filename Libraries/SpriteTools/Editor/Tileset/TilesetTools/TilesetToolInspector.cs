@@ -6,7 +6,7 @@ using Sandbox;
 
 namespace SpriteTools.TilesetTool;
 
-[CanEdit(typeof(TilesetTool))]
+[Inspector(typeof(TilesetTool))]
 public class TilesetToolInspector : InspectorWidget
 {
     public static TilesetToolInspector Active { get; private set; }
