@@ -525,9 +525,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
         toolBar = new ToolBar(this, "SpriteEditorToolbar");
         AddToolBar(toolBar, ToolbarPosition.Top);
 
-        toolBar.AddOption("New", "common/new.png", New).StatusText = "New Sprite";
-        toolBar.AddOption("Open", "common/open.png", Open).StatusText = "Open Sprite";
-        toolBar.AddOption("Save", "common/save.png", () => Save()).StatusText = "Save Sprite";
+        toolBar.AddOption("New", "common/new.png", New).StatusTip = "New Sprite";
+        toolBar.AddOption("Open", "common/open.png", Open).StatusTip = "Open Sprite";
+        toolBar.AddOption("Save", "common/save.png", () => Save()).StatusTip = "Save Sprite";
 
         toolBar.AddSeparator();
 
