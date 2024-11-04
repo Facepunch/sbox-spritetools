@@ -91,6 +91,7 @@ public class TilesetToolInspector : InspectorWidget
         {
             mainSheet.AddObject(Tool.SelectedComponent.GetSerialized(), x =>
             {
+                if (x.Name == nameof(TilesetComponent.Layers)) return true;
                 if (!x.HasAttribute<PropertyAttribute>()) return false;
                 if (x.PropertyType == typeof(Action)) return false;
                 switch (x.Name)

@@ -15,7 +15,7 @@ public partial class TilesetComponent : Collider, Component.ExecuteInEditor
 	/// <summary>
 	/// The Layers within the TilesetComponent
 	/// </summary>
-	[Property, Group("Layers")]
+	[Group("Layers")]
 	public List<Layer> Layers
 	{
 		get => _layers;
