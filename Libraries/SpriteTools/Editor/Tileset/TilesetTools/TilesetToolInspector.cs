@@ -24,8 +24,8 @@ public class TilesetToolInspector : InspectorWidget
         if (so.Targets.FirstOrDefault() is not TilesetTool tool) return;
 
         Tool = tool;
-        Tool.UpdateInspector += UpdateHeader;
-        Tool.UpdateInspector += UpdateSelectedSheet;
+        // Tool.UpdateInspector += UpdateHeader;
+        // Tool.UpdateInspector += UpdateSelectedSheet;
 
         Layout = Layout.Column();
         Layout.Margin = 4;
@@ -33,6 +33,23 @@ public class TilesetToolInspector : InspectorWidget
 
         Active = this;
         Rebuild();
+    }
+
+    int lastBuildHash = 0;
+    [EditorEvent.Frame]
+    void Frame()
+    {
+        int buildHash = 0;
+        if (Tool.SelectedComponent.IsValid())
+        {
+            buildHash += Tool.SelectedComponent.Layers.IndexOf(Tool?.SelectedLayer);
+            buildHash += Tool?.SelectedLayer?.TilesetResource?.ResourceId ?? 0;
+        }
+        if (buildHash != lastBuildHash)
+        {
+            lastBuildHash = buildHash;
+            Rebuild();
+        }
     }
 
     [EditorEvent.Hotload]
@@ -57,6 +74,7 @@ public class TilesetToolInspector : InspectorWidget
         scrollArea.Canvas.Layout.Add(mainSheet);
         UpdateMainSheet();
 
+        selectedSheet = null;
         UpdateSelectedSheet();
 
         Preview = new Preview.Preview(this);
@@ -105,7 +123,7 @@ public class TilesetToolInspector : InspectorWidget
     {
         if (!(Layout?.IsValid ?? false)) return;
 
-        if (!(selectedSheet?.IsValid ?? false))
+        if (selectedSheet is null || !(selectedSheet?.IsValid ?? false))
         {
             selectedSheet = new ControlSheet();
             scrollArea.Canvas.Layout.Add(selectedSheet);
