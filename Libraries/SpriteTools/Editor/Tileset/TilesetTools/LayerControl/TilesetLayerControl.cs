@@ -126,7 +126,10 @@ public class TilesetLayerControl : Widget
             layerControl.icoCollisionLayer.Visible = layerControl.Layer.IsCollisionLayer;
         }
 
-        
+        if (Layer.TilesetComponent.IsValid())
+        {
+            Layer.TilesetComponent.IsDirty = true;
+        }
     }
 
     void Rename()
