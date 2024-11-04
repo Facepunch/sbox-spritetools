@@ -11,6 +11,9 @@ internal class LabelTextEntry : Widget
     string lastValue = "";
     internal string lastSafeValue = "";
 
+    public bool IsItalic = false;
+    public bool IsHidden = false;
+
     public string EmptyValue
     {
         get => _emptyValue;
@@ -121,9 +124,10 @@ internal class LabelTextEntry : Widget
         base.OnPaint();
 
         if (editing) return;
-        Paint.SetPen(Theme.ControlText);
+        Paint.SetPen(Theme.ControlText.WithAlpha(IsHidden ? 0.5f : 1f));
         var val = Property.GetValue(EmptyValue);
         if (string.IsNullOrEmpty(val)) val = EmptyValue;
+        Paint.SetDefaultFont(italic: IsItalic);
         Paint.DrawText(LocalRect, val, TextFlag.LeftCenter);
     }
 }

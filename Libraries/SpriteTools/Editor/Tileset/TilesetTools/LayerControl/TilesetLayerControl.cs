@@ -36,6 +36,8 @@ public class TilesetLayerControl : Widget
         var serializedObject = Layer.GetSerialized();
         serializedObject.TryGetProperty(nameof(TilesetComponent.Layer.Name), out var name);
         labelText = new LabelTextEntry(name);
+        labelText.IsItalic = Layer.IsLocked;
+        labelText.IsHidden = !Layer.IsVisible;
         Layout.Add(labelText);
 
         icoCollisionLayer = new Widget(this)
@@ -63,6 +65,7 @@ public class TilesetLayerControl : Widget
         {
             Layer.IsVisible = !Layer.IsVisible;
             btnVisible.Icon = Layer.IsVisible ? "visibility" : "visibility_off";
+            labelText.IsHidden = !Layer.IsVisible;
         };
         Layout.Add(btnVisible);
 
@@ -73,6 +76,7 @@ public class TilesetLayerControl : Widget
         {
             Layer.IsLocked = !Layer.IsLocked;
             btnLock.Icon = Layer.IsLocked ? "lock" : "lock_open";
+            labelText.IsItalic = Layer.IsLocked;
         };
         Layout.Add(btnLock);
 
@@ -165,6 +169,7 @@ public class TilesetLayerControl : Widget
         popup.Visible = true;
     }
 
+    [Shortcut("editor.delete", "DEL")]
     void Delete()
     {
         ParentList.DeleteLayer(Layer);
