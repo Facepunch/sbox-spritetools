@@ -111,7 +111,7 @@ public class TilesetLayerListControl : ControlWidget
 
         var confirm = new PopupWindow(
             $"Bake Selected Layer",
-            $"Are you sure you want to Bake the Tiles on Layer \"{layer.Name}\"?\nThis will detach all tiles from their current references.", "No",
+            $"Are you sure you want to Bake the Tiles on Layer \"{layer.Name}\"?\nThis will detach all placed tiles from their tile resource references.", "No",
             new Dictionary<string, Action>() { { "Yes", BakeSelectedLayer } }
         );
         confirm.Show();
