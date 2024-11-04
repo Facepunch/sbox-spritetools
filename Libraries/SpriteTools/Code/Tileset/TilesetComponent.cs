@@ -40,7 +40,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	/// <summary>
 	/// Whether or not the component should generate a collider based on the specified Collision Layer
 	/// </summary>
-	[Property, Group("Collision")]
+	[Property, FeatureEnabled("Collision")]
 	public bool HasCollider
 	{
 		get => _hasCollider;
@@ -54,10 +54,36 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	}
 	bool _hasCollider;
 
+	[Property, Feature("Collision")]
+	public bool Static
+	{
+		get => _static;
+		set
+		{
+			if (value == _static) return;
+			_static = value;
+			if (Collider.IsValid()) Collider.Static = value;
+		}
+	}
+	private bool _static = true;
+
+	[Property, Feature("Collision")]
+	public bool IsTrigger
+	{
+		get => _isTrigger;
+		set
+		{
+			if (value == _isTrigger) return;
+			_isTrigger = value;
+			if (Collider.IsValid()) Collider.IsTrigger = value;
+		}
+	}
+	private bool _isTrigger = false;
+
 	/// <summary>
 	/// The width of the generated collider
 	/// </summary>
-	[Property, Group("Collision")]
+	[Property, Feature("Collision")]
 	public float ColliderWidth
 	{
 		get => _colliderWidth;
@@ -70,6 +96,52 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		}
 	}
 	float _colliderWidth;
+
+	[Property, Feature("Collision"), Group("Surface Properties")]
+	[Range(0f, 1f, 0.01f, true, true)]
+	public float? Friction
+	{
+		get => _friction;
+		set
+		{
+			if (value == _friction) return;
+			_friction = value;
+			if (Collider.IsValid()) Collider.Friction = value;
+		}
+	}
+	private float? _friction;
+
+	[Property, Feature("Collision"), Group("Surface Properties")]
+	public Surface Surface
+	{
+		get => _surface;
+		set
+		{
+			if (value == _surface) return;
+			_surface = value;
+			if (Collider.IsValid()) Collider.Surface = value;
+		}
+	}
+	private Surface _surface;
+
+	[Property, Feature("Collision"), Group("Surface Properties")]
+	public Vector3 SurfaceVelocity
+	{
+		get => _surfaceVelocity;
+		set
+		{
+			if (value == _surfaceVelocity) return;
+			_surfaceVelocity = value;
+			if (Collider.IsValid()) Collider.SurfaceVelocity = value;
+		}
+	}
+	private Vector3 _surfaceVelocity;
+
+	[Property, Feature("Collision"), Group("Trigger Actions"), ShowIf(nameof(IsTrigger), true)]
+	public Action<Collider> OnTriggerEnter { get; set; }
+
+	[Property, Feature("Collision"), Group("Trigger Actions"), ShowIf(nameof(IsTrigger), true)]
+	public Action<Collider> OnTriggerExit { get; set; }
 
 	public bool IsDirty
 	{
@@ -189,6 +261,13 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		Collider = AddComponent<TilesetCollider>();
 		Collider.Flags |= ComponentFlags.Hidden | ComponentFlags.NotSaved;
 		Collider.Tileset = this;
+		Collider.Static = Static;
+		Collider.IsTrigger = IsTrigger;
+		Collider.Friction = Friction;
+		Collider.Surface = Surface;
+		Collider.SurfaceVelocity = SurfaceVelocity;
+		Collider.OnTriggerEnter += OnTriggerEnter;
+		Collider.OnTriggerExit += OnTriggerExit;
 		Collider.RebuildMesh();
 	}
 
