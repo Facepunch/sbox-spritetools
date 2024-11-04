@@ -273,7 +273,6 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		Collider.SurfaceVelocity = SurfaceVelocity;
 		Collider.OnTriggerEnter += OnTriggerEnter;
 		Collider.OnTriggerExit += OnTriggerExit;
-		Collider.RebuildMesh();
 	}
 
 	void DestroyCollider()

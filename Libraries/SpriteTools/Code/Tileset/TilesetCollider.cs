@@ -12,7 +12,7 @@ public partial class TilesetCollider : Collider, Component.ExecuteInEditor
 {
 	internal TilesetComponent Tileset { get; set; }
 
-	internal bool IsDirty = false;
+	internal bool IsDirty = true;
 	private Model CollisionMesh { get; set; }
 	private List<Vector3> CollisionVertices { get; set; } = new();
 	private List<int[]> CollisionFaces { get; set; } = new();
