@@ -54,6 +54,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	}
 	bool _hasCollider;
 
+	/// <inheritdoc cref="Collider.Static" />
 	[Property, Feature("Collision")]
 	public bool Static
 	{
@@ -67,6 +68,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	}
 	private bool _static = true;
 
+	/// <inheritdoc cref="Collider.IsTrigger" />
 	[Property, Feature("Collision")]
 	public bool IsTrigger
 	{
@@ -97,6 +99,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	}
 	float _colliderWidth;
 
+	/// <inheritdoc cref="Collider.Friction" />
 	[Property, Feature("Collision"), Group("Surface Properties")]
 	[Range(0f, 1f, 0.01f, true, true)]
 	public float? Friction
@@ -111,6 +114,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	}
 	private float? _friction;
 
+	/// <inheritdoc cref="Collider.Surface" />
 	[Property, Feature("Collision"), Group("Surface Properties")]
 	public Surface Surface
 	{
@@ -124,6 +128,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	}
 	private Surface _surface;
 
+	/// <inheritdoc cref="Collider.SurfaceVelocity" />
 	[Property, Feature("Collision"), Group("Surface Properties")]
 	public Vector3 SurfaceVelocity
 	{
