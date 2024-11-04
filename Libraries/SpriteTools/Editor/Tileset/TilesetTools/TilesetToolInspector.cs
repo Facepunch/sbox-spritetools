@@ -93,6 +93,7 @@ public class TilesetToolInspector : InspectorWidget
             {
                 if (x.Name == nameof(TilesetComponent.Layers)) return true;
                 if (!x.HasAttribute<PropertyAttribute>()) return false;
+                if (x.TryGetAttribute<GroupAttribute>(out var group) && group.Value == "Surface Properties") return false;
                 if (x.PropertyType == typeof(Action)) return false;
                 switch (x.Name)
                 {
