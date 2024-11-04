@@ -85,10 +85,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 		{
 			var file = MenuBar.AddMenu("File");
-			file.AddOption("New", "common/new.png", () => New(), "CTRL+N").StatusText = "New Tileset";
-			file.AddOption("Open", "common/open.png", () => Open(), "Ctrl+O").StatusText = "Open Tileset";
-			file.AddOption("Save", "common/save.png", () => Save(), "Ctrl+S").StatusText = "Save Tileset";
-			file.AddOption("Save As...", "common/save.png", () => Save(true), "Ctrl+Shift+S").StatusText = "Save Tileset As...";
+			file.AddOption("New", "common/new.png", () => New(), "CTRL+N").StatusTip = "New Tileset";
+			file.AddOption("Open", "common/open.png", () => Open(), "Ctrl+O").StatusTip = "Open Tileset";
+			file.AddOption("Save", "common/save.png", () => Save(), "Ctrl+S").StatusTip = "Save Tileset";
+			file.AddOption("Save As...", "common/save.png", () => Save(true), "Ctrl+Shift+S").StatusTip = "Save Tileset As...";
 			file.AddSeparator();
 			file.AddOption(new Option("Exit") { Triggered = Close });
 		}
@@ -283,10 +283,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		_undoMenuOption.Text = _undoStack.UndoName ?? "Undo";
 		_redoMenuOption.Text = _undoStack.RedoName ?? "Redo";
 
-		_undoOption.StatusText = _undoStack.UndoName ?? "Undo";
-		_redoOption.StatusText = _undoStack.RedoName ?? "Redo";
-		_undoMenuOption.StatusText = _undoStack.UndoName ?? "Undo";
-		_redoMenuOption.StatusText = _undoStack.RedoName ?? "Redo";
+		_undoOption.StatusTip = _undoStack.UndoName ?? "Undo";
+		_redoOption.StatusTip = _undoStack.RedoName ?? "Redo";
+		_undoMenuOption.StatusTip = _undoStack.UndoName ?? "Undo";
+		_redoMenuOption.StatusTip = _undoStack.RedoName ?? "Redo";
 	}
 
 	static string GetSavePath(string title = "Save Tileset")
@@ -517,9 +517,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		toolBar = new ToolBar(this, "TilesetEditorToolbar");
 		AddToolBar(toolBar, ToolbarPosition.Top);
 
-		toolBar.AddOption("New", "common/new.png", New).StatusText = "New Tileset";
-		toolBar.AddOption("Open", "common/open.png", Open).StatusText = "Open Tileset";
-		toolBar.AddOption("Save", "common/save.png", () => Save()).StatusText = "Save Tileset";
+		toolBar.AddOption("New", "common/new.png", New).StatusTip = "New Tileset";
+		toolBar.AddOption("Open", "common/open.png", Open).StatusTip = "Open Tileset";
+		toolBar.AddOption("Save", "common/save.png", () => Save()).StatusTip = "Save Tileset";
 
 		toolBar.AddSeparator();
 

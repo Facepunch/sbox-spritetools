@@ -112,10 +112,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         {
             var file = MenuBar.AddMenu("File");
-            file.AddOption("New", "common/new.png", () => New(), "CTRL+N").StatusText = "New Sprite";
-            file.AddOption("Open", "common/open.png", () => Open(), "Ctrl+O").StatusText = "Open Sprite";
-            file.AddOption("Save", "common/save.png", () => Save(), "Ctrl+S").StatusText = "Save Sprite";
-            file.AddOption("Save As...", "common/save.png", () => Save(true), "Ctrl+Shift+S").StatusText = "Save Sprite As...";
+            file.AddOption("New", "common/new.png", () => New(), "CTRL+N").StatusTip = "New Sprite";
+            file.AddOption("Open", "common/open.png", () => Open(), "Ctrl+O").StatusTip = "Open Sprite";
+            file.AddOption("Save", "common/save.png", () => Save(), "Ctrl+S").StatusTip = "Save Sprite";
+            file.AddOption("Save As...", "common/save.png", () => Save(true), "Ctrl+Shift+S").StatusTip = "Save Sprite As...";
             file.AddSeparator();
             file.AddOption(new Option("Exit") { Triggered = Close });
         }
@@ -337,10 +337,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _undoMenuOption.Text = _undoStack.UndoName ?? "Undo";
         _redoMenuOption.Text = _undoStack.RedoName ?? "Redo";
 
-        _undoOption.StatusText = _undoStack.UndoName ?? "Undo";
-        _redoOption.StatusText = _undoStack.RedoName ?? "Redo";
-        _undoMenuOption.StatusText = _undoStack.UndoName ?? "Undo";
-        _redoMenuOption.StatusText = _undoStack.RedoName ?? "Redo";
+        _undoOption.StatusTip = _undoStack.UndoName ?? "Undo";
+        _redoOption.StatusTip = _undoStack.RedoName ?? "Redo";
+        _undoMenuOption.StatusTip = _undoStack.UndoName ?? "Undo";
+        _redoMenuOption.StatusTip = _undoStack.RedoName ?? "Redo";
     }
 
     static string GetSavePath(string title = "Save Sprite")
