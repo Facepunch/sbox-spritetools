@@ -93,17 +93,9 @@ public class TilesetToolInspector : InspectorWidget
             {
                 if (x.Name == nameof(TilesetComponent.Layers)) return true;
                 if (!x.HasAttribute<PropertyAttribute>()) return false;
-                if (x.TryGetAttribute<GroupAttribute>(out var group) && group.Value == "Surface Properties") return false;
+                if (x.TryGetAttribute<FeatureAttribute>(out var feature) && feature.Title == "Collision") return false;
                 if (x.PropertyType == typeof(Action)) return false;
-                switch (x.Name)
-                {
-                    case nameof(Collider.Static):
-                    case nameof(Collider.Surface):
-                    case nameof(Collider.IsTrigger):
-                    case nameof(Collider.OnTriggerEnter):
-                    case nameof(Collider.OnTriggerExit):
-                        return false;
-                }
+
                 return true;
             });
         }
