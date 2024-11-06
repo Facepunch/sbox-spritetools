@@ -30,7 +30,7 @@ public class LineTileTool : BaseTileTool
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
 
-        var tilePos = pos / Parent.SelectedLayer.TilesetResource.GetTileSize();
+        var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize();
 
         if (holding)
         {

@@ -25,7 +25,7 @@ public class EraserTileTool : BaseTileTool
         Parent._sceneObject.RenderingEnabled = false;
 
         var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
-        var tilePos = pos / tileSize;
+        var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / tileSize;
         if (Gizmo.IsLeftMouseDown)
         {
             Parent.EraseTile(tilePos);

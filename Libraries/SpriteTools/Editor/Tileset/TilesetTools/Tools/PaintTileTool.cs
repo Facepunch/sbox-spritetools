@@ -37,7 +37,7 @@ public class PaintTileTool : BaseTileTool
         }
         Parent._sceneObject.SetPositions(positions);
 
-        var tilePos = (Vector2Int)(pos / Parent.SelectedLayer.TilesetResource.GetTileSize());
+        var tilePos = (Vector2Int)((pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize());
         if (Gizmo.IsLeftMouseDown)
         {
             var tile = TilesetTool.Active.SelectedTile;

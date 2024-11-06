@@ -32,7 +32,7 @@ public class RectangleTileTool : BaseTileTool
         Parent._sceneObject.RenderingEnabled = true;
 
         var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
-        var tilePos = pos / tileSize;
+        var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / tileSize;
 
         if (holding)
         {
@@ -44,7 +44,7 @@ public class RectangleTileTool : BaseTileTool
             if (deleting)
             {
                 Parent._sceneObject.RenderingEnabled = false;
-                using (Gizmo.Scope("delete"))
+                using (Gizmo.Scope("delete", new Transform(Parent.SelectedComponent.WorldPosition)))
                 {
                     Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
                     Gizmo.Draw.SolidBox(new BBox(tilePos * tileSize + min * tileSize, tilePos * tileSize + max * tileSize + tileSize));
