@@ -231,17 +231,27 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	{
 		base.DrawGizmos();
 
-		if (!Gizmo.IsSelected) return;
-
+		var bounds = BBox.FromPositionAndSize(0, 0);
 		foreach (var _so in _sos)
 		{
 			if (!_so.IsValid()) continue;
-			using (Gizmo.Scope("tileset"))
+
+			var boundSize = _so.Bounds.Size;
+			if ((boundSize.x + boundSize.y + boundSize.z) > (bounds.Size.x + bounds.Size.y + bounds.Size.z))
 			{
-				Gizmo.Draw.Color = Color.Yellow;
-				Gizmo.Draw.LineThickness = 1f;
-				Gizmo.Draw.LineBBox(_so.Bounds);
+				bounds = _so.Bounds.Translate(-_so.Position);
 			}
+		}
+
+		Gizmo.Hitbox.BBox(bounds);
+
+		if (!Gizmo.IsSelected) return;
+
+		using (Gizmo.Scope("tileset"))
+		{
+			Gizmo.Draw.Color = Color.Yellow;
+			Gizmo.Draw.LineThickness = 1f;
+			Gizmo.Draw.LineBBox(bounds);
 		}
 	}
 
