@@ -10,7 +10,8 @@ namespace SpriteTools;
 
 [Category("2D")]
 [Icon("emoji_emotions")]
-[Title("2D Sprite Component")]
+[Title("2D Sprite")]
+[Tint(EditorTint.Yellow)]
 public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 {
     /// <summary>
