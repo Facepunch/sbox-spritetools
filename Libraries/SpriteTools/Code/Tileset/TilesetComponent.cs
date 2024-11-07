@@ -584,6 +584,8 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 			var siz = tileset.GetTileSize();
 			maxPosition += new Vector3(siz.x, siz.y, 0);
+			minPosition += Position;
+			maxPosition += Position;
 			Bounds = new BBox(minPosition, maxPosition + Vector3.Down * 0.01f);
 
 
