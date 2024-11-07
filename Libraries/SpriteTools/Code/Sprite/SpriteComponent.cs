@@ -174,6 +174,11 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         get => _currentAnimation;
         set
         {
+            if (value is null)
+            {
+                _currentAnimation = null;
+                return;
+            }
             PlayAnimation(value.Name);
         }
     }
