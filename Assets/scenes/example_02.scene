@@ -52,7 +52,7 @@
     {
       "__guid": "eefc75d0-7564-4d78-9681-2dd8cf5a64ff",
       "Flags": 0,
-      "Name": "Tileset Object",
+      "Name": "Main Tileset",
       "Enabled": true,
       "Components": [
         {
@@ -1741,7 +1741,8 @@
               }
             }
           ],
-          "Static": false
+          "Static": false,
+          "SurfaceVelocity": "0,0,0"
         }
       ]
     }
@@ -1751,9 +1752,11 @@
     "MaxFixedUpdates": 5,
     "NetworkFrequency": 60,
     "NetworkInterpolation": true,
+    "PhysicsSubSteps": 1,
     "ThreadedAnimation": true,
     "TimeScale": 1,
     "UseFixedUpdate": true,
+    "Metadata": {},
     "NavMesh": {
       "Enabled": false,
       "IncludeStaticBodies": true,
@@ -1767,10 +1770,9 @@
       "IncludedBodies": ""
     }
   },
-  "Title": "minimal",
-  "Description": "",
-  "ResourceVersion": 1,
+  "ResourceVersion": 2,
+  "Title": null,
+  "Description": null,
   "__references": [],
-  "IsValid": true,
-  "__version": 1
+  "__version": 2
 }
