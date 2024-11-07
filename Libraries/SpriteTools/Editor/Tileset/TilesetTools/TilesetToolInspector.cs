@@ -10,7 +10,7 @@ namespace SpriteTools.TilesetTool;
 public class TilesetToolInspector : InspectorWidget
 {
     public static TilesetToolInspector Active { get; private set; }
-    TilesetTool Tool;
+    internal TilesetTool Tool;
     StatusWidget Header;
 
     ScrollArea scrollArea;
@@ -87,7 +87,6 @@ public class TilesetToolInspector : InspectorWidget
     internal void UpdateHeader()
     {
         Header.Text = "Paint Tiles";
-        Header.LeadText = Tool.SelectedLayer == null ? "No Layer Selected" : $"Selected Layer: {Tool.SelectedLayer.Name}";
         Header.Color = (false) ? Theme.Red : Theme.Blue;
         Header.Icon = (false) ? "warning" : "dashboard";
         Header.Update();
@@ -143,9 +142,13 @@ public class TilesetToolInspector : InspectorWidget
         public string LeadText { get; set; }
         public Color Color { get; set; }
 
-        public StatusWidget(Widget parent) : base(parent)
+        TilesetToolInspector Inspector;
+
+        public StatusWidget(TilesetToolInspector parent) : base(parent)
         {
+            Inspector = parent;
             MinimumSize = 48;
+            Cursor = CursorShape.Finger;
             SetSizeMode(SizeMode.Default, SizeMode.CanShrink);
         }
 
@@ -173,7 +176,50 @@ public class TilesetToolInspector : InspectorWidget
 
             Paint.SetPen(Color.WithAlpha(0.6f));
             Paint.SetDefaultFont(8, 400);
-            Paint.DrawText(rect, LeadText, TextFlag.LeftTop);
+            var preText = "Selected Component:";
+            if (!Inspector.Tool.SelectedComponent.IsValid())
+                preText = "No Tileset Component";
+            var selectedRect = Paint.DrawText(rect, preText, TextFlag.LeftTop);
+            if (Inspector.Tool.SelectedComponent.IsValid())
+            {
+                var name = Inspector.Tool.SelectedComponent.GameObject.Name;
+                var textPos = selectedRect.TopRight + new Vector2(8, 0);
+                var textRect = new Rect(textPos, Paint.MeasureText(name));
+                var boxRect = textRect.Grow(4, 2, 18, 2);
+                var isHovering = Paint.HasMouseOver;
+                var boxCol = isHovering ? Theme.ControlBackground.Lighten(0.3f) : Theme.ControlBackground.Darken(0.2f);
+                var color = isHovering ? Color.Lighten(0.2f) : Color;
+                Paint.SetBrushAndPen(boxCol, Color.Transparent);
+                Paint.DrawRect(boxRect);
+                Paint.SetPen(color);
+                var drawnRect = Paint.DrawText(textPos, name);
+                var iconPos = drawnRect.TopRight + new Vector2(2, 0);
+                Paint.DrawIcon(Rect.FromPoints(iconPos, iconPos + 14), "expand_more", 14);
+
+            }
+        }
+
+        protected override void OnMouseClick(MouseEvent e)
+        {
+            base.OnMouseClick(e);
+
+            var components = SceneEditorSession.Active.Scene.GetAllComponents<TilesetComponent>();
+            Log.Info(components.Count());
+            if (components.Count() == 0) return;
+
+            var menu = new Menu();
+
+            foreach (var tileset in components)
+            {
+                var option = menu.AddOption(tileset.GameObject.Name, null, () =>
+                {
+                    Inspector.Tool.SelectedComponent = tileset;
+                });
+                option.Checkable = true;
+                option.Checked = tileset == Inspector.Tool.SelectedComponent;
+            }
+
+            menu.OpenAtCursor();
         }
     }
 }
