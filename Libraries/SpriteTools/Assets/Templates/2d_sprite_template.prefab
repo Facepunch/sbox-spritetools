@@ -1,0 +1,58 @@
+{
+  "RootObject": {
+    "__guid": "8b4bea8e-0f16-4f2d-81c5-5b7c9c2e306f",
+    "Flags": 0,
+    "Name": "2d_sprite_template",
+    "Enabled": true,
+    "Components": [
+      {
+        "__type": "SpriteTools.SpriteComponent",
+        "__guid": "91f9155d-41af-428f-bb78-095581669c54",
+        "__version": 1,
+        "BroadcastEvents": {},
+        "CastShadows": "On",
+        "CreateAttachPoints": false,
+        "FlashTint": "1,1,1,0",
+        "PlaybackSpeed": 1,
+        "Sprite": "templates/example_sprite.sprite",
+        "SpriteFlags": "None",
+        "StartingAnimationName": "default",
+        "Tint": "1,1,1,1",
+        "UpDirection": "YPositive",
+        "UsePixelScale": false
+      }
+    ],
+    "Children": [],
+    "__variables": [],
+    "__properties": {
+      "FixedUpdateFrequency": 50,
+      "MaxFixedUpdates": 5,
+      "NetworkFrequency": 30,
+      "NetworkInterpolation": true,
+      "PhysicsSubSteps": 1,
+      "ThreadedAnimation": true,
+      "TimeScale": 1,
+      "UseFixedUpdate": true,
+      "Metadata": {},
+      "NavMesh": {
+        "Enabled": false,
+        "IncludeStaticBodies": true,
+        "IncludeKeyframedBodies": true,
+        "EditorAutoUpdate": true,
+        "AgentHeight": 64,
+        "AgentRadius": 16,
+        "AgentStepSize": 18,
+        "AgentMaxSlope": 40,
+        "ExcludedBodies": "",
+        "IncludedBodies": ""
+      }
+    }
+  },
+  "ShowInMenu": true,
+  "MenuPath": "2D Object/2D Sprite",
+  "MenuIcon": "emoji_emotions",
+  "DontBreakAsTemplate": false,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

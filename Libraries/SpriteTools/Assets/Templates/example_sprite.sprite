@@ -1,0 +1,18 @@
+{
+  "Animations": [
+    {
+      "FrameRate": 15,
+      "Origin": "0.5,0.5",
+      "Name": "default",
+      "Frames": [
+        {
+          "FilePath": "materials/particles/shapes/heart1.png",
+          "Events": []
+        }
+      ],
+      "Attachments": []
+    }
+  ],
+  "__references": [],
+  "__version": 0
+}
