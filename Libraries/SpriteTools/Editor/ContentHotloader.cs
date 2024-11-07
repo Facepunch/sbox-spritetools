@@ -34,6 +34,8 @@ public static class ContentHotloader
                 var sprites = session.Scene.GetAllComponents<SpriteComponent>();
                 foreach (var sprite in sprites)
                 {
+                    if (sprite.Sprite is null) continue;
+                    if (sprite.CurrentAnimation is null) continue;
                     sprite.PlayAnimation(sprite.CurrentAnimation.Name, true);
                 }
             }
