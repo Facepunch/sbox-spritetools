@@ -232,6 +232,21 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	{
 		base.DrawGizmos();
 
+		var bounds = GetBounds();
+		Gizmo.Hitbox.BBox(bounds);
+
+		if (!Gizmo.IsSelected) return;
+
+		using (Gizmo.Scope("tileset", new Transform(0, WorldRotation.Inverse, 1)))
+		{
+			Gizmo.Draw.Color = Color.Yellow;
+			Gizmo.Draw.LineThickness = 1f;
+			Gizmo.Draw.LineBBox(bounds);
+		}
+	}
+
+	public BBox GetBounds()
+	{
 		var bounds = BBox.FromPositionAndSize(0, 0);
 		foreach (var _so in _sos)
 		{
@@ -244,16 +259,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 		}
 
-		Gizmo.Hitbox.BBox(bounds);
-
-		if (!Gizmo.IsSelected) return;
-
-		using (Gizmo.Scope("tileset", new Transform(0, WorldRotation.Inverse, 1)))
-		{
-			Gizmo.Draw.Color = Color.Yellow;
-			Gizmo.Draw.LineThickness = 1f;
-			Gizmo.Draw.LineBBox(bounds);
-		}
+		return bounds;
 	}
 
 	void RebuildSceneObjects()
