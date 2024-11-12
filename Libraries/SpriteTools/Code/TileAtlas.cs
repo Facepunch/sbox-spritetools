@@ -131,4 +131,9 @@ public class TileAtlas
             Cache = Cache.Where(x => x.Key.FilePath != path).ToDictionary(x => x.Key, x => x.Value);
         }
     }
+
+    public static void ClearCache(TilesetResource tileset)
+    {
+        Cache.Remove(tileset);
+    }
 }

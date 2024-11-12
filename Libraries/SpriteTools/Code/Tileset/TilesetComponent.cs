@@ -646,6 +646,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 		if (Materials.TryGetValue(resource, out var combo))
 		{
+			combo.Item1 = texture;
 			combo.Item2.Set("Texture", texture);
 		}
 		else

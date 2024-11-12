@@ -266,6 +266,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		}
 
 		MainAssetBrowser.Instance?.UpdateAssetList();
+		TileAtlas.ClearCache(Tileset);
 
 		return true;
 	}
