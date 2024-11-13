@@ -305,6 +305,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 SpriteMaterial = MaterialOverride.CreateCopy();
             else
                 SpriteMaterial = Material.Create("spritemat", "shaders/sprite_2d.shader");
+
+            SpriteMaterial?.Set("g_vFlashColor", _flashTint);
+            SpriteMaterial?.Set("g_flFlashAmount", _flashTint.a);
         }
 
         UpdateSprite();
@@ -329,7 +332,10 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         base.OnEnabled();
 
         if (SceneObject.IsValid())
+        {
             SceneObject.RenderingEnabled = true;
+            SceneObject.ColorTint = Tint;
+        }
 
         if (CreateAttachPoints)
             BuildAttachPoints();
