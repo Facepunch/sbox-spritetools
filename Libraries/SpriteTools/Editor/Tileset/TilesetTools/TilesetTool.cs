@@ -20,7 +20,7 @@ public partial class TilesetTool : EditorTool
 	public ToolSettings Settings { get; private set; } = new();
 	public class ToolSettings
 	{
-		[Feature("🖌️ Brush"), Property] public int Angle { get; set; } = 0;
+		[Feature("🖌️ Brush"), Property, Editor("angle")] public int Angle { get; set; } = 0;
 		[Feature("🖌️ Brush"), Property] public bool HorizontalFlip { get; set; } = false;
 		[Feature("🖌️ Brush"), Property] public bool VerticalFlip { get; set; } = false;
 		[Feature("🖌️ Brush"), Property, WideMode(HasLabel = false)] public Preview.Preview Preview { get; set; } = new();
