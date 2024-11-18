@@ -6,16 +6,22 @@ using System.Threading.Tasks;
 
 namespace SpriteTools.TilesetTool.Preview;
 
-public class Preview : Widget
+public class Preview { }
+
+[CustomEditor(typeof(Preview))]
+public class PreviewWidget : ControlWidget
 {
+    public static PreviewWidget Current { get; private set; }
+
     public TilesetToolInspector Inspector { get; }
     private readonly RenderingWidget Rendering;
 
     internal Vector2 TextureSize => Rendering.TextureSize;
 
-    public Preview(TilesetToolInspector inspector) : base(null)
+    public PreviewWidget(SerializedProperty prop) : base(prop)
     {
-        Inspector = inspector;
+        Current = this;
+        Inspector = TilesetToolInspector.Active;
 
         Name = "Preview";
         WindowTitle = "Preview";

@@ -47,18 +47,18 @@ public class PaintTileTool : BaseTileTool
                 {
                     var ux = x;
                     var xx = x;
-                    if (Parent.HorizontalFlip) ux = tile.Size.x - x - 1;
+                    if (Parent.Settings.HorizontalFlip) ux = tile.Size.x - x - 1;
                     for (int y = 0; y < tile.Size.y; y++)
                     {
                         var uy = y;
                         var yy = -y;
                         var offsetPos = new Vector2Int(xx, yy);
 
-                        if (Parent.Angle == 90)
+                        if (Parent.Settings.Angle == 90)
                             offsetPos = new Vector2Int(-offsetPos.y, offsetPos.x);
-                        else if (Parent.Angle == 180)
+                        else if (Parent.Settings.Angle == 180)
                             offsetPos = new Vector2Int(-offsetPos.x, -offsetPos.y);
-                        else if (Parent.Angle == 270)
+                        else if (Parent.Settings.Angle == 270)
                             offsetPos = new Vector2Int(offsetPos.y, -offsetPos.x);
 
                         Parent.PlaceTile(tilePos + offsetPos, tile.Id, new Vector2Int(ux, uy), false);

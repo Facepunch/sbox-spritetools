@@ -328,14 +328,19 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		public bool IsLocked { get; set; }
 
 		/// <summary>
-		/// Whether or not this Layer dictates the collision mesh
-		/// </summary>
-		public bool IsCollisionLayer { get; set; }
-
-		/// <summary>
 		/// The Tileset that this Layer uses
 		/// </summary>
 		[Property, Group("Selected Layer")] public TilesetResource TilesetResource { get; set; }
+
+		/// <summary>
+		/// The height of the Layer
+		/// </summary>
+		//[Property, Group("Selected Layer")] public float Height { get; set; } = 0f;
+
+		/// <summary>
+		/// Whether or not this Layer dictates the collision mesh
+		/// </summary>
+		[Group("Selected Layer"), Title("Has Collisions")] public bool IsCollisionLayer { get; set; }
 
 		/// <summary>
 		/// A dictionary of all Tiles in the layer by their position

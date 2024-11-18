@@ -17,9 +17,17 @@ public partial class TilesetTool : EditorTool
 {
 	public static TilesetTool Active { get; private set; }
 
-	[Property] public int Angle { get; set; } = 0;
-	[Property] public bool HorizontalFlip { get; set; } = false;
-	[Property] public bool VerticalFlip { get; set; } = false;
+	public ToolSettings Settings { get; private set; } = new();
+	public class ToolSettings
+	{
+		[Feature("🖌️ Brush"), Property] public int Angle { get; set; } = 0;
+		[Feature("🖌️ Brush"), Property] public bool HorizontalFlip { get; set; } = false;
+		[Feature("🖌️ Brush"), Property] public bool VerticalFlip { get; set; } = false;
+		[Feature("🖌️ Brush"), Property, WideMode(HasLabel = false)] public Preview.Preview Preview { get; set; } = new();
+
+		[Header("NOT YET IMPLEMENTED!")]
+		[Feature("🪟 Autotile"), Property, ReadOnly] public bool Autotile { get; set; } = false;
+	}
 
 	public override IEnumerable<EditorTool> GetSubtools()
 	{
@@ -44,7 +52,7 @@ public partial class TilesetTool : EditorTool
 				SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
 				if (!string.IsNullOrEmpty(_selectedLayer?.TilesetResource?.FilePath))
 				{
-					TilesetToolInspector.Active?.Preview?.UpdateTexture(_selectedLayer.TilesetResource.FilePath);
+					Preview.PreviewWidget.Current?.UpdateTexture(_selectedLayer.TilesetResource.FilePath);
 				}
 			}
 		}
@@ -160,7 +168,7 @@ public partial class TilesetTool : EditorTool
 			return;
 		}
 
-		SelectedLayer.SetTile(position, tileId, cellPosition, Angle, HorizontalFlip, VerticalFlip, rebuild);
+		SelectedLayer.SetTile(position, tileId, cellPosition, Settings.Angle, Settings.HorizontalFlip, Settings.VerticalFlip, rebuild);
 	}
 
 	internal void EraseTile(Vector2 position, bool rebuild = true)
@@ -212,17 +220,17 @@ public partial class TilesetTool : EditorTool
 	public static void RotateLeft()
 	{
 		if (Active is null) return;
-		Active.Angle = (Active.Angle + 90) % 360;
+		Active.Settings.Angle = (Active.Settings.Angle + 90) % 360;
 	}
 
 	[Shortcut("tileset-tools.rotate-right", "W", typeof(SceneViewportWidget))]
 	public static void RotateRight()
 	{
 		if (Active is null) return;
-		Active.Angle -= 90;
-		if (Active.Angle < 0)
+		Active.Settings.Angle -= 90;
+		if (Active.Settings.Angle < 0)
 		{
-			Active.Angle += 360;
+			Active.Settings.Angle += 360;
 		}
 	}
 
@@ -230,14 +238,14 @@ public partial class TilesetTool : EditorTool
 	public static void FlipHorizontal()
 	{
 		if (Active is null) return;
-		Active.HorizontalFlip = !Active.HorizontalFlip;
+		Active.Settings.HorizontalFlip = !Active.Settings.HorizontalFlip;
 	}
 
 	[Shortcut("tileset-tools.flip-vertical", "S", typeof(SceneViewportWidget))]
 	public static void FlipVertical()
 	{
 		if (Active is null) return;
-		Active.VerticalFlip = !Active.VerticalFlip;
+		Active.Settings.VerticalFlip = !Active.Settings.VerticalFlip;
 	}
 
 }
@@ -337,11 +345,11 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 			var offsetPos = pos.Item1;
 			var tilePosition = (pos.Item2.x == -1 || pos.Item2.y == -1) ? selectedTile.Position : pos.Item2;
 
-			if (Tool.Angle == 90)
+			if (Tool.Settings.Angle == 90)
 				offsetPos = new Vector2Int(-offsetPos.y, offsetPos.x);
-			else if (Tool.Angle == 180)
+			else if (Tool.Settings.Angle == 180)
 				offsetPos = new Vector2Int(-offsetPos.x, -offsetPos.y);
-			else if (Tool.Angle == 270)
+			else if (Tool.Settings.Angle == 270)
 				offsetPos = new Vector2Int(offsetPos.y, -offsetPos.x);
 			var offset = tileset.GetOffset(tilePosition);
 
@@ -354,15 +362,15 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 			var bottomLeft = new Vector3(position.x, position.y + size.y, position.z);
 
 
-			if (Tool.HorizontalFlip) offset.x = -offset.x - tiling.x;
-			if (!Tool.VerticalFlip) offset.y = -offset.y - tiling.y;
+			if (Tool.Settings.HorizontalFlip) offset.x = -offset.x - tiling.x;
+			if (!Tool.Settings.VerticalFlip) offset.y = -offset.y - tiling.y;
 
 			var uvTopLeft = new Vector2(offset.x, offset.y);
 			var uvTopRight = new Vector2(offset.x + tiling.x, offset.y);
 			var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
 			var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
 
-			if (Tool.Angle == 90)
+			if (Tool.Settings.Angle == 90)
 			{
 				var tempUv = uvTopLeft;
 				uvTopLeft = uvBottomLeft;
@@ -370,7 +378,7 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 				uvBottomRight = uvTopRight;
 				uvTopRight = tempUv;
 			}
-			else if (Tool.Angle == 180)
+			else if (Tool.Settings.Angle == 180)
 			{
 				var tempUv = uvTopLeft;
 				uvTopLeft = uvBottomRight;
@@ -379,7 +387,7 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 				uvTopRight = uvBottomLeft;
 				uvBottomLeft = tempUv;
 			}
-			else if (Tool.Angle == 270)
+			else if (Tool.Settings.Angle == 270)
 			{
 				var tempUv = uvTopLeft;
 				uvTopLeft = uvTopRight;

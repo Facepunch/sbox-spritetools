@@ -14,10 +14,11 @@ public class TilesetToolInspector : InspectorWidget
     StatusWidget Header;
 
     ScrollArea scrollArea;
+    ControlSheet toolSheet;
     ControlSheet mainSheet;
     ControlSheet selectedSheet;
 
-    internal Preview.Preview Preview;
+    internal Preview.PreviewWidget Preview;
 
     public TilesetToolInspector(SerializedObject so) : base(so)
     {
@@ -76,9 +77,13 @@ public class TilesetToolInspector : InspectorWidget
 
         selectedSheet = null;
         UpdateSelectedSheet();
+        
+        toolSheet = new ControlSheet();
+        scrollArea.Canvas.Layout.Add(toolSheet);
+        UpdateToolSheet();
 
-        Preview = new Preview.Preview(this);
-        scrollArea.Canvas.Layout.Add(Preview);
+        // Preview = new Preview.Preview(this);
+        // scrollArea.Canvas.Layout.Add(Preview);
 
         scrollArea.Canvas.Layout.AddStretchCell();
 
@@ -90,6 +95,22 @@ public class TilesetToolInspector : InspectorWidget
         Header.Color = (false) ? Theme.Red : Theme.Blue;
         Header.Icon = (false) ? "warning" : "dashboard";
         Header.Update();
+    }
+
+    internal void UpdateToolSheet()
+    {
+        if (!(Layout?.IsValid ?? false)) return;
+        if (toolSheet is null) return;
+
+        toolSheet?.Clear(true);
+
+        if (Tool?.Settings is not null)
+        {
+            toolSheet.AddObject(Tool.Settings.GetSerialized(), x =>
+            {
+                return x.HasAttribute<PropertyAttribute>() && x.PropertyType != typeof(Action);
+            });
+        }
     }
 
     internal void UpdateMainSheet()
