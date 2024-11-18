@@ -18,8 +18,6 @@ public class TilesetToolInspector : InspectorWidget
     ControlSheet mainSheet;
     ControlSheet selectedSheet;
 
-    internal Preview.PreviewWidget Preview;
-
     public TilesetToolInspector(SerializedObject so) : base(so)
     {
         if (so.Targets.FirstOrDefault() is not TilesetTool tool) return;
@@ -77,7 +75,7 @@ public class TilesetToolInspector : InspectorWidget
 
         selectedSheet = null;
         UpdateSelectedSheet();
-        
+
         toolSheet = new ControlSheet();
         scrollArea.Canvas.Layout.Add(toolSheet);
         UpdateToolSheet();

@@ -31,6 +31,7 @@ public abstract class BaseTileTool : EditorTool
     protected Vector3 GetGizmoPos()
     {
         if (Parent.SelectedComponent.Layers.Count == 0) return Vector3.Zero;
+        if (Parent.SelectedComponent.Transform is null) return Vector3.Zero;
 
         var tr = SceneEditorSession.Active.Scene.Trace
             .Ray(Gizmo.CurrentRay, 500000)

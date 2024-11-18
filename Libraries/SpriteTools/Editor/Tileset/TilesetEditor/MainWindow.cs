@@ -458,13 +458,13 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	public void PushUndo(string name, string buffer = "")
 	{
-		if (string.IsNullOrEmpty(buffer)) buffer = Tileset.Serialize();
+		if (string.IsNullOrEmpty(buffer)) buffer = Tileset.SerializeString();
 		_undoStack.PushUndo(name, buffer);
 	}
 
 	public void PushRedo()
 	{
-		_undoStack.PushRedo(Tileset.Serialize());
+		_undoStack.PushRedo(Tileset.SerializeString());
 	}
 
 	public void Undo()
@@ -503,7 +503,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	internal void ReloadFromString(string buffer)
 	{
-		Tileset.Deserialize(buffer);
+		Tileset.DeserializeString(buffer);
 
 		SetDirty();
 		UpdateEverything();

@@ -74,7 +74,7 @@ public partial class TilesetTool : EditorTool
 	}
 	TilesetResource.Tile _selectedTile;
 
-	internal Action UpdateInspector;
+	internal Action UpdateInspector { get; set; }
 
 	bool WasGridActive = true;
 	Vector2Int GridSize => SelectedLayer?.TilesetResource?.TileSize ?? new Vector2Int(32, 32);
@@ -117,12 +117,13 @@ public partial class TilesetTool : EditorTool
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
+		if (SelectedComponent.Transform is null) return;
 
-		if (Selection.FirstOrDefault() != this || Selection.Count > 1)
-		{
-			EditorToolManager.SetTool("object");
-			return;
-		}
+		// if (Selection.FirstOrDefault() != this || Selection.Count > 1)
+		// {
+		// 	EditorToolManager.SetTool("object");
+		// 	return;
+		// }
 
 		if (SceneViewportWidget.LastSelected?.SceneView?.Tools?.CurrentTool?.CurrentTool is null)
 		{

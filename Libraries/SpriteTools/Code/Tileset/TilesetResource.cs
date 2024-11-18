@@ -161,7 +161,7 @@ public class TilesetResource : GameResource
 		TextureHashes[tile.Id] = hash;
 	}
 
-	public string Serialize()
+	public string SerializeString()
 	{
 		var obj = new JsonObject()
 		{
@@ -174,7 +174,7 @@ public class TilesetResource : GameResource
 		return obj.ToJsonString();
 	}
 
-	public void Deserialize(string json)
+	public void DeserializeString(string json)
 	{
 		var obj = JsonNode.Parse(json);
 		FilePath = obj["FilePath"]?.GetValue<string>() ?? "";

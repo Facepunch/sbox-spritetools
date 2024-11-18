@@ -22,6 +22,7 @@ public class PaintTileTool : BaseTileTool
     public override void OnUpdate()
     {
         if (!CanUseTool()) return;
+        if (Parent.SelectedComponent.Transform is null) return;
 
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
