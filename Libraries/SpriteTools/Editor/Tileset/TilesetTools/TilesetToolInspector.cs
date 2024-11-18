@@ -214,6 +214,7 @@ public class TilesetToolInspector : InspectorWidget
                 var option = menu.AddOption(tileset.GameObject.Name, null, () =>
                 {
                     Inspector.Tool.SelectedComponent = tileset;
+                    Inspector.Tool.SelectedLayer = tileset.Layers.FirstOrDefault();
                 });
                 option.Checkable = true;
                 option.Checked = tileset == Inspector.Tool.SelectedComponent;
