@@ -45,8 +45,9 @@ public partial class TilesetTool : EditorTool
 		{
 			if (_selectedLayer == value) return;
 
+			var previousTileset = _selectedLayer?.TilesetResource;
 			_selectedLayer = value;
-			if (value is not null)
+			if (value is not null && (previousTileset == null || _selectedLayer?.TilesetResource != previousTileset))
 			{
 				_sceneObject?.UpdateTileset(value.TilesetResource);
 				SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
