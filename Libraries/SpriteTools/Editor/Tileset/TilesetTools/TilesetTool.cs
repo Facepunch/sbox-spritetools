@@ -88,7 +88,6 @@ public partial class TilesetTool : EditorTool
 
 		if (SelectedComponent.IsValid())
 		{
-			if ((SelectedComponent?.Layers?.Count ?? 0) == 0) return;
 			foreach (var layer in SelectedComponent.Layers)
 			{
 				layer?.TilesetResource?.InternalUpdateTiles();
@@ -109,6 +108,12 @@ public partial class TilesetTool : EditorTool
 	public override void OnUpdate()
 	{
 		base.OnUpdate();
+
+		if (Selection.FirstOrDefault() != this || Selection.Count > 1)
+		{
+			EditorToolManager.SetTool("object");
+			return;
+		}
 
 		if (SceneViewportWidget.LastSelected?.SceneView?.Tools?.CurrentTool?.CurrentTool is null)
 		{
