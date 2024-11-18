@@ -119,11 +119,11 @@ public partial class TilesetTool : EditorTool
 		base.OnUpdate();
 		if (SelectedComponent.Transform is null) return;
 
-		// if (Selection.FirstOrDefault() != this || Selection.Count > 1)
-		// {
-		// 	EditorToolManager.SetTool("object");
-		// 	return;
-		// }
+		if (Selection.FirstOrDefault() != this || Selection.Count > 1)
+		{
+			EditorToolManager.SetTool("object");
+			return;
+		}
 
 		if (SceneViewportWidget.LastSelected?.SceneView?.Tools?.CurrentTool?.CurrentTool is null)
 		{
