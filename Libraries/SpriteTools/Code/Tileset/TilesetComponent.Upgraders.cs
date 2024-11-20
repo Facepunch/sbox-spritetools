@@ -26,7 +26,7 @@ public partial class TilesetComponent
                     var layer = layerList[i];
                     if (layer is null) continue;
                     var layerObj = layer.AsObject();
-                    layerObj["Height"] = distance * i;
+                    layerObj["Height"] = distance * (layerList.Count - i);
                 }
             }
         }
