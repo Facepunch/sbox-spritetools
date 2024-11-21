@@ -3,6 +3,7 @@ using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 
 namespace SpriteTools.TilesetEditor;
 
@@ -159,7 +160,13 @@ public class AutotileBrushControl : Widget
 
 	void Rename()
 	{
-
+		var brush = Brush;
+		OpenLineEditFlyout(Brush.Name, "What do you want to rename this Brush to?", null,
+		name =>
+		{
+			if (string.IsNullOrEmpty(name)) return;
+			brush.Name = name;
+		});
 	}
 
 	void DeleteLayerPopup()
@@ -201,6 +208,17 @@ public class AutotileBrushControl : Widget
 		base.OnContextMenu(e);
 
 		var m = new Menu(this);
+
+		m.AddOption("Clear All Tiles", "clear", () =>
+		{
+			foreach (var tile in Brush.Tiles)
+			{
+				tile.Tiles?.Clear();
+			}
+			ParentList?.MainWindow?.inspector?.UpdateSelectedAutotileSheet();
+		});
+
+		m.AddSeparator();
 
 		m.AddOption("Rename", "edit", Rename);
 		m.AddOption("Delete", "delete", Delete);
@@ -264,5 +282,67 @@ public class AutotileBrushControl : Widget
 
 		delta = otherIndex - myIndex;
 		return true;
+	}
+
+	private static void OpenLineEditFlyout(string value, string message, Vector2? position, Action<string> onSubmit)
+	{
+		LineEdit entry = null;
+
+		OpenFlyout(message, position,
+			(popup, button) =>
+			{
+				entry = new LineEdit(popup) { Text = value };
+				entry.ReturnPressed += () => button.MouseClick?.Invoke();
+
+				popup.Layout.Add(entry);
+				entry.Focus();
+			},
+			() =>
+			{
+				try
+				{
+					onSubmit(entry.Value);
+				}
+				catch (Exception ex)
+				{
+					OpenErrorFlyout(ex, position);
+				}
+			});
+	}
+
+	private static void OpenFlyout(string message, Vector2? position, Action<PopupWidget, Button> onLayout = null, Action onSubmit = null)
+	{
+		var popup = new PopupWidget(null);
+		popup.Layout = Layout.Column();
+		popup.Layout.Margin = 16;
+		popup.Layout.Spacing = 8;
+
+		popup.Layout.Add(new Label(message));
+
+		var button = new Button.Primary("Confirm");
+
+		button.MouseClick += () =>
+		{
+			onSubmit?.Invoke();
+			popup.Close();
+		};
+
+		onLayout?.Invoke(popup, button);
+
+		var bottomBar = popup.Layout.AddRow();
+		bottomBar.AddStretchCell();
+		bottomBar.Add(button);
+		popup.Position = position ?? Editor.Application.CursorPosition;
+		popup.Visible = true;
+	}
+
+	private static void OpenErrorFlyout(string title, string message, Vector2? position)
+	{
+		OpenFlyout($"<h3>{title}</h3><p>{message}</p>", position);
+	}
+
+	private static void OpenErrorFlyout(Exception ex, Vector2? position)
+	{
+		OpenErrorFlyout("Error", SecurityElement.Escape(ex.Message), position);
 	}
 }

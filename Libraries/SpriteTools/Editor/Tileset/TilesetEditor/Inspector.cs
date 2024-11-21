@@ -199,10 +199,21 @@ public class Inspector : Widget
     {
         selectedAutotileSheet?.Clear(true);
 
-        if (autotileBrushList?.SelectedTile is null) return;
+        if (autotileBrushList?.SelectedTile is not null)
+        {
 
-        var serializedObject = autotileBrushList.SelectedTile.GetSerialized();
-        selectedAutotileSheet.AddObject(serializedObject, (SerializedProperty prop) =>
+            var serializedObject = autotileBrushList.SelectedTile.GetSerialized();
+            selectedAutotileSheet.AddObject(serializedObject, (SerializedProperty prop) =>
+            {
+                return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
+            });
+            return;
+        }
+
+        if (autotileBrushList?.SelectedBrush is null) return;
+
+        var serializedBrush = autotileBrushList.SelectedBrush.Brush.GetSerialized();
+        selectedAutotileSheet.AddObject(serializedBrush, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
         });

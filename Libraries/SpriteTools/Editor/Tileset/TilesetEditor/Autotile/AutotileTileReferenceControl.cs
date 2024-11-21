@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Editor;
 using Sandbox;
@@ -5,11 +6,13 @@ using Sandbox;
 namespace SpriteTools.TilesetEditor;
 
 [CustomEditor(typeof(AutotileBrush.TileReference))]
-public class GameObjectControlWidget : ControlWidget
+public class AutotileTileReferenceControl : ControlWidget
 {
     public override bool SupportsMultiEdit => false;
 
-    public GameObjectControlWidget(SerializedProperty property) : base(property)
+    internal static Guid DragId = Guid.Empty;
+
+    public AutotileTileReferenceControl(SerializedProperty property) : base(property)
     {
         if (!property.IsEditable)
             ReadOnly = true;
@@ -110,53 +113,5 @@ public class GameObjectControlWidget : ControlWidget
     {
         SerializedProperty.SetValue<GameObject>(null);
         SignalValuesChanged();
-    }
-
-    public override void OnDragHover(DragEvent ev)
-    {
-        ev.Action = DropAction.Ignore;
-
-        if (ev.Data.OfType<GameObject>().Any())
-        {
-            ev.Action = DropAction.Link;
-            return;
-        }
-
-        if (ev.Data.HasFileOrFolder)
-        {
-            var asset = AssetSystem.FindByPath(ev.Data.Files.First());
-            if (asset is null) return;
-            if (asset.AssetType.FileExtension != "prefab") return;
-
-            if (asset.TryLoadResource(out PrefabFile prefabFile))
-            {
-                ev.Action = DropAction.Link;
-                return;
-            }
-        }
-
-    }
-
-    public override void OnDragDrop(DragEvent ev)
-    {
-        if (ev.Data.OfType<GameObject>().FirstOrDefault() is { } go)
-        {
-            SerializedProperty.SetValue(go);
-            return;
-        }
-
-        if (ev.Data.HasFileOrFolder)
-        {
-            var asset = AssetSystem.FindByPath(ev.Data.Files.First());
-            if (asset is null) return;
-            if (asset.AssetType.FileExtension != "prefab") return;
-
-            if (asset.TryLoadResource(out PrefabFile prefabFile))
-            {
-                SerializedProperty.SetValue(SceneUtility.GetPrefabScene(prefabFile));
-
-                return;
-            }
-        }
     }
 }

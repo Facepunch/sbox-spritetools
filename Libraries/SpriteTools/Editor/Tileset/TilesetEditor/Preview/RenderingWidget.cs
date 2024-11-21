@@ -26,6 +26,8 @@ public class RenderingWidget : SpriteRenderingWidget
 	public RenderingWidget(MainWindow window, Widget parent) : base(parent)
 	{
 		MainWindow = window;
+		AcceptDrops = false;
+		IsDraggable = false;
 	}
 
 	[EditorEvent.Frame]
@@ -64,6 +66,11 @@ public class RenderingWidget : SpriteRenderingWidget
 			frameHeight = MainWindow.Tileset.TileSize.y / TextureSize.y * planeHeight;
 			xSeparation = MainWindow.Tileset.TileSeparation.x / TextureSize.x * planeWidth;
 			ySeparation = MainWindow.Tileset.TileSeparation.y / TextureSize.y * planeHeight;
+
+			if (Gizmo.WasLeftMouseReleased)
+			{
+				AutotileTileReferenceControl.DragId = Guid.Empty;
+			}
 
 			{
 				int framesPerRow = MainWindow.Tileset.CurrentTextureSize.x / MainWindow.Tileset.CurrentTileSize.x;
@@ -248,14 +255,14 @@ public class RenderingWidget : SpriteRenderingWidget
 						Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
 						Gizmo.Draw.SolidBox(bbox);
 					}
-					if (Gizmo.WasLeftMousePressed)
+					if (Gizmo.WasLeftMouseReleased)
 					{
 						if (MainWindow?.inspector?.autotileBrushList?.SelectedTile is not null)
 						{
 							var currentTileCount = MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.Count ?? 0;
-							if ((MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.LastOrDefault()?.Id ?? new Guid()) == Guid.Empty)
+							if (currentTileCount > 0 && (MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.LastOrDefault()?.Id ?? new Guid()) == Guid.Empty)
 							{
-								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.RemoveAt(MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Count - 1);
+								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.RemoveAt(currentTileCount - 1);
 							}
 							var hadNone = currentTileCount == 0;
 							var reference = new AutotileBrush.TileReference(tile.Id);
@@ -276,6 +283,10 @@ public class RenderingWidget : SpriteRenderingWidget
 								MainWindow.inspector.autotileBrushList.SelectedTile = MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles[selectedIndex];
 							}
 						}
+					}
+					else if (Gizmo.WasLeftMousePressed)
+					{
+						AutotileTileReferenceControl.DragId = tile.Id;
 					}
 				}
 			}

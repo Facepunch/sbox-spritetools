@@ -9,8 +9,8 @@ public class AutotileBrush
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public bool Is47Tiles { get; set; } = false;
-    [Property] public string Name { get; set; }
-    [Property] public Tile[] Tiles { get; set; }
+    [Property, Placeholder("Autotile Brush")] public string Name { get; set; }
+    public Tile[] Tiles { get; set; }
 
     public AutotileBrush() : this(false) { }
 

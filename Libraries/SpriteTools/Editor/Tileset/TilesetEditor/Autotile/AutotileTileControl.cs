@@ -65,5 +65,25 @@ public class AutotileTileControl : Widget
         base.OnMouseClick(e);
 
         ParentBrush?.ParentList?.SelectTile(this);
+
+        e.Accepted = true;
+    }
+
+    protected override void OnContextMenu(ContextMenuEvent e)
+    {
+        base.OnContextMenu(e);
+
+        var m = new Menu(this);
+
+        m.AddOption("Clear", "clear", Clear);
+
+        m.OpenAtCursor(false);
+
+        e.Accepted = true;
+    }
+
+    void Clear()
+    {
+        Tile.Tiles?.Clear();
     }
 }
