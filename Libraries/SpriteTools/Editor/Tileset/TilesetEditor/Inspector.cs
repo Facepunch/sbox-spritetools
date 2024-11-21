@@ -50,6 +50,7 @@ public class Inspector : Widget
         segmentedControl = Layout.Add(new SegmentedControl());
         segmentedControl.AddOption("Setup", "auto_fix_high");
         segmentedControl.AddOption("Tiles", "grid_on");
+        segmentedControl.AddOption("Autotile Brushes", "brush");
         segmentedControl.OnSelectedChanged = (index) =>
         {
             UpdateControlSheet();
@@ -133,13 +134,15 @@ public class Inspector : Widget
         controlSheet.AddObject(serializedObject, (SerializedProperty prop) =>
         {
             if (segmentedControl.SelectedIndex == 0 && prop.GroupName != "Tileset Setup") return false;
-            if (segmentedControl.SelectedIndex == 1 && prop.GroupName == "Tileset Setup") return false;
+            if (segmentedControl.SelectedIndex > 0 && prop.GroupName == "Tileset Setup") return false;
+            if (segmentedControl.SelectedIndex == 1 && (prop.GroupName?.Contains("Autotile") ?? false)) return false;
+            if (segmentedControl.SelectedIndex == 2 && !(prop.GroupName?.Contains("Autotile") ?? false)) return false;
             return prop.HasAttribute<PropertyAttribute>() && !prop.HasAttribute<HideAttribute>();
         });
 
         var setupVisible = segmentedControl.SelectedIndex == 0;
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
-        selectedTileGroup.Visible = !setupVisible && hasTiles;
+        selectedTileGroup.Visible = (segmentedControl.SelectedIndex == 1) && hasTiles;
         btnRegenerate.Visible = setupVisible;
         btnRegenerate.Text = hasTiles ? "Regenerate Tiles" : "Generate Tiles";
         btnDeleteAll.Visible = setupVisible && hasTiles;

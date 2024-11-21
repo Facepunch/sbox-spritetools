@@ -24,6 +24,12 @@ public class TilesetResource : GameResource
 	[Property, Group("Tiles")]
 	public List<Tile> Tiles { get; set; } = new();
 
+	[Property, Group("Autotile Settings")]
+	public TilesetResource ImportAutotileFrom { get; set; }
+
+	[Property, Group("Autotile Brushes"), Order(9999)]
+	public List<AutotileBrush> AutotileBrushes { get; set; } = new();
+
 	[JsonIgnore, Hide]
 	public Dictionary<Guid, Tile> TileMap { get; set; } = new();
 
