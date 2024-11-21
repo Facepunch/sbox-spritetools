@@ -8,7 +8,7 @@ namespace SpriteTools.TilesetEditor;
 
 public class AutotileBrushControl : Widget
 {
-	AutotileBrushListControl ParentList;
+	internal AutotileBrushListControl ParentList;
 	internal AutotileBrush Brush;
 
 	Drag dragData;
@@ -65,7 +65,11 @@ public class AutotileBrushControl : Widget
 	{
 		base.OnDestroyed();
 
-		ParentList.Selected.Remove(this);
+		if (ParentList.SelectedBrush == this)
+		{
+			ParentList.SelectedBrush = null;
+			ParentList.SelectedTile = null;
+		}
 	}
 
 	void LoadPixmap()
@@ -87,7 +91,7 @@ public class AutotileBrushControl : Widget
 			Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
 			Paint.DrawRect(LocalRect, 4);
 		}
-		else if (ParentList.Selected.Contains(this))
+		else if (ParentList.SelectedBrush == this)
 		{
 			Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
 			Paint.DrawRect(LocalRect, 4);
@@ -188,24 +192,7 @@ public class AutotileBrushControl : Widget
 
 	void Delete()
 	{
-		if (ParentList.Selected.Contains(this))
-		{
-			if (ParentList.Selected.Count == ParentList.Buttons.Count)
-			{
-				ParentList.DeleteAll();
-			}
-			else
-			{
-				foreach (var selected in ParentList.Selected)
-				{
-					ParentList.DeleteBrush(selected.Brush);
-				}
-			}
-		}
-		else
-		{
-			ParentList.DeleteBrush(Brush);
-		}
+		ParentList.DeleteBrush(Brush);
 	}
 
 	protected override void OnContextMenu(ContextMenuEvent e)

@@ -5,7 +5,7 @@ namespace SpriteTools.TilesetEditor;
 
 public class AutotileTileControl : Widget
 {
-    AutotileBrushControl ParentBrush;
+    internal AutotileBrushControl ParentBrush;
     internal AutotileBrush.Tile Tile;
 
     public AutotileTileControl(AutotileBrushControl brush, AutotileBrush.Tile tile)
@@ -31,7 +31,19 @@ public class AutotileTileControl : Widget
 
     protected override void OnPaint()
     {
-        Paint.SetBrushAndPen(Theme.Grey);
+        var color = IsUnderMouse ? Color.Red : Theme.Grey;
+        if (ParentBrush.ParentList.SelectedTile == Tile)
+        {
+            color = Theme.Blue;
+        }
+        Paint.SetBrushAndPen(color);
         Paint.DrawRect(LocalRect);
+    }
+
+    protected override void OnMouseClick(MouseEvent e)
+    {
+        base.OnMouseClick(e);
+
+        ParentBrush?.ParentList?.SelectTile(this);
     }
 }
