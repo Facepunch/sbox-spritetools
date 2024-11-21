@@ -1,3 +1,4 @@
+using System;
 using Editor;
 using Sandbox;
 
@@ -8,10 +9,13 @@ public class AutotileTileControl : Widget
     internal AutotileBrushControl ParentBrush;
     internal AutotileBrush.Tile Tile;
 
-    public AutotileTileControl(AutotileBrushControl brush, AutotileBrush.Tile tile)
+    int Index;
+
+    public AutotileTileControl(AutotileBrushControl brush, int index)
     {
+        Index = index;
         ParentBrush = brush;
-        Tile = tile;
+        Tile = ParentBrush.Brush.Tiles[index];
 
         VerticalSizeMode = SizeMode.Flexible;
 
@@ -31,12 +35,22 @@ public class AutotileTileControl : Widget
 
     protected override void OnPaint()
     {
-        var color = IsUnderMouse ? Color.Red : Theme.Grey;
+        Texture tex = null;
+        // TODO: Get tile texture
+        if (tex is null)
+        {
+            var tileCount = ParentBrush.Brush.Is47Tiles ? 47 : 16;
+            tex = Texture.Load(Editor.FileSystem.Mounted, $"images/guides/tile-guide-{tileCount}-{Index}.png");
+        }
+        var pixmap = Pixmap.FromTexture(tex);
+        Paint.Draw(LocalRect, pixmap);
+
+        var color = IsUnderMouse ? Color.White : Color.Transparent;
         if (ParentBrush.ParentList.SelectedTile == Tile)
         {
             color = Theme.Blue;
         }
-        Paint.SetBrushAndPen(color);
+        Paint.SetBrushAndPen(color.WithAlpha(MathF.Min(0.5f, color.a)), Color.Transparent);
         Paint.DrawRect(LocalRect);
     }
 

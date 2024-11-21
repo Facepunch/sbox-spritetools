@@ -49,8 +49,7 @@ public class AutotileBrushControl : Widget
 		// }
 		for (int i = 0; i < tileCount; i++)
 		{
-			var tile = Brush.Tiles[i];
-			var tileControl = new AutotileTileControl(this, tile);
+			var tileControl = new AutotileTileControl(this, i);
 			TileContent.Add(tileControl);
 			TileControls.Add(tileControl);
 		}
@@ -109,7 +108,7 @@ public class AutotileBrushControl : Widget
 		var tileCount = Brush.Is47Tiles ? 47 : 16;
 		Paint.SetBrushAndPen(Theme.Grey);
 		var size = 26f;
-		var padding = 2;
+		var padding = 3;
 		var tileWidth = MathF.Floor((Width - size) / size);
 		for (int i = 0; i < tileCount; i++)
 		{

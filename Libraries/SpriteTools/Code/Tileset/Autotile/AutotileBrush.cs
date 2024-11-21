@@ -27,6 +27,7 @@ public class AutotileBrush
 
     public class Tile
     {
+        // [InlineEditor, WideMode(HasLabel = false)]
         [Property] public List<TileReference> Tiles { get; set; }
     }
 

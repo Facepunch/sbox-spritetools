@@ -174,7 +174,7 @@ public class AutotileBrushListControl : ControlWidget
 
     public void DeleteBrush(AutotileBrush brush)
     {
-        if (SelectedBrush.Brush == brush)
+        if (SelectedBrush?.Brush == brush)
         {
             SelectedBrush = null;
             SelectedTile = null;
