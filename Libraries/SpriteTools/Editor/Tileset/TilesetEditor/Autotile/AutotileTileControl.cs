@@ -36,7 +36,13 @@ public class AutotileTileControl : Widget
     protected override void OnPaint()
     {
         Texture tex = null;
-        // TODO: Get tile texture
+        if ((Tile?.Tiles?.Count ?? 0) > 0)
+        {
+            if (ParentBrush.ParentList.MainWindow.Tileset.TileTextures.TryGetValue(Tile.Tiles[0].Id, out var texture))
+            {
+                tex = texture;
+            }
+        }
         if (tex is null)
         {
             var tileCount = ParentBrush.Brush.Is47Tiles ? 47 : 16;

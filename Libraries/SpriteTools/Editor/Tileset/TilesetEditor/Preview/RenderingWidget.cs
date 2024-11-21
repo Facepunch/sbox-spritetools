@@ -237,6 +237,34 @@ public class RenderingWidget : SpriteRenderingWidget
 					}
 				}
 			}
+			else if (MainWindow.inspector.SelectedTab == 2)
+			{
+				if (Gizmo.IsHovered)
+				{
+					Cursor = CursorShape.Finger;
+					timeSinceLastCornerHover = 0f;
+					using (Gizmo.Scope("hover"))
+					{
+						Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha(0.5f);
+						Gizmo.Draw.SolidBox(bbox);
+					}
+					if (Gizmo.WasLeftMousePressed)
+					{
+						if (MainWindow?.inspector?.autotileBrushList?.SelectedTile is not null && (MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.Count ?? 0) < 2)
+						{
+							MainWindow.inspector.autotileBrushList.SelectedTile.Tiles ??= new();
+							var reference = new AutotileBrush.TileReference(tile.Id);
+							if (!MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Contains(reference))
+								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Add(reference);
+							MainWindow.inspector?.UpdateSelectedAutotileSheet();
+
+							var selectedIndex = Array.IndexOf(MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles, MainWindow.inspector.autotileBrushList.SelectedTile);
+							selectedIndex = (selectedIndex + 1) % MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles.Count();
+							MainWindow.inspector.autotileBrushList.SelectedTile = MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles[selectedIndex];
+						}
+					}
+				}
+			}
 
 			DrawBox(x, y, width, height);
 		}

@@ -103,18 +103,20 @@ public class AutotileBrushControl : Widget
 
 		var brushName = string.IsNullOrEmpty(Brush.Name) ? $"Brush {ParentList.Buttons.IndexOf(this) + 1}" : Brush.Name;
 		Paint.SetBrushAndPen(Color.Transparent);
-		Paint.DrawTextBox(LocalRect.Shrink(6, 4), brushName, Theme.ControlText, 8, 4, TextFlag.LeftTop);
+		var textRect = LocalRect.Shrink(6, 4);
+		textRect.Top += 2f;
+		Paint.DrawTextBox(textRect, brushName, Theme.ControlText, 8, 4, TextFlag.LeftTop);
 
 		var tileCount = Brush.Is47Tiles ? 47 : 16;
 		Paint.SetBrushAndPen(Theme.Grey);
 		var size = 26f;
 		var padding = 3;
-		var tileWidth = MathF.Floor((Width - size) / size);
+		var tileWidth = MathF.Floor(Width / (size + padding));
 		for (int i = 0; i < tileCount; i++)
 		{
 			var x = i % tileWidth;
 			var y = MathF.Floor(i / tileWidth);
-			var tileRect = new Rect(LocalRect.TopLeft + new Vector2(4, 20) + new Vector2(x * (size + padding), y * (size + padding)), new Vector2(size, size));
+			var tileRect = new Rect(LocalRect.TopLeft + new Vector2(4, 26) + new Vector2(x * (size + padding), y * (size + padding)), new Vector2(size, size));
 			if (TileControls.ElementAt(i) is AutotileTileControl tileControl)
 			{
 				tileControl.Position = tileRect.Position;
@@ -122,7 +124,7 @@ public class AutotileBrushControl : Widget
 			//Paint.DrawRect(tileRect, 2);
 		}
 		var maxY = 1 + MathF.Floor(tileCount / tileWidth);
-		FixedHeight = 26 + (size + padding * 2f) * maxY;
+		FixedHeight = 28 + (size + padding) * maxY;
 
 
 		// if (Pixmap is null) LoadPixmap();

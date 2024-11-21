@@ -36,5 +36,15 @@ public class AutotileBrush
         public Guid Id { get; set; }
         public Vector2Int Position { get; set; }
         public float Weight { get; set; } = 10f;
+
+        public TileReference()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        public TileReference(Guid guid)
+        {
+            Id = guid;
+        }
     }
 }
