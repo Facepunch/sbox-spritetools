@@ -1,5 +1,6 @@
 using Editor;
 using Sandbox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,13 +11,12 @@ public class AutotileBrushControl : Widget
 	AutotileBrushListControl ParentList;
 	internal AutotileBrush Brush;
 
-	internal LabelTextEntry labelText;
-
 	Drag dragData;
 	bool draggingAbove = false;
 	bool draggingBelow = false;
 
-	Pixmap Pixmap;
+	Layout TileContent;
+	List<AutotileTileControl> TileControls = new();
 
 	public AutotileBrushControl(AutotileBrushListControl list, AutotileBrush brush)
 	{
@@ -33,16 +33,29 @@ public class AutotileBrushControl : Widget
 		StatusTip = $"Select Brush \"{brush.Name}\"";
 		Cursor = CursorShape.Finger;
 
-		Layout = Layout.Row();
-		Layout.AddSpacingCell(20);
+		Layout = Layout.Column();
 		Layout.Margin = 4;
 		Layout.Spacing = 4;
 
-		var serializedObject = Brush.GetSerialized();
-		serializedObject.TryGetProperty(nameof(TilesetResource.Tile.Name), out var name);
-		labelText = new LabelTextEntry(name);
-		labelText.EmptyValue = $"Brush {brush.Name}";
-		Layout.Add(labelText);
+		TileContent = Layout.Add(Layout.Row());
+		var tileCount = Brush.Is47Tiles ? 47 : 16;
+		// if (Brush.Tiles is null)
+		// {
+		// 	Brush.Tiles = new AutotileBrush.Tile[tileCount];
+		// 	for (int i = 0; i < tileCount; i++)
+		// 	{
+		// 		Brush.Tiles[i] = new AutotileBrush.Tile();
+		// 	}
+		// }
+		for (int i = 0; i < tileCount; i++)
+		{
+			var tile = Brush.Tiles[i];
+			var tileControl = new AutotileTileControl(this, tile);
+			TileContent.Add(tileControl);
+			TileControls.Add(tileControl);
+		}
+
+		// FixedHeight = Brush.Is47Tiles ? 128 : 64;
 
 		IsDraggable = true;
 		AcceptDrops = true;
@@ -68,6 +81,7 @@ public class AutotileBrushControl : Widget
 
 	protected override void OnPaint()
 	{
+		MaximumWidth = ParentList.Width - 12;
 		if (dragData?.IsValid ?? false)
 		{
 			Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
@@ -83,6 +97,30 @@ public class AutotileBrushControl : Widget
 			Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
 			Paint.DrawRect(LocalRect, 4);
 		}
+
+		var brushName = string.IsNullOrEmpty(Brush.Name) ? $"Brush {ParentList.Buttons.IndexOf(this) + 1}" : Brush.Name;
+		Paint.SetBrushAndPen(Color.Transparent);
+		Paint.DrawTextBox(LocalRect.Shrink(6, 4), brushName, Theme.ControlText, 8, 4, TextFlag.LeftTop);
+
+		var tileCount = Brush.Is47Tiles ? 47 : 16;
+		Paint.SetBrushAndPen(Theme.Grey);
+		var size = 26f;
+		var padding = 2;
+		var tileWidth = MathF.Floor((Width - size) / size);
+		for (int i = 0; i < tileCount; i++)
+		{
+			var x = i % tileWidth;
+			var y = MathF.Floor(i / tileWidth);
+			var tileRect = new Rect(LocalRect.TopLeft + new Vector2(4, 20) + new Vector2(x * (size + padding), y * (size + padding)), new Vector2(size, size));
+			if (TileControls.ElementAt(i) is AutotileTileControl tileControl)
+			{
+				tileControl.Position = tileRect.Position;
+			}
+			//Paint.DrawRect(tileRect, 2);
+		}
+		var maxY = 1 + MathF.Floor(tileCount / tileWidth);
+		FixedHeight = 26 + (size + padding * 2f) * maxY;
+
 
 		// if (Pixmap is null) LoadPixmap();
 		// if (Pixmap is not null)
@@ -116,7 +154,7 @@ public class AutotileBrushControl : Widget
 
 	void Rename()
 	{
-		labelText.Edit();
+
 	}
 
 	void DeleteLayerPopup()
