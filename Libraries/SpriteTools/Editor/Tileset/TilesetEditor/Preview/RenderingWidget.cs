@@ -253,6 +253,10 @@ public class RenderingWidget : SpriteRenderingWidget
 						if (MainWindow?.inspector?.autotileBrushList?.SelectedTile is not null)
 						{
 							var currentTileCount = MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.Count ?? 0;
+							if ((MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.LastOrDefault()?.Id ?? new Guid()) == Guid.Empty)
+							{
+								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.RemoveAt(MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Count - 1);
+							}
 							var hadNone = currentTileCount == 0;
 							var reference = new AutotileBrush.TileReference(tile.Id);
 							reference.Tileset = MainWindow.Tileset;

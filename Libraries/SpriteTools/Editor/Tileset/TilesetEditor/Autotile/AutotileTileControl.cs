@@ -38,7 +38,7 @@ public class AutotileTileControl : Widget
         Texture tex = null;
         if ((Tile?.Tiles?.Count ?? 0) > 0)
         {
-            if (ParentBrush.ParentList.MainWindow.Tileset.TileTextures.TryGetValue(Tile.Tiles[0].Id, out var texture))
+            if (ParentBrush.ParentList.MainWindow.Tileset.TileTextures.TryGetValue(Tile?.Tiles[0]?.Id ?? Guid.Empty, out var texture))
             {
                 tex = texture;
             }
