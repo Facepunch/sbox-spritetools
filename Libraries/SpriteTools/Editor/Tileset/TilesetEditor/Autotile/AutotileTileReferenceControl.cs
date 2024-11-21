@@ -47,14 +47,14 @@ public class GameObjectControlWidget : ControlWidget
         if ((tile?.Id ?? System.Guid.Empty) == System.Guid.Empty)
         {
             Paint.SetPen(Theme.ControlText.WithAlpha(0.3f));
-            Paint.DrawIcon(rect, "radio_button_unchecked", 14, TextFlag.LeftCenter);
+            Paint.DrawIcon(rect, "grid_3x3", 14, TextFlag.LeftCenter);
             rect.Left += 22;
             Paint.DrawText(rect, "None", TextFlag.LeftCenter);
         }
         else
         {
             Paint.SetPen(Theme.Green);
-            Paint.DrawIcon(rect, "panorama_wide_angle_select", 14, TextFlag.LeftCenter);
+            Paint.DrawIcon(rect, "grid_on", 14, TextFlag.LeftCenter);
             rect.Left += 22;
             var realTile = tile?.Tileset?.Tiles.FirstOrDefault(t => t.Id == tile.Id);
             Paint.DrawText(rect, string.IsNullOrEmpty(realTile?.Name) ? $"Tile {realTile?.Position ?? Vector2Int.Zero}" : realTile.Name, TextFlag.LeftCenter);
