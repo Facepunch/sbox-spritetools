@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Sandbox;
 
 namespace SpriteTools;
@@ -33,6 +34,7 @@ public class AutotileBrush
 
     public class TileReference
     {
+        [Hide] public TilesetResource Tileset { get; set; }
         public Guid Id { get; set; }
         public Vector2Int Position { get; set; }
         public float Weight { get; set; } = 10f;

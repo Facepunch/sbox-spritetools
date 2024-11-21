@@ -99,7 +99,6 @@ public class TilesetResource : GameResource
 	public void InternalUpdateTileTexture(Tile tile)
 	{
 		TextureData ??= new();
-		Log.Info($"Trying to update tile {tile.Name}");
 
 		InternalUpdateTileData(tile);
 		if (TileTextures.TryGetValue(tile.Id, out var texture))

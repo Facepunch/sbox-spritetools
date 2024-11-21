@@ -250,17 +250,27 @@ public class RenderingWidget : SpriteRenderingWidget
 					}
 					if (Gizmo.WasLeftMousePressed)
 					{
-						if (MainWindow?.inspector?.autotileBrushList?.SelectedTile is not null && (MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.Count ?? 0) < 2)
+						if (MainWindow?.inspector?.autotileBrushList?.SelectedTile is not null)
 						{
-							MainWindow.inspector.autotileBrushList.SelectedTile.Tiles ??= new();
+							var currentTileCount = MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.Count ?? 0;
+							var hadNone = currentTileCount == 0;
 							var reference = new AutotileBrush.TileReference(tile.Id);
+							reference.Tileset = MainWindow.Tileset;
+							if (currentTileCount < 2)
+							{
+								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles ??= new();
+								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Clear();
+							}
 							if (!MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Contains(reference))
 								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Add(reference);
 							MainWindow.inspector?.UpdateSelectedAutotileSheet();
 
-							var selectedIndex = Array.IndexOf(MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles, MainWindow.inspector.autotileBrushList.SelectedTile);
-							selectedIndex = (selectedIndex + 1) % MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles.Count();
-							MainWindow.inspector.autotileBrushList.SelectedTile = MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles[selectedIndex];
+							if (hadNone)
+							{
+								var selectedIndex = Array.IndexOf(MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles, MainWindow.inspector.autotileBrushList.SelectedTile);
+								selectedIndex = (selectedIndex + 1) % MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles.Count();
+								MainWindow.inspector.autotileBrushList.SelectedTile = MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles[selectedIndex];
+							}
 						}
 					}
 				}
