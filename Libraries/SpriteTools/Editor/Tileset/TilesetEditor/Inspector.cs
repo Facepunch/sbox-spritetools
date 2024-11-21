@@ -14,13 +14,16 @@ public class Inspector : Widget
 
     ControlSheet controlSheet;
     ControlSheet selectedTileSheet;
+    ControlSheet selectedAutotileSheet;
     internal SegmentedControl segmentedControl;
 
     internal Button btnRegenerate;
     Button btnDeleteAll;
     WarningBox warningBox;
     ExpandGroup selectedTileGroup;
+    ExpandGroup selectedAutotileGroup;
     internal TilesetTileListControl tileList;
+    internal AutotileBrushListControl autotileBrushList;
 
     public Inspector(MainWindow mainWindow) : base(null)
     {
@@ -35,6 +38,7 @@ public class Inspector : Widget
 
         controlSheet = new ControlSheet();
         selectedTileSheet = new ControlSheet();
+        selectedAutotileSheet = new ControlSheet();
 
         MinimumWidth = 350f;
 
@@ -59,16 +63,32 @@ public class Inspector : Widget
         scroller.Canvas.Layout.Add(controlSheet);
 
         scroller.Canvas.Layout.AddSpacingCell(8);
-        selectedTileGroup = scroller.Canvas.Layout.Add(new ExpandGroup(this));
-        selectedTileGroup.Title = "Selected Tile";
-        selectedTileGroup.SetOpenState(true);
-        var w = new Widget();
-        w.Layout = Layout.Column();
-        w.VerticalSizeMode = SizeMode.CanGrow;
-        w.HorizontalSizeMode = SizeMode.Flexible;
-        w.Layout.Add(selectedTileSheet);
-        w.Layout.AddSpacingCell(8);
-        selectedTileGroup.SetWidget(w);
+
+        {
+            selectedTileGroup = scroller.Canvas.Layout.Add(new ExpandGroup(this));
+            selectedTileGroup.Title = "Selected Tile";
+            selectedTileGroup.SetOpenState(true);
+            var w = new Widget();
+            w.Layout = Layout.Column();
+            w.VerticalSizeMode = SizeMode.CanGrow;
+            w.HorizontalSizeMode = SizeMode.Flexible;
+            w.Layout.Add(selectedTileSheet);
+            w.Layout.AddSpacingCell(8);
+            selectedTileGroup.SetWidget(w);
+        }
+
+        {
+            selectedAutotileGroup = scroller.Canvas.Layout.Add(new ExpandGroup(this));
+            selectedAutotileGroup.Title = "Selected Autotile";
+            selectedAutotileGroup.SetOpenState(true);
+            var w = new Widget();
+            w.Layout = Layout.Column();
+            w.VerticalSizeMode = SizeMode.CanGrow;
+            w.HorizontalSizeMode = SizeMode.Flexible;
+            w.Layout.Add(selectedAutotileSheet);
+            w.Layout.AddSpacingCell(8);
+            selectedAutotileGroup.SetWidget(w);
+        }
 
         btnRegenerate = scroller.Canvas.Layout.Add(new Button("Regenerate Tiles", icon: "refresh"));
         btnRegenerate.Clicked = MainWindow.GenerateTiles;
@@ -86,6 +106,7 @@ public class Inspector : Widget
 
         UpdateControlSheet();
         UpdateSelectedSheet();
+        UpdateSelectedAutotileSheet();
     }
 
     [EditorEvent.Hotload]
@@ -93,6 +114,7 @@ public class Inspector : Widget
     {
         UpdateControlSheet();
         UpdateSelectedSheet();
+        UpdateSelectedAutotileSheet();
     }
 
     internal void UpdateControlSheet()
@@ -143,6 +165,7 @@ public class Inspector : Widget
         var setupVisible = segmentedControl.SelectedIndex == 0;
         var hasTiles = (MainWindow?.Tileset?.Tiles?.Count ?? 0) > 0;
         selectedTileGroup.Visible = (segmentedControl.SelectedIndex == 1) && hasTiles;
+        selectedAutotileGroup.Visible = (segmentedControl.SelectedIndex == 2) && (MainWindow?.Tileset?.AutotileBrushes?.Count ?? 0) > 0;
         btnRegenerate.Visible = setupVisible;
         btnRegenerate.Text = hasTiles ? "Regenerate Tiles" : "Generate Tiles";
         btnDeleteAll.Visible = setupVisible && hasTiles;
@@ -167,6 +190,19 @@ public class Inspector : Widget
         objs.Rebuild();
 
         selectedTileSheet.AddObject(objs, (SerializedProperty prop) =>
+        {
+            return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
+        });
+    }
+
+    internal void UpdateSelectedAutotileSheet()
+    {
+        selectedAutotileSheet?.Clear(true);
+
+        if (autotileBrushList?.SelectedTile is null) return;
+
+        var serializedObject = autotileBrushList.SelectedTile.GetSerialized();
+        selectedAutotileSheet.AddObject(serializedObject, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
         });

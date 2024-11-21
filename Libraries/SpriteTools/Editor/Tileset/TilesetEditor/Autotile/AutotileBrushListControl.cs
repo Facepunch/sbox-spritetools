@@ -77,7 +77,7 @@ public class AutotileBrushListControl : ControlWidget
                 if (IsDescendantOf(window.inspector))
                 {
                     MainWindow = window;
-                    // window.inspector.tileList = this;
+                    window.inspector.autotileBrushList = this;
                     break;
                 }
             }
@@ -150,7 +150,7 @@ public class AutotileBrushListControl : ControlWidget
         // }
         SelectedBrush = button;
         SelectedTile = null;
-        MainWindow.inspector.UpdateSelectedSheet();
+        MainWindow.inspector.UpdateSelectedAutotileSheet();
     }
 
     internal void SelectTile(AutotileTileControl button)
@@ -162,7 +162,7 @@ public class AutotileBrushListControl : ControlWidget
         }
         if (SelectedTile == button.Tile) return;
         SelectedTile = button.Tile;
-        MainWindow.inspector.UpdateSelectedSheet();
+        MainWindow.inspector.UpdateSelectedAutotileSheet();
     }
 
     public void DeleteAll()
@@ -174,10 +174,16 @@ public class AutotileBrushListControl : ControlWidget
 
     public void DeleteBrush(AutotileBrush brush)
     {
+        if (SelectedBrush.Brush == brush)
+        {
+            SelectedBrush = null;
+            SelectedTile = null;
+        }
         var brushes = SerializedProperty.GetValue<List<AutotileBrush>>();
         brushes.Remove(brush);
         SerializedProperty.SetValue(brushes);
         UpdateList();
+        MainWindow?.inspector?.UpdateSelectedAutotileSheet();
     }
 
     public void NewBrush(bool is47Tiles = false)
@@ -186,6 +192,7 @@ public class AutotileBrushListControl : ControlWidget
         layers.Add(new AutotileBrush(is47Tiles));
         SerializedProperty.SetValue(layers);
         UpdateList();
+        MainWindow?.inspector?.UpdateSelectedAutotileSheet();
     }
 
     protected override void OnKeyPress(KeyEvent e)
