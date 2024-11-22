@@ -57,7 +57,7 @@ class PreviewTileset : AssetPreview
         }
         else
         {
-            so.Transform = so.Transform.WithScale(new Vector3(aspect, 1, 1));
+            so.Transform = so.Transform.WithScale(new Vector3(1f / aspect, 1, 1));
         }
 
         so.SetMaterialOverride(previewMat);
