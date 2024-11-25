@@ -19,7 +19,7 @@ public class AutotileTileControl : Widget
 
         VerticalSizeMode = SizeMode.Flexible;
 
-        StatusTip = $"Select Tile";
+        StatusTip = $"Select Tile {index}";
         Cursor = CursorShape.Finger;
 
         Layout = Layout.Row();

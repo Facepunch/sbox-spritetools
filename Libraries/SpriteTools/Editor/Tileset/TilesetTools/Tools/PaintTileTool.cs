@@ -84,26 +84,29 @@ public class PaintTileTool : BaseTileTool
             isPainting = false;
         }
 
-        if (Parent?.SelectedLayer?.AutoTilePositions is not null)
-        {
-            var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
-            using (Gizmo.Scope("test", Transform.Zero))
-            {
-                Gizmo.Draw.Color = Color.Red;
-                foreach (var group in Parent.SelectedLayer.AutoTilePositions)
-                {
-                    var brush = group.Key;
-                    foreach (var position in group.Value)
-                    {
-                        Gizmo.Draw.WorldText("X",
-                            new Transform(
-                                Parent.SelectedComponent.WorldPosition + (Vector3)((Vector2)position * tileSize) + (Vector3)(tileSize * 0.5f)
-                            )
-                        );
-                    }
-                }
-            }
-        }
+        // if (Parent?.SelectedLayer?.AutoTilePositions is not null)
+        // {
+        //     var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
+        //     using (Gizmo.Scope("test", Transform.Zero))
+        //     {
+        //         Gizmo.Draw.Color = Color.Red;
+        //         foreach (var group in Parent.SelectedLayer.AutoTilePositions)
+        //         {
+        //             var brush = group.Key;
+        //             foreach (var position in group.Value)
+        //             {
+        //                 Gizmo.Draw.WorldText(Parent.SelectedLayer.GetAutotileBitmask(brush, position).ToString(),
+        //                     new Transform(
+        //                         Parent.SelectedComponent.WorldPosition + (Vector3)((Vector2)position * tileSize) + (Vector3)(tileSize * 0.5f),
+        //                         Rotation.Identity,
+        //                         0.3f
+        //                     ),
+        //                     "Poppins", 24
+        //                 );
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     [Shortcut("tileset-tools.paint-tool", "b", typeof(SceneViewportWidget))]
