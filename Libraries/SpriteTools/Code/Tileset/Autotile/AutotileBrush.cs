@@ -26,6 +26,14 @@ public class AutotileBrush
         }
     }
 
+    public TilesetResource.Tile GetTileFromBitmask(int bitmask)
+    {
+        if (bitmask < 0)
+            return null;
+
+        return null;
+    }
+
     public class Tile
     {
         // [InlineEditor, WideMode(HasLabel = false)]

@@ -454,15 +454,102 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			if (!AutoTilePositions.ContainsKey(autotileId))
 				AutoTilePositions[autotileId] = new List<Vector2Int>();
 
+			bool shouldUpdate = false;
 			if (enabled)
 			{
 				if (!AutoTilePositions[autotileId].Contains(position))
+				{
 					AutoTilePositions[autotileId].Add(position);
+					shouldUpdate = true;
+				}
 			}
 			else
 			{
-				AutoTilePositions[autotileId].Remove(position);
+				if (AutoTilePositions[autotileId].Contains(position))
+				{
+					Tiles.Remove(position);
+					AutoTilePositions[autotileId].Remove(position);
+					shouldUpdate = true;
+				}
 			}
+
+			if (shouldUpdate)
+				UpdateAutotile(autotileId, position);
+		}
+
+		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool updateSurrounding = true)
+		{
+			if (!AutoTilePositions.ContainsKey(autotileId)) return;
+
+			if (AutoTilePositions[autotileId].Contains(position))
+			{
+				var bitmask = GetAutotileBitmask(autotileId, position);
+				var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
+				if (brush is not null)
+				{
+					var tile = brush.GetTileFromBitmask(bitmask);
+					if (tile is not null)
+					{
+						SetTile(position, tile.Id, Vector2Int.Zero, 0, false, false, false);
+					}
+					else
+					{
+						Log.Warning($"Tile not found for bitmask {bitmask} in AutotileBrush {brush.Name}");
+					}
+				}
+			}
+
+			if (updateSurrounding)
+			{
+				var up = position.WithY(position.y + 1);
+				var down = position.WithY(position.y - 1);
+				var left = position.WithX(position.x - 1);
+				var right = position.WithX(position.x + 1);
+				var upLeft = up.WithX(left.x);
+				var upRight = up.WithX(right.x);
+				var downLeft = down.WithX(left.x);
+				var downRight = down.WithX(right.x);
+
+				UpdateAutotile(autotileId, up, false);
+				UpdateAutotile(autotileId, down, false);
+				UpdateAutotile(autotileId, left, false);
+				UpdateAutotile(autotileId, right, false);
+				UpdateAutotile(autotileId, upLeft, false);
+				UpdateAutotile(autotileId, upRight, false);
+				UpdateAutotile(autotileId, downLeft, false);
+				UpdateAutotile(autotileId, downRight, false);
+			}
+		}
+
+		public int GetAutotileBitmask(Guid autotileId, Vector2Int position)
+		{
+			if (AutoTilePositions is null || !AutoTilePositions.ContainsKey(autotileId)) return -1;
+
+			var positions = AutoTilePositions[autotileId];
+			int value = 0;
+
+			var up = position.WithY(position.y + 1);
+			var down = position.WithY(position.y - 1);
+			var left = position.WithX(position.x - 1);
+			var right = position.WithX(position.x + 1);
+			var upLeft = up.WithX(left.x);
+			var upRight = up.WithX(right.x);
+			var downLeft = down.WithX(left.x);
+			var downRight = down.WithX(right.x);
+
+			foreach (var pos in positions)
+			{
+				if (pos == upLeft) value += 1;
+				if (pos == up) value += 2;
+				if (pos == upRight) value += 4;
+				if (pos == left) value += 8;
+				if (pos == right) value += 16;
+				if (pos == downLeft) value += 32;
+				if (pos == down) value += 64;
+				if (pos == downRight) value += 128;
+			}
+
+			return value;
 		}
 	}
 
