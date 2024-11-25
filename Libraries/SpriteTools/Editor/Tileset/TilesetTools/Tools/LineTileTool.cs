@@ -59,10 +59,21 @@ public class LineTileTool : BaseTileTool
                 holding = false;
                 Parent._sceneObject.ClearPositions();
 
+                var brush = AutotileWidget.Instance?.Brush;
                 var tile = TilesetTool.Active.SelectedTile;
-                foreach (var ppos in positions)
+                if (brush is null)
                 {
-                    Parent.PlaceTile((Vector2Int)(tilePos + ppos), tile.Id, Vector2Int.Zero, false);
+                    foreach (var ppos in positions)
+                    {
+                        Parent.PlaceTile((Vector2Int)(tilePos + ppos), tile.Id, Vector2Int.Zero, false);
+                    }
+                }
+                else
+                {
+                    foreach (var ppos in positions)
+                    {
+                        Parent.PlaceAutotile(brush, (Vector2Int)(tilePos + ppos));
+                    }
                 }
                 Parent.SelectedComponent.IsDirty = true;
                 SceneEditorSession.Active.FullUndoSnapshot($"Paint Tile Line");
