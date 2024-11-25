@@ -42,7 +42,12 @@ public class PaintTileTool : BaseTileTool
         if (Gizmo.IsLeftMouseDown)
         {
             var tile = TilesetTool.Active.SelectedTile;
-            if (tile.Size.x > 1 || tile.Size.y > 1)
+            var brush = AutotileBrush;
+            if (brush is not null)
+            {
+                Parent.PlaceAutotile(brush, tilePos);
+            }
+            else if (tile.Size.x > 1 || tile.Size.y > 1)
             {
                 for (int x = 0; x < tile.Size.x; x++)
                 {
@@ -77,6 +82,27 @@ public class PaintTileTool : BaseTileTool
         {
             SceneEditorSession.Active.FullUndoSnapshot($"Paint Tiles");
             isPainting = false;
+        }
+
+        if (Parent?.SelectedLayer?.AutoTilePositions is not null)
+        {
+            var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
+            using (Gizmo.Scope("test", Transform.Zero))
+            {
+                Gizmo.Draw.Color = Color.Red;
+                foreach (var group in Parent.SelectedLayer.AutoTilePositions)
+                {
+                    var brush = group.Key;
+                    foreach (var position in group.Value)
+                    {
+                        Gizmo.Draw.WorldText("X",
+                            new Transform(
+                                Parent.SelectedComponent.WorldPosition + (Vector3)((Vector2)position * tileSize) + (Vector3)(tileSize * 0.5f)
+                            )
+                        );
+                    }
+                }
+            }
         }
     }
 

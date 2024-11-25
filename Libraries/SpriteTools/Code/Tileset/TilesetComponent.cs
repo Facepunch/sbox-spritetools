@@ -336,9 +336,14 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		[Group("Selected Layer"), Title("Has Collisions")] public bool IsCollisionLayer { get; set; }
 
 		/// <summary>
-		/// A dictionary of all Tiles in the layer by their position
+		/// A dictionary of all Tiles in the layer by their position.
 		/// </summary>
 		public Dictionary<Vector2Int, Tile> Tiles { get; set; }
+
+		/// <summary>
+		/// A dictionary containing a list of positions for each Autotile Brush by their ID.
+		/// </summary>
+		public Dictionary<Guid, List<Vector2Int>> AutoTilePositions { get; set; }
 
 		/// <summary>
 		/// The TilesetComponent that this Layer belongs to
@@ -423,6 +428,41 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		{
 			if (IsLocked) return;
 			Tiles.Remove(position);
+		}
+
+		/// <summary>
+		/// Set an Autotile at the specified position. Will fail if IsLocked is true.
+		/// </summary>
+		/// <param name="autotileBrush"></param>
+		/// <param name="position"></param>
+		public void SetAutotile(AutotileBrush autotileBrush, Vector2Int position)
+		{
+			SetAutotile(autotileBrush.Id, position);
+		}
+
+		/// <summary>
+		/// Set an Autotile at the specified position. Will fail if IsLocked is true.
+		/// </summary>
+		/// <param name="autotileId"></param>
+		/// <param name="position"></param>
+		/// <param name="enabled"></param>
+		public void SetAutotile(Guid autotileId, Vector2Int position, bool enabled = true)
+		{
+			if (IsLocked) return;
+			AutoTilePositions ??= new();
+
+			if (!AutoTilePositions.ContainsKey(autotileId))
+				AutoTilePositions[autotileId] = new List<Vector2Int>();
+
+			if (enabled)
+			{
+				if (!AutoTilePositions[autotileId].Contains(position))
+					AutoTilePositions[autotileId].Add(position);
+			}
+			else
+			{
+				AutoTilePositions[autotileId].Remove(position);
+			}
 		}
 	}
 
