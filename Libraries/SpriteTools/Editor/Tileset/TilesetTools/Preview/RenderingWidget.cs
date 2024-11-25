@@ -84,7 +84,10 @@ public class RenderingWidget : SpriteRenderingWidget
 
 				using (Gizmo.Scope("tiles"))
 				{
-					Gizmo.Draw.Color = new Color(0.1f, 0.4f, 1f);
+					if (AutotileBrush is null)
+						Gizmo.Draw.Color = new Color(0.1f, 0.4f, 1f);
+					else
+						Gizmo.Draw.Color = Color.Yellow;
 					Gizmo.Draw.LineThickness = 3f;
 
 					int xi = 0;
