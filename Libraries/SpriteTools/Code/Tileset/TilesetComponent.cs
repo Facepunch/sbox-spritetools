@@ -391,13 +391,24 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		/// <param name="flipX"></param>
 		/// <param name="flipY"></param>
 		/// <param name="rebuild"></param>
-		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition = default, int angle = 0, bool flipX = false, bool flipY = false, bool rebuild = true)
+		public void SetTile(Vector2Int position, Guid tileId, Vector2Int cellPosition = default, int angle = 0, bool flipX = false, bool flipY = false, bool rebuild = true, bool removeAutotile = true)
 		{
 			if (IsLocked) return;
 			var tile = new Tile(tileId, cellPosition, angle, flipX, flipY);
 			Tiles[position] = tile;
 			if (rebuild && TilesetComponent.IsValid())
 				TilesetComponent.IsDirty = true;
+
+			if (removeAutotile)
+			{
+				foreach (var group in AutoTilePositions)
+				{
+					if (group.Value.Contains(position))
+					{
+						group.Value.Remove(position);
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -459,14 +470,25 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			if (IsLocked) return;
 			AutoTilePositions ??= new();
 
+			foreach (var group in AutoTilePositions)
+			{
+				if (group.Key == autotileId) continue;
+				if (group.Value.Contains(position))
+				{
+					group.Value.Remove(position);
+				}
+			}
+
 			if (!AutoTilePositions.ContainsKey(autotileId))
 				AutoTilePositions[autotileId] = new List<Vector2Int>();
 
+			bool shouldUpdate = false;
 			if (enabled)
 			{
 				if (!AutoTilePositions[autotileId].Contains(position))
 				{
 					AutoTilePositions[autotileId].Add(position);
+					shouldUpdate = true;
 				}
 			}
 			else
@@ -475,10 +497,12 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				{
 					Tiles.Remove(position);
 					AutoTilePositions[autotileId].Remove(position);
+					shouldUpdate = true;
 				}
 			}
 
-			UpdateAutotile(autotileId, position);
+			if (shouldUpdate)
+				UpdateAutotile(autotileId, position);
 		}
 
 		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool updateSurrounding = true)
@@ -494,8 +518,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 					var tile = brush.GetTileFromBitmask(bitmask);
 					if (tile is not null)
 					{
-						if (Tiles.TryGetValue(position, out var existingTile) && existingTile.TileId == tile.Id) return;
-						SetTile(position, tile.Id, Vector2Int.Zero, 0, false, false, false);
+						SetTile(position, tile.Id, Vector2Int.Zero, 0, false, false, false, removeAutotile: false);
 					}
 					else
 					{
