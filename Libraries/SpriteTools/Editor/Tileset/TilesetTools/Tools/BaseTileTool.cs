@@ -8,6 +8,15 @@ public abstract class BaseTileTool : EditorTool
 {
     protected TilesetTool Parent;
 
+    protected AutotileBrush AutotileBrush
+    {
+        get
+        {
+            if (AutotileWidget.Instance is null) return null;
+            return AutotileWidget.Instance.Brush;
+        }
+    }
+
     public BaseTileTool(TilesetTool parent)
     {
         Parent = parent;

@@ -8,6 +8,7 @@ namespace SpriteTools.TilesetTool;
 public class AutotileWidget : ControlWidget
 {
 	public static AutotileWidget Instance { get; private set; }
+	public AutotileBrush Brush { get; private set; }
 
 	public AutotileWidget(SerializedProperty property) : base(property)
 	{
@@ -58,6 +59,10 @@ public class AutotileWidget : ControlWidget
 
 		var comboBox = new ComboBox(this);
 		var v = SerializedProperty.GetValue<int>();
+		if (v >= 0)
+		{
+			Brush = layer.TilesetResource.AutotileBrushes[v + 1];
+		}
 
 		comboBox.AddItem("None", "check_box_outline_blank", onSelected: () => SerializedProperty.SetValue<int>(-1), selected: v == -1);
 
