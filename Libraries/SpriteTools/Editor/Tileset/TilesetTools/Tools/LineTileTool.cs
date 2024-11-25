@@ -17,7 +17,7 @@ public class LineTileTool : BaseTileTool
 {
     public LineTileTool(TilesetTool parent) : base(parent) { }
 
-    [Property, Range(0, 8, 1)] public int Separation { get; set; } = 0;
+    [Group("Line Tool"), Property, Range(0, 8, 1)] public int Separation { get; set; } = 0;
 
     Vector2 startPos;
     bool holding = false;

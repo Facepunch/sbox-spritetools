@@ -17,7 +17,7 @@ public class RectangleTileTool : BaseTileTool
 {
     public RectangleTileTool(TilesetTool parent) : base(parent) { }
 
-    [Property] public bool Hollow { get; set; } = false;
+    [Group("Rectangle Tool"), Property] public bool Hollow { get; set; } = false;
 
     Vector2 startPos;
     bool holding = false;
