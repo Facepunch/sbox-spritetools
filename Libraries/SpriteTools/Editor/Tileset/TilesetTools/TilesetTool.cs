@@ -20,13 +20,15 @@ public partial class TilesetTool : EditorTool
 	public ToolSettings Settings { get; private set; } = new();
 	public class ToolSettings
 	{
-		[Feature("🖌️ Brush"), Property, Editor("angle")] public int Angle { get; set; } = 0;
-		[Feature("🖌️ Brush"), Property] public bool HorizontalFlip { get; set; } = false;
-		[Feature("🖌️ Brush"), Property] public bool VerticalFlip { get; set; } = false;
-		[Feature("🖌️ Brush"), Property, WideMode(HasLabel = false)] public Preview.Preview Preview { get; set; } = new();
+		[Group("Brush"), Property, Editor("angle")] public int Angle { get; set; } = 0;
+		[Group("Brush"), Property] public bool HorizontalFlip { get; set; } = false;
+		[Group("Brush"), Property] public bool VerticalFlip { get; set; } = false;
 
-		[Header("NOT YET IMPLEMENTED!")]
-		[Feature("🪟 Autotile"), Property, ReadOnly] public bool Autotile { get; set; } = false;
+		[Header("FEATURE NOT COMPLETE!")]
+		[Group("Brush"), Property, Editor("autotile_index")] public int AutotileBrush { get; set; } = -1;
+
+
+		[Group("Brush"), Property, WideMode(HasLabel = false), Order(999999)] public Preview.Preview Preview { get; set; } = new();
 	}
 
 	public override IEnumerable<EditorTool> GetSubtools()
@@ -49,6 +51,7 @@ public partial class TilesetTool : EditorTool
 			_selectedLayer = value;
 			if (value is not null && (previousTileset == null || _selectedLayer?.TilesetResource != previousTileset))
 			{
+				Settings.AutotileBrush = -1;
 				_sceneObject?.UpdateTileset(value.TilesetResource);
 				SelectedTile = value?.TilesetResource?.Tiles?.FirstOrDefault();
 				if (!string.IsNullOrEmpty(_selectedLayer?.TilesetResource?.FilePath))
