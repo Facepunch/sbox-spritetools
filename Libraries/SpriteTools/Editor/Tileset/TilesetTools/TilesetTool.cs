@@ -28,7 +28,8 @@ public partial class TilesetTool : EditorTool
 		[Group("Brush"), Property, Editor("autotile_index")] public int AutotileBrush { get; set; } = -1;
 
 
-		[Group("Brush"), Property, WideMode(HasLabel = false), Order(999999)] public Preview.Preview Preview { get; set; } = new();
+		[Group("Brush"), Property, WideMode(HasLabel = false), Order(999999)]
+		public Preview.Preview Preview { get; set; } = new();
 	}
 
 	public override IEnumerable<EditorTool> GetSubtools()

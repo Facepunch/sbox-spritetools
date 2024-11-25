@@ -59,17 +59,18 @@ public class AutotileWidget : ControlWidget
 
 		var comboBox = new ComboBox(this);
 		var v = SerializedProperty.GetValue<int>();
-		if (v >= 0)
+		if (v >= 0 && v < layer.TilesetResource.AutotileBrushes.Count)
 		{
-			Brush = layer.TilesetResource.AutotileBrushes[v + 1];
+			Brush = layer.TilesetResource.AutotileBrushes[v];
 		}
 
-		comboBox.AddItem("None", "check_box_outline_blank", onSelected: () => SerializedProperty.SetValue<int>(-1), selected: v == -1);
+		comboBox.AddItem("None", "check_box_outline_blank", onSelected: () => SetValue(-1), selected: v == -1);
 
 		for (int i = 0; i < layer.TilesetResource.AutotileBrushes.Count; ++i)
 		{
+			int index = i;
 			var autotile = layer.TilesetResource.AutotileBrushes[i];
-			comboBox.AddItem(autotile.Name, "grid_on", onSelected: () => SerializedProperty.SetValue(i), selected: v == i);
+			comboBox.AddItem(autotile.Name, "grid_on", onSelected: () => SetValue(index), selected: v == i);
 		}
 
 		comboBox.StateCookie = $"autotile.{tilesetComponent.Id}.{layer.Name}";
@@ -117,6 +118,21 @@ public class AutotileWidget : ControlWidget
 		if (Instance == this)
 		{
 			Instance = null;
+		}
+	}
+
+	void SetValue(int val)
+	{
+		SerializedProperty.SetValue(val);
+
+		var layer = TilesetTool.Active?.SelectedLayer;
+		if (layer is not null && val >= 0 && val < layer.TilesetResource.AutotileBrushes.Count)
+		{
+			Brush = layer.TilesetResource.AutotileBrushes[val];
+		}
+		else
+		{
+			Brush = null;
 		}
 	}
 }
