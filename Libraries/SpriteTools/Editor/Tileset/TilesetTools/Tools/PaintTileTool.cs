@@ -17,6 +17,10 @@ public class PaintTileTool : BaseTileTool
 {
     public PaintTileTool(TilesetTool parent) : base(parent) { }
 
+    [Group("Paint Tool"), Property, Range(1, 12, 1)] public int BrushSize { get; set; } = 1;
+    [Group("Paint Tool"), Property] public bool IsRound { get; set; } = false;
+
+
     bool isPainting = false;
 
     public override void OnUpdate()
@@ -28,12 +32,43 @@ public class PaintTileTool : BaseTileTool
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
 
+        var tile = TilesetTool.Active.SelectedTile;
         List<(Vector2Int, Vector2Int)> positions = new();
-        for (int i = 0; i < Parent.SelectedTile.Size.x; i++)
+        if (tile.Size.x > 1 || tile.Size.y > 1)
         {
-            for (int j = 0; j < Parent.SelectedTile.Size.y; j++)
+            for (int i = 0; i < tile.Size.x; i++)
             {
-                positions.Add((new Vector2Int(i, -j), Parent.SelectedTile.Position + new Vector2Int(i, j)));
+                for (int j = 0; j < tile.Size.y; j++)
+                {
+                    positions.Add((new Vector2Int(i, -j), tile.Position + new Vector2Int(i, j)));
+                }
+            }
+        }
+        else if (IsRound)
+        {
+            var size = (BrushSize - 0.9f) * 2;
+            var center = new Vector2Int((int)(size / 2f), (int)(size / 2f));
+            for (int i = 0; i < size * 2; i++)
+            {
+                for (int j = 0; j < size * 2; j++)
+                {
+                    var offset = new Vector2Int(i, j) - center;
+                    if (offset.LengthSquared <= (size / 2) * (size / 2))
+                    {
+                        positions.Add((offset, tile.Position));
+                    }
+                }
+            }
+        }
+        else
+        {
+            Vector2Int startPos = new Vector2Int(-BrushSize / 2, -BrushSize / 2);
+            for (int i = 0; i < BrushSize; i++)
+            {
+                for (int j = 0; j < BrushSize; j++)
+                {
+                    positions.Add((new Vector2Int(i, j) + startPos, tile.Position));
+                }
             }
         }
         Parent._sceneObject.SetPositions(positions);
@@ -41,11 +76,10 @@ public class PaintTileTool : BaseTileTool
         var tilePos = (Vector2Int)((pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize());
         if (Gizmo.IsLeftMouseDown)
         {
-            var tile = TilesetTool.Active.SelectedTile;
             var brush = AutotileBrush;
             if (brush is not null)
             {
-                Parent.PlaceAutotile(brush, tilePos);
+                Place(tilePos, true);
             }
             else if (tile.Size.x > 1 || tile.Size.y > 1)
             {
@@ -74,7 +108,7 @@ public class PaintTileTool : BaseTileTool
             }
             else
             {
-                Parent.PlaceTile(tilePos, tile.Id, Vector2Int.Zero);
+                Place(tilePos);
             }
             isPainting = true;
         }
@@ -107,6 +141,55 @@ public class PaintTileTool : BaseTileTool
         //         }
         //     }
         // }
+    }
+
+    void Place(Vector2Int tilePos, bool isAutotile = false)
+    {
+        var brush = AutotileBrush;
+        var tile = TilesetTool.Active.SelectedTile;
+
+        if (IsRound)
+        {
+            var size = (BrushSize - 0.9f) * 2;
+            var center = new Vector2Int((int)(size / 2f), (int)(size / 2f));
+            for (int i = 0; i < size * 2; i++)
+            {
+                for (int j = 0; j < size * 2; j++)
+                {
+                    var offset = new Vector2Int(i, j) - center;
+                    if (offset.LengthSquared <= (size / 2) * (size / 2))
+                    {
+                        if (brush is null)
+                        {
+                            Parent.PlaceTile(tilePos + offset, tile.Id, Vector2Int.Zero);
+                        }
+                        else
+                        {
+                            Parent.PlaceAutotile(brush, tilePos + offset);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            Vector2Int startPos = new Vector2Int(-BrushSize / 2, -BrushSize / 2);
+            for (int i = 0; i < BrushSize; i++)
+            {
+                for (int j = 0; j < BrushSize; j++)
+                {
+                    var offset = new Vector2Int(i, j) + startPos;
+                    if (brush is null)
+                    {
+                        Parent.PlaceTile(tilePos + offset, tile.Id, Vector2Int.Zero);
+                    }
+                    else
+                    {
+                        Parent.PlaceAutotile(brush, tilePos + offset);
+                    }
+                }
+            }
+        }
     }
 
     [Shortcut("tileset-tools.paint-tool", "b", typeof(SceneViewportWidget))]

@@ -29,6 +29,7 @@ public class LineTileTool : BaseTileTool
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
+        Parent._sceneObject.SetPositions(new List<Vector2> { Vector2.Zero });
 
         var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize();
 
@@ -59,7 +60,7 @@ public class LineTileTool : BaseTileTool
                 holding = false;
                 Parent._sceneObject.ClearPositions();
 
-                var brush = AutotileWidget.Instance?.Brush;
+                var brush = AutotileBrush;
                 var tile = TilesetTool.Active.SelectedTile;
                 if (brush is null)
                 {

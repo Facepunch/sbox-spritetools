@@ -454,9 +454,10 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		/// </summary>
 		/// <param name="autotileBrush"></param>
 		/// <param name="position"></param>
-		public void SetAutotile(AutotileBrush autotileBrush, Vector2Int position)
+		/// <param name="enabled"></param>
+		public void SetAutotile(AutotileBrush autotileBrush, Vector2Int position, bool enabled = true)
 		{
-			SetAutotile(autotileBrush.Id, position);
+			SetAutotile(autotileBrush.Id, position, enabled);
 		}
 
 		/// <summary>

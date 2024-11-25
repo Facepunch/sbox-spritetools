@@ -30,6 +30,7 @@ public class RectangleTileTool : BaseTileTool
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
+        Parent._sceneObject.SetPositions(new List<Vector2> { Vector2.Zero });
 
         var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
         var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / tileSize;
@@ -74,7 +75,7 @@ public class RectangleTileTool : BaseTileTool
                 }
                 else
                 {
-                    var brush = AutotileWidget.Instance?.Brush;
+                    var brush = AutotileBrush;
                     var tile = TilesetTool.Active.SelectedTile;
                     if (brush is null)
                     {
