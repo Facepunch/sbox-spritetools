@@ -116,13 +116,17 @@ public class RectangleTileTool : BaseTileTool
         }
         else
         {
-            if (Parent._sceneObject.MultiTilePositions.Count != 1)
+            if (tilePos != lastTilePos)
+            {
                 UpdateTilePositions(new List<Vector2> { 0 });
+                lastTilePos = tilePos;
+            }
         }
     }
 
     void UpdateTilePositions(List<Vector2> positions)
     {
+        Log.Info(positions);
         var brush = AutotileBrush;
         if (brush is null)
         {
@@ -152,8 +156,8 @@ public class RectangleTileTool : BaseTileTool
         for (int i = 0; i < positionCount; i++)
         {
             var scenePos = tilePositions[i];
-            var setPos = (Vector2Int)(tilePos + scenePos.Item1);
-            var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, setPos, overrides);
+            var realPos = tilePos + scenePos.Item1;
+            var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, realPos, overrides);
             var maskTile = brush.GetTileFromBitmask(bitmask);
             if (maskTile is not null)
             {
@@ -166,7 +170,7 @@ public class RectangleTileTool : BaseTileTool
             {
                 for (int yy = -1; yy <= 1; yy++)
                 {
-                    var checkPos = setPos + new Vector2Int(xx, yy);
+                    var checkPos = realPos + new Vector2Int(xx, yy);
                     if ((xx != 0 || yy != 0) && allPositions.Contains(checkPos) && !overrides.ContainsKey(checkPos))
                     {
                         AddAutotilePosition(ref tilePositions, overrides, checkPos, tilePos);
@@ -187,7 +191,7 @@ public class RectangleTileTool : BaseTileTool
         if (maskTile is not null)
         {
             var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
-            list.Add((pos, mappedTile.Position));
+            list.Add((pos - tilePos, mappedTile.Position));
         }
     }
 
