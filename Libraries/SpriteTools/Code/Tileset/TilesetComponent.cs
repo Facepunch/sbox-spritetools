@@ -624,6 +624,7 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 
 		MissingMaterial = Material.Load("materials/sprite_2d.vmat").CreateCopy();
 		MissingMaterial.Set("Texture", Texture.Load("images/missing-tile.png"));
+		Tags.SetFrom(Component.Tags);
 	}
 
 	public override void RenderSceneObject()

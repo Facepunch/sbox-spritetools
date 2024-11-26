@@ -335,6 +335,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         {
             SceneObject.RenderingEnabled = true;
             SceneObject.ColorTint = Tint;
+            SceneObject.Tags.SetFrom(GameObject.Tags);
         }
 
         if (CreateAttachPoints)
@@ -365,6 +366,16 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             bbox.Maxs.z = 0.0f;
             Gizmo.Draw.Color = Gizmo.IsSelected ? Color.White : Color.Orange;
             Gizmo.Draw.LineBBox(bbox);
+        }
+    }
+
+    protected override void OnTagsChanged()
+    {
+        base.OnTagsChanged();
+
+        if (SceneObject.IsValid())
+        {
+            SceneObject.Tags.SetFrom(GameObject.Tags);
         }
     }
 
