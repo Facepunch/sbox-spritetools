@@ -189,7 +189,8 @@ public class PaintTileTool : BaseTileTool
             }
             foreach (var existingTilePos in Parent.SelectedLayer.Tiles.Keys)
             {
-                allPositions.Add(existingTilePos);
+                if (!allPositions.Contains(existingTilePos))
+                    allPositions.Add(existingTilePos);
             }
             var positionCount = positions.Count;
             for (int i = 0; i < positionCount; i++)
@@ -226,8 +227,9 @@ public class PaintTileTool : BaseTileTool
 
     void AddAutotilePosition(ref List<(Vector2Int, Vector2Int)> list, Dictionary<Vector2Int, bool> overrides, Vector2Int pos, Vector2Int tilePos)
     {
-        var bitmask = Parent.SelectedLayer.GetAutotileBitmask(AutotileBrush.Id, pos, overrides);
-        var maskTile = AutotileBrush.GetTileFromBitmask(bitmask);
+        var brush = AutotileBrush;
+        var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, pos, overrides);
+        var maskTile = brush.GetTileFromBitmask(bitmask);
         if (maskTile is not null)
         {
             var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
