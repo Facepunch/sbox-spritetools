@@ -20,6 +20,7 @@ public class LineTileTool : BaseTileTool
     [Group("Line Tool"), Property, Range(0, 8, 1)] public int Separation { get; set; } = 0;
 
     Vector2 startPos;
+    Vector2 lastTilePos;
     bool holding = false;
 
     public override void OnUpdate()
@@ -29,7 +30,6 @@ public class LineTileTool : BaseTileTool
         var pos = GetGizmoPos();
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
         Parent._sceneObject.RenderingEnabled = true;
-        Parent._sceneObject.SetPositions(new List<Vector2> { Vector2.Zero });
 
         var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize();
 
@@ -53,7 +53,11 @@ public class LineTileTool : BaseTileTool
                 if (!positions.Contains(thisPos))
                     positions.Add(thisPos);
             }
-            Parent._sceneObject.SetPositions(positions);
+            if(tilePos != lastTilePos)
+            {
+                UpdateTilePositions(positions);
+                lastTilePos = tilePos;
+            }
 
             if (!Gizmo.IsLeftMouseDown)
             {
@@ -85,8 +89,17 @@ public class LineTileTool : BaseTileTool
             startPos = tilePos;
             holding = true;
         }
+        else
+        {
+            if (tilePos != lastTilePos)
+            {
+                UpdateTilePositions(new List<Vector2> { 0 });
+                lastTilePos = tilePos;
+            }
+        }
 
     }
+
 
     [Shortcut("tileset-tools.line-tool", "l", typeof(SceneViewportWidget))]
     public static void ActivateSubTool()

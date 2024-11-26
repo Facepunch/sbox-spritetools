@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Editor;
 using Sandbox;
@@ -63,6 +64,75 @@ public abstract class BaseTileTool : EditorTool
         return pos + offset;
     }
 
+    protected void UpdateTilePositions(List<Vector2> positions)
+    {
+        var brush = AutotileBrush;
+        if (brush is null)
+        {
+            Parent._sceneObject.SetPositions(positions);
+            return;
+        }
+
+        var pos = GetGizmoPos();
+        var tilePos = (Vector2Int)((pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize());
+
+        var tilePositions = new List<(Vector2Int, Vector2Int)>();
+        var overrides = new Dictionary<Vector2Int, bool>();
+        var allPositions = new List<Vector2Int>();
+        foreach (var scenePos in positions)
+        {
+            var setPos = (Vector2Int)(tilePos + scenePos);
+            tilePositions.Add(((Vector2Int)scenePos, -1));
+            overrides.Add(setPos, true);
+            allPositions.Add(setPos);
+        }
+        foreach (var existingTilePos in Parent.SelectedLayer.Tiles.Keys)
+        {
+            if (!allPositions.Contains(existingTilePos))
+                allPositions.Add(existingTilePos);
+        }
+        var positionCount = tilePositions.Count;
+        for (int i = 0; i < positionCount; i++)
+        {
+            var scenePos = tilePositions[i];
+            var realPos = tilePos + scenePos.Item1;
+            var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, realPos, overrides);
+            var maskTile = brush.GetTileFromBitmask(bitmask);
+            if (maskTile is not null)
+            {
+                var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
+                scenePos.Item2 = mappedTile.Position;
+                tilePositions[i] = scenePos;
+            }
+
+            for (int xx = -1; xx <= 1; xx++)
+            {
+                for (int yy = -1; yy <= 1; yy++)
+                {
+                    var checkPos = realPos + new Vector2Int(xx, yy);
+                    if ((xx != 0 || yy != 0) && allPositions.Contains(checkPos) && !overrides.ContainsKey(checkPos))
+                    {
+                        AddAutotilePosition(ref tilePositions, overrides, checkPos, tilePos);
+                        allPositions.Remove(checkPos);
+                    }
+                }
+            }
+        }
+
+        Parent._sceneObject.SetPositions(tilePositions);
+    }
+
+    protected void AddAutotilePosition(ref List<(Vector2Int, Vector2Int)> list, Dictionary<Vector2Int, bool> overrides, Vector2Int pos, Vector2Int tilePos)
+    {
+        var brush = AutotileBrush;
+        var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, pos, overrides);
+        var maskTile = brush.GetTileFromBitmask(bitmask);
+        if (maskTile is not null)
+        {
+            var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
+            list.Add((pos - tilePos, mappedTile.Position));
+        }
+    }
     protected bool CanUseTool()
     {
         if (Parent?.SelectedLayer?.TilesetResource is null) return false;
