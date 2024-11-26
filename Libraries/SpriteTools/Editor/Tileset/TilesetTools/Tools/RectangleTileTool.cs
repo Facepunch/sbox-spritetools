@@ -60,6 +60,7 @@ public class RectangleTileTool : BaseTileTool
 
             if (!Gizmo.IsLeftMouseDown && !Gizmo.IsRightMouseDown)
             {
+                var brush = AutotileBrush;
                 holding = false;
                 Parent._sceneObject.ClearPositions();
 
@@ -68,14 +69,16 @@ public class RectangleTileTool : BaseTileTool
                     positions = GetPositions(min, max);
                     foreach (var ppos in positions)
                     {
-                        Parent.EraseTile(tilePos + ppos, false);
+                        if (brush is null)
+                            Parent.EraseTile(tilePos + ppos, false);
+                        else
+                            Parent.EraseAutoTile(brush, (Vector2Int)(tilePos + ppos));
                     }
                     SceneEditorSession.Active.FullUndoSnapshot($"Erase Tile Rectangle");
                     Parent.SelectedComponent.IsDirty = true;
                 }
                 else
                 {
-                    var brush = AutotileBrush;
                     var tile = TilesetTool.Active.SelectedTile;
                     if (brush is null)
                     {
