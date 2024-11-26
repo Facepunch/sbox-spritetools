@@ -580,6 +580,55 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 			return value;
 		}
+
+		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, Dictionary<Vector2Int, bool> overrides)
+		{
+			if (AutoTilePositions is null || !AutoTilePositions.ContainsKey(autotileId)) return -1;
+
+			var positions = new List<Vector2Int>(AutoTilePositions[autotileId]);
+			int value = 0;
+
+			foreach (var ride in overrides)
+			{
+				if (ride.Value)
+				{
+					if (!positions.Contains(ride.Key))
+					{
+						positions.Add(ride.Key);
+					}
+				}
+				else
+				{
+					if (positions.Contains(ride.Key))
+					{
+						positions.Remove(ride.Key);
+					}
+				}
+			}
+
+			var up = position.WithY(position.y + 1);
+			var down = position.WithY(position.y - 1);
+			var left = position.WithX(position.x - 1);
+			var right = position.WithX(position.x + 1);
+			var upLeft = up.WithX(left.x);
+			var upRight = up.WithX(right.x);
+			var downLeft = down.WithX(left.x);
+			var downRight = down.WithX(right.x);
+
+			foreach (var pos in positions)
+			{
+				if (pos == upLeft) value += 1;
+				if (pos == up) value += 2;
+				if (pos == upRight) value += 4;
+				if (pos == left) value += 8;
+				if (pos == right) value += 16;
+				if (pos == downLeft) value += 32;
+				if (pos == down) value += 64;
+				if (pos == downRight) value += 128;
+			}
+
+			return value;
+		}
 	}
 
 	public class Tile

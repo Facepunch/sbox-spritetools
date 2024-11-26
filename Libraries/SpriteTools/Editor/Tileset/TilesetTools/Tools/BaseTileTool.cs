@@ -43,7 +43,7 @@ public abstract class BaseTileTool : EditorTool
         if (Parent.SelectedComponent.Transform is null) return Vector3.Zero;
 
         var tr = SceneEditorSession.Active.Scene.Trace
-            .Ray(Gizmo.CurrentRay, 500000)
+            .Ray(Gizmo.CurrentRay, 50000)
             .Run();
 
         var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();

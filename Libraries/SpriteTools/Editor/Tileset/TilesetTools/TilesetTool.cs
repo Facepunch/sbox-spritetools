@@ -373,7 +373,7 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 				offsetPos = new Vector2Int(offsetPos.y, -offsetPos.x);
 			var offset = tileset.GetOffset(tilePosition);
 
-			var position = new Vector3(offsetPos.x * tileSize.x, offsetPos.y * tileSize.y, 0) - new Vector3(0, (scale.y - 1) * tileSize.y, 0);
+			var position = new Vector3(offsetPos.x * tileSize.x, offsetPos.y * tileSize.y, Position.z) - new Vector3(0, (scale.y - 1) * tileSize.y, 0);
 			var size = tileSize * scale;
 
 			var topLeft = new Vector3(position.x, position.y, position.z);

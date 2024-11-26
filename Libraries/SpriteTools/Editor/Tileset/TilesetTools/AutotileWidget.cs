@@ -63,6 +63,10 @@ public class AutotileWidget : ControlWidget
 		{
 			Brush = layer.TilesetResource.AutotileBrushes[v];
 		}
+		else
+		{
+			Brush = null;
+		}
 
 		comboBox.AddItem("None", "check_box_outline_blank", onSelected: () => SetValue(-1), selected: v == -1);
 
