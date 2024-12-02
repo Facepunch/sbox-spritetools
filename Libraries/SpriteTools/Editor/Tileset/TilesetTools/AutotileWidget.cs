@@ -74,7 +74,9 @@ public class AutotileWidget : ControlWidget
 		{
 			int index = i;
 			var autotile = layer.TilesetResource.AutotileBrushes[i];
-			comboBox.AddItem(autotile.Name, "grid_on", onSelected: () => SetValue(index), selected: v == i);
+			if (autotile is null) continue;
+			var name = string.IsNullOrWhiteSpace(autotile.Name) ? $"Autotile {i}" : autotile.Name;
+			comboBox.AddItem(name, "grid_on", onSelected: () => SetValue(index), selected: v == i);
 		}
 
 		comboBox.StateCookie = $"autotile.{tilesetComponent.Id}.{layer.Name}";
