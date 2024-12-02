@@ -66,7 +66,7 @@ public class PaintTileTool : BaseTileTool
             var brush = AutotileBrush;
             if (brush is not null)
             {
-                Place(tilePos, true);
+                Place(tilePos);
             }
             else if (tile.Size.x > 1 || tile.Size.y > 1)
             {
@@ -225,19 +225,7 @@ public class PaintTileTool : BaseTileTool
         lastTilePos = tilePos;
     }
 
-    void AddAutotilePosition(ref List<(Vector2Int, Vector2Int)> list, Dictionary<Vector2Int, bool> overrides, Vector2Int pos, Vector2Int tilePos)
-    {
-        var brush = AutotileBrush;
-        var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, pos, overrides);
-        var maskTile = brush.GetTileFromBitmask(bitmask);
-        if (maskTile is not null)
-        {
-            var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
-            list.Add((pos - tilePos, mappedTile.Position));
-        }
-    }
-
-    void Place(Vector2Int tilePos, bool isAutotile = false)
+    void Place(Vector2Int tilePos)
     {
         var brush = AutotileBrush;
         var tile = TilesetTool.Active.SelectedTile;
