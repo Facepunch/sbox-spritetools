@@ -562,21 +562,57 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			var left = position.WithX(position.x - 1);
 			var right = position.WithX(position.x + 1);
 
-			
-			var upLeft = up.WithX(left.x);
-			var upRight = up.WithX(right.x);
-			var downLeft = down.WithX(left.x);
-			var downRight = down.WithX(right.x);
-			foreach (var pos in positions)
+			var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
+			if (brush is null) return 0;
+
+			switch (brush.AutotileType)
 			{
-				if (pos == upLeft) value += 1;
-				if (pos == up) value += 2;
-				if (pos == upRight) value += 4;
-				if (pos == left) value += 8;
-				if (pos == right) value += 16;
-				if (pos == downLeft) value += 32;
-				if (pos == down) value += 64;
-				if (pos == downRight) value += 128;
+				case AutotileType.Bitmask2x2Edge:
+					{
+						foreach (var pos in positions)
+						{
+							if(pos == up) value += 1;
+							if(pos == left) value += 2;
+							if(pos == right) value += 4;
+							if(pos == down) value += 8;
+						}
+						break;
+					}
+				case AutotileType.Bitmask2x2Corner:
+				case AutotileType.Bitmask3x3:
+				case AutotileType.Bitmask3x3Complete:
+					{
+						var upLeft = up.WithX(left.x);
+						var upRight = up.WithX(right.x);
+						var downLeft = down.WithX(left.x);
+						var downRight = down.WithX(right.x);
+
+						if (brush.AutotileType == AutotileType.Bitmask2x2Corner)
+						{
+							foreach(var pos in positions)
+							{
+								if (pos == upLeft) value += 1;
+								if (pos == upRight) value += 2;
+								if (pos == downLeft) value += 4;
+								if (pos == downRight) value += 8;
+							}
+						}
+						else
+						{
+							foreach (var pos in positions)
+							{
+								if (pos == upLeft) value += 1;
+								if (pos == up) value += 2;
+								if (pos == upRight) value += 4;
+								if (pos == left) value += 8;
+								if (pos == right) value += 16;
+								if (pos == downLeft) value += 32;
+								if (pos == down) value += 64;
+								if (pos == downRight) value += 128;
+							}
+						}
+						break;
+					}
 			}
 
 			return value;
