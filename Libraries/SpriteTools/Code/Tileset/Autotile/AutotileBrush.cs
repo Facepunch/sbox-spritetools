@@ -34,17 +34,72 @@ public class AutotileBrush
 
         Tile selectedTile = null;
 
-        // tesat infibfdiusbfdsi
-
-        if (AutotileType == AutotileType.Bitmask3x3)
+        switch (AutotileType)
         {
-            selectedTile = GetTile3x3(bitmask);
+            case AutotileType.Bitmask2x2Edge:
+                selectedTile = GetTile2x2Edge(bitmask);
+                break;
+            case AutotileType.Bitmask2x2Corner:
+                selectedTile = GetTile2x2Corner(bitmask);
+                break;
+            case AutotileType.Bitmask3x3:
+                selectedTile = GetTile3x3(bitmask);
+                break;
         }
 
         if (selectedTile is null) return null;
 
+        // TODO: Random weights
         int randomIndex = Random.Shared.Int(0, selectedTile.Tiles.Count - 1);
         return selectedTile.Tiles[randomIndex];
+    }
+
+    Tile GetTile2x2Edge(int bitmask)
+    {
+        switch (bitmask)
+        {
+            case 0: return Tiles[0];
+            case 1: return Tiles[1];
+            case 2: return Tiles[2];
+            case 3: return Tiles[3];
+            case 4: return Tiles[4];
+            case 5: return Tiles[5];
+            case 6: return Tiles[6];
+            case 7: return Tiles[7];
+            case 8: return Tiles[8];
+            case 9: return Tiles[9];
+            case 10: return Tiles[10];
+            case 11: return Tiles[11];
+            case 12: return Tiles[12];
+            case 13: return Tiles[13];
+            case 14: return Tiles[14];
+            case 15: return Tiles[15];
+            default: return null;
+        }
+    }
+
+    Tile GetTile2x2Corner(int bitmask)
+    {
+        switch (bitmask)
+        {
+            case 0: return Tiles[0];
+            case 1: return Tiles[1];
+            case 2: return Tiles[2];
+            case 3: return Tiles[3];
+            case 4: return Tiles[4];
+            case 5: return Tiles[5];
+            case 6: return Tiles[6];
+            case 7: return Tiles[7];
+            case 8: return Tiles[8];
+            case 9: return Tiles[9];
+            case 10: return Tiles[10];
+            case 11: return Tiles[11];
+            case 12: return Tiles[12];
+            case 13: return Tiles[13];
+            case 14: return Tiles[14];
+            case 15: return Tiles[15];
+            default: return null;
+        }
     }
 
     Tile GetTile3x3(int bitmask)
