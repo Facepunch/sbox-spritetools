@@ -26,7 +26,7 @@ public class AutotileBrushControl : Widget
 
 		MouseClick = () =>
 		{
-			ParentList.SelectBrush(this, Brush);
+			ParentList.SelectBrush(this);
 		};
 
 		VerticalSizeMode = SizeMode.Flexible;

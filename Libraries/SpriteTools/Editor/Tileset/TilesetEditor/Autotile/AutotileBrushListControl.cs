@@ -102,52 +102,11 @@ public class AutotileBrushListControl : ControlWidget
         }
     }
 
-    internal void SelectBrush(AutotileBrushControl button, AutotileBrush brush)
+    internal void SelectBrush(AutotileBrushControl button)
     {
         if (MainWindow is null) return;
-        if (SelectedBrush == button) return;
-        // var buttonIndex = Buttons.IndexOf(button);
-        // if (modifiers.HasFlag(KeyboardModifiers.Shift))
-        // {
-        //     var minIndex = Selected.Min(x => Buttons.IndexOf(x));
-        //     var maxIndex = Selected.Max(x => Buttons.IndexOf(x));
+        if (SelectedBrush == button && SelectedTile is null) return;
 
-        //     if (buttonIndex >= minIndex && buttonIndex <= maxIndex)
-        //     {
-        //         Selected.Clear();
-        //         for (int i = minIndex; i <= buttonIndex; i++)
-        //         {
-        //             if (!Selected.Contains(Buttons[i])) Selected.Add(Buttons[i]);
-        //         }
-        //     }
-        //     else if (buttonIndex < minIndex)
-        //     {
-        //         for (int i = buttonIndex; i < minIndex; i++)
-        //         {
-        //             if (!Selected.Contains(Buttons[i])) Selected.Add(Buttons[i]);
-        //         }
-        //     }
-        //     else if (buttonIndex > maxIndex)
-        //     {
-        //         for (int i = maxIndex + 1; i <= buttonIndex; i++)
-        //         {
-        //             if (!Selected.Contains(Buttons[i])) Selected.Add(Buttons[i]);
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     if (modifiers.HasFlag(KeyboardModifiers.Ctrl))
-        //     {
-        //         if (Selected.Contains(button)) Selected.Remove(button);
-        //         else Selected.Add(button);
-        //     }
-        //     else
-        //     {
-        //         Selected.Clear();
-        //         Selected.Add(button);
-        //     }
-        // }
         SelectedBrush = button;
         SelectedTile = null;
         MainWindow.inspector.UpdateSelectedAutotileSheet();
@@ -161,6 +120,7 @@ public class AutotileBrushListControl : ControlWidget
             SelectedBrush = button.ParentBrush;
         }
         if (SelectedTile == button.Tile) return;
+
         SelectedTile = button.Tile;
         MainWindow.inspector.UpdateSelectedAutotileSheet();
     }
