@@ -10,7 +10,7 @@ public class AutotileBrush
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     [Property, Placeholder("Autotile Brush")] public string Name { get; set; }
-    public AutotileType AutotileType { get; private set; } = AutotileType.Bitmask2x2Edge;
+    public AutotileType AutotileType { get; set; } = AutotileType.Bitmask2x2Edge;
     public Tile[] Tiles { get; set; }
     public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 16);
 
@@ -60,6 +60,9 @@ public class AutotileBrush
                 selectedTile = GetTile2x2Corner(bitmask);
                 break;
             case AutotileType.Bitmask3x3:
+                selectedTile = GetTile3x3(bitmask);
+                break;
+            case AutotileType.Bitmask3x3Complete:
                 selectedTile = GetTile3x3(bitmask);
                 break;
         }

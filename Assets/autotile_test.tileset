@@ -1634,7 +1634,7 @@
     {
       "Id": "0f1a118c-bc65-424d-905c-056846f9b77d",
       "Name": "Dark",
-      "AutotileType": "Bitmask2x2Edge",
+      "AutotileType": "Bitmask3x3",
       "Tiles": [
         {
           "Tiles": [
@@ -1657,142 +1657,457 @@
           ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "5f7e0b6a-72d5-4a5c-9625-4039b2b3a22e",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "163b87af-ba35-4791-8a45-e1c748c3abe2",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "6d6d2112-51bd-412f-8f08-7a87c8bab580",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "412b9149-6adc-4166-afc2-1b33532631f0",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "d6445451-d891-415e-92e4-a0153496aa9c",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "f345c3ac-e563-428d-a3d5-5c7b628c256e",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "1b656f6f-b778-46ac-8d77-f3cc31d9da7b",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "fa22f949-4a62-4b17-9d6b-e3ad7a8bd79a",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "4a64f5b8-fa03-488c-ab98-741d778e15cd",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "6059c29a-3ac2-48d6-bc45-20e9203ec913",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "cc80129e-f85f-4a03-821f-8ebdcc751c07",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "dd657c39-e22a-44b8-bf3c-598050aad3b3",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "a5e63d42-8679-447c-99b9-88c73bc90c43",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "4dd6d1a3-1b4d-4569-a6d0-b9408518a575",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "3d58ddaa-c43e-4e43-b865-de6604e54db8",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "786a05ad-4f97-475d-b196-5ba72f112842",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "d988f8c1-b994-4756-9d80-87b03ad8bbc1",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "5244716d-7ef0-4dcf-aadd-57a1397adbef",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "b70434ad-cc0b-4b66-976f-69dc7a2237d7",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "5a6dff33-25cc-4e5e-a24e-42c95e6ef7e6",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "ec7b57b6-6eac-4f8e-8bb4-e7f168524648",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "ef79a683-531a-49e0-b247-8a04e2d7da3f",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "4318fd07-a215-4645-ae84-35b3726a8fdf",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "7d4f2ed4-ab50-4c4c-8975-efb05b7b8fc0",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "2fc9a205-8960-4522-9066-7a1d836ba0bf",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "7763819e-c30e-407f-8056-41720553c1a0",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "7e7840b6-a6f0-484d-a480-3f813ba4d2d5",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "9c82fbee-f66b-471f-8dab-0a13af3abf74",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "b53159f9-28ad-49f8-af1b-3ed6b0e6e991",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "2b831e10-ec6f-4263-a6bc-85dcda4404df",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "14ad646b-1a09-4592-b6f6-12e5cff12464",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "cdf04b63-5f00-4484-900d-1bda0d8bf298",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "c987e172-550a-4dd2-aebd-53bbb158cc90",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "c987e172-550a-4dd2-aebd-53bbb158cc90",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "d55311f1-6925-455a-972e-1d9cca507831",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "d55311f1-6925-455a-972e-1d9cca507831",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "a86b2622-eea5-45c0-8969-c374cb7e9532",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "a86b2622-eea5-45c0-8969-c374cb7e9532",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "357690f1-53a1-49eb-865c-c73a469245be",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "357690f1-53a1-49eb-865c-c73a469245be",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "b577370d-e0c6-4f18-8855-8abe2aee709c",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "d60e94eb-3c09-4de7-9761-2c4c094cc3a1",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "61b036b3-134b-4e4c-b233-1eef13290e20",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "c6e73387-a699-49de-b0c8-99eed09b2466",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         },
         {
-          "Tiles": null
+          "Tiles": [
+            {
+              "Tileset": "autotile_test.tileset",
+              "Id": "6a4fc913-ee30-48e2-af8c-01658fb4c244",
+              "Position": "0,0",
+              "Weight": 10
+            }
+          ]
         }
       ],
-      "TileCount": 16
+      "TileCount": 47
     },
     {
       "Id": "8d957bb6-bc4d-40cc-bc5d-c6f93f214b77",
