@@ -561,11 +561,12 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			var down = position.WithY(position.y - 1);
 			var left = position.WithX(position.x - 1);
 			var right = position.WithX(position.x + 1);
+
+			
 			var upLeft = up.WithX(left.x);
 			var upRight = up.WithX(right.x);
 			var downLeft = down.WithX(left.x);
 			var downRight = down.WithX(right.x);
-
 			foreach (var pos in positions)
 			{
 				if (pos == upLeft) value += 1;

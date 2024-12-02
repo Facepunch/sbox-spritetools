@@ -56,10 +56,10 @@ public class AutotileBrushListControl : ControlWidget
         row.Spacing = 8;
         var btn16Tile = row.Add(new Button.Primary("New 16-Tile Brush", "add"));
         btn16Tile.ToolTip = "Create a new brush with 16 tiles";
-        btn16Tile.Clicked += () => NewBrush(false);
+        btn16Tile.Clicked += () => NewBrush(AutotileType.Bitmask2x2Edge);
         var btn47Tile = row.Add(new Button.Primary("New 47-Tile Brush", "add"));
         btn47Tile.ToolTip = "Create a new brush with 47 tiles";
-        btn47Tile.Clicked += () => NewBrush(true);
+        btn47Tile.Clicked += () => NewBrush(AutotileType.Bitmask3x3);
 
         scrollArea.Canvas.Layout.AddStretchCell();
 
@@ -186,10 +186,10 @@ public class AutotileBrushListControl : ControlWidget
         MainWindow?.inspector?.UpdateSelectedAutotileSheet();
     }
 
-    public void NewBrush(bool is47Tiles = false)
+    public void NewBrush(AutotileType autotileType)
     {
         var layers = SerializedProperty.GetValue<List<AutotileBrush>>();
-        layers.Add(new AutotileBrush(is47Tiles));
+        layers.Add(new AutotileBrush(autotileType));
         SerializedProperty.SetValue(layers);
         UpdateList();
         MainWindow?.inspector?.UpdateSelectedAutotileSheet();

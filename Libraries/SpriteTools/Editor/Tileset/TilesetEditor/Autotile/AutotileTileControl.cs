@@ -45,7 +45,7 @@ public class AutotileTileControl : Widget
         }
         if (tex is null)
         {
-            var tileCount = ParentBrush.Brush.Is47Tiles ? 47 : 16;
+            var tileCount = ParentBrush.Brush.TileCount;
             tex = Texture.Load(Editor.FileSystem.Mounted, $"images/guides/tile-guide-{tileCount}-{Index}.png");
         }
         var pixmap = Pixmap.FromTexture(tex);

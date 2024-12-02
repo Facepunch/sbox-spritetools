@@ -39,7 +39,7 @@ public class AutotileBrushControl : Widget
 		Layout.Spacing = 4;
 
 		TileContent = Layout.Add(Layout.Row());
-		var tileCount = Brush.Is47Tiles ? 47 : 16;
+		var tileCount = Brush.TileCount;
 		// if (Brush.Tiles is null)
 		// {
 		// 	Brush.Tiles = new AutotileBrush.Tile[tileCount];
@@ -108,7 +108,7 @@ public class AutotileBrushControl : Widget
 		textRect.Top += 2f;
 		Paint.DrawTextBox(textRect, brushName, Theme.ControlText, 8, 4, TextFlag.LeftTop);
 
-		var tileCount = Brush.Is47Tiles ? 47 : 16;
+		var tileCount = Brush.TileCount;
 		Paint.SetBrushAndPen(Theme.Grey);
 		var size = 26f;
 		var padding = 3;
