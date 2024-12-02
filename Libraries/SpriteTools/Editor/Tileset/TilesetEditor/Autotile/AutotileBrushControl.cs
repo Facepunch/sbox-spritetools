@@ -39,23 +39,8 @@ public class AutotileBrushControl : Widget
 		Layout.Spacing = 4;
 
 		TileContent = Layout.Add(Layout.Row());
-		var tileCount = Brush.TileCount;
-		// if (Brush.Tiles is null)
-		// {
-		// 	Brush.Tiles = new AutotileBrush.Tile[tileCount];
-		// 	for (int i = 0; i < tileCount; i++)
-		// 	{
-		// 		Brush.Tiles[i] = new AutotileBrush.Tile();
-		// 	}
-		// }
-		for (int i = 0; i < tileCount; i++)
-		{
-			var tileControl = new AutotileTileControl(this, i);
-			TileContent.Add(tileControl);
-			TileControls.Add(tileControl);
-		}
 
-		// FixedHeight = Brush.Is47Tiles ? 128 : 64;
+		CreateTileControls();
 
 		IsDraggable = true;
 		AcceptDrops = true;
@@ -72,15 +57,29 @@ public class AutotileBrushControl : Widget
 		}
 	}
 
-	void LoadPixmap()
+	void CreateTileControls()
 	{
-		// var tileset = Tile.Tileset;
-		// if (tileset is null) return;
-		// var rect = new Rect(Tile.Position, Tile.Size);
-		// rect.Position = rect.Position * tileset.TileSize + rect.Position * tileset.TileSeparation;
-		// rect.Width *= tileset.TileSize.x;
-		// rect.Height *= tileset.TileSize.y;
-		// Pixmap = PixmapCache.Get(tileset.FilePath, rect);
+		if (TileContent is null) return;
+		TileContent.Clear(true);
+		TileControls.Clear();
+
+		var tileCount = Brush.TileCount;
+		for (int i = 0; i < tileCount; i++)
+		{
+			var tileControl = new AutotileTileControl(this, i);
+			TileContent.Add(tileControl);
+			TileControls.Add(tileControl);
+		}
+	}
+
+	[EditorEvent.Frame]
+	void Frame()
+	{
+		var tileCount = Brush?.TileCount ?? 0;
+		if (tileCount > 0 && tileCount != TileControls.Count)
+		{
+			CreateTileControls();
+		}
 	}
 
 	protected override void OnPaint()

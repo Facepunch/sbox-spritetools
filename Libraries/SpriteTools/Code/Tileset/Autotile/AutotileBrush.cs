@@ -8,8 +8,27 @@ namespace SpriteTools;
 public class AutotileBrush
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public AutotileType AutotileType { get; set; } = AutotileType.Bitmask2x2Edge;
     [Property, Placeholder("Autotile Brush")] public string Name { get; set; }
+    [Property, Title("Type")]
+    public AutotileType AutotileType
+    {
+        get => _autotileType;
+        set
+        {
+            _autotileType = value;
+
+            var tileCount = TileCount;
+            if (tileCount != (Tiles?.Length ?? 0))
+            {
+                Tiles = new Tile[tileCount];
+                for (int i = 0; i < tileCount; i++)
+                {
+                    Tiles[i] = new Tile();
+                }
+            }
+        }
+    }
+    AutotileType _autotileType = AutotileType.Bitmask2x2Edge;
     public Tile[] Tiles { get; set; }
     public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 16);
 
@@ -17,7 +36,7 @@ public class AutotileBrush
 
     public AutotileBrush(AutotileType type)
     {
-        AutotileType = type;
+        _autotileType = type;
 
         var tileCount = TileCount;
         Tiles = new Tile[tileCount];
@@ -48,6 +67,7 @@ public class AutotileBrush
         }
 
         if (selectedTile is null) return null;
+        if ((selectedTile.Tiles?.Count ?? 0) == 0) return null;
 
         // TODO: Random weights
         int randomIndex = Random.Shared.Int(0, selectedTile.Tiles.Count - 1);

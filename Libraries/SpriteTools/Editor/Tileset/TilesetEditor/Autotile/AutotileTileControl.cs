@@ -48,8 +48,11 @@ public class AutotileTileControl : Widget
             var tileCount = ParentBrush.Brush.TileCount;
             tex = Texture.Load(Editor.FileSystem.Mounted, $"images/guides/tile-guide-{tileCount}-{Index}.png");
         }
-        var pixmap = Pixmap.FromTexture(tex);
-        Paint.Draw(LocalRect, pixmap);
+        if (tex is not null)
+        {
+            var pixmap = Pixmap.FromTexture(tex);
+            Paint.Draw(LocalRect, pixmap);
+        }
 
         var color = IsUnderMouse ? Color.White : Color.Transparent;
         if (ParentBrush.ParentList.SelectedTile == Tile)
