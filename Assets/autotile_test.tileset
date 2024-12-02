@@ -2334,103 +2334,10 @@
       "TileCount": 16
     },
     {
-      "Id": "aae904f5-31ba-4f3a-ba6c-011b69875285",
+      "Id": "edcf064b-d622-4d86-baf6-34e576089748",
       "Name": null,
       "AutotileType": "Bitmask2x2Edge",
       "Tiles": [
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
-        {
-          "Tiles": null
-        },
         {
           "Tiles": null
         },

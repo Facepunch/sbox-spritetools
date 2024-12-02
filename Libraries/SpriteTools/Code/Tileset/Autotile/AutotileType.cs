@@ -3,11 +3,11 @@ namespace SpriteTools;
 public enum AutotileType
 {
     [Title("2x2 Edge Set"), Icon("add")]
-    [Description("(15 Tiles)")]
+    [Description("(15 Tiles) NOT IMPLEMENTED")]
     Bitmask2x2Edge,
 
     [Title("2x2 Corner Set"), Icon("close")]
-    [Description("(15 Tiles)")]
+    [Description("(15 Tiles) NOT IMPLEMENTED")]
     Bitmask2x2Corner,
 
     [Title("3x3 Minimal"), Icon("grid_3x3")]
@@ -15,6 +15,6 @@ public enum AutotileType
     Bitmask3x3,
 
     [Title("3x3 Complete"), Icon("grid_on")]
-    [Description("(255 Tiles)")]
+    [Description("(255 Tiles) NOT IMPLEMENTED")]
     Bitmask3x3Complete
 }
