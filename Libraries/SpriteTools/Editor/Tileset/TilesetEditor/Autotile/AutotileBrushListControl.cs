@@ -54,12 +54,9 @@ public class AutotileBrushListControl : ControlWidget
         var row = Layout.AddRow();
         row.AddStretchCell();
         row.Spacing = 8;
-        var btn16Tile = row.Add(new Button.Primary("New 16-Tile Brush", "add"));
-        btn16Tile.ToolTip = "Create a new brush with 16 tiles";
-        btn16Tile.Clicked += () => NewBrush(AutotileType.Bitmask2x2Edge);
-        var btn47Tile = row.Add(new Button.Primary("New 47-Tile Brush", "add"));
-        btn47Tile.ToolTip = "Create a new brush with 47 tiles";
-        btn47Tile.Clicked += () => NewBrush(AutotileType.Bitmask3x3);
+        var btn16Tile = row.Add(new Button.Primary("New Autotile Brush", "add"));
+        btn16Tile.ToolTip = "Create a new autotile brush";
+        btn16Tile.Clicked += () => NewBrushPopup();
 
         scrollArea.Canvas.Layout.AddStretchCell();
 
@@ -146,7 +143,46 @@ public class AutotileBrushListControl : ControlWidget
         MainWindow?.inspector?.UpdateSelectedAutotileSheet();
     }
 
-    public void NewBrush(AutotileType autotileType)
+    void NewBrushPopup()
+    {
+        var menu = new PopupWidget(null);
+        menu.Layout = Layout.Column();
+        menu.MinimumWidth = ScreenRect.Width;
+        menu.MaximumWidth = ScreenRect.Width;
+
+        ScrollArea scrollArea = menu.Layout.Add(new ScrollArea(this), 1);
+        scrollArea.Canvas = new Widget(scrollArea)
+        {
+            Layout = Layout.Column(),
+            VerticalSizeMode = (SizeMode)3,
+            HorizontalSizeMode = (SizeMode)3
+        };
+
+        IEnumerable<EnumDescription.Entry> enumerableList = EditorTypeLibrary.GetEnumDescription(typeof(AutotileType));
+        foreach (var entry in enumerableList)
+        {
+            var button = scrollArea.Canvas.Layout.Add(new MenuOption(entry));
+            button.MouseLeftPress += () =>
+            {
+                NewBrush((AutotileType)entry.IntegerValue);
+                menu?.Close();
+            };
+        }
+
+        menu.Position = ScreenRect.BottomLeft;
+        menu.Visible = true;
+        menu.AdjustSize();
+        menu.ConstrainToScreen();
+        menu.OnPaintOverride = () =>
+        {
+            Paint.SetBrushAndPen(Theme.ControlBackground);
+            Rect rect = Paint.LocalRect;
+            Paint.DrawRect(in rect, 0f);
+            return true;
+        };
+    }
+
+    void NewBrush(AutotileType autotileType)
     {
         var layers = SerializedProperty.GetValue<List<AutotileBrush>>();
         layers.Add(new AutotileBrush(autotileType));
@@ -167,4 +203,44 @@ public class AutotileBrushListControl : ControlWidget
         modifiers = e.KeyboardModifiers;
     }
 
+}
+
+file class MenuOption : Widget
+{
+    EnumDescription.Entry info;
+
+    public MenuOption(EnumDescription.Entry e) : base(null)
+    {
+        info = e;
+
+        Layout = Layout.Row();
+        Layout.Margin = 8;
+
+        if (!string.IsNullOrWhiteSpace(e.Icon))
+        {
+            Layout.Add(new IconButton(e.Icon) { Background = Color.Transparent, TransparentForMouseEvents = true, IconSize = 18 });
+        }
+
+        Layout.AddSpacingCell(8);
+        var c = Layout.AddColumn();
+        var title = c.Add(new Label(e.Title));
+        title.SetStyles("font-size: 12px; font-weight: bold; font-family: Poppins; color: white;");
+
+        if (!string.IsNullOrWhiteSpace(e.Description))
+        {
+            var desc = c.Add(new Label(e.Description.Trim('\n', '\r', '\t', ' ')));
+            desc.WordWrap = true;
+            desc.MinimumHeight = 1;
+            desc.MinimumWidth = 200;
+        }
+    }
+
+    protected override void OnPaint()
+    {
+        if (Paint.HasMouseOver)
+        {
+            Paint.SetBrushAndPen(Theme.Blue.WithAlpha(0.1f));
+            Paint.DrawRect(LocalRect.Shrink(2), 2);
+        }
+    }
 }
