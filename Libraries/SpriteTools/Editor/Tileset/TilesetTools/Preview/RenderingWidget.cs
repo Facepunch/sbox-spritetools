@@ -121,7 +121,7 @@ public class RenderingWidget : SpriteRenderingWidget
 	{
 		if (AutotileBrush is not null)
 		{
-			if (!AutotileBrush.Tiles.Any(x => x?.Tiles?.Any(y => y.Id == tile.Id) ?? false)) return;
+			if (!AutotileBrush.Tiles.Any(x => x?.Tiles?.Any(y => (y?.Id ?? Guid.Empty) == tile.Id) ?? false)) return;
 		}
 
 		bool isSelected = TilesetTool.Active?.SelectedTile == tile;

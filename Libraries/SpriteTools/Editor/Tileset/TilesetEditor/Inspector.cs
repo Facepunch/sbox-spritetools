@@ -25,6 +25,39 @@ public class Inspector : Widget
     internal TilesetTileListControl tileList;
     internal AutotileBrushListControl autotileBrushList;
 
+    AutotileType SelectedAutotileType
+    {
+        get => _selectedAutotileType;
+        set
+        {
+            if (_selectedAutotileType == value) return;
+
+            var brush = autotileBrushList?.SelectedBrush?.Brush;
+            if (brush is null) return;
+
+            if ((brush.Tiles?.Length ?? 0) > 0 && brush.Tiles.Any(x => (x?.Tiles?.Count ?? 0) > 0))
+            {
+                var popup = new PopupWindow(
+                    "Change Brush Type?",
+                    "Are you sure you want to change the Brush Type?\nThis will remove all existing tiles in the brush.",
+                    "Cancel", new Dictionary<string, Action>{
+                        {"OK", () => {
+                            _selectedAutotileType = value;
+                            brush.SetAutotileType(value);
+                        }}
+                    });
+
+                popup.Show();
+            }
+            else
+            {
+                _selectedAutotileType = value;
+                brush.SetAutotileType(value);
+            }
+        }
+    }
+    AutotileType _selectedAutotileType;
+
     public Inspector(MainWindow mainWindow) : base(null)
     {
         MainWindow = mainWindow;
@@ -207,15 +240,23 @@ public class Inspector : Widget
             {
                 return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
             });
+
             return;
         }
 
         if (autotileBrushList?.SelectedBrush is null) return;
 
+        _selectedAutotileType = autotileBrushList.SelectedBrush.Brush.AutotileType;
+
         var serializedBrush = autotileBrushList.SelectedBrush.Brush.GetSerialized();
         selectedAutotileSheet.AddObject(serializedBrush, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();
+        });
+
+        selectedAutotileSheet.AddObject(this.GetSerialized(), (SerializedProperty prop) =>
+        {
+            return prop.Name == "SelectedAutotileType";
         });
     }
 

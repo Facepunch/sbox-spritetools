@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Sandbox;
 
@@ -9,26 +10,7 @@ public class AutotileBrush
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     [Property, Placeholder("Autotile Brush")] public string Name { get; set; }
-    [Property, Title("Type")]
-    public AutotileType AutotileType
-    {
-        get => _autotileType;
-        set
-        {
-            _autotileType = value;
-
-            var tileCount = TileCount;
-            if (tileCount != (Tiles?.Length ?? 0))
-            {
-                Tiles = new Tile[tileCount];
-                for (int i = 0; i < tileCount; i++)
-                {
-                    Tiles[i] = new Tile();
-                }
-            }
-        }
-    }
-    AutotileType _autotileType = AutotileType.Bitmask2x2Edge;
+    public AutotileType AutotileType { get; private set; } = AutotileType.Bitmask2x2Edge;
     public Tile[] Tiles { get; set; }
     public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 16);
 
@@ -36,7 +18,23 @@ public class AutotileBrush
 
     public AutotileBrush(AutotileType type)
     {
-        _autotileType = type;
+        AutotileType = type;
+
+        var tileCount = TileCount;
+        Tiles = new Tile[tileCount];
+        for (int i = 0; i < tileCount; i++)
+        {
+            Tiles[i] = new Tile();
+        }
+    }
+
+    /// <summary>
+    /// Set the autotile type for this brush. This will reset all existing tiles in the brush.
+    /// </summary>
+    /// <param name="autotileType"></param>
+    public void SetAutotileType(AutotileType autotileType)
+    {
+        AutotileType = autotileType;
 
         var tileCount = TileCount;
         Tiles = new Tile[tileCount];

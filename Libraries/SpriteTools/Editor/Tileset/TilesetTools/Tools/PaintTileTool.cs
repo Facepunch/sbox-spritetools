@@ -244,48 +244,6 @@ public class PaintTileTool : BaseTileTool
         }
 
         return;
-        if (IsRound)
-        {
-            var size = (BrushSize - 0.9f) * 2;
-            var center = new Vector2Int((int)(size / 2f), (int)(size / 2f));
-            for (int i = 0; i < size * 2; i++)
-            {
-                for (int j = 0; j < size * 2; j++)
-                {
-                    var offset = new Vector2Int(i, j) - center;
-                    if (offset.LengthSquared <= (size / 2) * (size / 2))
-                    {
-                        if (brush is null)
-                        {
-                            Parent.PlaceTile(tilePos + offset, tile.Id, Vector2Int.Zero);
-                        }
-                        else
-                        {
-                            Parent.PlaceAutotile(brush, tilePos + offset);
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            Vector2Int startPos = new Vector2Int(-BrushSize / 2, -BrushSize / 2);
-            for (int i = 0; i < BrushSize; i++)
-            {
-                for (int j = 0; j < BrushSize; j++)
-                {
-                    var offset = new Vector2Int(i, j) + startPos;
-                    if (brush is null)
-                    {
-                        Parent.PlaceTile(tilePos + offset, tile.Id, Vector2Int.Zero);
-                    }
-                    else
-                    {
-                        Parent.PlaceAutotile(brush, tilePos + offset);
-                    }
-                }
-            }
-        }
     }
 
     [Shortcut("tileset-tools.paint-tool", "b", typeof(SceneViewportWidget))]

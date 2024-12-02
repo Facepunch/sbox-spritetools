@@ -168,35 +168,6 @@ public class AutotileBrushControl : Widget
 		});
 	}
 
-	void DeleteLayerPopup()
-	{
-		var popup = new PopupWidget(ParentList);
-		popup.Layout = Layout.Column();
-		popup.Layout.Margin = 16;
-		popup.Layout.Spacing = 8;
-
-		popup.Layout.Add(new Label($"Are you sure you want to delete this Layer?"));
-
-		var button = new Button.Primary("Delete");
-
-
-		button.MouseClick = () =>
-		{
-			Delete();
-			popup.Visible = false;
-		};
-
-		popup.Layout.Add(button);
-
-		var bottomBar = popup.Layout.AddRow();
-		bottomBar.AddStretchCell();
-		bottomBar.Add(button);
-
-		var popupPos = new Vector2(Editor.Application.CursorPosition.x - 250, Editor.Application.CursorPosition.y);
-		popup.Position = popupPos;
-		popup.Visible = true;
-	}
-
 	void Delete()
 	{
 		ParentList.DeleteBrush(Brush);
