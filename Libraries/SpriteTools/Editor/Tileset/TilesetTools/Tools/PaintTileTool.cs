@@ -105,29 +105,29 @@ public class PaintTileTool : BaseTileTool
             isPainting = false;
         }
 
-        // if (Parent?.SelectedLayer?.AutoTilePositions is not null)
-        // {
-        //     var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
-        //     using (Gizmo.Scope("test", Transform.Zero))
-        //     {
-        //         Gizmo.Draw.Color = Color.Red.WithAlpha(0.1f);
-        //         foreach (var group in Parent.SelectedLayer.AutoTilePositions)
-        //         {
-        //             var brush = group.Key;
-        //             foreach (var position in group.Value)
-        //             {
-        //                 Gizmo.Draw.WorldText(Parent.SelectedLayer.GetAutotileBitmask(brush, position).ToString(),
-        //                     new Transform(
-        //                         Parent.SelectedComponent.WorldPosition + (Vector3)((Vector2)position * tileSize) + (Vector3)(tileSize * 0.5f) + Vector3.Up * 200,
-        //                         Rotation.Identity,
-        //                         0.3f
-        //                     ),
-        //                     "Poppins", 24
-        //                 );
-        //             }
-        //         }
-        //     }
-        // }
+        if (Parent?.SelectedLayer?.AutoTilePositions is not null)
+        {
+            var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
+            using (Gizmo.Scope("test", Transform.Zero))
+            {
+                Gizmo.Draw.Color = Color.Red.WithAlpha(0.1f);
+                foreach (var group in Parent.SelectedLayer.AutoTilePositions)
+                {
+                    var brush = group.Key;
+                    foreach (var position in group.Value)
+                    {
+                        Gizmo.Draw.WorldText(Parent.SelectedLayer.GetAutotileBitmask(brush, position).ToString(),
+                            new Transform(
+                                Parent.SelectedComponent.WorldPosition + (Vector3)((Vector2)position * tileSize) + (Vector3)(tileSize * 0.5f) + Vector3.Up * 200,
+                                Rotation.Identity,
+                                0.3f
+                            ),
+                            "Poppins", 24
+                        );
+                    }
+                }
+            }
+        }
     }
 
     void UpdateTilePositions()
@@ -179,49 +179,52 @@ public class PaintTileTool : BaseTileTool
         // Set autobrush tiles if necessary
         if (brush is not null)
         {
-            var overrides = new Dictionary<Vector2Int, bool>();
-            var allPositions = new List<Vector2Int>();
-            foreach (var scenePos in positions)
+            if (brush.AutotileType == AutotileType.Bitmask2x2Edge)
             {
-                var setPos = tilePos + scenePos.Item1;
-                overrides.Add(setPos, true);
-                allPositions.Add(setPos);
-            }
-            foreach (var existingTilePos in Parent.SelectedLayer.Tiles.Keys)
-            {
-                if (!allPositions.Contains(existingTilePos))
-                    allPositions.Add(existingTilePos);
-            }
-            var positionCount = positions.Count;
-            for (int i = 0; i < positionCount; i++)
-            {
-                var scenePos = positions[i];
-                var realPos = tilePos + scenePos.Item1;
-                var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, realPos, overrides);
-                var maskTile = brush.GetTileFromBitmask(bitmask);
-                if (maskTile is not null)
+                List<Vector2Int> tilesToAdd = new();
+                foreach (var ppos in positions)
                 {
-                    var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
-                    scenePos.Item2 = mappedTile.Position;
-                    positions[i] = scenePos;
-                }
-
-                for (int xx = -1; xx <= 1; xx++)
-                {
-                    for (int yy = -1; yy <= 1; yy++)
+                    bool touchingX = false;
+                    bool touchingY = false;
+                    var up = ppos.Item1.WithY(ppos.Item1.y + 1);
+                    var down = ppos.Item1.WithY(ppos.Item1.y - 1);
+                    var left = ppos.Item1.WithX(ppos.Item1.x - 1);
+                    var right = ppos.Item1.WithX(ppos.Item1.x + 1);
+                    foreach (var ppos2 in positions)
                     {
-                        var checkPos = realPos + new Vector2Int(xx, yy);
-                        if ((xx != 0 || yy != 0) && allPositions.Contains(checkPos) && !overrides.ContainsKey(checkPos))
+                        if (!touchingX && (ppos2.Item1 == left || ppos2.Item1 == right))
                         {
-                            AddAutotilePosition(ref positions, overrides, checkPos, tilePos);
-                            allPositions.Remove(checkPos);
+                            touchingX = true;
                         }
+                        if (!touchingY && (ppos2.Item1 == up || ppos2.Item1 == down))
+                        {
+                            touchingY = true;
+                        }
+                        if (touchingX && touchingY) break;
                     }
+                    if (touchingX && touchingY) continue;
+
+                    var upLeft = up.WithX(left.x);
+                    var upRight = up.WithX(right.x);
+                    var downLeft = down.WithX(left.x);
+                    var downRight = down.WithX(right.x);
+                    if (!tilesToAdd.Contains(up)) tilesToAdd.Add(up);
+                    if (!tilesToAdd.Contains(down)) tilesToAdd.Add(down);
+                    if (!tilesToAdd.Contains(left)) tilesToAdd.Add(left);
+                    if (!tilesToAdd.Contains(right)) tilesToAdd.Add(right);
+                    if (!tilesToAdd.Contains(upLeft)) tilesToAdd.Add(upLeft);
+                    if (!tilesToAdd.Contains(upRight)) tilesToAdd.Add(upRight);
+                    if (!tilesToAdd.Contains(downLeft)) tilesToAdd.Add(downLeft);
+                    if (!tilesToAdd.Contains(downRight)) tilesToAdd.Add(downRight);
+                }
+                foreach (var toAddPos in tilesToAdd)
+                {
+                    positions.Add((toAddPos, tile.Position));
                 }
             }
         }
 
-        Parent._sceneObject.SetPositions(positions);
+        UpdateTilePositions(positions.Select(x => (Vector2)x.Item1).ToList());
         lastTilePos = tilePos;
     }
 
