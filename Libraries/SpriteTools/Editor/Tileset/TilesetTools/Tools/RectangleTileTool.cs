@@ -47,7 +47,7 @@ public class RectangleTileTool : BaseTileTool
             if (deleting)
             {
                 Parent._sceneObject.RenderingEnabled = false;
-                using (Gizmo.Scope("delete", new Transform(Parent.SelectedComponent.WorldPosition)))
+                using (Gizmo.Scope("delete"))
                 {
                     Gizmo.Draw.Color = Color.Red.WithAlpha(0.5f);
                     Gizmo.Draw.SolidBox(new BBox(tilePos * tileSize + min * tileSize, tilePos * tileSize + max * tileSize + tileSize));
