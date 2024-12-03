@@ -500,6 +500,10 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 					AutoTilePositions[autotileId].Remove(position);
 					shouldUpdate = true;
 				}
+				else
+				{
+					RemoveTile(position);
+				}
 			}
 
 			if (shouldUpdate)
