@@ -51,7 +51,14 @@ public class PaintTileTool : BaseTileTool
     /// If enabled, Autotiles of different types will attempt to connect with each other.
     /// </summary>
     [Group("Paint Tool"), Property, ShowIf(nameof(this.CanSeeAutotileSettings), true)]
-    public bool MergeDifferentAutotiles { get; set; } = true;
+    public bool MergeDifferentAutotiles
+    {
+        get => ShouldMergeAutotiles;
+        set
+        {
+            ShouldMergeAutotiles = value;
+        }
+    }
     private bool CanSeeAutotileSettings => AutotileWidget.Instance?.Brush is not null;
 
     Vector2Int lastTilePos;

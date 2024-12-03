@@ -9,6 +9,8 @@ public abstract class BaseTileTool : EditorTool
 {
     protected TilesetTool Parent;
 
+    protected bool ShouldMergeAutotiles = true;
+
     protected AutotileBrush AutotileBrush
     {
         get
@@ -88,6 +90,8 @@ public abstract class BaseTileTool : EditorTool
         }
         foreach (var existingTilePos in Parent.SelectedLayer.Tiles.Keys)
         {
+            if (!ShouldMergeAutotiles && !Parent.SelectedLayer.AutoTilePositions[brush.Id].Contains(existingTilePos))
+                continue;
             if (!allPositions.Contains(existingTilePos))
                 allPositions.Add(existingTilePos);
         }
