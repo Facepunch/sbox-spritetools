@@ -77,19 +77,113 @@ public class AutotileBrush
 
     Tile GetTile2x2Edge(int bitmask)
     {
-        return Tiles[0];
-        // switch (bitmask)
-        // {
-        //     case 208:
-        //     case 212:
-        //     case 240:
-        //     case 241:
-        //     case 245:
-        //         return Tiles[7];
-        //     case 255:
-        //         return Tiles[0];
-        //     default: return null;
-        // }
+        // return Tiles[0];
+        switch (bitmask)
+        {
+            // Top-Left Corner
+            case 208:
+            case 209:
+            case 211:
+            case 212:
+            case 213:
+            case 217:
+            case 221:
+            case 240:
+            case 241:
+            case 243:
+            case 244:
+            case 245:
+                return Tiles[7];
+            // Top-Right Corner
+            case 104:
+            case 105:
+            case 108:
+            case 109:
+            case 110:
+            case 124:
+            case 125:
+            case 232:
+            case 233:
+            case 236:
+            case 237:
+            case 238:
+                return Tiles[11];
+            // Bottom-Left Corner
+            case 22:
+            case 23:
+            case 54:
+            case 55:
+            case 62:
+            case 118:
+            case 119:
+            case 150:
+            case 151:
+            case 182:
+            case 183:
+            case 190:
+                return Tiles[13];
+            // Bottom-Right Corner
+            case 11:
+            case 15:
+            case 43:
+            case 47:
+            case 139:
+            case 143:
+            case 155:
+            case 171:
+            case 175:
+            case 187:
+            case 203:
+            case 207:
+                return Tiles[14];
+            // Top
+            case 248:
+            case 249:
+            case 252:
+            case 253:
+                return Tiles[3];
+            // Down
+            case 31:
+            case 63:
+            case 159:
+            case 191:
+                return Tiles[12];
+            // Left
+            case 214:
+            case 215:
+            case 246:
+            case 247:
+                return Tiles[5];
+            // Right
+            case 107:
+            case 111:
+            case 235:
+            case 239:
+                return Tiles[10];
+            // Inner Top-Left
+            case 254:
+                return Tiles[1];
+            // Inner Top-Right
+            case 251:
+                return Tiles[2];
+            // Inner Bottom-Left
+            case 223:
+                return Tiles[4];
+            // Inner Bottom-Right
+            case 127:
+                return Tiles[8];
+            // Inner Diagonal (Top-Left and Bottom-Right)
+            case 126:
+                return Tiles[9];
+            // Inner Diagonal (Top-Right and Bottom-Left)
+            case 216:
+            case 219:
+                return Tiles[6];
+            // Inside
+            case 255:
+                return Tiles[0];
+            default: return Tiles[0];
+        }
     }
 
     Tile GetTile2x2Corner(int bitmask)

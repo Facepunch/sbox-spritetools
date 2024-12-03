@@ -572,7 +572,8 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
 			if (brush is null) return 0;
 
-			if (brush.AutotileType == AutotileType.Bitmask2x2Edge)
+			bool is2x2 = brush.AutotileType == AutotileType.Bitmask2x2Edge;
+			if (is2x2)
 			{
 				foreach (var pos in positions)
 				{
@@ -610,6 +611,18 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				if (pos == downLeft) value += 32;
 				if (pos == down) value += 64;
 				if (pos == downRight) value += 128;
+			}
+
+			if (is2x2)
+			{
+				switch (value)
+				{
+					case 46:
+					case 116:
+					case 147:
+					case 201:
+						return -1;
+				}
 			}
 
 			return value;
