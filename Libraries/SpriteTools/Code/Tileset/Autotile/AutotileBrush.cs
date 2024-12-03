@@ -12,7 +12,7 @@ public class AutotileBrush
     [Property, Placeholder("Autotile Brush")] public string Name { get; set; }
     public AutotileType AutotileType { get; set; } = AutotileType.Bitmask2x2Edge;
     public Tile[] Tiles { get; set; }
-    public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 16);
+    public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 15);
 
     public AutotileBrush() : this(AutotileType.Bitmask2x2Edge) { }
 
@@ -80,21 +80,14 @@ public class AutotileBrush
         return Tiles[0];
         // switch (bitmask)
         // {
-        //     case 1: return Tiles[];
-        //     case 2: return Tiles[];
-        //     case 3: return Tiles[];
-        //     case 4: return Tiles[];
-        //     case 5: return Tiles[];
-        //     case 6: return Tiles[];
-        //     case 7: return Tiles[];
-        //     case 8: return Tiles[];
-        //     case 9: return Tiles[];
-        //     case 10: return Tiles[];
-        //     case 11: return Tiles[10];
-        //     case 12: return Tiles[];
-        //     case 13: return Tiles[];
-        //     case 14: return Tiles[];
-        //     case 15: return Tiles[0];
+        //     case 208:
+        //     case 212:
+        //     case 240:
+        //     case 241:
+        //     case 245:
+        //         return Tiles[7];
+        //     case 255:
+        //         return Tiles[0];
         //     default: return null;
         // }
     }
