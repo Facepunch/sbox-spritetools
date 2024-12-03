@@ -164,11 +164,11 @@ public partial class TilesetTool : EditorTool
 		}
 	}
 
-	internal void PlaceAutotile(Guid brushId, Vector2Int position)
+	internal void PlaceAutotile(Guid brushId, Vector2Int position, bool update = true)
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetAutotile(brushId, position);
+		SelectedLayer.SetAutotile(brushId, position, true, update);
 	}
 
 	internal void EraseAutoTile(AutotileBrush brush, Vector2Int position)

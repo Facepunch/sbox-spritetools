@@ -466,7 +466,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		/// <param name="autotileId"></param>
 		/// <param name="position"></param>
 		/// <param name="enabled"></param>
-		public void SetAutotile(Guid autotileId, Vector2Int position, bool enabled = true)
+		public void SetAutotile(Guid autotileId, Vector2Int position, bool enabled = true, bool update = true)
 		{
 			if (IsLocked) return;
 			AutoTilePositions ??= new();
@@ -506,7 +506,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				}
 			}
 
-			if (shouldUpdate)
+			if (update && shouldUpdate)
 				UpdateAutotile(autotileId, position, !enabled);
 		}
 
@@ -514,6 +514,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		{
 			if (!AutoTilePositions.ContainsKey(autotileId)) return;
 
+			var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
 			if (AutoTilePositions[autotileId].Contains(position))
 			{
 				var bitmask = GetAutotileBitmask(autotileId, position);
@@ -523,7 +524,6 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				}
 				else
 				{
-					var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
 					if (brush is not null)
 					{
 						var tile = brush.GetTileFromBitmask(bitmask);
@@ -549,6 +549,19 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				var upRight = up.WithX(right.x);
 				var downLeft = down.WithX(left.x);
 				var downRight = down.WithX(right.x);
+
+				if (brush is not null && brush.AutotileType == AutotileType.Bitmask2x2Edge)
+				{
+					Log.Info("deleting shit");
+					if (GetAutotileBitmask(autotileId, up) == -1) RemoveTile(up);
+					if (GetAutotileBitmask(autotileId, down) == -1) RemoveTile(down);
+					if (GetAutotileBitmask(autotileId, left) == -1) RemoveTile(left);
+					if (GetAutotileBitmask(autotileId, right) == -1) RemoveTile(right);
+					if (GetAutotileBitmask(autotileId, upLeft) == -1) RemoveTile(upLeft);
+					if (GetAutotileBitmask(autotileId, upRight) == -1) RemoveTile(upRight);
+					if (GetAutotileBitmask(autotileId, downLeft) == -1) RemoveTile(downLeft);
+					if (GetAutotileBitmask(autotileId, downRight) == -1) RemoveTile(downRight);
+				}
 
 				UpdateAutotile(autotileId, up, checkErased, false);
 				UpdateAutotile(autotileId, down, checkErased, false);

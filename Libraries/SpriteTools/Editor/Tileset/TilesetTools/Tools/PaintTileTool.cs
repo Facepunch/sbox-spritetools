@@ -264,7 +264,16 @@ public class PaintTileTool : BaseTileTool
             }
             else
             {
-                Parent.PlaceAutotile((position.Item3 == Guid.Empty) ? brush.Id : position.Item3, tilePos + position.Item1);
+                Parent.PlaceAutotile((position.Item3 == Guid.Empty) ? brush.Id : position.Item3, tilePos + position.Item1, false);
+            }
+        }
+
+        if (brush is not null)
+        {
+            foreach (var position in Parent._sceneObject.MultiTilePositions)
+            {
+                var brushId = (position.Item3 == Guid.Empty) ? brush.Id : position.Item3;
+                Parent.SelectedLayer.UpdateAutotile(brushId, tilePos + position.Item1, false);
             }
         }
 
