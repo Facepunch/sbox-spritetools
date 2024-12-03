@@ -16,7 +16,14 @@ public class EraserTileTool : BaseTileTool
 {
     public EraserTileTool(TilesetTool parent) : base(parent) { }
 
+    /// <summary>
+    /// The size of the Brush when Erasing.
+    /// </summary>
     [Group("Eraser Tool"), Property, Range(1, 12, 1)] public int BrushSize { get; set; } = 1;
+
+    /// <summary>
+    /// Whether the Brush is round or square.
+    /// </summary>
     [Group("Eraser Tool"), Property] public bool IsRound { get; set; } = false;
 
     bool isErasing = false;

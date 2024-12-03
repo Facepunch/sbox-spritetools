@@ -17,6 +17,9 @@ public class RectangleTileTool : BaseTileTool
 {
     public RectangleTileTool(TilesetTool parent) : base(parent) { }
 
+    /// <summary>
+    /// If enabled, the rectangle will only draw the border and not be filled.
+    /// </summary>
     [Group("Rectangle Tool"), Property] public bool Hollow { get; set; } = false;
 
     Vector2 startPos;

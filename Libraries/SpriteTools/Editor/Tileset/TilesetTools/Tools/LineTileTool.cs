@@ -17,6 +17,9 @@ public class LineTileTool : BaseTileTool
 {
     public LineTileTool(TilesetTool parent) : base(parent) { }
 
+    /// <summary>
+    /// The distance/spacing between each tile in the line.
+    /// </summary>
     [Group("Line Tool"), Property, Range(0, 8, 1)] public int Separation { get; set; } = 0;
 
     Vector2 startPos;
@@ -53,7 +56,7 @@ public class LineTileTool : BaseTileTool
                 if (!positions.Contains(thisPos))
                     positions.Add(thisPos);
             }
-            if(tilePos != lastTilePos)
+            if (tilePos != lastTilePos)
             {
                 UpdateTilePositions(positions);
                 lastTilePos = tilePos;

@@ -17,6 +17,9 @@ public class PaintTileTool : BaseTileTool
 {
     public PaintTileTool(TilesetTool parent) : base(parent) { }
 
+    /// <summary>
+    /// The size of the Brush when Painting.
+    /// </summary>
     [Group("Paint Tool"), Property, Range(1, 12, 1)]
     public int BrushSize
     {
@@ -29,6 +32,9 @@ public class PaintTileTool : BaseTileTool
     }
     private int _brushSize = 1;
 
+    /// <summary>
+    /// Whether the Brush is round or square.
+    /// </summary>
     [Group("Paint Tool"), Property]
     public bool IsRound
     {
@@ -40,6 +46,13 @@ public class PaintTileTool : BaseTileTool
         }
     }
     private bool _isRound = false;
+
+    /// <summary>
+    /// If enabled, Autotiles of different types will attempt to connect with each other.
+    /// </summary>
+    [Group("Paint Tool"), Property, ShowIf(nameof(this.CanSeeAutotileSettings), true)]
+    public bool MergeDifferentAutotiles { get; set; } = true;
+    private bool CanSeeAutotileSettings => AutotileWidget.Instance?.Brush is not null;
 
     Vector2Int lastTilePos;
     bool isPainting = false;
@@ -219,8 +232,8 @@ public class PaintTileTool : BaseTileTool
                 }
                 foreach (var toAddPos in tilesToAdd)
                 {
-                    if(!positions.Contains((toAddPos, tile.Position)))
-                      positions.Add((toAddPos, tile.Position));
+                    if (!positions.Contains((toAddPos, tile.Position)))
+                        positions.Add((toAddPos, tile.Position));
                 }
             }
         }
