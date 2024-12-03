@@ -80,22 +80,21 @@ public class AutotileBrush
         return Tiles[0];
         // switch (bitmask)
         // {
-        //     case 0: return Tiles[0];
-        //     case 1: return Tiles[1];
-        //     case 2: return Tiles[2];
-        //     case 3: return Tiles[3];
-        //     case 4: return Tiles[4];
-        //     case 5: return Tiles[5];
-        //     case 6: return Tiles[6];
-        //     case 7: return Tiles[7];
-        //     case 8: return Tiles[8];
-        //     case 9: return Tiles[9];
-        //     case 10: return Tiles[10];
-        //     case 11: return Tiles[11];
-        //     case 12: return Tiles[12];
-        //     case 13: return Tiles[13];
-        //     case 14: return Tiles[14];
-        //     case 15: return Tiles[15];
+        //     case 1: return Tiles[];
+        //     case 2: return Tiles[];
+        //     case 3: return Tiles[];
+        //     case 4: return Tiles[];
+        //     case 5: return Tiles[];
+        //     case 6: return Tiles[];
+        //     case 7: return Tiles[];
+        //     case 8: return Tiles[];
+        //     case 9: return Tiles[];
+        //     case 10: return Tiles[];
+        //     case 11: return Tiles[10];
+        //     case 12: return Tiles[];
+        //     case 13: return Tiles[];
+        //     case 14: return Tiles[];
+        //     case 15: return Tiles[0];
         //     default: return null;
         // }
     }
