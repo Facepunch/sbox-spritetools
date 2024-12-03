@@ -503,27 +503,34 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 
 			if (shouldUpdate)
-				UpdateAutotile(autotileId, position);
+				UpdateAutotile(autotileId, position, !enabled);
 		}
 
-		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool updateSurrounding = true)
+		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool checkErased, bool updateSurrounding = true)
 		{
 			if (!AutoTilePositions.ContainsKey(autotileId)) return;
 
 			if (AutoTilePositions[autotileId].Contains(position))
 			{
 				var bitmask = GetAutotileBitmask(autotileId, position);
-				var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
-				if (brush is not null)
+				if (bitmask == -1)
 				{
-					var tile = brush.GetTileFromBitmask(bitmask);
-					if (tile is not null)
+					if (checkErased) RemoveTile(position);
+				}
+				else
+				{
+					var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
+					if (brush is not null)
 					{
-						SetTile(position, tile.Id, Vector2Int.Zero, 0, false, false, false, removeAutotile: false);
-					}
-					else
-					{
-						Log.Warning($"Tile not found for bitmask {bitmask} in AutotileBrush {brush.Name}");
+						var tile = brush.GetTileFromBitmask(bitmask);
+						if (tile is not null)
+						{
+							SetTile(position, tile.Id, Vector2Int.Zero, 0, false, false, false, removeAutotile: false);
+						}
+						else
+						{
+							Log.Warning($"Tile not found for bitmask {bitmask} in AutotileBrush {brush.Name}");
+						}
 					}
 				}
 			}
@@ -539,14 +546,14 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				var downLeft = down.WithX(left.x);
 				var downRight = down.WithX(right.x);
 
-				UpdateAutotile(autotileId, up, false);
-				UpdateAutotile(autotileId, down, false);
-				UpdateAutotile(autotileId, left, false);
-				UpdateAutotile(autotileId, right, false);
-				UpdateAutotile(autotileId, upLeft, false);
-				UpdateAutotile(autotileId, upRight, false);
-				UpdateAutotile(autotileId, downLeft, false);
-				UpdateAutotile(autotileId, downRight, false);
+				UpdateAutotile(autotileId, up, checkErased, false);
+				UpdateAutotile(autotileId, down, checkErased, false);
+				UpdateAutotile(autotileId, left, checkErased, false);
+				UpdateAutotile(autotileId, right, checkErased, false);
+				UpdateAutotile(autotileId, upLeft, checkErased, false);
+				UpdateAutotile(autotileId, upRight, checkErased, false);
+				UpdateAutotile(autotileId, downLeft, checkErased, false);
+				UpdateAutotile(autotileId, downRight, checkErased, false);
 			}
 		}
 
@@ -575,6 +582,18 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 							if (pos == left) value += 2;
 							if (pos == right) value += 4;
 							if (pos == down) value += 8;
+						}
+						switch (value)
+						{
+							case 0:
+							case 1:
+							case 2:
+							case 4:
+							case 8:
+							case 9:
+							case 6:
+								value = -1;
+								break;
 						}
 						break;
 					}
