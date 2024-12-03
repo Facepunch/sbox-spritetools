@@ -80,7 +80,7 @@ public class LineTileTool : BaseTileTool
                 {
                     foreach (var ppos in positions)
                     {
-                        Parent.PlaceAutotile(brush, (Vector2Int)(tilePos + ppos));
+                        Parent.PlaceAutotile(brush.Id, (Vector2Int)(tilePos + ppos));
                     }
                 }
                 Parent.SelectedComponent.IsDirty = true;

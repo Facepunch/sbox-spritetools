@@ -103,7 +103,7 @@ public class RectangleTileTool : BaseTileTool
                     {
                         foreach (var ppos in positions)
                         {
-                            Parent.PlaceAutotile(brush, (Vector2Int)(tilePos + ppos));
+                            Parent.PlaceAutotile(brush.Id, (Vector2Int)(tilePos + ppos));
                         }
                     }
                     SceneEditorSession.Active.FullUndoSnapshot($"Place Tile Rectangle");

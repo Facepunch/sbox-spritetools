@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Editor;
@@ -263,7 +264,7 @@ public class PaintTileTool : BaseTileTool
             }
             else
             {
-                Parent.PlaceAutotile(brush, tilePos + position.Item1);
+                Parent.PlaceAutotile((position.Item3 == Guid.Empty) ? brush.Id : position.Item3, tilePos + position.Item1);
             }
         }
 

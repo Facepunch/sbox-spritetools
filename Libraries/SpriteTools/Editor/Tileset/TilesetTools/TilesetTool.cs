@@ -164,11 +164,11 @@ public partial class TilesetTool : EditorTool
 		}
 	}
 
-	internal void PlaceAutotile(AutotileBrush brush, Vector2Int position)
+	internal void PlaceAutotile(Guid brushId, Vector2Int position)
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetAutotile(brush, position);
+		SelectedLayer.SetAutotile(brushId, position);
 	}
 
 	internal void EraseAutoTile(AutotileBrush brush, Vector2Int position)
@@ -275,7 +275,7 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 	TilesetTool Tool;
 	Material Material;
 
-	internal List<(Vector2Int, Vector2Int)> MultiTilePositions = new();
+	internal List<(Vector2Int, Vector2Int, Guid)> MultiTilePositions = new();
 
 	public TilesetPreviewObject(TilesetTool tool, SceneWorld world) : base(world)
 	{
@@ -294,43 +294,55 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		MultiTilePositions.Clear();
 	}
 
-	internal void SetPositions(List<Vector2Int> positions, List<Vector2Int> cellPositions = null)
+	internal void SetPositions(List<Vector2Int> positions, List<Vector2Int> cellPositions = null, List<Guid> guids = null)
 	{
 		if (cellPositions is null)
 		{
-			MultiTilePositions = positions.Select(x => (x, new Vector2Int(-1, -1))).ToList();
+			MultiTilePositions = positions.Select(x => (x, new Vector2Int(-1, -1), Guid.Empty)).ToList();
 			return;
 		}
+
+		guids ??= new();
 
 		MultiTilePositions.Clear();
 		for (int i = 0; i < positions.Count; i++)
 		{
-			if (i >= cellPositions.Count)
-				MultiTilePositions.Add((positions[i], new Vector2Int(-1, -1)));
-			else
-				MultiTilePositions.Add((positions[i], cellPositions[i]));
+			Vector2Int cellPos = new Vector2Int(-1, -1);
+			Guid cellId = Guid.Empty;
+			if (i < cellPositions.Count)
+				cellPos = cellPositions[i];
+			if (i < guids.Count)
+				cellId = guids[i];
+
+			MultiTilePositions.Add((positions[i], cellPos, cellId));
 		}
 	}
 
-	internal void SetPositions(List<Vector2> positions, List<Vector2> cellPositions = null)
+	internal void SetPositions(List<Vector2> positions, List<Vector2> cellPositions = null, List<Guid> guids = null)
 	{
 		if (cellPositions is null)
 		{
-			MultiTilePositions = positions.Select(x => ((Vector2Int)x, new Vector2Int(-1, -1))).ToList();
+			MultiTilePositions = positions.Select(x => ((Vector2Int)x, new Vector2Int(-1, -1), Guid.Empty)).ToList();
 			return;
 		}
+
+		guids ??= new();
 
 		MultiTilePositions.Clear();
 		for (int i = 0; i < positions.Count; i++)
 		{
-			if (i >= cellPositions.Count)
-				MultiTilePositions.Add(((Vector2Int)positions[i], new Vector2Int(-1, -1)));
-			else
-				MultiTilePositions.Add(((Vector2Int)positions[i], (Vector2Int)cellPositions[i]));
+			Vector2Int cellPos = new Vector2Int(-1, -1);
+			Guid cellId = Guid.Empty;
+			if (i < cellPositions.Count)
+				cellPos = (Vector2Int)cellPositions[i];
+			if (i < guids.Count)
+				cellId = guids[i];
+
+			MultiTilePositions.Add(((Vector2Int)positions[i], cellPos, cellId));
 		}
 	}
 
-	internal void SetPositions(List<(Vector2Int, Vector2Int)> positions)
+	internal void SetPositions(List<(Vector2Int, Vector2Int, Guid)> positions)
 	{
 		MultiTilePositions = positions;
 	}
@@ -356,7 +368,7 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		var tiling = tileset.GetTiling() * scale;
 
 		var positions = MultiTilePositions.ToList();
-		if (positions.Count == 0) positions.Add((Vector2Int.Zero, new Vector2Int(-1, -1)));
+		if (positions.Count == 0) positions.Add((Vector2Int.Zero, new Vector2Int(-1, -1), Guid.Empty));
 
 		int i = 0;
 		var vertexCount = positions.Count * 6;
