@@ -2334,10 +2334,727 @@
       "TileCount": 16
     },
     {
-      "Id": "edcf064b-d622-4d86-baf6-34e576089748",
+      "Id": "f2a28000-c005-420a-ae21-a18da4924621",
       "Name": null,
-      "AutotileType": "Bitmask2x2Edge",
+      "AutotileType": "Bitmask3x3Complete",
       "Tiles": [
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
+        {
+          "Tiles": null
+        },
         {
           "Tiles": null
         },
@@ -2387,7 +3104,7 @@
           "Tiles": null
         }
       ],
-      "TileCount": 16
+      "TileCount": 255
     }
   ],
   "CurrentTextureSize": "352,224",

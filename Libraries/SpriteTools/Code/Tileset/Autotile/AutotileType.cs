@@ -15,6 +15,6 @@ public enum AutotileType
     Bitmask3x3 = 2,
 
     [Title("3x3 Complete Set"), Icon("grid_on")]
-    [Description("(255 Tiles) NOT IMPLEMENTED")]
+    [Description("(255 Tiles)")]
     Bitmask3x3Complete = 3
 }

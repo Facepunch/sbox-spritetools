@@ -60,10 +60,10 @@ public class AutotileBrush
             //     selectedTile = GetTile2x2Corner(bitmask);
             //     break;
             case AutotileType.Bitmask3x3:
-                selectedTile = GetTile3x3(bitmask);
+                selectedTile = GetTile3x3Minimal(bitmask);
                 break;
             case AutotileType.Bitmask3x3Complete:
-                selectedTile = GetTile3x3(bitmask);
+                selectedTile = GetTile3x3Complete(bitmask);
                 break;
         }
 
@@ -77,26 +77,27 @@ public class AutotileBrush
 
     Tile GetTile2x2Edge(int bitmask)
     {
-        switch (bitmask)
-        {
-            case 0: return Tiles[0];
-            case 1: return Tiles[1];
-            case 2: return Tiles[2];
-            case 3: return Tiles[3];
-            case 4: return Tiles[4];
-            case 5: return Tiles[5];
-            case 6: return Tiles[6];
-            case 7: return Tiles[7];
-            case 8: return Tiles[8];
-            case 9: return Tiles[9];
-            case 10: return Tiles[10];
-            case 11: return Tiles[11];
-            case 12: return Tiles[12];
-            case 13: return Tiles[13];
-            case 14: return Tiles[14];
-            case 15: return Tiles[15];
-            default: return null;
-        }
+        return Tiles[0];
+        // switch (bitmask)
+        // {
+        //     case 0: return Tiles[0];
+        //     case 1: return Tiles[1];
+        //     case 2: return Tiles[2];
+        //     case 3: return Tiles[3];
+        //     case 4: return Tiles[4];
+        //     case 5: return Tiles[5];
+        //     case 6: return Tiles[6];
+        //     case 7: return Tiles[7];
+        //     case 8: return Tiles[8];
+        //     case 9: return Tiles[9];
+        //     case 10: return Tiles[10];
+        //     case 11: return Tiles[11];
+        //     case 12: return Tiles[12];
+        //     case 13: return Tiles[13];
+        //     case 14: return Tiles[14];
+        //     case 15: return Tiles[15];
+        //     default: return null;
+        // }
     }
 
     Tile GetTile2x2Corner(int bitmask)
@@ -123,7 +124,7 @@ public class AutotileBrush
         }
     }
 
-    Tile GetTile3x3(int bitmask)
+    Tile GetTile3x3Minimal(int bitmask)
     {
         switch (bitmask)
         {
@@ -385,6 +386,13 @@ public class AutotileBrush
             case 255: return Tiles[0];
             default: return null;
         }
+    }
+
+    Tile GetTile3x3Complete(int bitmask)
+    {
+        if (bitmask < 0 || bitmask >= Tiles.Length)
+            return null;
+        return Tiles[bitmask];
     }
 
     public class Tile
