@@ -348,6 +348,8 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 		var tileset = selectedTile.Tileset;
 		if (tileset is null) return;
 
+		var brush = AutotileWidget.Instance?.Brush;
+
 		var tileSize = tileset.GetTileSize();
 		var scale = Vector2Int.One;
 		// if (TilesetTool.Active.CurrentTool is PaintTileTool) scale = selectedTile.Size;
@@ -365,12 +367,16 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 			var offsetPos = pos.Item1;
 			var tilePosition = (pos.Item2.x == -1 || pos.Item2.y == -1) ? selectedTile.Position : pos.Item2;
 
-			if (Tool.Settings.Angle == 90)
-				offsetPos = new Vector2Int(-offsetPos.y, offsetPos.x);
-			else if (Tool.Settings.Angle == 180)
-				offsetPos = new Vector2Int(-offsetPos.x, -offsetPos.y);
-			else if (Tool.Settings.Angle == 270)
-				offsetPos = new Vector2Int(offsetPos.y, -offsetPos.x);
+			if (brush is null)
+			{
+				if (Tool.Settings.Angle == 90)
+					offsetPos = new Vector2Int(-offsetPos.y, offsetPos.x);
+				else if (Tool.Settings.Angle == 180)
+					offsetPos = new Vector2Int(-offsetPos.x, -offsetPos.y);
+				else if (Tool.Settings.Angle == 270)
+					offsetPos = new Vector2Int(offsetPos.y, -offsetPos.x);
+			}
+
 			var offset = tileset.GetOffset(tilePosition);
 
 			var position = new Vector3(offsetPos.x * tileSize.x, offsetPos.y * tileSize.y, Position.z) - new Vector3(0, (scale.y - 1) * tileSize.y, 0);
@@ -390,30 +396,33 @@ internal sealed class TilesetPreviewObject : SceneCustomObject
 			var uvBottomRight = new Vector2(offset.x + tiling.x, offset.y + tiling.y);
 			var uvBottomLeft = new Vector2(offset.x, offset.y + tiling.y);
 
-			if (Tool.Settings.Angle == 90)
+			if (brush is null)
 			{
-				var tempUv = uvTopLeft;
-				uvTopLeft = uvBottomLeft;
-				uvBottomLeft = uvBottomRight;
-				uvBottomRight = uvTopRight;
-				uvTopRight = tempUv;
-			}
-			else if (Tool.Settings.Angle == 180)
-			{
-				var tempUv = uvTopLeft;
-				uvTopLeft = uvBottomRight;
-				uvBottomRight = tempUv;
-				tempUv = uvTopRight;
-				uvTopRight = uvBottomLeft;
-				uvBottomLeft = tempUv;
-			}
-			else if (Tool.Settings.Angle == 270)
-			{
-				var tempUv = uvTopLeft;
-				uvTopLeft = uvTopRight;
-				uvTopRight = uvBottomRight;
-				uvBottomRight = uvBottomLeft;
-				uvBottomLeft = tempUv;
+				if (Tool.Settings.Angle == 90)
+				{
+					var tempUv = uvTopLeft;
+					uvTopLeft = uvBottomLeft;
+					uvBottomLeft = uvBottomRight;
+					uvBottomRight = uvTopRight;
+					uvTopRight = tempUv;
+				}
+				else if (Tool.Settings.Angle == 180)
+				{
+					var tempUv = uvTopLeft;
+					uvTopLeft = uvBottomRight;
+					uvBottomRight = tempUv;
+					tempUv = uvTopRight;
+					uvTopRight = uvBottomLeft;
+					uvBottomLeft = tempUv;
+				}
+				else if (Tool.Settings.Angle == 270)
+				{
+					var tempUv = uvTopLeft;
+					uvTopLeft = uvTopRight;
+					uvTopRight = uvBottomRight;
+					uvBottomRight = uvBottomLeft;
+					uvBottomLeft = tempUv;
+				}
 			}
 
 			vertex[i] = new Vertex(topLeft);
