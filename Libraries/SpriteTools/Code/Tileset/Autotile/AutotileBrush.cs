@@ -56,9 +56,9 @@ public class AutotileBrush
             case AutotileType.Bitmask2x2Edge:
                 selectedTile = GetTile2x2Edge(bitmask);
                 break;
-            case AutotileType.Bitmask2x2Corner:
-                selectedTile = GetTile2x2Corner(bitmask);
-                break;
+            // case AutotileType.Bitmask2x2Corner:
+            //     selectedTile = GetTile2x2Corner(bitmask);
+            //     break;
             case AutotileType.Bitmask3x3:
                 selectedTile = GetTile3x3(bitmask);
                 break;

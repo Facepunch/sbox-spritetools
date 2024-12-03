@@ -49,7 +49,7 @@ public class AutotileTileControl : Widget
             switch (ParentBrush.Brush.AutotileType)
             {
                 case AutotileType.Bitmask2x2Edge: tileType = "2x2e"; break;
-                case AutotileType.Bitmask2x2Corner: tileType = "2x2c"; break;
+                // case AutotileType.Bitmask2x2Corner: tileType = "2x2c"; break;
                 case AutotileType.Bitmask3x3: tileType = "3x3m"; break;
                 case AutotileType.Bitmask3x3Complete: tileType = "3x3c"; break;
             }
