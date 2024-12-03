@@ -507,7 +507,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 
 			if (update && shouldUpdate)
+			{
 				UpdateAutotile(autotileId, position, !enabled);
+			}
 		}
 
 		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool checkErased, bool updateSurrounding = true)

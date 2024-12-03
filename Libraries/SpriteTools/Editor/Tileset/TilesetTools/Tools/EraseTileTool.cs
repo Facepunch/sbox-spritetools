@@ -89,7 +89,15 @@ public class EraserTileTool : BaseTileTool
                 }
                 else
                 {
-                    Parent.EraseAutoTile(brush, (Vector2Int)tilePos + ppos);
+                    Parent.EraseAutoTile(brush, (Vector2Int)tilePos + ppos, false);
+                }
+            }
+
+            if (brush is not null)
+            {
+                foreach (var ppos in positions)
+                {
+                    Parent.SelectedLayer.UpdateAutotile(brush.Id, ppos, true);
                 }
             }
             isErasing = true;
