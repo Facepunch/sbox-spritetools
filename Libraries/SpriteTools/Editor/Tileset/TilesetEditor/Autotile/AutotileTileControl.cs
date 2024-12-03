@@ -45,8 +45,16 @@ public class AutotileTileControl : Widget
         }
         if (tex is null)
         {
+            string tileType = "2x2e";
+            switch (ParentBrush.Brush.AutotileType)
+            {
+                case AutotileType.Bitmask2x2Edge: tileType = "2x2e"; break;
+                case AutotileType.Bitmask2x2Corner: tileType = "2x2c"; break;
+                case AutotileType.Bitmask3x3: tileType = "3x3m"; break;
+                case AutotileType.Bitmask3x3Complete: tileType = "3x3c"; break;
+            }
             var tileCount = ParentBrush.Brush.TileCount;
-            tex = Texture.Load(Editor.FileSystem.Mounted, $"images/guides/tile-guide-{tileCount}-{Index}.png");
+            tex = Texture.Load(Editor.FileSystem.Mounted, $"images/guides/tile-guide-{tileType}-{Index}.png");
         }
         if (tex is not null)
         {
