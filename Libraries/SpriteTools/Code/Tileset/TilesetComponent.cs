@@ -552,15 +552,14 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 				if (brush is not null && brush.AutotileType == AutotileType.Bitmask2x2Edge)
 				{
-					Log.Info("deleting shit");
-					if (GetAutotileBitmask(autotileId, up) == -1) RemoveTile(up);
-					if (GetAutotileBitmask(autotileId, down) == -1) RemoveTile(down);
-					if (GetAutotileBitmask(autotileId, left) == -1) RemoveTile(left);
-					if (GetAutotileBitmask(autotileId, right) == -1) RemoveTile(right);
-					if (GetAutotileBitmask(autotileId, upLeft) == -1) RemoveTile(upLeft);
-					if (GetAutotileBitmask(autotileId, upRight) == -1) RemoveTile(upRight);
-					if (GetAutotileBitmask(autotileId, downLeft) == -1) RemoveTile(downLeft);
-					if (GetAutotileBitmask(autotileId, downRight) == -1) RemoveTile(downRight);
+					ClearInvalidAutotile(autotileId, up);
+					ClearInvalidAutotile(autotileId, down);
+					ClearInvalidAutotile(autotileId, left);
+					ClearInvalidAutotile(autotileId, right);
+					ClearInvalidAutotile(autotileId, upLeft);
+					ClearInvalidAutotile(autotileId, upRight);
+					ClearInvalidAutotile(autotileId, downLeft);
+					ClearInvalidAutotile(autotileId, downRight);
 				}
 
 				UpdateAutotile(autotileId, up, checkErased, false);
@@ -572,6 +571,20 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 				UpdateAutotile(autotileId, downLeft, checkErased, false);
 				UpdateAutotile(autotileId, downRight, checkErased, false);
 			}
+		}
+
+		void ClearInvalidAutotile(Guid autotileId, Vector2Int position)
+		{
+			if (!Tiles.TryGetValue(position, out var tile)) return;
+
+			var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
+
+			if (brush is null) return;
+			if (brush.AutotileType != AutotileType.Bitmask2x2Edge) return;
+			if (!brush.Tiles.Any(x => x.Tiles.Any(y => y.Id == tile.TileId))) return;
+			if (GetAutotileBitmask(autotileId, position) != -1) return;
+
+			RemoveTile(position);
 		}
 
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position)
