@@ -634,9 +634,17 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, Dictionary<Vector2Int, bool> overrides)
 		{
-			if (AutoTilePositions is null || !AutoTilePositions.ContainsKey(autotileId)) return -1;
+			if (AutoTilePositions is null) return -1;
 
-			var positions = new List<Vector2Int>(AutoTilePositions[autotileId]);
+			var positions = new List<Vector2Int>();
+			foreach (var thing in AutoTilePositions)
+			{
+				foreach (var pos in thing.Value)
+				{
+					if (!positions.Contains(pos))
+						positions.Add(pos);
+				}
+			}
 			int value = 0;
 
 			foreach (var ride in overrides)
