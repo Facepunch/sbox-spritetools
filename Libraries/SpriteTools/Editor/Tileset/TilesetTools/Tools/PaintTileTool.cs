@@ -219,7 +219,8 @@ public class PaintTileTool : BaseTileTool
                 }
                 foreach (var toAddPos in tilesToAdd)
                 {
-                    positions.Add((toAddPos, tile.Position));
+                    if(!positions.Contains((toAddPos, tile.Position)))
+                      positions.Add((toAddPos, tile.Position));
                 }
             }
         }
