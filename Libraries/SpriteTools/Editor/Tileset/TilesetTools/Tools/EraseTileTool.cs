@@ -106,7 +106,8 @@ public class EraserTileTool : BaseTileTool
             foreach (var ppos in positions)
             {
                 var p = ppos * tileSize + tilePos * tileSize;
-                Gizmo.Draw.SolidBox(new BBox(p, p + tileSize));
+                var pp = Vector3.Up * 200 + (Vector3)p;
+                Gizmo.Draw.SolidBox(new BBox(pp, pp + (Vector3)tileSize));
             }
         }
     }
