@@ -525,7 +525,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 			if (update && shouldUpdate)
 			{
-				UpdateAutotile(autotileId, position, !enabled);
+				UpdateAutotile(autotileId, position, !enabled, shouldMerge: isMerging);
 			}
 		}
 
@@ -539,6 +539,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			{
 				if (shouldMerge) autotile.ShouldMerge = true;
 				if (autotile.ShouldMerge) shouldMerge = true;
+
 				var bitmask = GetAutotileBitmask(autotileId, position, shouldMerge);
 				if (bitmask == -1)
 				{

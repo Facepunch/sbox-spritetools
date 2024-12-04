@@ -273,7 +273,7 @@ public class PaintTileTool : BaseTileTool
             foreach (var position in Parent._sceneObject.MultiTilePositions)
             {
                 var brushId = (position.Item3 == Guid.Empty) ? brush.Id : position.Item3;
-                Parent.SelectedLayer.UpdateAutotile(brushId, tilePos + position.Item1, false);
+                Parent.SelectedLayer.UpdateAutotile(brushId, tilePos + position.Item1, false, shouldMerge: MergeDifferentAutotiles);
             }
         }
 
