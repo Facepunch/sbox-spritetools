@@ -91,7 +91,7 @@ public abstract class BaseTileTool : EditorTool
         }
         foreach (var existingTilePos in Parent.SelectedLayer.Tiles.Keys)
         {
-            if (!ShouldMergeAutotiles && !Parent.SelectedLayer.AutoTilePositions[brush.Id].Contains(existingTilePos))
+            if (!ShouldMergeAutotiles && !Parent.SelectedLayer.Autotiles[brush.Id].Any(x => x.Position == existingTilePos))
                 continue;
             if (!allPositions.Contains(existingTilePos))
                 allPositions.Add(existingTilePos);

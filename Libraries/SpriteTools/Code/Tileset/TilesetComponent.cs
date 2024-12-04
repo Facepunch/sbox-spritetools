@@ -343,7 +343,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		/// <summary>
 		/// A dictionary containing a list of positions for each Autotile Brush by their ID.
 		/// </summary>
-		public Dictionary<Guid, List<Vector2Int>> AutoTilePositions { get; set; }
+		public Dictionary<Guid, List<AutotilePosition>> Autotiles { get; set; }
 
 		/// <summary>
 		/// The TilesetComponent that this Layer belongs to
@@ -401,11 +401,15 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 			if (removeAutotile)
 			{
-				foreach (var group in AutoTilePositions)
+				foreach (var group in Autotiles)
 				{
-					if (group.Value.Contains(position))
+					foreach (var autotile in group.Value)
 					{
-						group.Value.Remove(position);
+						if (autotile.Position == position)
+						{
+							Autotiles[group.Key].Remove(autotile);
+							break;
+						}
 					}
 				}
 			}
@@ -440,11 +444,15 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			if (IsLocked) return;
 			Tiles.Remove(position);
 
-			foreach (var group in AutoTilePositions)
+			foreach (var group in Autotiles)
 			{
-				if (group.Value.Contains(position))
+				foreach (var autotile in group.Value)
 				{
-					group.Value.Remove(position);
+					if (autotile.Position == position)
+					{
+						Autotiles[group.Key].Remove(autotile);
+						break;
+					}
 				}
 			}
 		}
@@ -469,35 +477,40 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		public void SetAutotile(Guid autotileId, Vector2Int position, bool enabled = true, bool update = true)
 		{
 			if (IsLocked) return;
-			AutoTilePositions ??= new();
+			Autotiles ??= new();
 
-			foreach (var group in AutoTilePositions)
+			foreach (var group in Autotiles)
 			{
 				if (group.Key == autotileId) continue;
-				if (group.Value.Contains(position))
+				foreach (var autotile in group.Value)
 				{
-					group.Value.Remove(position);
+					if (autotile.Position == position)
+					{
+						Autotiles[group.Key].Remove(autotile);
+						break;
+					}
 				}
 			}
 
-			if (!AutoTilePositions.ContainsKey(autotileId))
-				AutoTilePositions[autotileId] = new List<Vector2Int>();
+			if (!Autotiles.ContainsKey(autotileId))
+				Autotiles[autotileId] = new List<AutotilePosition>();
 
 			bool shouldUpdate = false;
 			if (enabled)
 			{
-				if (!AutoTilePositions[autotileId].Contains(position))
+				if (!Autotiles[autotileId].Any(x => x.Position == position))
 				{
-					AutoTilePositions[autotileId].Add(position);
+					Autotiles[autotileId].Add(new(position));
 					shouldUpdate = true;
 				}
 			}
 			else
 			{
-				if (AutoTilePositions[autotileId].Contains(position))
+				var foundPos = Autotiles[autotileId].FirstOrDefault(x => x.Position == position);
+				if (foundPos is not null)
 				{
 					Tiles.Remove(position);
-					AutoTilePositions[autotileId].Remove(position);
+					Autotiles[autotileId].Remove(foundPos);
 					shouldUpdate = true;
 				}
 				else
@@ -514,10 +527,10 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool checkErased, bool updateSurrounding = true)
 		{
-			if (!AutoTilePositions.ContainsKey(autotileId)) return;
+			if (!Autotiles.ContainsKey(autotileId)) return;
 
 			var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
-			if (AutoTilePositions[autotileId].Contains(position))
+			if (Autotiles[autotileId].Any(x => x.Position == position))
 			{
 				var bitmask = GetAutotileBitmask(autotileId, position);
 				if (bitmask == -1)
@@ -591,9 +604,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position)
 		{
-			if (AutoTilePositions is null || !AutoTilePositions.ContainsKey(autotileId)) return -1;
+			if (Autotiles is null || !Autotiles.ContainsKey(autotileId)) return -1;
 
-			var positions = AutoTilePositions[autotileId];
+			var positions = Autotiles[autotileId];
 			int value = 0;
 
 			var up = position.WithY(position.y + 1);
@@ -609,10 +622,10 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			{
 				foreach (var pos in positions)
 				{
-					if (pos == up) value += 1;
-					if (pos == left) value += 2;
-					if (pos == right) value += 4;
-					if (pos == down) value += 8;
+					if (pos.Position == up) value += 1;
+					if (pos.Position == left) value += 2;
+					if (pos.Position == right) value += 4;
+					if (pos.Position == down) value += 8;
 				}
 				switch (value)
 				{
@@ -633,8 +646,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			var downLeft = down.WithX(left.x);
 			var downRight = down.WithX(right.x);
 
-			foreach (var pos in positions)
+			foreach (var thing in positions)
 			{
+				var pos = thing.Position;
 				if (pos == upLeft) value += 1;
 				if (pos == up) value += 2;
 				if (pos == upRight) value += 4;
@@ -662,15 +676,15 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, Dictionary<Vector2Int, bool> overrides)
 		{
-			if (AutoTilePositions is null) return -1;
+			if (Autotiles is null) return -1;
 
 			var positions = new List<Vector2Int>();
-			foreach (var thing in AutoTilePositions)
+			foreach (var thing in Autotiles)
 			{
 				foreach (var pos in thing.Value)
 				{
-					if (!positions.Contains(pos))
-						positions.Add(pos);
+					if (!positions.Contains(pos.Position))
+						positions.Add(pos.Position);
 				}
 			}
 			int value = 0;
@@ -715,6 +729,18 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 
 			return value;
+		}
+
+		public class AutotilePosition
+		{
+			public Vector2Int Position { get; set; }
+			public bool ShouldMerge { get; set; } = false;
+
+			public AutotilePosition(Vector2Int position, bool shouldMerge = false)
+			{
+				Position = position;
+				ShouldMerge = shouldMerge;
+			}
 		}
 	}
 
