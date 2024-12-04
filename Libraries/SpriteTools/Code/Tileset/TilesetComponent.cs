@@ -463,9 +463,11 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		/// <param name="autotileBrush"></param>
 		/// <param name="position"></param>
 		/// <param name="enabled"></param>
-		public void SetAutotile(AutotileBrush autotileBrush, Vector2Int position, bool enabled = true)
+		///	<param name="update"></param>
+		/// <param name="isMerging"></param>
+		public void SetAutotile(AutotileBrush autotileBrush, Vector2Int position, bool enabled = true, bool update = true, bool isMerging = false)
 		{
-			SetAutotile(autotileBrush.Id, position, enabled);
+			SetAutotile(autotileBrush.Id, position, enabled, update, isMerging);
 		}
 
 		/// <summary>
@@ -474,7 +476,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		/// <param name="autotileId"></param>
 		/// <param name="position"></param>
 		/// <param name="enabled"></param>
-		public void SetAutotile(Guid autotileId, Vector2Int position, bool enabled = true, bool update = true)
+		/// <param name="update"></param>
+		/// <param name="isMerging"></param>
+		public void SetAutotile(Guid autotileId, Vector2Int position, bool enabled = true, bool update = true, bool isMerging = false)
 		{
 			if (IsLocked) return;
 			Autotiles ??= new();
@@ -500,7 +504,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			{
 				if (!Autotiles[autotileId].Any(x => x.Position == position))
 				{
-					Autotiles[autotileId].Add(new(position));
+					Autotiles[autotileId].Add(new(position, isMerging));
 					shouldUpdate = true;
 				}
 			}
@@ -525,14 +529,17 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 		}
 
-		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool checkErased, bool updateSurrounding = true)
+		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool checkErased, bool updateSurrounding = true, bool shouldMerge = false)
 		{
 			if (!Autotiles.ContainsKey(autotileId)) return;
 
 			var brush = TilesetResource.AutotileBrushes.FirstOrDefault(x => x.Id == autotileId);
-			if (Autotiles[autotileId].Any(x => x.Position == position))
+			var autotile = Autotiles[autotileId].FirstOrDefault(x => x.Position == position);
+			if (autotile is not null)
 			{
-				var bitmask = GetAutotileBitmask(autotileId, position);
+				if (shouldMerge) autotile.ShouldMerge = true;
+				if (autotile.ShouldMerge) shouldMerge = true;
+				var bitmask = GetAutotileBitmask(autotileId, position, shouldMerge);
 				if (bitmask == -1)
 				{
 					if (checkErased) RemoveTile(position);
@@ -577,14 +584,14 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 					ClearInvalidAutotile(autotileId, downRight);
 				}
 
-				UpdateAutotile(autotileId, up, checkErased, false);
-				UpdateAutotile(autotileId, down, checkErased, false);
-				UpdateAutotile(autotileId, left, checkErased, false);
-				UpdateAutotile(autotileId, right, checkErased, false);
-				UpdateAutotile(autotileId, upLeft, checkErased, false);
-				UpdateAutotile(autotileId, upRight, checkErased, false);
-				UpdateAutotile(autotileId, downLeft, checkErased, false);
-				UpdateAutotile(autotileId, downRight, checkErased, false);
+				UpdateAutotile(autotileId, up, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, down, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, left, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, right, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, upLeft, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, upRight, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, downLeft, checkErased, false, shouldMerge);
+				UpdateAutotile(autotileId, downRight, checkErased, false, shouldMerge);
 			}
 		}
 
@@ -602,11 +609,22 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			RemoveTile(position);
 		}
 
-		public int GetAutotileBitmask(Guid autotileId, Vector2Int position)
+		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, bool mergeAll = false)
 		{
-			if (Autotiles is null || !Autotiles.ContainsKey(autotileId)) return -1;
+			if (Autotiles is null || (!mergeAll && !Autotiles.ContainsKey(autotileId))) return -1;
 
-			var positions = Autotiles[autotileId];
+			List<AutotilePosition> positions = new();
+			if (mergeAll)
+			{
+				foreach (var kvp in Autotiles)
+				{
+					positions.AddRange(kvp.Value);
+				}
+			}
+			else
+			{
+				positions = Autotiles[autotileId];
+			}
 			int value = 0;
 
 			var up = position.WithY(position.y + 1);
@@ -674,13 +692,14 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			return value;
 		}
 
-		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, Dictionary<Vector2Int, bool> overrides)
+		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, Dictionary<Vector2Int, bool> overrides, bool mergeAll = false)
 		{
 			if (Autotiles is null) return -1;
 
 			var positions = new List<Vector2Int>();
 			foreach (var thing in Autotiles)
 			{
+				if (!mergeAll && thing.Key != autotileId) continue;
 				foreach (var pos in thing.Value)
 				{
 					if (!positions.Contains(pos.Position))

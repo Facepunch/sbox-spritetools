@@ -168,7 +168,8 @@ public partial class TilesetTool : EditorTool
 	{
 		if (SelectedLayer is null) return;
 
-		SelectedLayer.SetAutotile(brushId, position, true, update);
+		bool isMerging = CurrentTool is BaseTileTool tool && tool.ShouldMergeAutotiles;
+		SelectedLayer.SetAutotile(brushId, position, true, update, isMerging);
 	}
 
 	internal void EraseAutoTile(AutotileBrush brush, Vector2Int position, bool update = true)

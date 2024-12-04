@@ -10,7 +10,7 @@ public abstract class BaseTileTool : EditorTool
 {
     protected TilesetTool Parent;
 
-    protected bool ShouldMergeAutotiles = true;
+    public bool ShouldMergeAutotiles = true;
 
     protected AutotileBrush AutotileBrush
     {
@@ -101,7 +101,7 @@ public abstract class BaseTileTool : EditorTool
         {
             var scenePos = tilePositions[i];
             var realPos = tilePos + scenePos.Item1;
-            var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, realPos, overrides);
+            var bitmask = Parent.SelectedLayer.GetAutotileBitmask(brush.Id, realPos, overrides, ShouldMergeAutotiles);
             var maskTile = brush.GetTileFromBitmask(bitmask);
             if (maskTile is not null)
             {
