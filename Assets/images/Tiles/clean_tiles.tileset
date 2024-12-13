@@ -103,7 +103,7 @@
     {
       "Id": "b94eb68b-91a1-4d68-b74f-8d3f29b65c77",
       "Name": "",
-      "Position": "9,11",
+      "Position": "10,11",
       "Size": "1,1"
     },
     {
@@ -200,5 +200,6 @@
   "CurrentTextureSize": "1856,2624",
   "CurrentTileSize": "64,64",
   "__references": [],
+  "HasUnsavedChanges": true,
   "__version": 0
 }

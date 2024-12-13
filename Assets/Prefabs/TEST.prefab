@@ -1,0 +1,256 @@
+{
+  "RootObject": {
+    "__guid": "42d87486-21cb-4bbc-8eb9-7870bbb3624f",
+    "Flags": 0,
+    "Name": "test",
+    "Enabled": true,
+    "Children": [
+      {
+        "__guid": "d60e4edc-2f98-45e9-871b-61519787c8f8",
+        "Flags": 0,
+        "Name": "GameObject",
+        "Enabled": true
+      },
+      {
+        "__guid": "cce58e69-5e2c-4401-a50e-335e8d6b944e",
+        "Flags": 0,
+        "Name": "Tileset Object",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "SpriteTools.TilesetComponent",
+            "__guid": "c0278ea7-3dca-4eb7-9095-7ed0fc11cf8a",
+            "ColliderWidth": 0,
+            "HasCollider": false,
+            "IsTrigger": false,
+            "LayerDistance": 1,
+            "Layers": [
+              {
+                "Name": "Untitled Layer",
+                "IsVisible": true,
+                "TilesetResource": "tilesets/top_down_tileset.tileset",
+                "Tiles": {}
+              },
+              {
+                "Name": "Untitled Layer",
+                "IsVisible": true,
+                "Tiles": {}
+              }
+            ],
+            "Static": true,
+            "SurfaceVelocity": "0,0,0"
+          }
+        ]
+      },
+      {
+        "__guid": "38595ff1-8a7c-4c1a-aeb0-b0724406dbe9",
+        "Flags": 0,
+        "Name": "Tileset Object",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "SpriteTools.TilesetComponent",
+            "__guid": "ff7f6273-0e74-4e51-86b2-33bcf3747a94",
+            "ColliderWidth": 0,
+            "HasCollider": false,
+            "IsTrigger": false,
+            "LayerDistance": 1,
+            "Layers": [
+              {
+                "Name": "the 2nd one",
+                "IsVisible": true,
+                "TilesetResource": "world_tile_01.tileset",
+                "Tiles": {
+                  "-11,5": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-12,5": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-12,4": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-12,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-12,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-11,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-11,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-10,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-9,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-8,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-8,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-7,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-7,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-6,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-6,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-5,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-4,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-4,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-3,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-3,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-3,4": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-3,5": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-1,5": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-1,4": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-1,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-1,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "-1,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "0,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "0,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "4,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "1,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "1,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "5,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "4,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "3,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "3,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "4,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "5,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "5,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "8,5": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "8,4": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "8,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "8,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "9,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "10,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "11,1": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "11,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "12,2": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "9,4": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  },
+                  "7,3": {
+                    "TileId": "c30d4cc4-d313-45f9-9d30-49c91154f217"
+                  }
+                }
+              }
+            ],
+            "Static": true,
+            "SurfaceVelocity": "0,0,0"
+          }
+        ]
+      }
+    ],
+    "__variables": [],
+    "__properties": {
+      "FixedUpdateFrequency": 50,
+      "MaxFixedUpdates": 5,
+      "NetworkFrequency": 30,
+      "NetworkInterpolation": true,
+      "PhysicsSubSteps": 1,
+      "ThreadedAnimation": true,
+      "TimeScale": 1,
+      "UseFixedUpdate": true,
+      "Metadata": {},
+      "NavMesh": {
+        "Enabled": false,
+        "IncludeStaticBodies": true,
+        "IncludeKeyframedBodies": true,
+        "EditorAutoUpdate": true,
+        "AgentHeight": 64,
+        "AgentRadius": 16,
+        "AgentStepSize": 18,
+        "AgentMaxSlope": 40,
+        "ExcludedBodies": "",
+        "IncludedBodies": ""
+      }
+    }
+  },
+  "ShowInMenu": false,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "DontBreakAsTemplate": false,
+  "ResourceVersion": 1,
+  "__references": [],
+  "HasUnsavedChanges": false,
+  "__version": 1
+}
