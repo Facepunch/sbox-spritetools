@@ -192,7 +192,6 @@ public class RenderingWidget : SpriteRenderingWidget
 						{
 							startMovePosition += new Vector3(0, xx * frameWidth);
 							tile.Position += new Vector2Int(xx, 0);
-							tile.Tileset?.InternalUpdateTileTexture(tile);
 						}
 					}
 					if (Math.Abs(deltaf.y) >= frameHeight / 2f)
@@ -202,7 +201,6 @@ public class RenderingWidget : SpriteRenderingWidget
 						{
 							startMovePosition += new Vector3(yy * frameHeight, 0);
 							tile.Position += new Vector2Int(0, yy);
-							tile.Tileset?.InternalUpdateTileTexture(tile);
 						}
 					}
 				}
@@ -416,7 +414,6 @@ public class RenderingWidget : SpriteRenderingWidget
 					{
 						tile.Position = position;
 						tile.Size = size;
-						tile.Tileset?.InternalUpdateTileTexture(tile);
 					}
 				}
 			}

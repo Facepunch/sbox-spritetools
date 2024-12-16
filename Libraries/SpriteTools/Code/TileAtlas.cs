@@ -14,6 +14,7 @@ public class TileAtlas
     Vector2 OriginalTileSize;
     Vector2Int TileSize;
     Vector2Int TileCounts;
+    Dictionary<Vector2Int, Texture> TileCache = new();
 
 
     public static Dictionary<TilesetResource, TileAtlas> Cache = new();
@@ -111,6 +112,41 @@ public class TileAtlas
         Cache[tilesetResource] = atlas;
 
         return atlas;
+    }
+
+    public Texture GetTextureFromCell(Vector2Int cellPosition)
+    {
+        if (TileCache.ContainsKey(cellPosition))
+        {
+            return TileCache[cellPosition];
+        }
+
+        int x = cellPosition.x * TileSize.x + 1;
+        int y = cellPosition.y * TileSize.y + 1;
+        int outputSizeX = TileSize.x - 2;
+        int outputSizeY = TileSize.y - 2;
+        byte[] textureData = new byte[outputSizeX * outputSizeY * 4];
+        var pixels = Texture.GetPixels();
+        for (int i = 0; i < outputSizeX; i++)
+        {
+            for (int j = 0; j < outputSizeY; j++)
+            {
+                int ind = (i + j * outputSizeX) * 4;
+                int sampleIndex = (int)(x + i + (y + j) * Texture.Size.x);
+                var color = pixels[sampleIndex];
+                textureData[ind + 0] = color.r;
+                textureData[ind + 1] = color.g;
+                textureData[ind + 2] = color.b;
+                textureData[ind + 3] = color.a;
+            }
+        }
+
+        var builder = Texture.Create(outputSizeX, outputSizeY);
+        builder.WithData(textureData);
+        builder.WithMips(0);
+        var texture = builder.Finish();
+        TileCache[cellPosition] = texture;
+        return texture;
     }
 
     // Cast to texture

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Editor;
 using Sandbox;
 
@@ -39,9 +40,15 @@ public class AutotileTileControl : Widget
         Texture tex = null;
         if ((Tile?.Tiles?.Count ?? 0) > 0)
         {
-            if (ParentBrush.ParentList.MainWindow.Tileset.TileTextures.TryGetValue(Tile?.Tiles[0]?.Id ?? Guid.Empty, out var texture))
+            var tileRef = Tile?.Tiles?.FirstOrDefault();
+            var tile = tileRef?.Tileset?.Tiles?.FirstOrDefault(x => x.Id == tileRef.Id);
+            if (tile is not null)
             {
-                tex = texture;
+                var atlas = TileAtlas.FromTileset(tile.Tileset);
+                if (atlas is not null)
+                {
+                    tex = atlas.GetTextureFromCell(tile.Position);
+                }
             }
         }
         if (tex is null)
@@ -54,7 +61,6 @@ public class AutotileTileControl : Widget
                 case AutotileType.Bitmask3x3: tileType = "3x3m"; break;
                 case AutotileType.Bitmask3x3Complete: tileType = "3x3c"; break;
             }
-            var tileCount = ParentBrush.Brush.TileCount;
             tex = GetGuide(tileType, Index);
         }
         if (tex is not null)

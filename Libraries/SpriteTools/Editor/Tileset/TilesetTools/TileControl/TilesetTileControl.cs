@@ -16,8 +16,6 @@ public class TilesetTileControl : Widget
 	bool draggingAbove = false;
 	bool draggingBelow = false;
 
-	Pixmap Pixmap;
-
 	public TilesetTileControl(TilesetTileListControl list, TilesetResource.Tile tile)
 	{
 		ParentList = list;
@@ -55,17 +53,6 @@ public class TilesetTileControl : Widget
 		ParentList.Selected.Remove(this);
 	}
 
-	void LoadPixmap()
-	{
-		var tileset = Tile.Tileset;
-		if (tileset is null) return;
-		var rect = new Rect(Tile.Position, Tile.Size);
-		rect.Position = rect.Position * tileset.TileSize + rect.Position * tileset.TileSeparation;
-		rect.Width *= tileset.TileSize.x;
-		rect.Height *= tileset.TileSize.y;
-		Pixmap = PixmapCache.Get(tileset.FilePath, rect);
-	}
-
 	protected override void OnPaint()
 	{
 		if (dragData?.IsValid ?? false)
@@ -92,8 +79,10 @@ public class TilesetTileControl : Widget
 		// 	Paint.Draw(pixRect, Pixmap);
 		// }
 
-		if (Tile.Tileset.TileTextures.TryGetValue(Tile.Id, out var texture))
+		var atlas = TileAtlas.FromTileset(Tile.Tileset);
+		if (atlas is not null)
 		{
+			var texture = atlas.GetTextureFromCell(Tile.Position);
 			var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
 			pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 7);
 			var pixmap = Pixmap.FromTexture(texture);
