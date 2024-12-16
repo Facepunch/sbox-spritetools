@@ -64,18 +64,19 @@ public class TextureAtlas
 
         int xx = index % Size;
         int yy = index / Size;
-
         int x = xx * (int)MaxFrameSize.x % (Size * (int)MaxFrameSize.x);
         int y = yy * (int)MaxFrameSize.y / (Size * (int)MaxFrameSize.y) * (int)MaxFrameSize.y;
+        int outputSizeX = (int)MaxFrameSize.x - 2;
+        int outputSizeY = (int)MaxFrameSize.y - 2;
         x += 1;
         y += 1;
-        byte[] textureData = new byte[(int)(MaxFrameSize.x * MaxFrameSize.y * 4)];
+        byte[] textureData = new byte[(int)(outputSizeX * outputSizeY * 4)];
         var pixels = Texture.GetPixels();
-        for (int i = 0; i < MaxFrameSize.x; i++)
+        for (int i = 0; i < outputSizeX; i++)
         {
-            for (int j = 0; j < MaxFrameSize.y; j++)
+            for (int j = 0; j < outputSizeY; j++)
             {
-                var ind = (i + j * (int)MaxFrameSize.x) * 4;
+                var ind = (i + j * outputSizeX) * 4;
                 var sampleIndex = x + i + (y + j) * Texture.Width;
                 var color = pixels[sampleIndex];
                 textureData[ind + 0] = color.r;
@@ -85,10 +86,9 @@ public class TextureAtlas
             }
         }
 
-        var builder = Texture.Create((int)MaxFrameSize.x, (int)MaxFrameSize.y);
+        var builder = Texture.Create(outputSizeX, outputSizeY);
         builder.WithData(textureData);
         builder.WithMips(0);
-        builder.WithMultisample(0);
         var texture = builder.Finish();
         FrameCache[index] = texture;
         return texture;
