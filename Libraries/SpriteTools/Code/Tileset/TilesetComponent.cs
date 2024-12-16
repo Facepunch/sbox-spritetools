@@ -399,7 +399,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			if (rebuild && TilesetComponent.IsValid())
 				TilesetComponent.IsDirty = true;
 
-			if (removeAutotile)
+			if (removeAutotile && Autotiles is not null)
 			{
 				foreach (var group in Autotiles)
 				{
@@ -444,14 +444,17 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			if (IsLocked) return;
 			Tiles.Remove(position);
 
-			foreach (var group in Autotiles)
+			if (Autotiles is not null)
 			{
-				foreach (var autotile in group.Value)
+				foreach (var group in Autotiles)
 				{
-					if (autotile.Position == position)
+					foreach (var autotile in group.Value)
 					{
-						Autotiles[group.Key].Remove(autotile);
-						break;
+						if (autotile.Position == position)
+						{
+							Autotiles[group.Key].Remove(autotile);
+							break;
+						}
 					}
 				}
 			}
