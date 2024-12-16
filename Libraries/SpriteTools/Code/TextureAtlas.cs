@@ -62,17 +62,22 @@ public class TextureAtlas
             return cachedTexture;
         }
 
-        int x = index * (int)MaxFrameSize.x % (Size * (int)MaxFrameSize.x);
-        int y = index * (int)MaxFrameSize.y / (Size * (int)MaxFrameSize.y) * (int)MaxFrameSize.y;
+        int xx = index % Size;
+        int yy = index / Size;
+
+        int x = xx * (int)MaxFrameSize.x % (Size * (int)MaxFrameSize.x);
+        int y = yy * (int)MaxFrameSize.y / (Size * (int)MaxFrameSize.y) * (int)MaxFrameSize.y;
         x += 1;
         y += 1;
         byte[] textureData = new byte[(int)(MaxFrameSize.x * MaxFrameSize.y * 4)];
+        var pixels = Texture.GetPixels();
         for (int i = 0; i < MaxFrameSize.x; i++)
         {
             for (int j = 0; j < MaxFrameSize.y; j++)
             {
                 var ind = (i + j * (int)MaxFrameSize.x) * 4;
-                var color = Texture.GetPixel(x + i, y + j);
+                var sampleIndex = x + i + (y + j) * Texture.Width;
+                var color = pixels[sampleIndex];
                 textureData[ind + 0] = color.r;
                 textureData[ind + 1] = color.g;
                 textureData[ind + 2] = color.b;
@@ -328,10 +333,10 @@ public class TextureAtlas
 
         Vector2 imageSize = atlas.Size * atlas.MaxFrameSize;
         byte[] textureData = new byte[(int)(imageSize.x * imageSize.y * 4)];
+        int x = 0;
+        int y = 0;
         foreach (var rect in spriteRects)
         {
-            int x = 0;
-            int y = 0;
             if (x + rect.Width > imageSize.x)
             {
                 x = 0;
