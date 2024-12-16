@@ -115,9 +115,29 @@ public class AutotileTileControl : Widget
                 {
                     for (int i = 0; i < 16; i++)
                     {
-                        var x = i % 8;
-                        var y = i / 8;
+                        int x = i % 8;
+                        int y = i / 8;
                         rects.Add(new Rect(x * 8, y * 8, 8, 8));
+                    }
+                    break;
+                }
+            case "3x3m":
+                {
+                    for (int i = 0; i < 47; i++)
+                    {
+                        var x = i % 7;
+                        var y = i / 7;
+                        rects.Add(new Rect(x * 8, y * 8, 8, 8));
+                    }
+                    break;
+                }
+            case "3x3c":
+                {
+                    for (int i = 0; i < 256; i++)
+                    {
+                        var x = i % 16;
+                        var y = i / 16;
+                        rects.Add(new Rect(x * 3, y * 3, 3, 3));
                     }
                     break;
                 }
