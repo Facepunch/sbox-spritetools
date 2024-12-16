@@ -55,6 +55,11 @@ public class TextureAtlas
         return new Vector2(x, y) / (Size * MaxFrameSize);
     }
 
+    /// <summary>
+    /// Returns the texture for a specific frame in the texture atlas.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public Texture GetTextureFromFrame(int index)
     {
         if (FrameCache.TryGetValue(index, out var cachedTexture))
