@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Editor;
 using Sandbox;
 
@@ -54,7 +55,7 @@ public class AutotileTileControl : Widget
                 case AutotileType.Bitmask3x3Complete: tileType = "3x3c"; break;
             }
             var tileCount = ParentBrush.Brush.TileCount;
-            tex = Texture.Load(Editor.FileSystem.Mounted, $"images/guides/tile-guide-{tileType}-{Index}.png");
+            tex = GetGuide(tileType, Index);
         }
         if (tex is not null)
         {
@@ -96,5 +97,28 @@ public class AutotileTileControl : Widget
     void Clear()
     {
         Tile.Tiles?.Clear();
+    }
+
+    static Texture GetGuide(string tileType, int index)
+    {
+        var imagePath = $"images/guides/tile-guide-{tileType}.png";
+        List<Rect> rects = new();
+        switch (tileType)
+        {
+            case "2x2e":
+                {
+                    for (int i = 0; i < 16; i++)
+                    {
+                        var x = i % 8;
+                        var y = i / 8;
+                        rects.Add(new Rect(x * 8, y * 8, 8, 8));
+                    }
+                    break;
+                }
+        }
+        if (rects.Count == 0) return Texture.White;
+
+        var atlas = TextureAtlas.FromSpritesheet(imagePath, rects);
+        return atlas.GetTextureFromFrame(index);
     }
 }
