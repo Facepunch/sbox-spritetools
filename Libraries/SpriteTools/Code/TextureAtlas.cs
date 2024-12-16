@@ -299,7 +299,7 @@ public class TextureAtlas
     /// <param name="spriteRects">A list of rectangles representing the position of each sprite in the spritesheet</param>
     public static TextureAtlas FromSpritesheet(string path, List<Rect> spriteRects)
     {
-        var key = path + string.Join(",", spriteRects.OrderBy(x => x));
+        var key = path + string.Join(",", spriteRects);
         if (Cache.TryGetValue(key, out var cachedAtlas))
         {
             return cachedAtlas;
