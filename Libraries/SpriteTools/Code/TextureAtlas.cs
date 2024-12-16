@@ -69,8 +69,8 @@ public class TextureAtlas
 
         int xx = index % Size;
         int yy = index / Size;
-        int x = xx * (int)MaxFrameSize.x % (Size * (int)MaxFrameSize.x);
-        int y = yy * (int)MaxFrameSize.y / (Size * (int)MaxFrameSize.y) * (int)MaxFrameSize.y;
+        int x = xx * (int)MaxFrameSize.x;
+        int y = yy * (int)MaxFrameSize.y;
         int outputSizeX = (int)MaxFrameSize.x - 2;
         int outputSizeY = (int)MaxFrameSize.y - 2;
         x += 1;
