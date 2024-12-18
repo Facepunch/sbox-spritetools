@@ -149,7 +149,7 @@ public class TilesetResource : GameResource
 		[Property]
 		public Vector2Int Size { get; set; }
 
-		[JsonIgnore]
+		[JsonIgnore, ReadOnly]
 		public TilesetResource Tileset;
 
 		public Tile(Vector2Int position, Vector2Int size)
@@ -166,6 +166,11 @@ public class TilesetResource : GameResource
 				Name = Name
 			};
 			return copy;
+		}
+
+		public string GetName()
+		{
+			return string.IsNullOrEmpty(Name) ? $"Tile {Position}" : Name;
 		}
 	}
 }
