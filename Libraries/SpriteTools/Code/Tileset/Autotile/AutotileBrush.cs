@@ -11,8 +11,8 @@ public class AutotileBrush
     public Guid Id { get; set; } = Guid.NewGuid();
     [Property, Placeholder("Autotile Brush")] public string Name { get; set; }
     public AutotileType AutotileType { get; set; } = AutotileType.Bitmask2x2Edge;
-    public Tile[] Tiles { get; set; }
-    public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 15);
+    [Hide] public Tile[] Tiles { get; set; }
+    [Hide] public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 15);
 
     public AutotileBrush() : this(AutotileType.Bitmask2x2Edge) { }
 

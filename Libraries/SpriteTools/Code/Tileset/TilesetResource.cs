@@ -149,7 +149,7 @@ public class TilesetResource : GameResource
 		[Property]
 		public Vector2Int Size { get; set; }
 
-		[JsonIgnore, ReadOnly]
+		[JsonIgnore, Hide, ReadOnly]
 		public TilesetResource Tileset;
 
 		public Tile(Vector2Int position, Vector2Int size)
