@@ -41,7 +41,7 @@ public class AutotileTileControl : Widget
         if ((Tile?.Tiles?.Count ?? 0) > 0)
         {
             var tileRef = Tile?.Tiles?.FirstOrDefault();
-            var tile = tileRef?.Tileset?.Tiles?.FirstOrDefault(x => x.Id == tileRef.Id);
+            var tile = tileRef?.Tileset?.Tiles?.FirstOrDefault(x => x?.Id == tileRef?.Id);
             if (tile is not null)
             {
                 var atlas = TileAtlas.FromTileset(tile.Tileset);
