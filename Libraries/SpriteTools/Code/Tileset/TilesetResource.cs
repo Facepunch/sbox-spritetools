@@ -1,13 +1,15 @@
 ﻿using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
 [GameResource("2D Tileset", "tileset", "A 2D Tileset atlas", Icon = "calendar_view_month", IconBgColor = "#fab006")]
-public class TilesetResource : GameResource
+public partial class TilesetResource : GameResource
 {
 	[Property, ImageAssetPath, Title("Tileset Image"), Group("Tileset Setup")]
 	public string FilePath { get; set; }
@@ -21,7 +23,7 @@ public class TilesetResource : GameResource
 	[Property, Group("Additional Settings")]
 	public float TileScale { get; set; } = 1.0f;
 
-	[Property, Group("Tiles")]
+	[Property, Group("Tiles"), Json]
 	public List<Tile> Tiles { get; set; } = new();
 
 	[Property, Group("Autotile Settings")]
@@ -127,50 +129,6 @@ public class TilesetResource : GameResource
 		{
 			Size = size;
 			Data = data;
-		}
-	}
-
-	public class Tile
-	{
-		public Guid Id { get; set; }
-
-		[JsonIgnore, ReadOnly, Property]
-		public int Index => Tileset?.Tiles?.IndexOf(this) ?? -1;
-
-		[Property]
-		public string Name { get; set; } = "";
-
-		[Property]
-		public TagSet Tags { get; set; }
-
-		[Property]
-		public Vector2Int Position { get; set; }
-
-		[Property]
-		public Vector2Int Size { get; set; }
-
-		[JsonIgnore, Hide, ReadOnly]
-		public TilesetResource Tileset;
-
-		public Tile(Vector2Int position, Vector2Int size)
-		{
-			Id = Guid.NewGuid();
-			Position = position;
-			Size = size;
-		}
-
-		public Tile Copy()
-		{
-			var copy = new Tile(Position, Size)
-			{
-				Name = Name
-			};
-			return copy;
-		}
-
-		public string GetName()
-		{
-			return string.IsNullOrEmpty(Name) ? $"Tile {Position}" : Name;
 		}
 	}
 }
