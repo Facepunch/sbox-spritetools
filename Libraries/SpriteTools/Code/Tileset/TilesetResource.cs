@@ -1,7 +1,9 @@
 ﻿using Sandbox;
+using SpriteTools.Converters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -23,7 +25,7 @@ public partial class TilesetResource : GameResource
 	[Property, Group("Additional Settings")]
 	public float TileScale { get; set; } = 1.0f;
 
-	[Property, Group("Tiles"), Json]
+	[Property, Group("Tiles")]
 	public List<Tile> Tiles { get; set; } = new();
 
 	[Property, Group("Autotile Settings")]
@@ -62,7 +64,6 @@ public partial class TilesetResource : GameResource
 
 	public void AddTile(Tile tile)
 	{
-		Tiles.Add(tile);
 		TileMap[tile.Id] = tile;
 		tile.Tileset = this;
 	}
@@ -70,7 +71,6 @@ public partial class TilesetResource : GameResource
 	public void RemoveTile(Tile tile)
 	{
 		TileMap.Remove(tile.Id);
-		Tiles.Remove(tile);
 	}
 
 	public string SerializeString()
@@ -101,12 +101,36 @@ public partial class TilesetResource : GameResource
 	{
 		base.PostLoad();
 
-		InternalUpdateTiles();
+		ReloadTileset();
 	}
 
 	protected override void PostReload()
 	{
 		base.PostReload();
+
+		ReloadTileset();
+	}
+
+	void ReloadTileset()
+	{
+		var sourceFile = this.ResourcePath;
+		if (sourceFile.EndsWith("_c")) sourceFile = sourceFile.Substring(0, sourceFile.Length - 2);
+		var json = Json.Deserialize<JsonObject>(FileSystem.Mounted.ReadAllText(sourceFile));
+		var tileList = json["Tiles"] as JsonArray;
+		if (tileList is not null)
+		{
+			Tiles.Clear();
+			foreach (var obj in tileList)
+			{
+				if (obj is JsonObject jsonObj)
+				{
+					var tile = new Tile(0, 1);
+					tile.Deserialize(jsonObj);
+					tile.Tileset = this;
+					Tiles.Add(tile);
+				}
+			}
+		}
 
 		InternalUpdateTiles();
 	}
@@ -115,9 +139,22 @@ public partial class TilesetResource : GameResource
 	{
 		foreach (var tile in Tiles)
 		{
-			tile.Tileset = this;
 			TileMap[tile.Id] = tile;
+			tile.Tileset = this;
 		}
+	}
+
+	protected override void OnJsonSerialize(JsonObject node)
+	{
+		base.OnJsonSerialize(node);
+
+		var tilesList = node["Tiles"] as JsonArray;
+		tilesList.Clear();
+		foreach (var tile in Tiles)
+		{
+			tilesList.Add(tile.Serialize());
+		}
+		node["Tiles"] = tilesList;
 	}
 
 	public class TileTextureData

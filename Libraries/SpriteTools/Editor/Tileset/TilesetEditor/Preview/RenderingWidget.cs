@@ -44,6 +44,7 @@ public class RenderingWidget : SpriteRenderingWidget
 		tileDict = new();
 		foreach (var tile in MainWindow.Tileset.Tiles)
 		{
+			if (tile is null) continue;
 			for (int i = 0; i < tile.Size.x; i++)
 			{
 				for (int j = 0; j < tile.Size.y; j++)

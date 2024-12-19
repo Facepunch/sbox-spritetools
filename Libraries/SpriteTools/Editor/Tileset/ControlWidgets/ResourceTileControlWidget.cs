@@ -21,7 +21,7 @@ public class ResourceTileControlWidget : ReferencedResourceWidget<TilesetResourc
     protected override void PopulateComboBox()
     {
         var resource = Resources.FirstOrDefault();
-        foreach (var tile in resource.Tiles)
+        foreach (TilesetResource.Tile tile in resource.Tiles)
         {
             ComboBox.AddItem(tile.GetName(), null, () =>
             {
