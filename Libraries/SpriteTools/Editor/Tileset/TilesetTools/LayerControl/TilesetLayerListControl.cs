@@ -122,13 +122,13 @@ public class TilesetLayerListControl : ControlWidget
         var layer = TilesetTool.Active?.SelectedLayer;
         if (layer is null) return;
 
-        var tilemap = layer?.TilesetResource?.TileMap;
-        if (tilemap is null) return;
+        var tileset = layer?.TilesetResource;
+        if (tileset is null) return;
 
         foreach (var tile in layer.Tiles)
         {
-            if (tile.Value.TileId == Guid.Empty || !tilemap.ContainsKey(tile.Value.TileId)) continue;
-            var tileRef = tilemap[tile.Value.TileId];
+            var tileRef = tileset.GetTileFromId(tile.Value.TileId);
+            if(tileRef is null) continue;
             tile.Value.TileId = default;
             tile.Value.CellPosition = default;
             tile.Value.BakedPosition = tileRef.Position + tile.Value.CellPosition;

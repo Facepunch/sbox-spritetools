@@ -35,7 +35,7 @@ public partial class TilesetResource : GameResource
 	public List<AutotileBrush> AutotileBrushes { get; set; } = new();
 
 	[JsonIgnore, Hide]
-	public Dictionary<Guid, Tile> TileMap { get; set; } = new();
+	internal Dictionary<Guid, Tile> TileMap { get; set; } = new();
 
 	[Hide] public Vector2Int CurrentTextureSize { get; set; } = Vector2Int.One;
 	[Hide] public Vector2Int CurrentTileSize { get; set; } = new Vector2Int(32, 32);
@@ -73,6 +73,16 @@ public partial class TilesetResource : GameResource
 	{
 		TileMap.Remove(tile.Id);
 		Tiles.Remove(tile);
+	}
+
+	public Tile GetTileFromId(Guid id)
+	{
+		if (id == Guid.Empty) return null;
+		if (TileMap.ContainsKey(id))
+		{
+			return TileMap[id];
+		}
+		return null;
 	}
 
 	public string SerializeString()

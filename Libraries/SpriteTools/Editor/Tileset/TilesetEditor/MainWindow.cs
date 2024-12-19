@@ -386,8 +386,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		if (Tileset is null) return;
 
 		PushUndo("Generate Tiles");
-		Tileset.Tiles.Clear();
-		Tileset.TileMap.Clear();
+		foreach (var tile in Tileset.Tiles)
+		{
+			Tileset.RemoveTile(tile);
+		}
 		Tileset.CurrentTileSize = Tileset.TileSize;
 		Tileset.CurrentTextureSize = (Vector2Int)preview.TextureSize;
 

@@ -105,7 +105,7 @@ public abstract class BaseTileTool : EditorTool
             var maskTile = brush.GetTileFromBitmask(bitmask);
             if (maskTile is not null)
             {
-                var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
+                var mappedTile = Parent.SelectedLayer.TilesetResource.GetTileFromId(maskTile.Id);
                 scenePos.Item2 = mappedTile.Position;
                 tilePositions[i] = scenePos;
             }
@@ -136,7 +136,7 @@ public abstract class BaseTileTool : EditorTool
         var maskTile = brush.GetTileFromBitmask(bitmask);
         if (maskTile is not null)
         {
-            var mappedTile = Parent.SelectedLayer.TilesetResource.TileMap[maskTile.Id];
+            var mappedTile = Parent.SelectedLayer.TilesetResource.GetTileFromId(maskTile.Id);
             list.Add((pos - tilePos, mappedTile.Position, brush.Id));
         }
     }
