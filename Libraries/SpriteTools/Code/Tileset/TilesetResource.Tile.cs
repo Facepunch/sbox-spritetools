@@ -11,27 +11,48 @@ namespace SpriteTools;
 public partial class TilesetResource
 {
     [JsonConverter(typeof(JsonConvertReference))]
-    public class Tile// : IJsonConvert
+    public class Tile
     {
+        /// <summary>
+        /// The unique ID for the Tile
+        /// </summary>
         public Guid Id { get; set; }
 
+        /// <summary>
+        /// The index of the Tile in the Tileset
+        /// </summary>
         [JsonIgnore, ReadOnly, Property]
         public int Index => Tileset?.Tiles?.ToList()?.IndexOf(this) ?? -1;
 
+        /// <summary>
+        /// The name of the Tile (if any)
+        /// </summary>
         [Property]
         public string Name { get; set; } = "";
 
+        /// <summary>
+        /// The tags associated with the Tile. These are used for searching/filtering tiles or adding custom data.
+        /// </summary>
         [Property]
         public TagSet Tags { get; set; }
 
+        /// <summary>
+        /// The position of the Tile in the Atlas
+        /// </summary>
         [Property]
         public Vector2Int Position { get; set; }
 
+        /// <summary>
+        /// The size of the Tile in the Atlas (in Tiles)
+        /// </summary>
         [Property]
         public Vector2Int Size { get; set; }
 
+        /// <summary>
+        /// The 
+        /// </summary>
         [JsonIgnore, Hide, ReadOnly]
-        public TilesetResource Tileset;
+        public TilesetResource Tileset { get; internal set; }
 
         public Tile(Vector2Int position, Vector2Int size)
         {
@@ -40,94 +61,34 @@ public partial class TilesetResource
             Size = size;
         }
 
+        /// <summary>
+        /// Creates a copy of the Tile with a new ID
+        /// </summary>
+        /// <returns></returns>
         public Tile Copy()
         {
             var copy = new Tile(Position, Size)
             {
-                Name = Name
+                Name = Name,
+                Tags = new TagSet(),
+                Tileset = Tileset
             };
+            foreach (var tag in Tags.TryGetAll())
+            {
+                copy.Tags.Add(tag);
+            }
             return copy;
         }
 
+        /// <summary>
+        /// Returns the name of the Tile or a default name if none is set.
+        /// </summary>
+        /// <returns></returns>
         public string GetName()
         {
             return string.IsNullOrEmpty(Name) ? $"Tile {Position}" : Name;
         }
-
-        // public static object JsonRead(ref Utf8JsonReader reader, Type targetType)
-        // {
-        //     if (reader.TokenType == JsonTokenType.StartObject)
-        //     {
-        //         reader.Read();
-
-        //         int tilesetId = 0;
-        //         Guid tileId = Guid.Empty;
-
-        //         while (reader.TokenType != JsonTokenType.EndObject)
-        //         {
-        //             if (reader.TokenType == JsonTokenType.PropertyName)
-        //             {
-        //                 var name = reader.GetString();
-        //                 reader.Read();
-
-        //                 if (name == "tileset")
-        //                 {
-        //                     tilesetId = int.Parse(reader.GetString());
-        //                     reader.Read();
-        //                     continue;
-        //                 }
-        //                 else if (name == "tile")
-        //                 {
-        //                     tileId = Guid.Parse(reader.GetString());
-        //                     reader.Read();
-        //                     continue;
-        //                 }
-
-        //                 reader.Read();
-        //                 continue;
-        //             }
-
-        //             reader.Read();
-        //         }
-
-        //         if (tilesetId != 0 && tileId != Guid.Empty)
-        //         {
-        //             var allTilesets = ResourceLibrary.GetAll<TilesetResource>();
-        //             foreach (var tileset in allTilesets)
-        //             {
-        //                 if (tileset.ResourceId == tilesetId)
-        //                 {
-        //                     return tileset.TileMap[tileId];
-        //                 }
-        //             }
-        //         }
-
-        //     }
-        //     return null;
-        // }
-
-        // public static void JsonWrite(object value, Utf8JsonWriter writer)
-        // {
-        //     if (value is not TilesetResource.Tile tile)
-        //         throw new NotImplementedException();
-
-        //     if (tile is null)
-        //     {
-        //         writer.WriteNullValue();
-        //         return;
-        //     }
-
-        //     writer.WriteStartObject();
-        //     {
-        //         writer.WritePropertyName("tileset");
-        //         writer.WriteNumberValue(tile.Tileset.ResourceId);
-
-        //         writer.WritePropertyName("tile");
-        //         writer.WriteStringValue(tile.Id.ToString());
-        //     }
-        //     writer.WriteEndObject();
-        // }
-
+        
         public JsonObject Serialize()
         {
             var json = new JsonObject

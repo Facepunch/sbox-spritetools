@@ -310,10 +310,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		var tileName = $"Tile {x},{y}";
 
 		PushUndo($"Create Tile \"{tileName}\"");
-		var tile = new TilesetResource.Tile(new Vector2Int(x, y), 1)
-		{
-			Tileset = Tileset
-		};
+		var tile = new TilesetResource.Tile(new Vector2Int(x, y), 1);
 		Tileset.AddTile(tile);
 
 		if (Tileset.Tiles.Count == 1)
