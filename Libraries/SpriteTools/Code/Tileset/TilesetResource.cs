@@ -64,6 +64,7 @@ public partial class TilesetResource : GameResource
 
 	public void AddTile(Tile tile)
 	{
+		Tiles.Add(tile);
 		TileMap[tile.Id] = tile;
 		tile.Tileset = this;
 	}
@@ -71,6 +72,7 @@ public partial class TilesetResource : GameResource
 	public void RemoveTile(Tile tile)
 	{
 		TileMap.Remove(tile.Id);
+		Tiles.Remove(tile);
 	}
 
 	public string SerializeString()
