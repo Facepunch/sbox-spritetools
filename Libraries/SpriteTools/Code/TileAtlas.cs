@@ -43,6 +43,11 @@ public class TileAtlas
             return null;
         }
 
+        if (tilesetResource.Tiles.Any(x => x?.Tileset is null))
+        {
+            return null;
+        }
+
         var path = tilesetResource.FilePath;
         var texture = Texture.Load(FileSystem.Mounted, path);
         var atlas = new TileAtlas();
