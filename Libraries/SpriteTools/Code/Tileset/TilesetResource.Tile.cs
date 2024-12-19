@@ -197,7 +197,7 @@ public partial class TilesetResource
 
                             if (name == "tileset")
                             {
-                                tilesetId = int.Parse(reader.GetString());
+                                tilesetId = reader.GetInt32();
                                 reader.Read();
                                 continue;
                             }
