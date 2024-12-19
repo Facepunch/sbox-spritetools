@@ -31,7 +31,9 @@ public class TileAtlas
 
     public static TileAtlas FromTileset(TilesetResource tilesetResource)
     {
-        if (Cache.ContainsKey(tilesetResource))
+        if (tilesetResource is null) return null;
+
+        if (Cache?.ContainsKey(tilesetResource) ?? false)
         {
             return Cache[tilesetResource];
         }
