@@ -187,6 +187,7 @@ public partial class TilesetResource : GameResource
 		var sourceFile = this.ResourcePath;
 		if (sourceFile.EndsWith("_c")) sourceFile = sourceFile.Substring(0, sourceFile.Length - 2);
 		var json = Json.Deserialize<JsonObject>(FileSystem.Mounted.ReadAllText(sourceFile));
+
 		var tileList = json["Tiles"] as JsonArray;
 		if (tileList is not null)
 		{
@@ -199,6 +200,21 @@ public partial class TilesetResource : GameResource
 					tile.Deserialize(jsonObj);
 					tile.Tileset = this;
 					Tiles.Add(tile);
+				}
+			}
+		}
+
+		var brushList = json["AutotileBrushes"] as JsonArray;
+		if (brushList is not null)
+		{
+			AutotileBrushes.Clear();
+			foreach (var obj in brushList)
+			{
+				if (obj is JsonObject jsonObj)
+				{
+					var brush = new AutotileBrush();
+					brush.Deserialize(jsonObj);
+					AutotileBrushes.Add(brush);
 				}
 			}
 		}

@@ -15,7 +15,16 @@ public class ResourceTileControlWidget : ReferencedResourceWidget<TilesetResourc
     protected override void PopulateResources(SerializedProperty property)
     {
         var tile = property.GetValue<TilesetResource.Tile>();
-        Resources.Add(tile?.Tileset);
+        var allTilesets = ResourceLibrary.GetAll<TilesetResource>();
+        foreach (var tileset in allTilesets)
+        {
+            if (tileset.Tiles.Contains(tile))
+            {
+                Resources.Add(tileset);
+                return;
+            }
+        }
+        Resources.Add(null);
     }
 
     protected override void PopulateComboBox()

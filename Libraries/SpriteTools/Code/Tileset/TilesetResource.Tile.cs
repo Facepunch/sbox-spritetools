@@ -88,7 +88,7 @@ public partial class TilesetResource
         {
             return string.IsNullOrEmpty(Name) ? $"Tile {Position}" : Name;
         }
-        
+
         public JsonObject Serialize()
         {
             var json = new JsonObject
@@ -194,130 +194,21 @@ public partial class TilesetResource
 
             public override void Write(Utf8JsonWriter writer, Tile value, JsonSerializerOptions options)
             {
+                var allTilesets = ResourceLibrary.GetAll<TilesetResource>();
+                var tileset = allTilesets.FirstOrDefault(t => t.Tiles.Contains(value));
+                if (tileset is null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+
                 writer.WriteStartObject();
                 {
                     writer.WritePropertyName("tileset");
-                    writer.WriteNumberValue(value.Tileset.ResourceId);
+                    writer.WriteNumberValue(tileset.ResourceId);
 
                     writer.WritePropertyName("tile");
                     writer.WriteStringValue(value.Id.ToString());
-                }
-                writer.WriteEndObject();
-            }
-        }
-
-        public class JsonConvert : JsonConverter<Tile>
-        {
-
-            public override bool CanConvert(Type objectType)
-            {
-                Log.Info($"CanConvert: {objectType}");
-                return objectType == typeof(Tile);
-            }
-
-            public override Tile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                Log.Info($"Attempting to read in converter...");
-                if (reader.TokenType == JsonTokenType.StartObject)
-                {
-                    reader.Read();
-
-                    Guid id = Guid.Empty;
-                    string name = "";
-                    TagSet tags = new TagSet();
-                    Vector2Int position = Vector2Int.Zero;
-                    Vector2Int size = Vector2Int.One;
-
-                    while (reader.TokenType != JsonTokenType.EndObject)
-                    {
-                        if (reader.TokenType == JsonTokenType.PropertyName)
-                        {
-                            var propertyName = reader.GetString();
-                            reader.Read();
-
-                            if (propertyName == "Id")
-                            {
-                                id = Guid.Parse(reader.GetString());
-                                reader.Read();
-                                continue;
-                            }
-                            else if (propertyName == "Name")
-                            {
-                                name = reader.GetString();
-                                reader.Read();
-                                continue;
-                            }
-                            else if (propertyName == "Tags")
-                            {
-                                if (reader.TokenType == JsonTokenType.Null)
-                                {
-                                    tags = new TagSet();
-                                }
-                                else
-                                {
-                                    var tagConverter = new TagSet.JsonConvert();
-                                    tags = tagConverter.Read(ref reader, typeof(TagSet), options);
-                                }
-                                reader.Read();
-                                continue;
-                            }
-                            else if (propertyName == "Position")
-                            {
-                                var positionString = reader.GetString();
-                                position = Vector2Int.Parse(positionString);
-                                reader.Read();
-                                continue;
-                            }
-                            else if (propertyName == "Size")
-                            {
-                                var sizeString = reader.GetString();
-                                size = Vector2Int.Parse(sizeString);
-                                reader.Read();
-                                continue;
-                            }
-
-                            reader.Read();
-                            continue;
-                        }
-
-                        reader.Read();
-                    }
-
-                    if (id != Guid.Empty)
-                    {
-                        var tile = new TilesetResource.Tile(position, size)
-                        {
-                            Id = id,
-                            Name = name,
-                            Tags = tags
-                        };
-                        return tile;
-                    }
-                }
-
-
-                return null;
-            }
-
-            public override void Write(Utf8JsonWriter writer, Tile tile, JsonSerializerOptions options)
-            {
-                writer.WriteStartObject();
-                {
-                    writer.WritePropertyName("Id");
-                    writer.WriteStringValue(tile.Id.ToString());
-
-                    writer.WritePropertyName("Name");
-                    writer.WriteStringValue(tile.Name);
-
-                    writer.WritePropertyName("Tags");
-                    var tagConverter = new TagSet.JsonConvert();
-                    tagConverter.Write(writer, tile.Tags, options);
-
-                    writer.WritePropertyName("Position");
-                    writer.WriteStringValue(tile.Position.ToString());
-
-                    writer.WritePropertyName("Size");
-                    writer.WriteStringValue(tile.Size.ToString());
                 }
                 writer.WriteEndObject();
             }
