@@ -142,6 +142,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	[Property, Feature("Collision"), Group("Trigger Actions"), ShowIf(nameof(IsTrigger), true)]
 	public Action<Collider> OnTriggerExit { get; set; }
 
+	/// <summary>
+	/// Whether or not the associated Collider is dirty. Setting this to true will rebuild the Collider on the next frame.
+	/// </summary>
 	public bool IsDirty
 	{
 		get => Collider?.IsDirty ?? false;
@@ -292,11 +295,21 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		Collider = null;
 	}
 
+	/// <summary>
+	/// Returns the Layer with the specified name
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
 	public Layer GetLayerFromName(string name)
 	{
 		return Layers.FirstOrDefault(x => x.Name == name);
 	}
 
+	/// <summary>
+	/// Returns the Layer at the specified index
+	/// </summary>
+	/// <param name="index"></param>
+	/// <returns></returns>
 	public Layer GetLayerFromIndex(int index)
 	{
 		if (index < 0 || index >= Layers.Count) return null;
@@ -532,6 +545,14 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			}
 		}
 
+		/// <summary>
+		/// Update the Autotile at the specified position. Used when manually modifying the placed autotiles.
+		/// </summary>
+		/// <param name="autotileId"></param>
+		/// <param name="position"></param>
+		/// <param name="checkErased"></param>
+		/// <param name="updateSurrounding"></param>
+		/// <param name="shouldMerge"></param>
 		public void UpdateAutotile(Guid autotileId, Vector2Int position, bool checkErased, bool updateSurrounding = true, bool shouldMerge = false)
 		{
 			if (!Autotiles.ContainsKey(autotileId)) return;
@@ -613,6 +634,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			RemoveTile(position);
 		}
 
+		///
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, bool mergeAll = false)
 		{
 			if (Autotiles is null || (!mergeAll && !Autotiles.ContainsKey(autotileId))) return -1;
