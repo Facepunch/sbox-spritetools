@@ -206,7 +206,7 @@ public partial class TilesetResource : GameResource
 		InternalUpdateTiles();
 	}
 
-	public void InternalUpdateTiles()
+	internal void InternalUpdateTiles()
 	{
 		foreach (var tile in Tiles)
 		{

@@ -409,9 +409,6 @@ public partial class MainWindow : DockWindow, IAssetEditor
 			y++;
 		}
 		PushRedo();
-
-		Tileset.InternalUpdateTiles();
-
 		UpdateEverything();
 	}
 

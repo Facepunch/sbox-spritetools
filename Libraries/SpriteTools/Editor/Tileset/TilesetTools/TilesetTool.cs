@@ -98,14 +98,6 @@ public partial class TilesetTool : EditorTool
 		InitGrid();
 		InitPreviewObject();
 		UpdateComponent();
-
-		if (SelectedComponent.IsValid())
-		{
-			foreach (var layer in SelectedComponent.Layers)
-			{
-				layer?.TilesetResource?.InternalUpdateTiles();
-			}
-		}
 	}
 
 	public override void OnDisabled()
