@@ -60,6 +60,8 @@ public class ResourceTileControlWidget : ControlWidget
         var tileset = Tilesets.FirstOrDefault();
         if (tileset is null)
         {
+            TilesetResource.Tile nullTile = null;
+            SerializedProperty.SetValue(nullTile);
             return;
         }
 

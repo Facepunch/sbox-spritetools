@@ -73,6 +73,8 @@ public class AutotileBrushControlWidget : ControlWidget
         var tileset = Tilesets.FirstOrDefault();
         if (tileset is null)
         {
+            AutotileBrush nullBrush = null;
+            SerializedProperty.SetValue(nullBrush);
             return;
         }
 
