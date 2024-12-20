@@ -28,7 +28,7 @@ public class TilesetTileControl : Widget
 
 		VerticalSizeMode = SizeMode.Flexible;
 
-		StatusTip = $"Select Tile \"{Tile.Name}\"";
+		StatusTip = $"Select Tile \"{Tile.GetName()}\"";
 		Cursor = CursorShape.Finger;
 
 		Layout = Layout.Row();
