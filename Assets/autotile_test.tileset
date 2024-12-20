@@ -1629,7 +1629,7 @@
       "Size": "1,1"
     }
   ],
-  "ImportAutotileFrom": null,
+  "InheritAutotileFrom": null,
   "AutotileBrushes": [
     {
       "Id": "0f1a118c-bc65-424d-905c-056846f9b77d",

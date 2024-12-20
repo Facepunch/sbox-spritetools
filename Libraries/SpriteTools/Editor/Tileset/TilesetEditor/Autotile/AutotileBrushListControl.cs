@@ -21,6 +21,7 @@ public class AutotileBrushListControl : ControlWidget
 
     internal Layout content;
     ScrollArea scrollArea;
+    Button btnNewBrush;
 
     KeyboardModifiers modifiers;
 
@@ -54,9 +55,9 @@ public class AutotileBrushListControl : ControlWidget
         var row = Layout.AddRow();
         row.AddStretchCell();
         row.Spacing = 8;
-        var btn16Tile = row.Add(new Button.Primary("New Autotile Brush", "add"));
-        btn16Tile.ToolTip = "Create a new autotile brush";
-        btn16Tile.Clicked += () => NewBrushPopup();
+        btnNewBrush = row.Add(new Button.Primary("New Autotile Brush", "add"));
+        btnNewBrush.ToolTip = "Create a new autotile brush";
+        btnNewBrush.Clicked += NewBrushPopup;
 
         scrollArea.Canvas.Layout.AddStretchCell();
 
@@ -77,6 +78,10 @@ public class AutotileBrushListControl : ControlWidget
                     window.inspector.autotileBrushList = this;
                     break;
                 }
+            }
+            if (MainWindow is null)
+            {
+                btnNewBrush.Visible = false;
             }
         }
 
