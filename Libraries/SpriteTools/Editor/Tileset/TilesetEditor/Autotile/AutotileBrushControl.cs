@@ -85,20 +85,28 @@ public class AutotileBrushControl : Widget
 	protected override void OnPaint()
 	{
 		MaximumWidth = ParentList.Width - 12;
-		if (dragData?.IsValid ?? false)
+		if (Enabled)
+		{
+			if (dragData?.IsValid ?? false)
+			{
+				Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
+				Paint.DrawRect(LocalRect, 4);
+			}
+			else if (ParentList.SelectedBrush == this)
+			{
+				Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
+				Paint.DrawRect(LocalRect, 4);
+			}
+			else if (IsUnderMouse)
+			{
+				Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
+				Paint.DrawRect(LocalRect, 4);
+			}
+		}
+		else
 		{
 			Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
-			Paint.DrawRect(LocalRect, 4);
-		}
-		else if (ParentList.SelectedBrush == this)
-		{
-			Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
-			Paint.DrawRect(LocalRect, 4);
-		}
-		else if (IsUnderMouse)
-		{
-			Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
-			Paint.DrawRect(LocalRect, 4);
+			Paint.DrawRect(LocalRect);
 		}
 
 		var brushName = string.IsNullOrEmpty(Brush.Name) ? $"Brush {ParentList.Buttons.IndexOf(this) + 1}" : Brush.Name;
@@ -121,27 +129,9 @@ public class AutotileBrushControl : Widget
 			{
 				tileControl.Position = tileRect.Position;
 			}
-			//Paint.DrawRect(tileRect, 2);
 		}
 		var maxY = 1 + MathF.Floor(tileCount / tileWidth);
 		FixedHeight = 28 + (size + padding) * maxY;
-
-
-		// if (Pixmap is null) LoadPixmap();
-		// if (Pixmap is not null)
-		// {
-		// 	var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
-		// 	pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 7);
-		// 	Paint.Draw(pixRect, Pixmap);
-		// }
-
-		// if (Tile.Tileset.TileTextures.TryGetValue(Tile.Id, out var texture))
-		// {
-		// 	var pixRect = Rect.FromPoints(LocalRect.TopLeft, LocalRect.TopLeft + new Vector2(16, 16));
-		// 	pixRect.Position = pixRect.Position + new Vector2(3, LocalRect.Height / 2 - 7);
-		// 	var pixmap = Pixmap.FromTexture(texture);
-		// 	Paint.Draw(pixRect, pixmap);
-		// }
 
 		if (draggingAbove)
 		{

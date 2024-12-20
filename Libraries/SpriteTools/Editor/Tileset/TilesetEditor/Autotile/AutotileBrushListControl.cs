@@ -22,6 +22,7 @@ public class AutotileBrushListControl : ControlWidget
     internal Layout content;
     ScrollArea scrollArea;
     Button btnNewBrush;
+    TilesetResource lastInheritedFrom;
 
     KeyboardModifiers modifiers;
 
@@ -84,6 +85,14 @@ public class AutotileBrushListControl : ControlWidget
                 btnNewBrush.Visible = false;
             }
         }
+        else
+        {
+            if (MainWindow.Tileset.InheritAutotileFrom != lastInheritedFrom)
+            {
+                lastInheritedFrom = MainWindow.Tileset.InheritAutotileFrom;
+                UpdateList();
+            }
+        }
 
         Paint.SetBrush(Theme.ControlBackground);
         Paint.SetPen(Theme.ControlBackground);
@@ -96,10 +105,40 @@ public class AutotileBrushListControl : ControlWidget
         Buttons.Clear();
 
         var brushes = SerializedProperty.GetValue<List<AutotileBrush>>();
+        var allBrushes = new List<AutotileBrush>();
+        var firstBrush = brushes.FirstOrDefault();
 
         foreach (var brush in brushes)
         {
+            allBrushes.Add(brush);
+        }
+
+        if (firstBrush is not null)
+        {
+            var allTilesets = ResourceLibrary.GetAll<TilesetResource>();
+            foreach (var tileset in allTilesets)
+            {
+                if (tileset.AutotileBrushes.Contains(firstBrush))
+                {
+                    if (tileset.InheritAutotileFrom is not null)
+                    {
+                        foreach (var inheritedBrush in tileset.InheritAutotileFrom.GetAllAutotileBrushes())
+                        {
+                            allBrushes.Add(inheritedBrush);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        foreach (var brush in allBrushes)
+        {
             var button = content.Add(new AutotileBrushControl(this, brush));
+            if (!brushes.Contains(brush))
+            {
+                button.Enabled = false;
+            }
             Buttons.Add(button);
         }
     }

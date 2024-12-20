@@ -53,6 +53,12 @@ public partial class TilesetResource : GameResource
 	public TilesetResource InheritAutotileFrom { get; set; }
 
 	/// <summary>
+	/// A list of all the autotile brushes that are inherited from the parent tileset.
+	/// </summary>
+	[Property, JsonIgnore]
+	public List<AutotileBrush> InheritedAutotileBrushes { get; set; } = new();
+
+	/// <summary>
 	/// A list of the autotile brushes for this tileset.
 	/// </summary>
 	[Property, Group("Autotile Brushes"), Order(9999)]
@@ -142,6 +148,36 @@ public partial class TilesetResource : GameResource
 			return TileMap[id];
 		}
 		return null;
+	}
+
+	/// <summary>
+	/// Returns a list of all autotile brushes for this tileset (including those inherited from parent tilesets).
+	/// </summary>
+	/// <returns></returns>
+	public List<AutotileBrush> GetAllAutotileBrushes()
+	{
+		var allBrushes = new List<AutotileBrush>();
+		foreach (var tileset in ResourceLibrary.GetAll<TilesetResource>())
+		{
+			if (tileset.InheritAutotileFrom is not null)
+			{
+				foreach (var inheritedBrush in tileset.InheritAutotileFrom.GetAllAutotileBrushes())
+				{
+					if (!allBrushes.Contains(inheritedBrush))
+					{
+						allBrushes.Add(inheritedBrush);
+					}
+				}
+			}
+			break;
+		}
+
+		foreach (var brush in AutotileBrushes)
+		{
+			allBrushes.Add(brush);
+		}
+
+		return allBrushes;
 	}
 
 	public string SerializeString()

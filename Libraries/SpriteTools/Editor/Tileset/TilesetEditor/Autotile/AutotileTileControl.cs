@@ -69,13 +69,19 @@ public class AutotileTileControl : Widget
             Paint.Draw(LocalRect, pixmap);
         }
 
-        var color = IsUnderMouse ? Color.White : Color.Transparent;
+        var color = (IsUnderMouse && Enabled) ? Color.White : Color.Transparent;
         if (ParentBrush.ParentList.SelectedTile == Tile)
         {
             color = Theme.Blue;
         }
         Paint.SetBrushAndPen(color.WithAlpha(MathF.Min(0.5f, color.a)), Color.Transparent);
         Paint.DrawRect(LocalRect);
+
+        if (!Enabled)
+        {
+            Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
+            Paint.DrawRect(LocalRect);
+        }
     }
 
     protected override void OnMouseClick(MouseEvent e)
