@@ -3,7 +3,7 @@ namespace SpriteTools;
 public enum AutotileType
 {
     [Title("2x2 Set"), Icon("add")]
-    [Description("(15 Tiles) NOT IMPLEMENTED")]
+    [Description("(15 Tiles)")]
     Bitmask2x2Edge = 0,
 
     // [Title("2x2 Corner Set"), Icon("close")]
