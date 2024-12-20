@@ -162,9 +162,42 @@ public partial class TilesetResource : GameResource
 		{
 			foreach (var inheritedBrush in InheritAutotileFrom.GetAllAutotileBrushes())
 			{
-				if (!allBrushes.Contains(inheritedBrush))
+				if (!allBrushes.Any(x => x.GetHashCode() == inheritedBrush.GetHashCode()))
 				{
-					allBrushes.Add(inheritedBrush);
+					var newBrush = new AutotileBrush();
+					newBrush.Name = inheritedBrush.Name;
+					newBrush.AutotileType = inheritedBrush.AutotileType;
+					var tileList = new List<AutotileBrush.Tile>();
+					foreach (var tile in inheritedBrush.Tiles)
+					{
+						var newTileRefs = new List<AutotileBrush.TileReference>();
+						foreach (var tileRef in tile.Tiles)
+						{
+							var newTileRef = new AutotileBrush.TileReference();
+							newTileRef.Position = tileRef.Position;
+							newTileRef.Weight = tileRef.Weight;
+							newTileRef.Tileset = this;
+							var pos = newTileRef.GetTilePosition();
+							foreach (var tilesetTile in Tiles)
+							{
+								if (tilesetTile.Position == pos)
+								{
+									newTileRef.Id = tilesetTile.Id;
+									break;
+								}
+							}
+							if (newTileRef.Id != Guid.Empty)
+							{
+								newTileRefs.Add(newTileRef);
+							}
+						}
+						var newTile = new AutotileBrush.Tile();
+						newTile.Tiles = newTileRefs;
+						tileList.Add(newTile);
+					}
+					newBrush.Tiles = tileList.ToArray();
+					newBrush.Tileset = this;
+					allBrushes.Add(newBrush);
 				}
 			}
 		}

@@ -484,6 +484,23 @@ public class AutotileBrush
         return Tiles[bitmask];
     }
 
+    public override int GetHashCode()
+    {
+        int val = 0;
+
+        foreach (var tile in Tiles)
+        {
+            if (tile?.Tiles is null) continue;
+            foreach (var tileRef in tile.Tiles)
+            {
+                if (tileRef is null) continue;
+                val += HashCode.Combine(tileRef.GetTilePosition());
+            }
+        }
+
+        return HashCode.Combine(Name, AutotileType, val);
+    }
+
     public class Tile
     {
         // [InlineEditor, WideMode(HasLabel = false)]

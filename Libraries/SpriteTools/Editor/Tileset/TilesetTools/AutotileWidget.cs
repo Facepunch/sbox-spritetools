@@ -110,8 +110,7 @@ public class AutotileWidget : ControlWidget
 			{
 				foreach (var autotile in selectedLayer.TilesetResource.GetAllAutotileBrushes())
 				{
-					hc.Add(autotile.Id);
-					hc.Add(autotile.Name);
+					hc.Add(autotile.GetHashCode());
 				}
 			}
 
