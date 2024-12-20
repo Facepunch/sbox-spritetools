@@ -8,7 +8,6 @@ using Sandbox;
 
 namespace SpriteTools;
 
-[JsonConverter(typeof(JsonConvertReference))]
 public class AutotileBrush
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -484,34 +483,6 @@ public class AutotileBrush
         return Tiles[bitmask];
     }
 
-    public JsonObject Serialize()
-    {
-        var json = new JsonObject
-        {
-            { "Id", Id.ToString() },
-            { "Name", Name },
-            { "AutotileType", AutotileType.ToString() },
-            { "Tiles", Json.Serialize(Tiles) }
-        };
-        return json;
-    }
-
-    public void Deserialize(JsonObject obj)
-    {
-        Id = Guid.Parse(obj["Id"].GetValue<string>());
-        Name = obj["Name"].GetValue<string>();
-        AutotileType = Enum.Parse<AutotileType>(obj["AutotileType"].GetValue<string>());
-        var tilesJson = obj["Tiles"].GetValue<string>();
-        if (string.IsNullOrEmpty(tilesJson))
-        {
-            Tiles = new Tile[0];
-        }
-        else
-        {
-            Tiles = Json.Deserialize<Tile[]>(tilesJson);
-        }
-    }
-
     public class Tile
     {
         // [InlineEditor, WideMode(HasLabel = false)]
@@ -532,93 +503,6 @@ public class AutotileBrush
         public TileReference(Guid guid)
         {
             Id = guid;
-        }
-    }
-
-    public class JsonConvertReference : JsonConverter<AutotileBrush>
-    {
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(AutotileBrush);
-        }
-
-        public override AutotileBrush Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.StartObject)
-            {
-                reader.Read();
-
-                int tilesetId = 0;
-                Guid brushId = Guid.Empty;
-
-                while (reader.TokenType != JsonTokenType.EndObject)
-                {
-                    if (reader.TokenType == JsonTokenType.PropertyName)
-                    {
-                        var name = reader.GetString();
-                        reader.Read();
-
-                        if (name == "tileset")
-                        {
-                            tilesetId = reader.GetInt32();
-                            reader.Read();
-                            continue;
-                        }
-                        else if (name == "brush")
-                        {
-                            brushId = Guid.Parse(reader.GetString());
-                            reader.Read();
-                            continue;
-                        }
-
-                        reader.Read();
-                        continue;
-                    }
-
-                    reader.Read();
-                }
-
-                if (tilesetId != 0 && brushId != Guid.Empty)
-                {
-                    var allTilesets = ResourceLibrary.GetAll<TilesetResource>();
-                    foreach (var tileset in allTilesets)
-                    {
-                        if (tileset.ResourceId == tilesetId)
-                        {
-                            foreach (var brush in tileset.AutotileBrushes)
-                            {
-                                if (brush.Id == brushId)
-                                {
-                                    return brush;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public override void Write(Utf8JsonWriter writer, AutotileBrush value, JsonSerializerOptions options)
-        {
-            var allTilesets = ResourceLibrary.GetAll<TilesetResource>();
-            var tileset = allTilesets.FirstOrDefault(x => x.AutotileBrushes.Any(y => y.Id == value.Id));
-            if (tileset is null)
-            {
-                writer.WriteNullValue();
-                return;
-            }
-
-            writer.WriteStartObject();
-            {
-                writer.WritePropertyName("tileset");
-                writer.WriteNumberValue(tileset.ResourceId);
-
-                writer.WritePropertyName("brush");
-                writer.WriteStringValue(value.Id.ToString());
-            }
-            writer.WriteEndObject();
         }
     }
 

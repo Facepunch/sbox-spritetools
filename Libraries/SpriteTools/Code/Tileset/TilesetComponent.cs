@@ -634,7 +634,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			RemoveTile(position);
 		}
 
-		///
+		
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, bool mergeAll = false)
 		{
 			if (Autotiles is null || (!mergeAll && !Autotiles.ContainsKey(autotileId))) return -1;

@@ -172,52 +172,12 @@ public partial class TilesetResource : GameResource
 	{
 		base.PostLoad();
 
-		ReloadTileset();
+		InternalUpdateTiles();
 	}
 
 	protected override void PostReload()
 	{
 		base.PostReload();
-
-		ReloadTileset();
-	}
-
-	void ReloadTileset()
-	{
-		var sourceFile = this.ResourcePath;
-		if (sourceFile.EndsWith("_c")) sourceFile = sourceFile.Substring(0, sourceFile.Length - 2);
-		var json = Json.Deserialize<JsonObject>(FileSystem.Mounted.ReadAllText(sourceFile));
-
-		var tileList = json["Tiles"] as JsonArray;
-		if (tileList is not null)
-		{
-			Tiles.Clear();
-			foreach (var obj in tileList)
-			{
-				if (obj is JsonObject jsonObj)
-				{
-					var tile = new Tile(0, 1);
-					tile.Deserialize(jsonObj);
-					tile.Tileset = this;
-					Tiles.Add(tile);
-				}
-			}
-		}
-
-		var brushList = json["AutotileBrushes"] as JsonArray;
-		if (brushList is not null)
-		{
-			AutotileBrushes.Clear();
-			foreach (var obj in brushList)
-			{
-				if (obj is JsonObject jsonObj)
-				{
-					var brush = new AutotileBrush();
-					brush.Deserialize(jsonObj);
-					AutotileBrushes.Add(brush);
-				}
-			}
-		}
 
 		InternalUpdateTiles();
 	}
@@ -229,19 +189,6 @@ public partial class TilesetResource : GameResource
 			TileMap[tile.Id] = tile;
 			tile.Tileset = this;
 		}
-	}
-
-	protected override void OnJsonSerialize(JsonObject node)
-	{
-		base.OnJsonSerialize(node);
-
-		var tilesList = node["Tiles"] as JsonArray;
-		tilesList.Clear();
-		foreach (var tile in Tiles)
-		{
-			tilesList.Add(tile.Serialize());
-		}
-		node["Tiles"] = tilesList;
 	}
 
 	public class TileTextureData
