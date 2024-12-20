@@ -23,8 +23,6 @@ public partial class TilesetTool : EditorTool
 		[Group("Brush"), Property, Editor("angle")] public int Angle { get; set; } = 0;
 		[Group("Brush"), Property] public bool HorizontalFlip { get; set; } = false;
 		[Group("Brush"), Property] public bool VerticalFlip { get; set; } = false;
-
-		[Header("FEATURE NOT COMPLETE!")]
 		[Group("Brush"), Property, Editor("autotile_index")] public int AutotileBrush { get; set; } = -1;
 
 

@@ -84,6 +84,7 @@ public class TilesetTileListControl : ControlWidget
 
         foreach (var tile in tiles)
         {
+            if (tile is null) continue;
             var button = content.Add(new TilesetTileControl(this, tile));
             Buttons.Add(button);
         }

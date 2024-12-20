@@ -55,7 +55,7 @@ public partial class TilesetResource : GameResource
 	/// <summary>
 	/// A list of all the autotile brushes that are inherited from the parent tileset.
 	/// </summary>
-	[Property, JsonIgnore]
+	[JsonIgnore, Hide]
 	public List<AutotileBrush> InheritedAutotileBrushes { get; set; } = new();
 
 	/// <summary>
