@@ -229,7 +229,7 @@ public class AutotileBrushListControl : ControlWidget
     void NewBrush(AutotileType autotileType)
     {
         var layers = SerializedProperty.GetValue<List<AutotileBrush>>();
-        layers.Add(new AutotileBrush(autotileType));
+        layers.Add(new AutotileBrush(autotileType){Tileset = MainWindow.Tileset});
         SerializedProperty.SetValue(layers);
         UpdateList();
         MainWindow?.inspector?.UpdateSelectedAutotileSheet();

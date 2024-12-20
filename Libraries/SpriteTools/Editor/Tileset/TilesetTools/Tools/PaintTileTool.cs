@@ -156,6 +156,7 @@ public class PaintTileTool : BaseTileTool
         var pos = GetGizmoPos();
         var brush = AutotileBrush;
         var tile = TilesetTool.Active.SelectedTile;
+        if (tile is null) return;
         var tilePos = (Vector2Int)((pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize());
 
         List<(Vector2Int, Vector2Int)> positions = new();

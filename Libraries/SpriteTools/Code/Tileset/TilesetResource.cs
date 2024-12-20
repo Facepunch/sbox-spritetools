@@ -53,12 +53,6 @@ public partial class TilesetResource : GameResource
 	public TilesetResource InheritAutotileFrom { get; set; }
 
 	/// <summary>
-	/// A list of all the autotile brushes that are inherited from the parent tileset.
-	/// </summary>
-	[JsonIgnore, Hide]
-	public List<AutotileBrush> InheritedAutotileBrushes { get; set; } = new();
-
-	/// <summary>
 	/// A list of the autotile brushes for this tileset.
 	/// </summary>
 	[Property, Group("Autotile Brushes"), Order(9999)]
@@ -157,24 +151,22 @@ public partial class TilesetResource : GameResource
 	public List<AutotileBrush> GetAllAutotileBrushes()
 	{
 		var allBrushes = new List<AutotileBrush>();
-		foreach (var tileset in ResourceLibrary.GetAll<TilesetResource>())
-		{
-			if (tileset.InheritAutotileFrom is not null)
-			{
-				foreach (var inheritedBrush in tileset.InheritAutotileFrom.GetAllAutotileBrushes())
-				{
-					if (!allBrushes.Contains(inheritedBrush))
-					{
-						allBrushes.Add(inheritedBrush);
-					}
-				}
-			}
-			break;
-		}
 
 		foreach (var brush in AutotileBrushes)
 		{
+			brush.Tileset = this;
 			allBrushes.Add(brush);
+		}
+
+		if (InheritAutotileFrom is not null)
+		{
+			foreach (var inheritedBrush in InheritAutotileFrom.GetAllAutotileBrushes())
+			{
+				if (!allBrushes.Contains(inheritedBrush))
+				{
+					allBrushes.Add(inheritedBrush);
+				}
+			}
 		}
 
 		return allBrushes;
@@ -208,12 +200,38 @@ public partial class TilesetResource : GameResource
 	{
 		base.PostLoad();
 
-		InternalUpdateTiles();
+		InternalReload();
 	}
 
 	protected override void PostReload()
 	{
 		base.PostReload();
+
+		InternalReload();
+	}
+
+	void InternalReload()
+	{
+		var realTiles = new List<Tile>();
+		foreach (var tile in Tiles)
+		{
+			if (tile is null) continue;
+			realTiles.Add(tile);
+		}
+		Tiles = realTiles;
+
+		var realBrushes = new List<AutotileBrush>();
+		foreach (var brush in AutotileBrushes)
+		{
+			if (brush is null) continue;
+			realBrushes.Add(brush);
+		}
+		AutotileBrushes = realBrushes;
+
+		foreach (var brush in AutotileBrushes)
+		{
+			brush.Tileset = this;
+		}
 
 		InternalUpdateTiles();
 	}

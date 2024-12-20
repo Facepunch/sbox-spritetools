@@ -15,6 +15,7 @@ public class AutotileBrush
     public AutotileType AutotileType { get; set; } = AutotileType.Bitmask2x2Edge;
     [Hide] public Tile[] Tiles { get; set; }
     [Hide] public int TileCount => (AutotileType == AutotileType.Bitmask3x3Complete) ? 255 : (AutotileType == AutotileType.Bitmask3x3 ? 47 : 15);
+    [Hide, JsonIgnore] public TilesetResource Tileset { get; set; }
 
     public AutotileBrush() : this(AutotileType.Bitmask2x2Edge) { }
 
@@ -494,6 +495,17 @@ public class AutotileBrush
         public Guid Id { get; set; }
         public Vector2Int Position { get; set; }
         public float Weight { get; set; } = 10f;
+
+        public Vector2Int GetTilePosition()
+        {
+            if (Tileset is null) return -1;
+            foreach (var tile in Tileset.Tiles)
+            {
+                if (tile is null) continue;
+                if (tile.Id == Id) return tile.Position;
+            }
+            return -1;
+        }
 
         public TileReference()
         {

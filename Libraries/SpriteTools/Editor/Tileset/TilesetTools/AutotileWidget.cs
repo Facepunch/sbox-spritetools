@@ -51,7 +51,9 @@ public class AutotileWidget : ControlWidget
 			return;
 		}
 
-		if ((layer?.TilesetResource?.AutotileBrushes?.Count ?? 0) == 0)
+		var allBrushes = layer?.TilesetResource?.GetAllAutotileBrushes();
+
+		if ((allBrushes?.Count ?? 0) == 0)
 		{
 			Layout.Add(new Label("Tileset has no Autotile Brushes"));
 			return;
@@ -59,9 +61,9 @@ public class AutotileWidget : ControlWidget
 
 		var comboBox = new ComboBox(this);
 		var v = SerializedProperty.GetValue<int>();
-		if (v >= 0 && v < layer.TilesetResource.AutotileBrushes.Count)
+		if (v >= 0 && v < allBrushes.Count)
 		{
-			Brush = layer.TilesetResource.AutotileBrushes[v];
+			Brush = allBrushes[v];
 		}
 		else
 		{
@@ -70,13 +72,13 @@ public class AutotileWidget : ControlWidget
 
 		comboBox.AddItem("None", "check_box_outline_blank", onSelected: () => SetValue(-1), selected: v == -1);
 
-		for (int i = 0; i < layer.TilesetResource.AutotileBrushes.Count; ++i)
+		for (int i = 0; i < allBrushes.Count; ++i)
 		{
 			int index = i;
-			var autotile = layer.TilesetResource.AutotileBrushes[i];
+			var autotile = allBrushes[i];
 			if (autotile is null) continue;
 			var name = string.IsNullOrWhiteSpace(autotile.Name) ? $"Autotile {i}" : autotile.Name;
-			comboBox.AddItem(name, "grid_on", onSelected: () => SetValue(index), selected: v == i);
+			comboBox.AddItem(name, "grid_on", onSelected: () => SetValue(index), selected: v == index);
 		}
 
 		comboBox.StateCookie = $"autotile.{tilesetComponent.Id}.{layer.Name}";
@@ -106,7 +108,7 @@ public class AutotileWidget : ControlWidget
 
 			if (tilesetComponent is not null && selectedLayer is not null)
 			{
-				foreach (var autotile in selectedLayer.TilesetResource.AutotileBrushes)
+				foreach (var autotile in selectedLayer.TilesetResource.GetAllAutotileBrushes())
 				{
 					hc.Add(autotile.Id);
 					hc.Add(autotile.Name);
@@ -132,9 +134,10 @@ public class AutotileWidget : ControlWidget
 		SerializedProperty.SetValue(val);
 
 		var layer = TilesetTool.Active?.SelectedLayer;
-		if (layer is not null && val >= 0 && val < layer.TilesetResource.AutotileBrushes.Count)
+		var allBrushes = layer.TilesetResource.GetAllAutotileBrushes();
+		if (layer is not null && val >= 0 && val < allBrushes.Count)
 		{
-			Brush = layer.TilesetResource.AutotileBrushes[val];
+			Brush = allBrushes[val];
 		}
 		else
 		{
