@@ -96,6 +96,13 @@ public partial class TilesetTool : EditorTool
 		InitGrid();
 		InitPreviewObject();
 		UpdateComponent();
+
+		if (_componentToOpen is not null)
+		{
+			SelectedComponent = _componentToOpen;
+			SelectedLayer = SelectedComponent?.Layers?.FirstOrDefault();
+			_componentToOpen = null;
+		}
 	}
 
 	public override void OnDisabled()
@@ -131,6 +138,21 @@ public partial class TilesetTool : EditorTool
 		{
 			Gizmo.Draw.IgnoreDepth = state.Is2D;
 			Gizmo.Draw.Grid(SelectedComponent.WorldPosition, state.GridAxis, gridSize, state.GridOpacity, 0.01f, 0.01f);
+		}
+	}
+
+	static TilesetComponent _componentToOpen;
+	public static void OpenComponent(TilesetComponent component)
+	{
+		if (Active is not null)
+		{
+			Active.SelectedComponent = component;
+			Active.SelectedLayer = component.Layers.FirstOrDefault();
+		}
+		else
+		{
+			_componentToOpen = component;
+			EditorToolManager.SetTool(nameof(TilesetTool));
 		}
 	}
 

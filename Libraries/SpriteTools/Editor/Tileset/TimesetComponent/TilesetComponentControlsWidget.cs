@@ -4,7 +4,7 @@ using System.Linq;
 using Editor;
 using Sandbox;
 
-namespace SpriteTools;
+namespace SpriteTools.TilesetTool;
 
 [CustomEditor(typeof(TilesetComponent.ComponentControls))]
 public class TilesetComponentControlsWidget : ControlWidget
@@ -37,7 +37,7 @@ public class TilesetComponentControlsWidget : ControlWidget
         btn.Icon = "dashboard";
         btn.Clicked += () =>
         {
-            EditorToolManager.SetTool(nameof(TilesetTool));
+            TilesetTool.OpenComponent(TilesetComponent);
         };
     }
 }
