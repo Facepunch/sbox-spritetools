@@ -16,7 +16,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	/// <summary>
 	/// The Layers within the TilesetComponent
 	/// </summary>
-	[Property, Group("Layers")]
+	[Group("Layers")]
 	public List<Layer> Layers
 	{
 		get => _layers;
@@ -30,6 +30,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		}
 	}
 	List<Layer> _layers;
+
+	[Property, WideMode(HasLabel = false)]
+	ComponentControls InternalControls { get; set; }
 
 	/// <summary>
 	/// Whether or not the component should generate a collider based on the specified Collision Layer
@@ -634,7 +637,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			RemoveTile(position);
 		}
 
-		
+
 		public int GetAutotileBitmask(Guid autotileId, Vector2Int position, bool mergeAll = false)
 		{
 			if (Autotiles is null || (!mergeAll && !Autotiles.ContainsKey(autotileId))) return -1;
@@ -814,6 +817,8 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 			return new Tile(TileId, CellPosition, Rotation, HorizontalFlip, VerticalFlip);
 		}
 	}
+
+	public class ComponentControls { }
 
 }
 

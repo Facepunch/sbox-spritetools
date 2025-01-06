@@ -131,6 +131,7 @@ public class TilesetToolInspector : InspectorWidget
                 if (!x.HasAttribute<PropertyAttribute>()) return false;
                 if (x.TryGetAttribute<FeatureAttribute>(out var feature) && feature.Title == "Collision") return false;
                 if (x.PropertyType == typeof(Action)) return false;
+                if (x.PropertyType == typeof(TilesetComponent.ComponentControls)) return false;
 
                 return true;
             });
