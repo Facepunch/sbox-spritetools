@@ -45,8 +45,10 @@ partial class TilesetDropObject : BaseDropObject
 		var tilesetComponent = GameObject.Components.GetOrCreate<TilesetComponent>();
 		var layer = new TilesetComponent.Layer();
 		layer.TilesetResource = tileset;
+		tilesetComponent.Layers ??= new();
 		tilesetComponent.Layers.Add(layer);
 
 		EditorScene.Selection.Set(DragObject);
+		SceneEditorSession.Active.FullUndoSnapshot("Create Tileset");
 	}
 }

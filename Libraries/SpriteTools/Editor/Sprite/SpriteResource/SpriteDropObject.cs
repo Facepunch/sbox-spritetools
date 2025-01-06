@@ -71,5 +71,6 @@ partial class SpriteDropObject : BaseDropObject
 
 		EditorScene.Selection.Clear();
 		EditorScene.Selection.Add(DragObject);
+		SceneEditorSession.Active.FullUndoSnapshot("Create Sprite");
 	}
 }
