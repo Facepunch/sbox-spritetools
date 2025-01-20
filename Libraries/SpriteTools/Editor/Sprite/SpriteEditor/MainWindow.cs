@@ -362,11 +362,10 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     internal void PromptImportSpritesheet()
     {
-        var picker = new AssetPicker(this, AssetType.ImageFile);
+        var picker = AssetPicker.Create(this, AssetType.ImageFile, new(){EnableMultiselect = false});
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
         picker.Window.Title = $"Import Spritesheet for {SelectedAnimation.Name}";
-        picker.MultiSelect = false;
         picker.OnAssetPicked = x =>
         {
             var path = x.FirstOrDefault()?.GetSourceFile();

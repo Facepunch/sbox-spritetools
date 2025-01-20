@@ -170,11 +170,10 @@ public class Timeline : Widget
     {
         if (MainWindow.SelectedAnimation is null) return;
 
-        var picker = new AssetPicker(this, AssetType.ImageFile);
+        var picker = AssetPicker.Create(this, AssetType.ImageFile, new() { EnableMultiselect = true });
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
         picker.Window.Title = $"Import Frame - {MainWindow.Sprite.ResourceName} - {MainWindow.SelectedAnimation.Name}";
-        picker.MultiSelect = true;
         // picker.Assets = new List<Asset>() { Asset };
         // picker.OnAssetHighlighted = x => Asset = x.First();
         picker.OnAssetPicked = x =>
