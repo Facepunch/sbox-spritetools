@@ -106,7 +106,7 @@ public class AutotileWidget : ControlWidget
 			hc.Add(selectedLayer);
 			hc.Add(selectedLayer?.TilesetResource);
 
-			if (tilesetComponent is not null && selectedLayer is not null)
+			if (tilesetComponent is not null && selectedLayer?.TilesetResource is not null)
 			{
 				foreach (var autotile in selectedLayer.TilesetResource.GetAllAutotileBrushes())
 				{
