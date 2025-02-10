@@ -80,6 +80,10 @@ public class EraserTileTool : BaseTileTool
         var tilePos = (pos - Parent.SelectedComponent.WorldPosition) / tileSize;
         if (Gizmo.IsLeftMouseDown)
         {
+            if (_componentUndoScope is null)
+            {
+                _componentUndoScope = SceneEditorSession.Active.UndoScope("Erase Tiles").WithComponentChanges(Parent.SelectedComponent).Push();
+            }
             var brush = AutotileBrush;
             foreach (var ppos in positions)
             {
@@ -104,7 +108,8 @@ public class EraserTileTool : BaseTileTool
         }
         else if (isErasing)
         {
-            SceneEditorSession.Active.FullUndoSnapshot($"Erase Tiles");
+            _componentUndoScope?.Dispose();
+            _componentUndoScope = null;
             isErasing = false;
         }
 

@@ -86,7 +86,6 @@ public class RectangleTileTool : BaseTileTool
                         else
                             Parent.EraseAutoTile(brush, (Vector2Int)(tilePos + ppos));
                     }
-                    SceneEditorSession.Active.FullUndoSnapshot($"Erase Tile Rectangle");
                     Parent.SelectedComponent.IsDirty = true;
                 }
                 else
@@ -111,16 +110,22 @@ public class RectangleTileTool : BaseTileTool
                             Parent.SelectedLayer.UpdateAutotile(brush.Id, (Vector2Int)(tilePos + ppos), false);
                         }
                     }
-                    SceneEditorSession.Active.FullUndoSnapshot($"Place Tile Rectangle");
                     Parent.SelectedComponent.IsDirty = true;
                 }
+                _componentUndoScope?.Dispose();
+                _componentUndoScope = null;
             }
         }
         else if (Gizmo.IsLeftMouseDown || Gizmo.IsRightMouseDown)
         {
+            deleting = Gizmo.IsRightMouseDown;
+            if (_componentUndoScope is null)
+            {
+                _componentUndoScope = SceneEditorSession.Active.UndoScope(deleting ? "Erase Tile Rectangle" : "Paint Tile Rectangle")
+                    .WithComponentChanges(Parent.SelectedComponent).Push();
+            }
             startPos = tilePos;
             holding = true;
-            deleting = Gizmo.IsRightMouseDown;
         }
         else
         {

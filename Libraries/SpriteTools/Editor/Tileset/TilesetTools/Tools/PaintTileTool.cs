@@ -84,6 +84,10 @@ public class PaintTileTool : BaseTileTool
 
         if (Gizmo.IsLeftMouseDown)
         {
+            if (_componentUndoScope is null)
+            {
+                _componentUndoScope = SceneEditorSession.Active.UndoScope("Paint Tile").WithComponentChanges(Parent.SelectedComponent).Push();
+            }
             var brush = AutotileBrush;
             if (brush is not null)
             {
@@ -122,7 +126,8 @@ public class PaintTileTool : BaseTileTool
         }
         else if (isPainting)
         {
-            SceneEditorSession.Active.FullUndoSnapshot($"Paint Tiles");
+            _componentUndoScope?.Dispose();
+            _componentUndoScope = null;
             isPainting = false;
         }
 

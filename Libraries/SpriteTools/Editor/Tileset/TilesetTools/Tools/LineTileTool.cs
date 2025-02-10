@@ -84,11 +84,16 @@ public class LineTileTool : BaseTileTool
                     }
                 }
                 Parent.SelectedComponent.IsDirty = true;
-                SceneEditorSession.Active.FullUndoSnapshot($"Paint Tile Line");
+                _componentUndoScope?.Dispose();
+                _componentUndoScope = null;
             }
         }
         else if (Gizmo.IsLeftMouseDown)
         {
+            if (_componentUndoScope is null)
+            {
+                _componentUndoScope = SceneEditorSession.Active.UndoScope("Paint Tiles").WithComponentChanges(Parent.SelectedComponent).Push();
+            }
             startPos = tilePos;
             holding = true;
         }

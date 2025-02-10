@@ -36,19 +36,22 @@ partial class TilesetDropObject : BaseDropObject
 		if (tileset is null)
 			return;
 
-		var DragObject = new GameObject();
-		DragObject.Name = tileset.ResourceName;
-		DragObject.Transform.World = new Transform(Vector3.Zero, Rotation.Identity, 1);
+		var undoScope = SceneEditorSession.Active.UndoScope("Drag Tileset").WithGameObjectCreations();
+		using (undoScope.Push())
+		{
+			var DragObject = new GameObject();
+			DragObject.Name = tileset.ResourceName;
+			DragObject.Transform.World = new Transform(Vector3.Zero, Rotation.Identity, 1);
 
-		GameObject = DragObject;
+			GameObject = DragObject;
 
-		var tilesetComponent = GameObject.Components.GetOrCreate<TilesetComponent>();
-		var layer = new TilesetComponent.Layer();
-		layer.TilesetResource = tileset;
-		tilesetComponent.Layers ??= new();
-		tilesetComponent.Layers.Add(layer);
+			var tilesetComponent = GameObject.Components.GetOrCreate<TilesetComponent>();
+			var layer = new TilesetComponent.Layer();
+			layer.TilesetResource = tileset;
+			tilesetComponent.Layers ??= new();
+			tilesetComponent.Layers.Add(layer);
 
-		EditorScene.Selection.Set(DragObject);
-		SceneEditorSession.Active.FullUndoSnapshot("Create Tileset");
+			EditorScene.Selection.Set(DragObject);
+		}
 	}
 }

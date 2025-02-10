@@ -59,18 +59,20 @@ partial class SpriteDropObject : BaseDropObject
 
 		if (sprite is null)
 			return;
+		var undoScope = SceneEditorSession.Active.UndoScope("Drag Sprite").WithGameObjectCreations();
+		using (undoScope.Push())
+		{
+			var DragObject = new GameObject();
+			DragObject.Name = sprite.ResourceName;
+			DragObject.Transform.World = traceTransform.WithRotation(SceneViewportWidget.LastSelected.State.CameraRotation * new Angles(0, -90, 90));
 
-		var DragObject = new GameObject();
-		DragObject.Name = sprite.ResourceName;
-		DragObject.Transform.World = traceTransform.WithRotation(SceneViewportWidget.LastSelected.State.CameraRotation * new Angles(0, -90, 90));
+			GameObject = DragObject;
 
-		GameObject = DragObject;
+			var spriteComponent = GameObject.Components.GetOrCreate<SpriteComponent>();
+			spriteComponent.Sprite = sprite;
 
-		var spriteComponent = GameObject.Components.GetOrCreate<SpriteComponent>();
-		spriteComponent.Sprite = sprite;
-
-		EditorScene.Selection.Clear();
-		EditorScene.Selection.Add(DragObject);
-		SceneEditorSession.Active.FullUndoSnapshot("Create Sprite");
+			EditorScene.Selection.Clear();
+			EditorScene.Selection.Add(DragObject);
+		}
 	}
 }

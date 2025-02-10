@@ -11,6 +11,7 @@ public abstract class BaseTileTool : EditorTool
     protected TilesetTool Parent;
 
     public bool ShouldMergeAutotiles = true;
+    protected IDisposable _componentUndoScope;
 
     protected AutotileBrush AutotileBrush
     {
