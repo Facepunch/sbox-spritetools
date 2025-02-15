@@ -27,7 +27,7 @@ public class TilesetLayerControl : Widget
         VerticalSizeMode = SizeMode.Flexible;
 
         StatusTip = $"Select Layer \"{Layer.Name}\"";
-        Cursor = CursorShape.Finger;
+        Cursor = TilesetTool.Active is not null ? CursorShape.Finger : CursorShape.None;
 
         Layout = Layout.Row();
         Layout.Margin = 4;
@@ -96,7 +96,7 @@ public class TilesetLayerControl : Widget
             Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
             Paint.DrawRect(LocalRect, 4);
         }
-        else if (IsUnderMouse)
+        else if (IsUnderMouse && TilesetTool.Active is not null)
         {
             Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
             Paint.DrawRect(LocalRect, 4);

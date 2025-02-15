@@ -44,17 +44,20 @@ public class TilesetLayerListControl : ControlWidget
         scrollArea.Canvas.Layout.Add(content);
 
         // Add button
-        var row = Layout.AddRow();
-        row.AddStretchCell();
-        row.Margin = 16;
-        var btnAdd = row.Add(new Button.Primary("Create New Layer", "add"));
-        btnAdd.HorizontalSizeMode = SizeMode.CanGrow;
-        btnAdd.Clicked = CreateNewLayer;
-        row.AddStretchCell();
-        var btnBake = row.Add(new Button("Bake Selected Layer", "palette"));
-        btnBake.HorizontalSizeMode = SizeMode.CanGrow;
-        btnBake.Clicked = BakeSelectedLayerPopup;
-        row.AddStretchCell();
+        if (TilesetTool.Active is not null)
+        {
+            var row = Layout.AddRow();
+            row.AddStretchCell();
+            row.Margin = 16;
+            var btnAdd = row.Add(new Button.Primary("Create New Layer", "add"));
+            btnAdd.HorizontalSizeMode = SizeMode.CanGrow;
+            btnAdd.Clicked = CreateNewLayer;
+            row.AddStretchCell();
+            var btnBake = row.Add(new Button("Bake Selected Layer", "palette"));
+            btnBake.HorizontalSizeMode = SizeMode.CanGrow;
+            btnBake.Clicked = BakeSelectedLayerPopup;
+            row.AddStretchCell();
+        }
 
         scrollArea.Canvas.Layout.AddStretchCell();
 
@@ -128,7 +131,7 @@ public class TilesetLayerListControl : ControlWidget
         foreach (var tile in layer.Tiles)
         {
             var tileRef = tileset.GetTileFromId(tile.Value.TileId);
-            if(tileRef is null) continue;
+            if (tileRef is null) continue;
             tile.Value.TileId = default;
             tile.Value.CellPosition = default;
             tile.Value.BakedPosition = tileRef.Position + tile.Value.CellPosition;
