@@ -16,7 +16,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 	/// <summary>
 	/// The Layers within the TilesetComponent
 	/// </summary>
-	[Group("Layers")]
+	[Property, Group("Layers")]
 	public List<Layer> Layers
 	{
 		get => _layers;
