@@ -70,7 +70,7 @@ public class TilesetLayerControl : Widget
         Layout.Add(btnVisible);
 
         var btnLock = new IconButton(Layer.IsLocked ? "lock" : "lock_open");
-        btnLock.ToolTip = "lock";
+        btnLock.ToolTip = "Lock Layer";
         btnLock.StatusTip = "Lock Layer " + Layer.Name;
         btnLock.OnClick += () =>
         {
