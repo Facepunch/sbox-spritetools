@@ -5,6 +5,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpriteTools.TilesetTool;
 
@@ -120,9 +121,17 @@ public partial class TilesetTool : EditorTool
 		base.OnUpdate();
 		if (SelectedComponent.Transform is null) return;
 
-		if (Selection.FirstOrDefault() != this || Selection.Count > 1)
+		var firstSelected = Selection.FirstOrDefault();
+		if (!_resetting && (firstSelected != this || Selection.Count > 1))
 		{
-			EditorToolManager.SetTool("object");
+			if (firstSelected is TilesetTool)
+			{
+				ResetTool();
+			}
+			else
+			{
+				EditorToolManager.SetTool("object");
+			}
 			return;
 		}
 
@@ -154,6 +163,40 @@ public partial class TilesetTool : EditorTool
 			_componentToOpen = component;
 			EditorToolManager.SetTool(nameof(TilesetTool));
 		}
+	}
+
+	// This is used for when the scene is reloaded via an undo/redo snapshot
+	bool _resetting = false;
+	async void ResetTool()
+	{
+		_resetting = true;
+		Active = null;
+		var componentId = SelectedComponent?.GameObject?.Id ?? Guid.Empty;
+		EditorToolManager.SetTool("object");
+		while (Manager?.CurrentSession is null)
+		{
+			await Task.Delay(1);
+		}
+		Selection.Clear();
+		while (TilesetToolInspector.Active.IsValid)
+		{
+			await Task.Delay(1);
+		}
+		if (componentId != Guid.Empty)
+		{
+			var scene = SceneEditorSession.Active.Scene;
+			var component = scene.Directory.FindByGuid(componentId).GetComponent<TilesetComponent>();
+			component ??= scene.GetAllComponents<TilesetComponent>().FirstOrDefault();
+			if (component is not null)
+			{
+				OpenComponent(component);
+			}
+		}
+		else
+		{
+			EditorToolManager.SetTool(nameof(TilesetTool));
+		}
+		_resetting = false;
 	}
 
 	void UpdateComponent()

@@ -71,7 +71,7 @@ public class PaintTileTool : BaseTileTool
         if (Parent.SelectedComponent.Transform is null) return;
 
         var pos = GetGizmoPos();
-        var tile = TilesetTool.Active.SelectedTile;
+        var tile = Parent.SelectedTile;
         var tilePos = (Vector2Int)((pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize());
 
         Parent._sceneObject.Transform = new Transform(pos, Rotation.Identity, 1);
@@ -160,7 +160,7 @@ public class PaintTileTool : BaseTileTool
     {
         var pos = GetGizmoPos();
         var brush = AutotileBrush;
-        var tile = TilesetTool.Active.SelectedTile;
+        var tile = Parent.SelectedTile;
         if (tile is null) return;
         var tilePos = (Vector2Int)((pos - Parent.SelectedComponent.WorldPosition) / Parent.SelectedLayer.TilesetResource.GetTileSize());
 
@@ -259,7 +259,7 @@ public class PaintTileTool : BaseTileTool
     void Place(Vector2Int tilePos)
     {
         var brush = AutotileBrush;
-        var tile = TilesetTool.Active.SelectedTile;
+        var tile = Parent.SelectedTile;
 
 
         foreach (var position in Parent._sceneObject.MultiTilePositions)
