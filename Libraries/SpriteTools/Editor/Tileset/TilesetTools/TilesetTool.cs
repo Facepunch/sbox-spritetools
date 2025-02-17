@@ -70,7 +70,7 @@ public partial class TilesetTool : EditorTool
 			if (_selectedTile == value) return;
 
 			_selectedTile = value;
-			_sceneObject.MultiTilePositions.Clear();
+			_sceneObject?.MultiTilePositions?.Clear();
 			UpdateInspector?.Invoke();
 		}
 	}

@@ -158,7 +158,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		}
 	}
 	TilesetCollider Collider;
-	List<TilesetSceneObject> _sos = new();
+	internal List<TilesetSceneObject> _sos = new();
 
 	protected override void OnEnabled()
 	{
@@ -192,6 +192,19 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 		_sos ??= new();
 		Layers ??= new();
+		var _newSos = new List<TilesetSceneObject>();
+		foreach (var sos in _sos)
+		{
+			if (sos is not null || sos.IsValid())
+			{
+				_newSos.Add(sos);
+			}
+			else
+			{
+				sos?.Delete();
+			}
+		}
+		_sos = _newSos;
 		if (Layers.Count != _sos.Count)
 		{
 			RebuildSceneObjects();
@@ -269,9 +282,9 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 		}
 
 		_sos = new List<TilesetSceneObject>();
-		foreach (var layer in Layers)
+		for (int i = 0; i < Layers.Count; i++)
 		{
-			_sos.Add(new TilesetSceneObject(this, Scene.SceneWorld, layer));
+			_sos.Add(new TilesetSceneObject(this, Scene.SceneWorld, i));
 		}
 	}
 
@@ -827,12 +840,12 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 	TilesetComponent Component;
 	Dictionary<TilesetResource, (TileAtlas, Material)> Materials = new();
 	Material MissingMaterial;
-	TilesetComponent.Layer Layer;
+	int LayerIndex;
 
-	public TilesetSceneObject(TilesetComponent component, SceneWorld world, TilesetComponent.Layer layer) : base(world)
+	public TilesetSceneObject(TilesetComponent component, SceneWorld world, int layerIndex) : base(world)
 	{
 		Component = component;
-		Layer = layer;
+		LayerIndex = layerIndex;
 
 		MissingMaterial = Material.Load("materials/sprite_2d.vmat").CreateCopy();
 		MissingMaterial.Set("Texture", Texture.Load("images/missing-tile.png"));
@@ -842,6 +855,11 @@ internal sealed class TilesetSceneObject : SceneCustomObject
 	public override void RenderSceneObject()
 	{
 		if (Component?.Layers is null) return;
+		var Layer = Component.Layers.ElementAtOrDefault(LayerIndex);
+		if (Layer is null)
+		{
+			return;
+		}
 
 		var layers = Component.Layers.ToList();
 		layers.Reverse();
