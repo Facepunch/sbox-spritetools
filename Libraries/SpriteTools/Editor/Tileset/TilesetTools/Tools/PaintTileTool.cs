@@ -266,7 +266,7 @@ public class PaintTileTool : BaseTileTool
         {
             if (brush is null)
             {
-                Parent.PlaceTile(tilePos + position.Item1, tile.Id, position.Item2);
+                Parent.PlaceTile(tilePos + position.Item1, tile.Id, 0);
             }
             else
             {
