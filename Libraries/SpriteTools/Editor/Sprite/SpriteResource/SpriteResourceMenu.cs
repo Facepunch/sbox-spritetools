@@ -24,7 +24,7 @@ internal static class SpriteResourceMenu
         }
     }
 
-    private static void CreateSpriteResourceUsingImageFiles(IEnumerable<AssetEntry> assets)
+    private static async void CreateSpriteResourceUsingImageFiles(IEnumerable<AssetEntry> assets)
     {
         var asset = assets.First().Asset;
         var assetName = asset.Name;
@@ -43,6 +43,7 @@ internal static class SpriteResourceMenu
 
         var paths = assets.Select(x => System.IO.Path.ChangeExtension(x.Asset.Path, System.IO.Path.GetExtension(x.Asset.AbsolutePath)));
         asset = AssetSystem.CreateResource("sprite", fd.SelectedFile);
+        await asset.CompileIfNeededAsync();
         var sprite = asset.LoadResource<SpriteResource>();
         var anim = sprite.Animations.FirstOrDefault();
         anim.Name = "default";
@@ -61,12 +62,13 @@ internal static class SpriteResourceMenu
         EditorUtility.InspectorObject = asset;
     }
 
-    private static void CreateSpriteResourcesUsingImageFiles(IEnumerable<AssetEntry> assets)
+    private static async void CreateSpriteResourcesUsingImageFiles(IEnumerable<AssetEntry> assets)
     {
         foreach (var entry in assets)
         {
             var asset = entry.Asset;
             var newAsset = AssetSystem.CreateResource("sprite", System.IO.Path.ChangeExtension(asset.AbsolutePath, ".sprite"));
+            await newAsset.CompileIfNeededAsync();
             var sprite = newAsset.LoadResource<SpriteResource>();
             var anim = sprite.Animations.FirstOrDefault();
             anim.Name = ImportSettings.AnimationName;
