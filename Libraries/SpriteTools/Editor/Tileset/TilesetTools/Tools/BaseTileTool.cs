@@ -51,6 +51,20 @@ public abstract class BaseTileTool : EditorTool
             .Ray(Gizmo.CurrentRay, 50000)
             .Run();
 
+        var viewportState = SceneViewportWidget.LastSelected.State;
+        if (!tr.Hit)
+        {
+            var dist = 0f;
+            if (!viewportState.Is2D)
+                dist = viewportState.CameraPosition.z < 0.0f ? viewportState.CameraPosition.z - 200 : 0.0f;
+            var plane = new Plane(viewportState.Is2D ? viewportState.CameraRotation.Backward : Vector3.Up, dist);
+            if (plane.TryTrace(new Ray(tr.StartPosition, tr.Direction), out tr.EndPosition))
+            {
+                tr.Normal = plane.Normal;
+                tr.HitPosition = tr.EndPosition;
+            }
+        }
+
         var tileSize = Parent.SelectedLayer.TilesetResource.GetTileSize();
         var center = Parent.SelectedComponent.WorldPosition;
         var offset = new Vector3(
