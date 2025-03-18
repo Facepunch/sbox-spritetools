@@ -222,6 +222,10 @@ public class Inspector : Widget
         }
         objs.Rebuild();
 
+        objs.OnPropertyChanged += (prop) =>
+        {
+            MainWindow.SetDirty();
+        };
         selectedTileSheet.AddObject(objs, (SerializedProperty prop) =>
         {
             return !prop.HasAttribute<HideAttribute>() && prop.HasAttribute<PropertyAttribute>();

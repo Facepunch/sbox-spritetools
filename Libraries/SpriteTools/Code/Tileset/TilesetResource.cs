@@ -210,10 +210,14 @@ public partial class TilesetResource : GameResource
 		var obj = new JsonObject()
 		{
 			["FilePath"] = FilePath,
+			["TileScale"] = TileScale.ToString(),
 			["TileSize"] = TileSize.ToString(),
-			["CurrentTileSize"] = CurrentTileSize.ToString(),
 			["TileSeparation"] = TileSeparation.ToString(),
-			["Tiles"] = Json.Serialize(Tiles)
+			["Tiles"] = JsonArray.Parse(Json.Serialize(Tiles)),
+			["AutotileBrushes"] = JsonArray.Parse(Json.Serialize(AutotileBrushes)),
+			["InheritAutotileFrom"] = InheritAutotileFrom?.ResourceId.ToString() ?? "",
+			["CurrentTextureSize"] = CurrentTextureSize.ToString(),
+			["CurrentTileSize"] = CurrentTileSize.ToString()
 		};
 		return obj.ToJsonString();
 	}
@@ -222,10 +226,25 @@ public partial class TilesetResource : GameResource
 	{
 		var obj = JsonNode.Parse(json);
 		FilePath = obj["FilePath"]?.GetValue<string>() ?? "";
+		TileScale = float.Parse(obj["TileScale"]?.GetValue<string>() ?? "1.0");
 		TileSize = Vector2Int.Parse(obj["TileSize"]?.GetValue<string>() ?? "32,32");
 		CurrentTileSize = Vector2Int.Parse(obj["CurrentTileSize"]?.GetValue<string>() ?? "32,32");
+		CurrentTextureSize = Vector2Int.Parse(obj["CurrentTextureSize"]?.GetValue<string>() ?? "1,1");
 		TileSeparation = Vector2Int.Parse(obj["TileSeparation"]?.GetValue<string>() ?? "0,0");
-		Tiles = Json.Deserialize<List<Tile>>(obj["Tiles"]?.GetValue<string>() ?? "[]");
+		var tiles = obj["Tiles"].AsArray();
+		Tiles.Clear();
+		foreach (var tile in tiles)
+		{
+			Tiles.Add(Json.Deserialize<Tile>(tile.ToJsonString()));
+		}
+		var brushes = obj["AutotileBrushes"].AsArray();
+		AutotileBrushes.Clear();
+		foreach (var brush in brushes)
+		{
+			AutotileBrushes.Add(Json.Deserialize<AutotileBrush>(brush.ToJsonString()));
+		}
+		var inheritId = obj["InheritAutotileFrom"]?.GetValue<string>() ?? "";
+		InheritAutotileFrom = ResourceLibrary.GetAll<TilesetResource>().FirstOrDefault(x => x.ResourceId.ToString() == inheritId);
 		InternalUpdateTiles();
 	}
 

@@ -2,7 +2,9 @@ using Editor;
 using Sandbox;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace SpriteTools.TilesetEditor;
 
@@ -240,6 +242,20 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		UpdateEverything();
 	}
 
+	private void Restore()
+	{
+		var path = _asset?.AbsolutePath;
+		if (string.IsNullOrEmpty(path))
+		{
+			return;
+		}
+
+		var contents = File.ReadAllText(path);
+		ReloadFromString(contents);
+
+		_dirty = false;
+	}
+
 	public bool Save(bool saveAs = false)
 	{
 		var savePath = (_asset == null || saveAs) ? GetSavePath() : _asset.AbsolutePath;
@@ -288,6 +304,27 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		_redoMenuOption.StatusTip = _undoStack.RedoName ?? "Redo";
 	}
 
+	protected override bool OnClose()
+	{
+		if (_dirty)
+		{
+			var confirm = new PopupWindow(
+				"Save Current Tileset", "The open tileset has unsaved changes. Would you like to save now?", "Cancel",
+				new Dictionary<string, System.Action>()
+				{
+					{ "No", () => { Restore(); Close(); } },
+					{ "Yes", () => { Save(); Close(); } }
+				}
+			);
+
+			confirm.Show();
+
+			return false;
+		}
+
+		return true;
+	}
+
 	static string GetSavePath(string title = "Save Tileset")
 	{
 		var fd = new FileDialog(null)
@@ -328,6 +365,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 		SelectTile(tile, add);
 		PushRedo();
+		SetDirty();
 	}
 
 	internal void SelectTile(TilesetResource.Tile tile, bool add = false)
@@ -376,6 +414,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 				}
 			}
 		}
+		SetDirty();
 	}
 
 	internal void GenerateTiles()

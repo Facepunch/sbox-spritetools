@@ -274,6 +274,7 @@ public class RenderingWidget : SpriteRenderingWidget
 							if (!MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Contains(reference))
 								MainWindow.inspector.autotileBrushList.SelectedTile.Tiles.Add(reference);
 							MainWindow.inspector?.UpdateSelectedAutotileSheet();
+							MainWindow.SetDirty();
 
 							if (hadNone)
 							{
