@@ -154,7 +154,10 @@ public class AutotileBrushControl : Widget
 		name =>
 		{
 			if (string.IsNullOrEmpty(name)) return;
+			ParentList?.MainWindow?.PushUndo("Rename Brush");
 			brush.Name = name;
+			ParentList?.MainWindow?.SetDirty();
+			ParentList?.MainWindow?.PushRedo();
 		});
 	}
 
@@ -176,6 +179,7 @@ public class AutotileBrushControl : Widget
 				tile.Tiles?.Clear();
 			}
 			ParentList?.MainWindow?.inspector?.UpdateSelectedAutotileSheet();
+			ParentList?.MainWindow?.SetDirty();
 		});
 
 		m.AddSeparator();

@@ -258,6 +258,7 @@ public class RenderingWidget : SpriteRenderingWidget
 					{
 						if (MainWindow?.inspector?.autotileBrushList?.SelectedTile is not null)
 						{
+							MainWindow.PushUndo("Set Autotile Tile");
 							var currentTileCount = MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.Count ?? 0;
 							if (currentTileCount > 0 && (MainWindow?.inspector?.autotileBrushList?.SelectedTile?.Tiles?.LastOrDefault()?.Id ?? new Guid()) == Guid.Empty)
 							{
@@ -282,6 +283,7 @@ public class RenderingWidget : SpriteRenderingWidget
 								selectedIndex = (selectedIndex + 1) % MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles.Count();
 								MainWindow.inspector.autotileBrushList.SelectedTile = MainWindow.inspector.autotileBrushList.SelectedBrush.Brush.Tiles[selectedIndex];
 							}
+							MainWindow.PushRedo();
 						}
 					}
 					else if (Gizmo.WasLeftMousePressed)

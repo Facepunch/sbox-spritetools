@@ -422,7 +422,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		if (Tileset is null) return;
 
 		PushUndo("Generate Tiles");
-		foreach (var tile in Tileset.Tiles)
+		foreach (var tile in Tileset.Tiles.ToList())
 		{
 			Tileset.RemoveTile(tile);
 		}
@@ -445,6 +445,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 			y++;
 		}
 		PushRedo();
+		SetDirty();
 		UpdateEverything();
 	}
 
@@ -456,7 +457,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		Tileset.Tiles ??= new List<TilesetResource.Tile>();
 		Tileset.Tiles?.Clear();
 		PushRedo();
-
+		SetDirty();
 		UpdateEverything();
 	}
 
