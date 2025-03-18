@@ -259,6 +259,22 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
     }
 
+    private void Restore()
+    {
+        var path = _asset?.AbsolutePath;
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        var contents = File.ReadAllText(path);
+        var json = Json.ParseToJsonObject(contents);
+        var animations = json["Animations"];
+        ReloadFromString(animations.ToJsonString());
+
+        _dirty = false;
+    }
+
     public bool Save(bool saveAs = false)
     {
         var savePath = (_asset == null || saveAs) ? GetSavePath() : _asset.AbsolutePath;
@@ -332,6 +348,27 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _redoOption.StatusTip = _undoStack.RedoName ?? "Redo";
         _undoMenuOption.StatusTip = _undoStack.UndoName ?? "Undo";
         _redoMenuOption.StatusTip = _undoStack.RedoName ?? "Redo";
+    }
+
+    protected override bool OnClose()
+    {
+        if (_dirty)
+        {
+            var confirm = new PopupWindow(
+                "Save Current Sprite", "The open sprite has unsaved changes. Would you like to save now?", "Cancel",
+                new Dictionary<string, System.Action>()
+                {
+                    { "No", () => { Restore(); Close(); } },
+                    { "Yes", () => { Save(); Close(); } }
+                }
+            );
+
+            confirm.Show();
+
+            return false;
+        }
+
+        return true;
     }
 
     static string GetSavePath(string title = "Save Sprite")
