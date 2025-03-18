@@ -487,6 +487,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public void PushRedo()
     {
         _undoStack.PushRedo(JsonSerializer.Serialize(Sprite.Animations));
+        SetDirty();
     }
 
     public void Undo()

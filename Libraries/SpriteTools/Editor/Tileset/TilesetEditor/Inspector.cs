@@ -180,8 +180,6 @@ public class Inspector : Widget
             MainWindow.PushUndo(undoName, buffer);
             MainWindow.PushRedo();
 
-            MainWindow.SetDirty();
-
             if (prop.Name == "FilePath")
                 MainWindow.preview.UpdateTexture(prop.GetValue<string>());
         };

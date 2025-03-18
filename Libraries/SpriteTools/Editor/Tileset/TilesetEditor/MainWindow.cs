@@ -498,6 +498,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 	public void PushRedo()
 	{
 		_undoStack.PushRedo(Tileset.SerializeString());
+		SetDirty();
 	}
 
 	public void Undo()
