@@ -21,6 +21,17 @@ public class Timeline : Widget
     Label labelFrameCount;
     FloatSlider sliderFrameSize;
 
+    public int CurrentFrame
+    {
+        get => MainWindow.CurrentFrameIndex + 1;
+        set
+        {
+            if (value <= 0) MainWindow.CurrentFrameIndex = 0;
+            else if (value > MainWindow.SelectedAnimation.Frames.Count) MainWindow.CurrentFrameIndex = MainWindow.SelectedAnimation.Frames.Count - 1;
+            else MainWindow.CurrentFrameIndex = value - 1;
+        }
+    }
+
     public Timeline(MainWindow mainWindow) : base(null)
     {
         MainWindow = mainWindow;
@@ -42,7 +53,7 @@ public class Timeline : Widget
         bannerLayout.Add(label1);
         bannerLayout.AddSpacingCell(4);
 
-        MainWindow.GetSerialized().TryGetProperty(nameof(MainWindow.CurrentFrame), out var currentFrameIndex);
+        this.GetSerialized().TryGetProperty(nameof(CurrentFrame), out var currentFrameIndex);
         widgetCurrentFrame = new IntegerControlWidget(currentFrameIndex);
         widgetCurrentFrame.MaximumWidth = 64f;
         bannerLayout.Add(widgetCurrentFrame);
