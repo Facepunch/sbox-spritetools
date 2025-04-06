@@ -78,7 +78,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	void UpdateWindowTitle()
 	{
-		Title = ($"{_asset.Name} - Tileset Editor" ?? "Untitled Tileset - Tileset Editor") + (_dirty ? "*" : "");
+		Title = (_asset != null ? $"{_asset.Name} - Tileset Editor" : "Untitled Tileset - Tileset Editor") + (_dirty ? "*" : "");
 	}
 
 	public void RebuildUI()
