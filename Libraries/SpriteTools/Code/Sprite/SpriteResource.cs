@@ -157,6 +157,9 @@ public class SpriteAnimation
 	/// </summary>
 	public List<SpriteAttachment> Attachments { get; set; } = new();
 
+	public int? LoopStart { get; set; } = null;
+	public int? LoopEnd { get; set; } = null;
+
 	public SpriteAnimation()
 	{
 		Frames = new List<SpriteAnimationFrame>();
