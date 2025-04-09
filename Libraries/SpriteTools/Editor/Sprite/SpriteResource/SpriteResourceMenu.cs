@@ -54,7 +54,7 @@ internal static class SpriteResourceMenu
             var frame = new SpriteAnimationFrame(path);
             anim.Frames.Add(frame);
         }
-        anim.Looping = true;
+        anim.LoopMode = SpriteResource.LoopMode.Forward;
 
         asset.SaveToDisk(sprite);
         MainAssetBrowser.Instance?.UpdateAssetList();
@@ -77,7 +77,7 @@ internal static class SpriteResourceMenu
             anim.Frames.Clear();
             var frame = new SpriteAnimationFrame(System.IO.Path.ChangeExtension(asset.Path, System.IO.Path.GetExtension(asset.AbsolutePath)));
             anim.Frames.Add(frame);
-            anim.Looping = true;
+            anim.LoopMode = SpriteResource.LoopMode.Forward;
 
             newAsset.SaveToDisk(sprite);
         }

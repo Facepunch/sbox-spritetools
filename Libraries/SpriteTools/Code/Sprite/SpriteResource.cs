@@ -97,7 +97,7 @@ public class SpriteResource : GameResource
 			var newAnimation = new SpriteAnimation(otherAnimation.Name)
 			{
 				FrameRate = otherAnimation.FrameRate,
-				Looping = otherAnimation.Looping,
+				LoopMode = otherAnimation.LoopMode,
 				Origin = otherAnimation.Origin
 			};
 			foreach (var otherFrame in otherAnimation.Frames)
@@ -110,6 +110,30 @@ public class SpriteResource : GameResource
 			}
 			Animations.Add(newAnimation);
 		}
+	}
+
+	/// <summary>
+	/// The different types of looping for sprite animation.
+	/// </summary>
+	public enum LoopMode
+	{
+		/// <summary>
+		/// The animation will play from start to finish and then stop.
+		/// </summary>
+		[Icon("not_interested")]
+		None,
+
+		/// <summary>
+		/// The animation will play from start to finish and then loop back to the start.
+		/// </summary>
+		[Icon("loop"), Title("Loop")]
+		Forward,
+
+		/// <summary>
+		/// The animation will play from start to finish and then backwards from finish to start before looping.
+		/// </summary>
+		[Icon("sync_alt")]
+		PingPong
 	}
 
 }
@@ -134,10 +158,16 @@ public class SpriteAnimation
 	[Property, Range(0f, 1f, 0.01f, true, false)] public Vector2 Origin { get; set; } = new Vector2(0.5f, 0.5f);
 
 	/// <summary>
-	/// Whether or not the animation should loop.
+	/// Whether or not the animation should loop. Replaced with LoopMode.
 	/// </summary>
-	[Property]
+	[System.Obsolete("Use LoopMode instead.")]
 	public bool Looping { get; set; } = false;
+
+	/// <summary>
+	/// Whether or not the animation should loop and how.
+	/// </summary>
+	[Property, Title("Looping")]
+	public SpriteResource.LoopMode LoopMode { get; set; } = SpriteResource.LoopMode.Forward;
 
 	/// <summary>
 	/// The name of the animation. This is used as a key to reference the animation.

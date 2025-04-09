@@ -281,6 +281,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
     }
     private int _currentFrameIndex = 0;
     private float _timeSinceLastFrame = 0;
+    private bool _isPingPonging = false;
     private bool _flipHorizontal = false;
     private bool _flipVertical = false;
 
@@ -394,53 +395,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
             return;
         }
 
-        var frameCount = CurrentAnimation.Frames.Count;
-        if (frameCount > 1)
-        {
-            var frameRate = (1f / ((PlaybackSpeed == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(PlaybackSpeed))));
-            _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
-
-            if (PlaybackSpeed > 0 && _timeSinceLastFrame >= frameRate)
-            {
-                if (CurrentAnimation.Looping || CurrentFrameIndex < frameCount - 1)
-                {
-                    var frame = CurrentFrameIndex;
-                    frame++;
-                    if (CurrentAnimation.Looping && frame >= frameCount)
-                        frame = 0;
-                    else if (frame >= frameCount - 1 && Game.IsPlaying)
-                        _queuedAnimations.Add(CurrentAnimation.Name);
-                    CurrentFrameIndex = frame;
-                    _timeSinceLastFrame = 0;
-
-                    var currentFrame = CurrentAnimation.Frames[frame];
-                    foreach (var tag in currentFrame.Events)
-                    {
-                        QueueEvent(tag);
-                    }
-                }
-            }
-            else if (PlaybackSpeed < 0 && _timeSinceLastFrame >= frameRate)
-            {
-                if (CurrentAnimation.Looping || CurrentFrameIndex > 0)
-                {
-                    var frame = CurrentFrameIndex;
-                    var currentFrame = CurrentAnimation.Frames[frame];
-                    foreach (var tag in currentFrame.Events)
-                    {
-                        QueueEvent(tag);
-                    }
-
-                    frame--;
-                    if (CurrentAnimation.Looping && frame < 0)
-                        frame = frameCount - 1;
-                    else if (frame <= 0 && Game.IsPlaying)
-                        OnAnimationComplete?.Invoke(CurrentAnimation.Name);
-                    CurrentFrameIndex = frame;
-                    _timeSinceLastFrame = 0;
-                }
-            }
-        }
+        AdvanceFrame();
 
         // var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
         // if (texture is not null)
@@ -502,6 +457,73 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (SceneObject is not null && SceneObject.Model.ResourcePath != targetModel)
             SceneObject.Model = Model.Load(targetModel);
         ApplyMaterialOffset();
+    }
+
+    void AdvanceFrame()
+    {
+        var frameCount = CurrentAnimation.Frames.Count;
+        if (frameCount <= 1) return;
+        var currentPlayback = PlaybackSpeed * (_isPingPonging ? -1 : 1);
+        var frameRate = (1f / ((currentPlayback == 0) ? 0 : (CurrentAnimation.FrameRate * Math.Abs(currentPlayback))));
+        _timeSinceLastFrame += ((Game.IsPlaying) ? Time.Delta : RealTime.Delta);
+        if (_timeSinceLastFrame < frameRate) return;
+        if (!(CurrentAnimation.LoopMode != SpriteResource.LoopMode.None || (currentPlayback > 0 && CurrentFrameIndex < frameCount - 1) || (currentPlayback < 0 && CurrentFrameIndex > 0))) return;
+
+        if (currentPlayback > 0)
+        {
+            var frame = CurrentFrameIndex;
+            frame++;
+            if (frame >= frameCount && CurrentAnimation.LoopMode != SpriteResource.LoopMode.None)
+            {
+                switch (CurrentAnimation.LoopMode)
+                {
+                    case SpriteResource.LoopMode.PingPong:
+                        _isPingPonging = !_isPingPonging;
+                        frame = frameCount - 2;
+                        break;
+                    case SpriteResource.LoopMode.Forward:
+                        _isPingPonging = false;
+                        frame = 0;
+                        break;
+                }
+            }
+            else if (frame >= frameCount - 1 && Game.IsPlaying)
+            {
+                _queuedAnimations.Add(CurrentAnimation.Name);
+            }
+            CurrentFrameIndex = frame;
+        }
+        else if (currentPlayback < 0)
+        {
+            var frame = CurrentFrameIndex;
+            frame--;
+            if (CurrentAnimation.LoopMode != SpriteResource.LoopMode.None && frame < 0)
+            {
+                switch (CurrentAnimation.LoopMode)
+                {
+                    case SpriteResource.LoopMode.PingPong:
+                        _isPingPonging = !_isPingPonging;
+                        frame = 1;
+                        break;
+                    case SpriteResource.LoopMode.Forward:
+                        _isPingPonging = false;
+                        frame = frameCount - 1;
+                        break;
+                }
+            }
+            else if (frame <= 0 && Game.IsPlaying)
+            {
+                OnAnimationComplete?.Invoke(CurrentAnimation.Name);
+            }
+            CurrentFrameIndex = frame;
+        }
+
+        _timeSinceLastFrame = 0;
+        var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
+        foreach (var tag in currentFrame.Events)
+        {
+            QueueEvent(tag);
+        }
     }
 
     protected override void OnDestroy()
@@ -595,6 +617,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         _currentAnimation = animation;
         _currentFrameIndex = 0;
         _timeSinceLastFrame = 0;
+        _isPingPonging = false;
 
         CurrentTexture = TextureAtlas.FromAnimation(animation);
         SpriteMaterial?.Set("Texture", CurrentTexture);
