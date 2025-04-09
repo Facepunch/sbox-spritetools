@@ -279,7 +279,7 @@ internal class AnimationButton : Widget
             {
                 FrameRate = Animation.FrameRate,
                 Origin = Animation.Origin,
-                Looping = Animation.Looping,
+                LoopMode = Animation.LoopMode,
             };
             if (Animation.Frames is not null)
             {

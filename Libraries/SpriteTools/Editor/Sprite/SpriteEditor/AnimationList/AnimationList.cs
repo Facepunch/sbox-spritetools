@@ -125,7 +125,7 @@ public class AnimationList : Widget
     void CreateAnimation(string name)
     {
         var anim = new SpriteAnimation(name);
-        anim.Looping = true;
+        anim.LoopMode = SpriteResource.LoopMode.Forward;
 
         MainWindow.PushUndo($"Create Animation {name}");
         MainWindow.Sprite.Animations.Add(anim);

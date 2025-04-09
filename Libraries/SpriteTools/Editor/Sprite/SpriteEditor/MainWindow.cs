@@ -57,6 +57,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     Option _undoMenuOption;
     Option _redoMenuOption;
+    bool _isPingPonging = false;
 
     public MainWindow()
     {
@@ -264,6 +265,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         var path = _asset?.AbsolutePath;
         if (string.IsNullOrEmpty(path))
         {
+            _dirty = false;
             return;
         }
 
@@ -317,16 +319,13 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
         if (Playing)
         {
+            if (SelectedAnimation.LoopMode != SpriteResource.LoopMode.PingPong)
+            {
+                _isPingPonging = false;
+            }
             while (frameTimer >= FrameTime)
             {
-                CurrentFrameIndex = (CurrentFrameIndex + 1) % SelectedAnimation.Frames.Count;
-                frameTimer -= FrameTime;
-                if (CurrentFrameIndex == 0 && !SelectedAnimation.Looping)
-                {
-                    Playing = false;
-                    CurrentFrameIndex = SelectedAnimation.Frames.Count - 1;
-                    frameTimer = 0;
-                }
+                AdvanceFrame();
             }
         }
         else
@@ -348,6 +347,54 @@ public partial class MainWindow : DockWindow, IAssetEditor
         _redoOption.StatusTip = _undoStack.RedoName ?? "Redo";
         _undoMenuOption.StatusTip = _undoStack.UndoName ?? "Undo";
         _redoMenuOption.StatusTip = _undoStack.RedoName ?? "Redo";
+    }
+
+    void AdvanceFrame()
+    {
+        var playbackSpeed = _isPingPonging ? -1 : 1;
+        var nextFrame = CurrentFrameIndex + playbackSpeed;
+        if (nextFrame >= SelectedAnimation.Frames.Count)
+        {
+            if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.Forward)
+            {
+                nextFrame = 0;
+            }
+            else if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.PingPong)
+            {
+                _isPingPonging = true;
+                nextFrame = SelectedAnimation.Frames.Count - 2;
+            }
+            else
+            {
+                nextFrame = SelectedAnimation.Frames.Count - 1;
+                PlayPause();
+            }
+        }
+        else if (nextFrame < 0)
+        {
+            if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.Forward)
+            {
+                nextFrame = SelectedAnimation.Frames.Count - 1;
+            }
+            else if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.PingPong)
+            {
+                _isPingPonging = false;
+                nextFrame = 1;
+            }
+            else
+            {
+                nextFrame = 0;
+                PlayPause();
+            }
+        }
+        CurrentFrameIndex = nextFrame;
+        frameTimer -= FrameTime;
+        if (CurrentFrameIndex == 0 && SelectedAnimation.LoopMode == SpriteResource.LoopMode.None)
+        {
+            Playing = false;
+            CurrentFrameIndex = SelectedAnimation.Frames.Count - 1;
+            frameTimer = 0;
+        }
     }
 
     protected override bool OnClose()
@@ -390,6 +437,12 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     internal void PromptImportSpritesheet()
     {
+        if (SelectedAnimation is null)
+        {
+            var popup = new PopupWindow("No Animation Selected", "Please select an animation to import a spritesheet into.", "OK", null);
+            popup.Show();
+            return;
+        }
         var picker = AssetPicker.Create(this, AssetType.ImageFile, new() { EnableMultiselect = false });
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
@@ -444,7 +497,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
     public void PlayPause()
     {
         Playing = !Playing;
-        if (Playing && !SelectedAnimation.Looping && CurrentFrameIndex >= SelectedAnimation.Frames.Count - 1)
+        if (Playing && SelectedAnimation.LoopMode == SpriteResource.LoopMode.None && CurrentFrameIndex >= SelectedAnimation.Frames.Count - 1)
         {
             CurrentFrameIndex = 0;
         }
