@@ -12,6 +12,7 @@ Properties/*
 code/obj/*
 code/Properties/*
 *.sln
+*.idea
 
 # Editor Projects
 Editor/obj/*
@@ -20,6 +21,7 @@ Editor/*.sln
 Editor/.vs/*
 Editor/.vscode/*
 
+Libraries/SpriteTools/*.idea
 Libraries/SpriteTools/Code/obj/*
 Libraries/SpriteTools/Code/Properties/*
 Libraries/SpriteTools/Code/*.sln
