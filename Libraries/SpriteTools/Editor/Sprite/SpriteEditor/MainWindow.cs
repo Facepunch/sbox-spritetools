@@ -264,6 +264,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         var path = _asset?.AbsolutePath;
         if (string.IsNullOrEmpty(path))
         {
+            _dirty = false;
             return;
         }
 
