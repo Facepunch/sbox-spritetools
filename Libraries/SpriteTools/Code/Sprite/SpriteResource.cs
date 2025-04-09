@@ -173,6 +173,18 @@ public class SpriteAnimation
 		Attachments = new List<SpriteAttachment>();
 	}
 
+	public int GetLoopStart()
+	{
+		if (LoopStart is null) return 0;
+		return LoopStart.Value;
+	}
+
+	public int GetLoopEnd()
+	{
+		if (LoopEnd is null) return Frames.Count - 1;
+		return LoopEnd.Value;
+	}
+
 	public Vector2 GetAttachmentPosition(string attachment, int index)
 	{
 		var attach = Attachments?.FirstOrDefault(x => x.Name == attachment);

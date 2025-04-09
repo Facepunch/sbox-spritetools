@@ -469,21 +469,23 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         if (_timeSinceLastFrame < frameRate) return;
         if (!(CurrentAnimation.LoopMode != SpriteResource.LoopMode.None || (currentPlayback > 0 && CurrentFrameIndex < frameCount - 1) || (currentPlayback < 0 && CurrentFrameIndex > 0))) return;
 
+        var loopStart = CurrentAnimation.GetLoopStart();
+        var loopEnd = CurrentAnimation.GetLoopEnd();
         if (currentPlayback > 0)
         {
             var frame = CurrentFrameIndex;
             frame++;
-            if (frame >= frameCount && CurrentAnimation.LoopMode != SpriteResource.LoopMode.None)
+            if (frame > loopEnd && CurrentAnimation.LoopMode != SpriteResource.LoopMode.None)
             {
                 switch (CurrentAnimation.LoopMode)
                 {
                     case SpriteResource.LoopMode.PingPong:
                         _isPingPonging = !_isPingPonging;
-                        frame = frameCount - 2;
+                        frame = loopEnd - 1;
                         break;
                     case SpriteResource.LoopMode.Forward:
                         _isPingPonging = false;
-                        frame = 0;
+                        frame = loopStart;
                         break;
                 }
             }
@@ -497,17 +499,17 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
         {
             var frame = CurrentFrameIndex;
             frame--;
-            if (CurrentAnimation.LoopMode != SpriteResource.LoopMode.None && frame < 0)
+            if (frame < loopStart && CurrentAnimation.LoopMode != SpriteResource.LoopMode.None)
             {
                 switch (CurrentAnimation.LoopMode)
                 {
                     case SpriteResource.LoopMode.PingPong:
                         _isPingPonging = !_isPingPonging;
-                        frame = 1;
+                        frame = loopStart + 1;
                         break;
                     case SpriteResource.LoopMode.Forward:
                         _isPingPonging = false;
-                        frame = frameCount - 1;
+                        frame = loopEnd;
                         break;
                 }
             }
