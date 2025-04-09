@@ -78,7 +78,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	void UpdateWindowTitle()
 	{
-		Title = ($"{_asset.Name} - Tileset Editor" ?? "Untitled Tileset - Tileset Editor") + (_dirty ? "*" : "");
+		Title = ($"{_asset?.Name ?? "Untitled Tileset"} - Tileset Editor") + (_dirty ? "*" : "");
 	}
 
 	public void RebuildUI()
@@ -247,6 +247,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		var path = _asset?.AbsolutePath;
 		if (string.IsNullOrEmpty(path))
 		{
+			_dirty = false;
 			return;
 		}
 
@@ -268,8 +269,8 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		}
 
 		// Register the asset if we haven't already
-		_asset ??= AssetSystem.RegisterFile(savePath);
-		_asset.SaveToDisk(Tileset);
+		_asset ??= AssetSystem.CreateResource("tileset", savePath);
+		_asset?.SaveToDisk(Tileset);
 		_dirty = false;
 		UpdateWindowTitle();
 
@@ -325,11 +326,13 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		return true;
 	}
 
-	static string GetSavePath(string title = "Save Tileset")
+	string GetSavePath(string title = "Save Tileset")
 	{
+		var lastDirectory = Cookie.GetString("LastSaveTilesetLocation", "");
 		var fd = new FileDialog(null)
 		{
 			Title = title,
+			Directory = lastDirectory,
 			DefaultSuffix = $".tileset"
 		};
 
@@ -339,7 +342,9 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		fd.SetNameFilter("2D Tileset (*.tileset)");
 		if (!fd.Execute()) return null;
 
-		return fd.SelectedFile;
+		var selectedFile = fd.SelectedFile;
+		Cookie.SetString("LastSaveTilesetLocation", System.IO.Path.GetDirectoryName(selectedFile));
+		return selectedFile;
 	}
 
 	internal void CreateTile(int x, int y, bool add = false)

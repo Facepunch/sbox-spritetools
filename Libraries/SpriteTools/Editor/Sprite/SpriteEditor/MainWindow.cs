@@ -289,12 +289,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
         }
 
         // Register the asset if we haven't already
-        if (_asset is null)
-        {
-            var newSprite = AssetSystem.CreateResource("sprite", savePath).LoadResource<SpriteResource>();
-            newSprite.CopyFrom(Sprite);
-        }
-        _asset ??= AssetSystem.RegisterFile(savePath);
+        _asset ??= AssetSystem.CreateResource("sprite", savePath);
         _asset.SaveToDisk(Sprite);
         _dirty = false;
         UpdateWindowTitle();
