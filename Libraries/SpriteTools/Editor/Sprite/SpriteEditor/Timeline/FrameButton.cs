@@ -81,6 +81,7 @@ public class FrameButton : Widget
     protected override void OnPaint()
     {
         bool isSelected = Selected.Contains(this);
+        var anim = MainWindow.SelectedAnimation;
 
         MinimumSize = new Vector2(FrameSize, FrameSize + 16f);
         MaximumSize = new Vector2(FrameSize, FrameSize + 16f);
@@ -124,13 +125,13 @@ public class FrameButton : Widget
         }
         Paint.Draw(pixRect, Pixmap);
 
-        if (MainWindow.SelectedAnimation.Frames[FrameIndex].Events.Count > 0)
+        if (anim.Frames[FrameIndex].Events.Count > 0)
         {
             var tagRect = new Rect(LocalRect.BottomLeft + Vector2.Down * 20f, new Vector2(Width, 20f)).Shrink(4);
             Paint.SetBrushAndPen(Theme.Yellow.WithAlpha(0.5f));
             Paint.DrawRect(tagRect);
 
-            string events = string.Join(", ", MainWindow.SelectedAnimation.Frames[FrameIndex].Events);
+            string events = string.Join(", ", anim.Frames[FrameIndex].Events);
 
             Paint.SetFont("Poppins", 7, 1000, false);
             Paint.SetPen(Theme.Black);
@@ -142,6 +143,27 @@ public class FrameButton : Widget
         }
 
         base.OnPaint();
+
+        if (anim.LoopMode != SpriteResource.LoopMode.None)
+        {
+            var headerSize = 16f;
+            var headerWidth = 4f;
+            Paint.SetPen(Theme.Yellow.WithAlpha(0.5f), headerWidth * 2f);
+            if (anim.GetLoopStart() == FrameIndex)
+            {
+                Paint.DrawLine(LocalRect.TopLeft, LocalRect.BottomLeft);
+                Paint.ClearPen();
+                Paint.SetBrush(Theme.Yellow.WithAlpha(0.5f));
+                Paint.DrawPolygon([LocalRect.TopLeft + new Vector2(headerWidth, 0), LocalRect.TopLeft + new Vector2(headerWidth, headerSize), LocalRect.TopLeft + new Vector2(headerWidth + headerSize, headerSize / 2f)]);
+            }
+            else if (anim.GetLoopEnd() == FrameIndex)
+            {
+                Paint.DrawLine(LocalRect.TopRight, LocalRect.BottomRight);
+                Paint.ClearPen();
+                Paint.SetBrush(Theme.Yellow.WithAlpha(0.5f));
+                Paint.DrawPolygon([LocalRect.TopRight - new Vector2(headerWidth, 0), LocalRect.TopRight + new Vector2(-headerWidth, headerSize), LocalRect.TopRight + new Vector2(-(headerWidth + headerSize), headerSize / 2f)]);
+            }
+        }
 
         if (draggingAbove)
         {
