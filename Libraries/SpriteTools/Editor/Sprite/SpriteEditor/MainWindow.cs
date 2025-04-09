@@ -493,6 +493,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     public void PlayPause()
     {
+        _isPingPonging = false;
         Playing = !Playing;
         if (Playing && SelectedAnimation.LoopMode == SpriteResource.LoopMode.None && CurrentFrameIndex >= SelectedAnimation.Frames.Count - 1)
         {
