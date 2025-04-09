@@ -391,6 +391,12 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     internal void PromptImportSpritesheet()
     {
+        if (SelectedAnimation is null)
+        {
+            var popup = new PopupWindow("No Animation Selected", "Please select an animation to import a spritesheet into.", "OK", null);
+            popup.Show();
+            return;
+        }
         var picker = AssetPicker.Create(this, AssetType.ImageFile, new() { EnableMultiselect = false });
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
