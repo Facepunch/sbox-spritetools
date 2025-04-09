@@ -258,31 +258,42 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	public bool Save(bool saveAs = false)
 	{
-		var savePath = (_asset == null || saveAs) ? GetSavePath() : _asset.AbsolutePath;
-		if (string.IsNullOrWhiteSpace(savePath)) return false;
-
-		if (saveAs)
+		try
 		{
-			// If we're saving as, we want to register the new asset
-			_asset = null;
-		}
+        	// Get save path
+        	var savePath = (_asset == null || saveAs) ? GetSavePath() : _asset.AbsolutePath;
+        	if (string.IsNullOrWhiteSpace(savePath)) return false;
 
-		// Register the asset if we haven't already
-		_asset ??= AssetSystem.RegisterFile(savePath);
-		_asset.SaveToDisk(Tileset);
-		_dirty = false;
-		UpdateWindowTitle();
+        	// If we're saving as, reset the asset
+        	if (saveAs)
+        	{
+        	    _asset = null;
+        	}
 
-		if (_asset == null)
-		{
-			Log.Warning($"Failed to register asset at path {savePath}");
-			return false;
-		}
+        	// Try to register the asset
+        	if (_asset == null)
+        	{
+            	_asset = AssetSystem.RegisterFile(savePath);
+        	}
 
-		MainAssetBrowser.Instance?.UpdateAssetList();
-		TileAtlas.ClearCache(Tileset);
+	        // If we have a valid asset, save it.
+	        _asset?.SaveToDisk(Tileset);
 
-		return true;
+        	_dirty = false;
+        	UpdateWindowTitle();
+        
+        	// Update UI
+        	MainAssetBrowser.Instance?.UpdateAssetList();
+        	TileAtlas.ClearCache(Tileset);
+        
+        	Log.Info($"Tileset saved to {savePath}");
+        	return true;
+    	}
+    	catch (Exception ex)
+    	{
+        	Log.Error($"Error saving tileset: {ex.Message}");
+        	return false;
+    	}
 	}
 
 	[EditorEvent.Frame]
