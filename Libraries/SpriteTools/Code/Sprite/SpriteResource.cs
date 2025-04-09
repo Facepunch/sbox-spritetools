@@ -5,7 +5,7 @@ using System.Linq;
 namespace SpriteTools;
 
 [GameResource("2D Sprite", "sprite", "A 2D sprite atlas", Icon = "emoji_emotions")]
-public class SpriteResource : GameResource
+public partial class SpriteResource : GameResource
 {
 	/// <summary>
 	/// A list of animations that are available for this sprite.
