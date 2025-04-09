@@ -74,6 +74,10 @@ public class Inspector : Widget
 
         // controlSheet.AddRow( serializedObject.GetProperty( nameof( SpriteResource.ResourceName ) ) );
 
+        // {
+        //     var so = MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrame].GetSerialized();
+        //     controlSheet.AddRow(so.GetProperty("FilePath"));
+        // }
 
         foreach (var prop in props)
         {
@@ -92,7 +96,7 @@ public class Inspector : Widget
             var label = row.AddCell(0, 0, new Label("Attachments") { MinimumHeight = Theme.RowHeight, Alignment = TextFlag.Center }, 2, 1, TextFlag.LeftTop);
             label.MinimumHeight = Theme.RowHeight;
             label.Alignment = TextFlag.LeftCenter;
-            label.SetStyles("color: #888;");
+            label.SetStyles("color: #888; margin-left: 8px;");
             label.ToolTip = attachmentProp.Description ?? attachmentProp.DisplayName;
             // label.ContentMargins = new Sandbox.UI.Margin(4, 0, 0, 0);
 
