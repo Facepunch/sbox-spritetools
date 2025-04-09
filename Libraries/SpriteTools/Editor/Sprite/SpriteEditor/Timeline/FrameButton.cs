@@ -237,11 +237,15 @@ public class FrameButton : Widget
         {
             if (ev.Data.Text == "loop-start")
             {
+                MainWindow.PushUndo($"Change {MainWindow.SelectedAnimation.Name} Loop Start");
                 MainWindow.SelectedAnimation.LoopStart = FrameIndex;
+                MainWindow.PushRedo();
             }
             else if (ev.Data.Text == "loop-end")
             {
+                MainWindow.PushUndo($"Change {MainWindow.SelectedAnimation.Name} Loop End");
                 MainWindow.SelectedAnimation.LoopEnd = FrameIndex;
+                MainWindow.PushRedo();
             }
 
             return;
