@@ -216,7 +216,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 		if (asset == _asset)
 		{
-			Log.Warning($"{asset.RelativePath} is already open.");
+			Focus();
 			return;
 		}
 
