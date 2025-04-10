@@ -157,6 +157,9 @@ public class SpriteAnimation
 	/// </summary>
 	public List<SpriteAttachment> Attachments { get; set; } = new();
 
+	public int? LoopStart { get; set; } = null;
+	public int? LoopEnd { get; set; } = null;
+
 	public SpriteAnimation()
 	{
 		Frames = new List<SpriteAnimationFrame>();
@@ -168,6 +171,18 @@ public class SpriteAnimation
 		Name = name;
 		Frames = new List<SpriteAnimationFrame>();
 		Attachments = new List<SpriteAttachment>();
+	}
+
+	public int GetLoopStart()
+	{
+		if (LoopStart is null) return 0;
+		return LoopStart.Value;
+	}
+
+	public int GetLoopEnd()
+	{
+		if (LoopEnd is null) return Frames.Count - 1;
+		return LoopEnd.Value;
 	}
 
 	public Vector2 GetAttachmentPosition(string attachment, int index)

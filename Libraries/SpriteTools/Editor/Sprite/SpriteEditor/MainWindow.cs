@@ -348,33 +348,35 @@ public partial class MainWindow : DockWindow, IAssetEditor
     {
         var playbackSpeed = _isPingPonging ? -1 : 1;
         var nextFrame = CurrentFrameIndex + playbackSpeed;
-        if (nextFrame >= SelectedAnimation.Frames.Count)
+        var loopStart = SelectedAnimation.GetLoopStart();
+        var loopEnd = SelectedAnimation.GetLoopEnd();
+        if (nextFrame > loopEnd && playbackSpeed > 0)
         {
             if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.Forward)
             {
-                nextFrame = 0;
+                nextFrame = loopStart;
             }
             else if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.PingPong)
             {
                 _isPingPonging = true;
-                nextFrame = SelectedAnimation.Frames.Count - 2;
+                nextFrame = Math.Max(loopEnd - 1, loopStart);
             }
-            else
+            else if (nextFrame >= SelectedAnimation.Frames.Count)
             {
                 nextFrame = SelectedAnimation.Frames.Count - 1;
                 PlayPause();
             }
         }
-        else if (nextFrame < 0)
+        else if (nextFrame < loopStart && playbackSpeed < 0)
         {
             if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.Forward)
             {
-                nextFrame = SelectedAnimation.Frames.Count - 1;
+                nextFrame = loopEnd;
             }
             else if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.PingPong)
             {
                 _isPingPonging = false;
-                nextFrame = 1;
+                nextFrame = Math.Min(loopStart + 1, loopEnd);
             }
             else
             {
@@ -491,6 +493,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
     public void PlayPause()
     {
+        _isPingPonging = false;
         Playing = !Playing;
         if (Playing && SelectedAnimation.LoopMode == SpriteResource.LoopMode.None && CurrentFrameIndex >= SelectedAnimation.Frames.Count - 1)
         {
