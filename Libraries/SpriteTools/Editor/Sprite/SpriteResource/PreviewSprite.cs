@@ -14,10 +14,14 @@ class PreviewSprite : AssetPreview
     Material previewMat;
     SpriteResource sprite;
     TextureAtlas atlas;
+    SpriteResource.LoopMode loopMode;
+    int loopStart = 0;
+    int loopEnd = 0;
     int frame = 0;
     int frames = 1;
     float frameTime = 1f;
     float timer = 0f;
+    bool isPingPonging = false;
 
     /// <summary>
     /// Use the eval, because in sequences we want to find a frame with the most action
@@ -65,7 +69,7 @@ class PreviewSprite : AssetPreview
         timer += timeStep;
         if (timer >= frameTime)
         {
-            frame = (frame + 1) % frames;
+            AdvanceFrame();
             UpdateFrame();
 
             timer -= frameTime;
@@ -79,6 +83,10 @@ class PreviewSprite : AssetPreview
         {
             previewMat.Set("Texture", atlas);
             frame = 0;
+            isPingPonging = false;
+            loopMode = anim.LoopMode;
+            loopStart = anim.GetLoopStart();
+            loopEnd = anim.GetLoopEnd();
             UpdateFrame();
 
             var aspectRatio = atlas.AspectRatio;
@@ -91,6 +99,45 @@ class PreviewSprite : AssetPreview
             frames = anim.Frames.Count;
             if (frames < 1)
                 frames = 1;
+        }
+    }
+
+    void AdvanceFrame()
+    {
+        var playbackSpeed = isPingPonging ? -1 : 1;
+        if (playbackSpeed > 0)
+        {
+            frame++;
+            if (frame >= loopEnd && loopMode == SpriteResource.LoopMode.Forward)
+            {
+                frame = loopStart;
+            }
+            else if (frame >= loopEnd && loopMode == SpriteResource.LoopMode.PingPong)
+            {
+                frame = Math.Max(loopEnd - 1, loopStart);
+                isPingPonging = true;
+            }
+            else if (frame >= frames)
+            {
+                frame = 0;
+            }
+        }
+        else if (playbackSpeed < 0)
+        {
+            frame--;
+            if (frame < loopStart && loopMode == SpriteResource.LoopMode.Forward)
+            {
+                frame = loopEnd - 1;
+            }
+            else if (frame < loopStart && loopMode == SpriteResource.LoopMode.PingPong)
+            {
+                frame = Math.Min(loopStart + 1, loopEnd);
+                isPingPonging = false;
+            }
+            else if (frame < 0)
+            {
+                frame = frames - 1;
+            }
         }
     }
 

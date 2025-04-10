@@ -481,7 +481,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 {
                     case SpriteResource.LoopMode.PingPong:
                         _isPingPonging = !_isPingPonging;
-                        frame = loopEnd - 1;
+                        frame = Math.Max(loopEnd - 1, loopStart);
                         break;
                     case SpriteResource.LoopMode.Forward:
                         _isPingPonging = false;
@@ -505,7 +505,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
                 {
                     case SpriteResource.LoopMode.PingPong:
                         _isPingPonging = !_isPingPonging;
-                        frame = loopStart + 1;
+                        frame = Math.Min(loopStart + 1, loopEnd);
                         break;
                     case SpriteResource.LoopMode.Forward:
                         _isPingPonging = false;

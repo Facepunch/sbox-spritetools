@@ -120,6 +120,8 @@ public class Preview : Widget
         if (MainWindow.Sprite is null) return;
         if (MainWindow.SelectedAnimation is null) return;
         if (MainWindow.SelectedAnimation.Frames.Count <= 0) return;
+        if (MainWindow.CurrentFrameIndex < 0) return;
+        if (MainWindow.CurrentFrameIndex >= MainWindow.SelectedAnimation.Frames.Count) return;
         var frame = MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrameIndex];
         if (frame is null) return;
         if (!Sandbox.FileSystem.Mounted.FileExists(frame.FilePath)) return;

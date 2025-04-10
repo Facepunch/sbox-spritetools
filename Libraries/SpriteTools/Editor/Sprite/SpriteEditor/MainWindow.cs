@@ -359,7 +359,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
             else if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.PingPong)
             {
                 _isPingPonging = true;
-                nextFrame = loopEnd - 1;
+                nextFrame = Math.Max(loopEnd - 1, loopStart);
             }
             else if (nextFrame >= SelectedAnimation.Frames.Count)
             {
@@ -376,7 +376,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
             else if (SelectedAnimation.LoopMode == SpriteResource.LoopMode.PingPong)
             {
                 _isPingPonging = false;
-                nextFrame = loopStart + 1;
+                nextFrame = Math.Min(loopStart + 1, loopEnd);
             }
             else
             {
