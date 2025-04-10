@@ -19,7 +19,7 @@ public class FrameButton : Widget
     Drag dragData;
     bool draggingAbove = false;
     bool draggingBelow = false;
-    bool draggingLoopPoint = false;
+    int draggingLoopPoint = 0;
     bool draggingLoopPointStart = false;
     bool draggingLoopPointEnd = false;
 
@@ -153,17 +153,19 @@ public class FrameButton : Widget
             var headerWidth = 4f;
             var isStart = anim.GetLoopStart() == FrameIndex;
             var isEnd = anim.GetLoopEnd() == FrameIndex;
-            var alpha = (!(dragData?.IsValid ?? false) || draggingLoopPointStart || draggingLoopPointEnd) ? 0.5f : 0.25f;
-            Paint.SetPen(Theme.Yellow.WithAlpha(alpha), headerWidth * 2f);
             if (isStart || draggingLoopPointStart)
             {
+                var alpha = (!((dragData?.IsValid ?? false) && dragData.Data.Text == "loop-start") || draggingLoopPointStart) ? 0.5f : 0.25f;
+                Paint.SetPen(Theme.Yellow.WithAlpha(alpha), headerWidth * 2f);
                 Paint.DrawLine(LocalRect.TopLeft, LocalRect.BottomLeft);
                 Paint.ClearPen();
                 Paint.SetBrush(Theme.Yellow.WithAlpha(alpha));
                 Paint.DrawPolygon([LocalRect.TopLeft + new Vector2(headerWidth, 0), LocalRect.TopLeft + new Vector2(headerWidth, headerSize), LocalRect.TopLeft + new Vector2(headerWidth + headerSize, headerSize / 2f)]);
             }
-            else if (isEnd || draggingLoopPointEnd)
+            if (isEnd || draggingLoopPointEnd)
             {
+                var alpha = (!((dragData?.IsValid ?? false) && dragData.Data.Text == "loop-end") || draggingLoopPointEnd) ? 0.5f : 0.25f;
+                Paint.SetPen(Theme.Yellow.WithAlpha(alpha), headerWidth * 2f);
                 Paint.DrawLine(LocalRect.TopRight, LocalRect.BottomRight);
                 Paint.ClearPen();
                 Paint.SetBrush(Theme.Yellow.WithAlpha(alpha));
@@ -189,9 +191,9 @@ public class FrameButton : Widget
 
         dragData = new Drag(this);
 
-        if (draggingLoopPoint)
+        if (draggingLoopPoint != 0)
         {
-            dragData.Data.Text = (MainWindow.SelectedAnimation.GetLoopStart() == FrameIndex) ? "loop-start" : "loop-end";
+            dragData.Data.Text = (draggingLoopPoint == 1) ? "loop-start" : "loop-end";
         }
         else
         {
@@ -295,8 +297,18 @@ public class FrameButton : Widget
         base.OnMousePress(e);
 
         var anim = MainWindow.SelectedAnimation;
-        draggingLoopPoint = (anim.GetLoopStart() == FrameIndex && e.LocalPosition.x < 8) || (anim.GetLoopEnd() == FrameIndex && e.LocalPosition.x > Width - 8);
-        Log.Info($"Dragging Loop Point: {draggingLoopPoint}");
+        if (anim.GetLoopStart() == FrameIndex && e.LocalPosition.x < 8)
+        {
+            draggingLoopPoint = 1;
+        }
+        else if (anim.GetLoopEnd() == FrameIndex && e.LocalPosition.x > Width - 8)
+        {
+            draggingLoopPoint = 2;
+        }
+        else
+        {
+            draggingLoopPoint = 0;
+        }
     }
 
     protected override void OnMouseClick(MouseEvent e)
