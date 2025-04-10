@@ -26,6 +26,12 @@ public class SpritesheetImporter : Dialog
         Window.MinimumSize = 200;
         Window.MaximumSize = 10000;
 
+        var settings = EditorCookie.Get<ImportSettings>("SpritesheetImporterSettings", null);
+        if (settings != null)
+        {
+            Settings = settings;
+        }
+
         BuildLayout();
     }
 
@@ -74,6 +80,7 @@ public class SpritesheetImporter : Dialog
         }
 
         OnImport?.Invoke(Path, frames);
+        EditorCookie.Set<ImportSettings>("SpritesheetImporterSettings", Settings);
         Close();
     }
 
