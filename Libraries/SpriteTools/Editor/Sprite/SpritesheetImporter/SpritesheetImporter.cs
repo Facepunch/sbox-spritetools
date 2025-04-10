@@ -44,13 +44,24 @@ public class SpritesheetImporter : Dialog
         var leftContent = new Widget();
         leftContent.MaximumWidth = 300;
         leftContent.Layout = Layout.Column();
+        leftContent.Layout.Spacing = 4;
         ControlSheet = new ControlSheet();
         UpdateControlSheet();
         leftContent.Layout.Add(ControlSheet);
         leftContent.Layout.AddStretchCell();
+
+        var buttonReset = new Button("Reset All Settings", "refresh", this);
+        buttonReset.Clicked += () =>
+        {
+            Settings = new ImportSettings();
+            UpdateControlSheet();
+        };
+        leftContent.Layout.Add(buttonReset);
+
         var buttonLoad = new Button("Import Spritesheet", "download", this);
         buttonLoad.Clicked += ImportSpritesheet;
         leftContent.Layout.Add(buttonLoad);
+
         leftSide.Add(leftContent);
         Layout.Add(leftSide);
 
