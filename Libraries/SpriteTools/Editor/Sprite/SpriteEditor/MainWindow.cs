@@ -440,7 +440,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
             popup.Show();
             return;
         }
-        var picker = AssetPicker.Create(this, AssetType.ImageFile, new() { EnableMultiselect = false });
+        var picker = AssetPicker.Create(this, AssetType.ImageFile, new() { EnableMultiselect = false, EnableCloud = false });
         picker.Window.StateCookie = "SpriteEditor.Import";
         picker.Window.RestoreFromStateCookie();
         picker.Window.Title = $"Import Spritesheet for {SelectedAnimation.Name}";
