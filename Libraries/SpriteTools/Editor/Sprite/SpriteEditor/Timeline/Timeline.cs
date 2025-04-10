@@ -165,6 +165,15 @@ public class Timeline : Widget
             }
         }
 
+        if (MainWindow.SelectedAnimation.LoopStart is not null && MainWindow.SelectedAnimation.LoopStart < 0)
+        {
+            MainWindow.SelectedAnimation.LoopStart = null;
+        }
+        if (MainWindow.SelectedAnimation.LoopEnd is not null && MainWindow.SelectedAnimation.LoopEnd >= MainWindow.SelectedAnimation.Frames.Count)
+        {
+            MainWindow.SelectedAnimation.LoopEnd = null;
+        }
+
         var addButton = new IconButton("add");
         addButton.Width = 128;
         addButton.Height = 128;
