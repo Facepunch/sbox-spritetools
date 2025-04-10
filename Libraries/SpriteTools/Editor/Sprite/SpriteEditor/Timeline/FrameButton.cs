@@ -297,11 +297,11 @@ public class FrameButton : Widget
         base.OnMousePress(e);
 
         var anim = MainWindow.SelectedAnimation;
-        if (anim.GetLoopStart() == FrameIndex && e.LocalPosition.x < 8)
+        if (anim.GetLoopStart() == FrameIndex && e.LocalPosition.x < 12)
         {
             draggingLoopPoint = 1;
         }
-        else if (anim.GetLoopEnd() == FrameIndex && e.LocalPosition.x > Width - 8)
+        else if (anim.GetLoopEnd() == FrameIndex && e.LocalPosition.x > Width - 12)
         {
             draggingLoopPoint = 2;
         }
