@@ -72,13 +72,6 @@ public class Inspector : Widget
                             .ThenBy(x => x.DisplayName)
                             .ToArray();
 
-        // controlSheet.AddRow( serializedObject.GetProperty( nameof( SpriteResource.ResourceName ) ) );
-
-        // {
-        //     var so = MainWindow.SelectedAnimation.Frames[MainWindow.CurrentFrame].GetSerialized();
-        //     controlSheet.AddRow(so.GetProperty("FilePath"));
-        // }
-
         foreach (var prop in props)
         {
             controlSheet.AddRow(prop);
@@ -98,10 +91,9 @@ public class Inspector : Widget
             label.Alignment = TextFlag.LeftCenter;
             label.SetStyles("color: #888; margin-left: 8px;");
             label.ToolTip = attachmentProp.Description ?? attachmentProp.DisplayName;
-            // label.ContentMargins = new Sandbox.UI.Margin(4, 0, 0, 0);
 
             var lo = row.AddCell(1, 0, Layout.Column(), 2, 1, TextFlag.LeftTop);
-            lo.Margin = new Sandbox.UI.Margin(16, 0, 0, 0);
+            lo.Margin = new Sandbox.UI.Margin(0, 0, 14, 0);
             lo.Add(attachmentControl);
 
             controlSheet.AddLayout(row);
