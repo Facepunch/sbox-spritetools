@@ -10,5 +10,6 @@ public class Draggable : SceneObject
 
     public Draggable(SceneWorld world, string model, Transform transform) : base(world, model, transform)
     {
+        Tags.Add("draggable");
     }
 }

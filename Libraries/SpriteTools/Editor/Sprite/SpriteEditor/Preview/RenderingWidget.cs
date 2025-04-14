@@ -58,7 +58,8 @@ public class RenderingWidget : SpriteRenderingWidget
         if (e.LeftMouseButton)
         {
             var cursorLocalPos = Editor.Application.CursorPosition - ScreenRect.Position;
-            var tr = World.Trace.Ray(Camera.GetRay(cursorLocalPos, Size), 5000f).Run();
+            var tr = World.Trace.Ray(Camera.GetRay(cursorLocalPos, Size), 8000f).WithTag("draggable").Run();
+            Log.Info(tr.EndPosition);
             if (tr.SceneObject is Draggable draggable)
             {
                 dragging = draggable;
@@ -80,7 +81,7 @@ public class RenderingWidget : SpriteRenderingWidget
         if (dragging is not null)
         {
             var cursorLocalPos = Editor.Application.CursorPosition - ScreenRect.Position;
-            var tr = World.Trace.Ray(Camera.GetRay(cursorLocalPos, Size), 5000f).Run();
+            var tr = World.Trace.Ray(Camera.GetRay(cursorLocalPos, Size), 5000f).WithTag("draggable").Run();
             var pos = tr.EndPosition.WithZ(0f);
             draggableGrabPos = pos;
             dragging?.OnPositionChanged.Invoke(new Vector2(pos.y, pos.x));
