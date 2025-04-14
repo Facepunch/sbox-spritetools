@@ -523,6 +523,16 @@ public partial class MainWindow : DockWindow, IAssetEditor
         CurrentFrameIndex = frame;
     }
 
+    public void FrameFirst()
+    {
+        CurrentFrameIndex = 0;
+    }
+
+    public void FrameLast()
+    {
+        CurrentFrameIndex = SelectedAnimation.Frames.Count - 1;
+    }
+
     internal void SetDirty()
     {
         _dirty = true;
