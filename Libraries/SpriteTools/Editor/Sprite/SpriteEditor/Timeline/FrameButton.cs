@@ -237,13 +237,13 @@ public class FrameButton : Widget
 
         if (!TryDragOperation(ev, out var delta))
         {
-            if (ev.Data.Text == "loop-start")
+            if (ev.Data.Text == "loop-start" && FrameIndex <= MainWindow.SelectedAnimation.LoopEnd)
             {
                 MainWindow.PushUndo($"Change {MainWindow.SelectedAnimation.Name} Loop Start");
                 MainWindow.SelectedAnimation.LoopStart = FrameIndex;
                 MainWindow.PushRedo();
             }
-            else if (ev.Data.Text == "loop-end")
+            else if (ev.Data.Text == "loop-end" && FrameIndex >= MainWindow.SelectedAnimation.LoopStart)
             {
                 MainWindow.PushUndo($"Change {MainWindow.SelectedAnimation.Name} Loop End");
                 MainWindow.SelectedAnimation.LoopEnd = FrameIndex;
