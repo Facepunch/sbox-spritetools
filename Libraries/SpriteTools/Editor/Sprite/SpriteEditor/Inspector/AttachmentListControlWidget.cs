@@ -12,6 +12,7 @@ public class AttachmentListControlWidget : ControlWidget
     public override bool SupportsMultiEdit => false;
 
     SerializedCollection Collection;
+    int lastCount = 0;
 
     Layout Content;
 
@@ -35,6 +36,15 @@ public class AttachmentListControlWidget : ControlWidget
         Layout.Add(Content);
 
         Rebuild();
+    }
+
+    [EditorEvent.Frame]
+    void OnFrame()
+    {
+        if (Collection.Count() != lastCount)
+        {
+            Rebuild();
+        }
     }
 
     public void Rebuild()
@@ -81,6 +91,7 @@ public class AttachmentListControlWidget : ControlWidget
         }
 
         Content.Add(grid);
+        lastCount = Collection.Count();
     }
 
     void AddEntry()
