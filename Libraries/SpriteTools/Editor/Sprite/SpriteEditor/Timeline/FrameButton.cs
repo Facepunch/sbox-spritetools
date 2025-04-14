@@ -136,8 +136,9 @@ public class FrameButton : Widget
 
             string events = string.Join(", ", anim.Frames[FrameIndex].Events);
 
-            Paint.SetFont("Poppins", 7, 1000, false);
-            Paint.SetPen(Theme.Black);
+            tagRect.Position -= Vector2.Up;
+            Paint.SetFont("Inter", 7, 1000, false);
+            Paint.SetPen(Theme.Black.WithAlpha(0.4f));
             tagRect.Position += 1;
             Paint.DrawText(tagRect, events, TextFlag.Center);
             tagRect.Position -= 1;
