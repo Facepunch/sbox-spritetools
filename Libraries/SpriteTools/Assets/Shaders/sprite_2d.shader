@@ -13,7 +13,7 @@ MODES
 {
 	VrForward();
 	Depth(); 
-	ToolsVis( S_MODE_TOOLS_VIS );
+	// ToolsVis( S_MODE_TOOLS_VIS );
 	ToolsWireframe( "vr_tools_wireframe.shader" );
 	ToolsShadingComplexity( "tools_shading_complexity.shader" );
 }
