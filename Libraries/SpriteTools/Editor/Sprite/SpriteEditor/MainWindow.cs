@@ -465,6 +465,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	void OnSpritesheetImport ( string path, List<Rect> frames )
 	{
+		PushUndo( $"Import Spritesheet with {frames.Count} frames" );
 		if ( SelectedAnimation is not null )
 		{
 			SelectedAnimation.Frames.Clear();
@@ -475,6 +476,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		}
 
 		Timeline.UpdateFrameList();
+		PushRedo();
 	}
 
 	void PromptSave ( Action action )
