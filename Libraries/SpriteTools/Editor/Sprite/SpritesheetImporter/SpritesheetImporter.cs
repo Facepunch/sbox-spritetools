@@ -1,105 +1,142 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Editor;
 using Sandbox;
+using System;
+using System.Collections.Generic;
 
 namespace SpriteTools.SpritesheetImporter;
 
+public class SpritesheetImporterFrame
+{
+	public Guid Id { get; set; }
+	public Rect Rect { get; set; }
+
+	public SpritesheetImporterFrame ( Rect rect )
+	{
+		Id = Guid.NewGuid();
+		Rect = rect;
+	}
+
+	public override int GetHashCode ()
+	{
+		return System.HashCode.Combine( Rect );
+	}
+	public override bool Equals ( object obj )
+	{
+		if ( obj is SpritesheetImporterFrame other )
+		{
+			return Id == other.Id;
+		}
+		return false;
+	}
+}
+
 public class SpritesheetImporter : Dialog
 {
-    public string Path { get; set; }
-    Preview Preview { get; set; }
-    public Action<string, List<Rect>> OnImport { get; set; }
-    public ImportSettings Settings { get; set; } = new ImportSettings();
+	public string Path { get; set; }
+	Preview Preview { get; set; }
+	public Action<string, List<Rect>> OnImport { get; set; }
+	public ImportSettings Settings { get; set; } = new ImportSettings();
 
-    ControlSheet ControlSheet { get; set; }
+	internal List<SpritesheetImporterFrame> Frames = new List<SpritesheetImporterFrame>();
 
-    public SpritesheetImporter(Widget parent, string path) : base(parent, false)
-    {
-        Path = path;
+	ControlSheet ControlSheet { get; set; }
 
-        Window.Title = "Spritesheet Importer";
-        Window.WindowTitle = "Spritesheet Importer";
-        Window.Size = new Vector2(960, 540);
-        Window.SetModal(true);
-        Window.MinimumSize = 200;
-        Window.MaximumSize = 10000;
+	public SpritesheetImporter ( Widget parent, string path ) : base( parent, false )
+	{
+		Path = path;
 
-        var settings = EditorCookie.Get<ImportSettings>("SpritesheetImporterSettings", null);
-        if (settings != null)
-        {
-            Settings = settings;
-        }
+		Window.Title = "Spritesheet Importer";
+		Window.WindowTitle = "Spritesheet Importer";
+		Window.Size = new Vector2( 960, 540 );
+		Window.SetModal( true );
+		Window.MinimumSize = 200;
+		Window.MaximumSize = 10000;
 
-        BuildLayout();
-    }
+		var settings = EditorCookie.Get<ImportSettings>( "SpritesheetImporterSettings", null );
+		if ( settings != null )
+		{
+			Settings = settings;
+		}
 
-    void BuildLayout()
-    {
-        Layout = Layout.Row();
+		BuildLayout();
+	}
 
-        var leftSide = Layout.Column();
-        leftSide.Margin = 16;
-        var leftContent = new Widget();
-        leftContent.MaximumWidth = 300;
-        leftContent.Layout = Layout.Column();
-        leftContent.Layout.Spacing = 4;
-        ControlSheet = new ControlSheet();
-        UpdateControlSheet();
-        leftContent.Layout.Add(ControlSheet);
-        leftContent.Layout.AddStretchCell();
+	public void CommitFrames ( List<Rect> frames )
+	{
+		foreach ( var frame in frames )
+		{
+			var newFrame = new SpritesheetImporterFrame( frame );
+			if ( Frames.Contains( newFrame ) ) continue;
+			Frames.Add( newFrame );
+		}
+	}
 
-        var buttonReset = new Button("Reset All Settings", "refresh", this);
-        buttonReset.Clicked += () =>
-        {
-            Settings = new ImportSettings();
-            UpdateControlSheet();
-        };
-        leftContent.Layout.Add(buttonReset);
+	void BuildLayout ()
+	{
+		Layout = Layout.Row();
 
-        var buttonLoad = new Button("Import Spritesheet", "download", this);
-        buttonLoad.Clicked += ImportSpritesheet;
-        leftContent.Layout.Add(buttonLoad);
+		var leftSide = Layout.Column();
+		leftSide.Margin = 16;
+		var leftContent = new Widget();
+		leftContent.MaximumWidth = 300;
+		leftContent.Layout = Layout.Column();
+		leftContent.Layout.Spacing = 4;
+		ControlSheet = new ControlSheet();
+		UpdateControlSheet();
+		leftContent.Layout.Add( ControlSheet );
+		leftContent.Layout.AddStretchCell();
 
-        leftSide.Add(leftContent);
-        Layout.Add(leftSide);
+		var buttonCommit = new Button( "Commit Settings", "shortcut", this );
+		buttonCommit.Clicked += () =>
+		{
+			CommitFrames( Settings.GetFrames() );
+		};
+		leftContent.Layout.Add( buttonCommit );
 
-        Preview = new Preview(this);
-        Layout.Add(Preview);
-    }
+		var buttonReset = new Button( "Reset All Settings", "refresh", this );
+		buttonReset.Clicked += () =>
+		{
+			Settings = new ImportSettings();
+			UpdateControlSheet();
+		};
+		leftContent.Layout.Add( buttonReset );
 
-    void ImportSpritesheet()
-    {
-        var frames = new List<Rect>();
-        var frameWidth = Settings.FrameWidth;
-        var frameHeight = Settings.FrameHeight;
-        var framesPerRow = Settings.FramesPerRow;
-        var frameCount = Settings.NumberOfFrames;
-        var horizontalCellOffset = Settings.HorizontalCellOffset;
-        var verticalCellOffset = Settings.VerticalCellOffset;
-        var horizontalPixelOffset = Settings.HorizontalPixelOffset;
-        var verticalPixelOffset = Settings.VerticalPixelOffset;
-        var horizontalSeparation = Settings.HorizontalSeparation;
-        var verticalSeparation = Settings.VerticalSeparation;
+		var buttonLoad = new Button( "Import Spritesheet", "download", this );
+		buttonLoad.Clicked += ImportSpritesheet;
+		leftContent.Layout.Add( buttonLoad );
 
-        for (int i = 0; i < frameCount; i++)
-        {
-            var x = (i % framesPerRow) * (frameWidth + horizontalSeparation) + horizontalPixelOffset + frameWidth * horizontalCellOffset;
-            var y = (i / framesPerRow) * (frameHeight + verticalSeparation) + verticalPixelOffset + frameHeight * verticalCellOffset;
-            frames.Add(new Rect(x, y, frameWidth, frameHeight));
-        }
+		leftSide.Add( leftContent );
+		Layout.Add( leftSide );
 
-        OnImport?.Invoke(Path, frames);
-        EditorCookie.Set<ImportSettings>("SpritesheetImporterSettings", Settings);
-        Close();
-    }
+		Preview = new Preview( this );
+		Layout.Add( Preview );
+	}
 
-    [EditorEvent.Hotload]
-    void UpdateControlSheet()
-    {
-        ControlSheet?.Clear(true);
-        ControlSheet.AddObject(Settings.GetSerialized());
-    }
+	void ImportSpritesheet ()
+	{
+		if ( Frames.Count == 0 )
+		{
+			CommitFrames( Settings.GetFrames() );
+		}
+		OnImport?.Invoke( Path, GetRectList() );
+		EditorCookie.Set<ImportSettings>( "SpritesheetImporterSettings", Settings );
+		Close();
+	}
 
+	[EditorEvent.Hotload]
+	void UpdateControlSheet ()
+	{
+		ControlSheet?.Clear( true );
+		ControlSheet.AddObject( Settings.GetSerialized() );
+	}
+
+	List<Rect> GetRectList ()
+	{
+		var list = new List<Rect>();
+		foreach ( var frame in Frames )
+		{
+			list.Add( frame.Rect );
+		}
+		return list;
+	}
 }
