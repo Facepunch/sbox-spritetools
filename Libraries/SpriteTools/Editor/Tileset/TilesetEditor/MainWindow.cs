@@ -86,18 +86,18 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 		{
 			var file = MenuBar.AddMenu( "File" );
-			file.AddOption( "New", "common/new.png", () => New(), "CTRL+N" ).StatusTip = "New Tileset";
-			file.AddOption( "Open", "common/open.png", () => Open(), "Ctrl+O" ).StatusTip = "Open Tileset";
-			file.AddOption( "Save", "common/save.png", () => Save(), "Ctrl+S" ).StatusTip = "Save Tileset";
-			file.AddOption( "Save As...", "common/save.png", () => Save( true ), "Ctrl+Shift+S" ).StatusTip = "Save Tileset As...";
+			file.AddOption( "New", "common/new.png", () => New(), "editor.new" ).StatusTip = "New Tileset";
+			file.AddOption( "Open", "common/open.png", () => Open(), "editor.open" ).StatusTip = "Open Tileset";
+			file.AddOption( "Save", "common/save.png", () => Save(), "editor.save" ).StatusTip = "Save Tileset";
+			file.AddOption( "Save As...", "common/save.png", () => Save( true ), "editor.save-as" ).StatusTip = "Save Tileset As...";
 			file.AddSeparator();
 			file.AddOption( new Option( "Exit" ) { Triggered = Close } );
 		}
 
 		{
 			var edit = MenuBar.AddMenu( "Edit" );
-			_undoMenuOption = edit.AddOption( "Undo", "undo", () => Undo(), "Ctrl+Z" );
-			_redoMenuOption = edit.AddOption( "Redo", "redo", () => Redo(), "Ctrl+Y" );
+			_undoMenuOption = edit.AddOption( "Undo", "undo", () => Undo(), "editor.undo" );
+			_redoMenuOption = edit.AddOption( "Redo", "redo", () => Redo(), "editor.redo" );
 
 			// edit.AddSeparator();
 			// edit.AddOption( "Cut", "common/cut.png", CutSelection, "Ctrl+X" );
@@ -172,6 +172,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		preview.UpdateTexture( Tileset.FilePath );
 	}
 
+	[Shortcut( "editor.new", "CTRL+N", ShortcutType.Window )]
 	public void New ()
 	{
 		PromptSave( () => CreateNew() );
@@ -190,6 +191,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		UpdateEverything();
 	}
 
+	[Shortcut( "editor.open", "CTRL+O", ShortcutType.Window )]
 	public void Open ()
 	{
 		var fd = new FileDialog( null )
@@ -256,6 +258,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		_dirty = false;
 	}
 
+	[Shortcut( "editor.save", "CTRL+S", ShortcutType.Window )]
 	public bool Save ( bool saveAs = false )
 	{
 		var savePath = ( _asset == null || saveAs ) ? GetSavePath() : _asset.AbsolutePath;
@@ -283,6 +286,12 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		TileAtlas.ClearCache( Tileset );
 
 		return true;
+	}
+
+	[Shortcut( "editor.save-as", "CTRL+SHIFT+S", ShortcutType.Window )]
+	private void SaveAs ()
+	{
+		Save( true );
 	}
 
 	[EditorEvent.Frame]
@@ -525,6 +534,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		SetDirty();
 	}
 
+	[Shortcut( "editor.undo", "CTRL+Z", ShortcutType.Window )]
 	public void Undo ()
 	{
 		if ( _undoStack.Undo() is UndoOp op )
@@ -546,6 +556,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		}
 	}
 
+	[Shortcut( "editor.redo", "CTRL+Y", ShortcutType.Window )]
 	public void Redo ()
 	{
 		if ( _undoStack.Redo() is UndoOp op )
