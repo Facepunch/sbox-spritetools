@@ -1,7 +1,21 @@
 {
+  "IsSubgraph": false,
+  "Path": "shaders/sprite_editor_background.shdrgrph",
   "Model": "models/dev/box.vmdl",
+  "Title": null,
   "Description": "",
+  "Category": null,
+  "Icon": null,
+  "AddToNodeLibrary": false,
   "BlendMode": "Opaque",
+  "ShadingModel": "Unlit",
+  "Domain": "Surface",
+  "PreviewSettings": {
+    "EnableShadows": true,
+    "ShowSkybox": true,
+    "BackgroundColor": "0,0,0,1",
+    "Tint": "1,1,1,1"
+  },
   "nodes": [
     {
       "_class": "Result",
@@ -10,7 +24,8 @@
       "DefaultMetalness": 0,
       "DefaultAmbientOcclusion": 1,
       "Identifier": "0",
-      "Position": "240,-80",
+      "Position": "240,-84",
+      "HandleOffsets": {},
       "Albedo": {
         "Identifier": "1",
         "Output": "Result"
@@ -26,11 +41,12 @@
       },
       "UI": {
         "Default": "1,1,1,1",
-        "SrgbRead": true,
-        "CreateInput": "CreateInputTexture2D"
+        "ShowExtension": true,
+        "SrgbRead": true
       },
       "Identifier": "1",
-      "Position": "-48,-80",
+      "Position": "-48,-84",
+      "HandleOffsets": {},
       "Coords": {
         "Identifier": "2",
         "Output": "Result"
@@ -41,7 +57,8 @@
       "DefaultA": 0,
       "DefaultB": 4.1,
       "Identifier": "2",
-      "Position": "-224,-80",
+      "Position": "-228,-84",
+      "HandleOffsets": {},
       "A": {
         "Identifier": "3",
         "Output": "XYZ"
@@ -50,7 +67,8 @@
     {
       "_class": "ScreenPosition",
       "Identifier": "3",
-      "Position": "-496,-80"
+      "Position": "-492,-84",
+      "HandleOffsets": {}
     }
   ]
 }

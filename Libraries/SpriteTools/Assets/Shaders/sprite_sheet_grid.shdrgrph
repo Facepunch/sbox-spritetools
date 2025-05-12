@@ -1,7 +1,21 @@
 {
+  "IsSubgraph": false,
+  "Path": "shaders/sprite_sheet_grid.shdrgrph",
   "Model": "models/dev/plane.vmdl",
+  "Title": null,
   "Description": "",
+  "Category": null,
+  "Icon": null,
+  "AddToNodeLibrary": false,
   "BlendMode": "Masked",
+  "ShadingModel": "Lit",
+  "Domain": "Surface",
+  "PreviewSettings": {
+    "EnableShadows": true,
+    "ShowSkybox": true,
+    "BackgroundColor": "0,0,0,1",
+    "Tint": "1,1,1,1"
+  },
   "nodes": [
     {
       "_class": "Result",
@@ -10,7 +24,8 @@
       "DefaultMetalness": 0,
       "DefaultAmbientOcclusion": 1,
       "Identifier": "0",
-      "Position": "1280,128",
+      "Position": "1284,132",
+      "HandleOffsets": {},
       "Albedo": {
         "Identifier": "18",
         "Output": "Result"
@@ -29,7 +44,8 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "1",
-      "Position": "-720,32"
+      "Position": "-720,36",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float2",
@@ -40,7 +56,8 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "2",
-      "Position": "-720,176"
+      "Position": "-720,180",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float2",
@@ -51,7 +68,8 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "3",
-      "Position": "-720,768"
+      "Position": "-720,768",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float",
@@ -62,7 +80,8 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "4",
-      "Position": "-720,96"
+      "Position": "-720,96",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float2",
@@ -73,7 +92,8 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "5",
-      "Position": "-720,432"
+      "Position": "-720,432",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float2",
@@ -84,7 +104,8 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "6",
-      "Position": "-720,304"
+      "Position": "-720,300",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float2",
@@ -95,14 +116,16 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "7",
-      "Position": "-720,560"
+      "Position": "-720,564",
+      "HandleOffsets": {}
     },
     {
       "_class": "Add",
       "DefaultA": 0,
       "DefaultB": 1,
       "Identifier": "8",
-      "Position": "-432,320",
+      "Position": "-432,324",
+      "HandleOffsets": {},
       "A": {
         "Identifier": "2",
         "Output": "Result"
@@ -120,21 +143,24 @@
       "Description": "",
       "Layer": 1,
       "Identifier": "9",
-      "Position": "-480,272"
+      "Position": "-480,276",
+      "HandleOffsets": {}
     },
     {
       "_class": "TextureCoord",
       "UseSecondaryCoord": false,
       "Tiling": "1,1",
       "Identifier": "10",
-      "Position": "-464,160"
+      "Position": "-468,156",
+      "HandleOffsets": {}
     },
     {
       "_class": "Step",
       "DefaultInput": 0,
       "DefaultEdge": 0,
       "Identifier": "11",
-      "Position": "-0,240",
+      "Position": "0,240",
+      "HandleOffsets": {},
       "Input": {
         "Identifier": "13",
         "Output": "Result"
@@ -149,7 +175,8 @@
       "DefaultA": 0,
       "DefaultB": 1,
       "Identifier": "12",
-      "Position": "-256,240",
+      "Position": "-252,240",
+      "HandleOffsets": {},
       "A": {
         "Identifier": "10",
         "Output": "Result"
@@ -163,6 +190,7 @@
       "_class": "Frac",
       "Identifier": "13",
       "Position": "-144,240",
+      "HandleOffsets": {},
       "Input": {
         "Identifier": "12",
         "Output": "Result"
@@ -177,14 +205,16 @@
       "IsAttribute": false,
       "UI": {},
       "Identifier": "14",
-      "Position": "-720,688"
+      "Position": "-720,684",
+      "HandleOffsets": {}
     },
     {
       "_class": "Max",
       "DefaultA": 0,
       "DefaultB": 0,
       "Identifier": "15",
-      "Position": "416,240",
+      "Position": "420,240",
+      "HandleOffsets": {},
       "InputA": {
         "Identifier": "16",
         "Output": "X"
@@ -197,7 +227,8 @@
     {
       "_class": "SplitVector",
       "Identifier": "16",
-      "Position": "208,240",
+      "Position": "204,240",
+      "HandleOffsets": {},
       "Input": {
         "Identifier": "11",
         "Output": "Result"
@@ -211,13 +242,17 @@
       "Description": "",
       "Layer": 2,
       "Identifier": "17",
-      "Position": "-512,96"
+      "Position": "-516,96",
+      "HandleOffsets": {}
     },
     {
       "_class": "Lerp",
+      "DefaultA": 0,
+      "DefaultB": 1,
       "Fraction": 0.5,
       "Identifier": "18",
       "Position": "768,0",
+      "HandleOffsets": {},
       "A": {
         "Identifier": "19",
         "Output": "Result"
@@ -240,7 +275,8 @@
         "Type": "Color"
       },
       "Identifier": "19",
-      "Position": "464,-272"
+      "Position": "468,-276",
+      "HandleOffsets": {}
     },
     {
       "_class": "Float4",
@@ -251,12 +287,14 @@
         "Type": "Color"
       },
       "Identifier": "20",
-      "Position": "464,-96"
+      "Position": "468,-96",
+      "HandleOffsets": {}
     },
     {
       "_class": "SplitVector",
       "Identifier": "21",
-      "Position": "992,160",
+      "Position": "996,156",
+      "HandleOffsets": {},
       "Input": {
         "Identifier": "18",
         "Output": "Result"
@@ -267,7 +305,8 @@
       "DefaultA": 0,
       "DefaultB": 1,
       "Identifier": "22",
-      "Position": "-400,704",
+      "Position": "-396,708",
+      "HandleOffsets": {},
       "A": {
         "Identifier": "14",
         "Output": "Result"
