@@ -1,6 +1,5 @@
 using Editor;
 using Sandbox;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,293 +7,293 @@ namespace SpriteTools.TilesetTool;
 
 public class TilesetLayerControl : Widget
 {
-    TilesetLayerListControl ParentList;
-    TilesetComponent.Layer Layer;
+	TilesetLayerListControl ParentList;
+	TilesetComponent.Layer Layer;
 
-    LabelTextEntry labelText;
+	LabelTextEntry labelText;
 
-    Drag dragData;
-    bool draggingAbove = false;
-    bool draggingBelow = false;
+	Drag dragData;
+	bool draggingAbove = false;
+	bool draggingBelow = false;
 
-    internal Widget icoCollisionLayer;
+	internal Widget icoCollisionLayer;
 
-    public TilesetLayerControl(TilesetLayerListControl list, TilesetComponent.Layer layer)
-    {
-        ParentList = list;
-        Layer = layer;
+	public TilesetLayerControl ( TilesetLayerListControl list, TilesetComponent.Layer layer )
+	{
+		ParentList = list;
+		Layer = layer;
 
-        VerticalSizeMode = SizeMode.Flexible;
+		VerticalSizeMode = SizeMode.Flexible;
 
-        StatusTip = $"Select Layer \"{Layer.Name}\"";
-        Cursor = TilesetTool.Active is not null ? CursorShape.Finger : CursorShape.None;
+		StatusTip = $"Select Layer \"{Layer.Name}\"";
+		Cursor = TilesetTool.Active is not null ? CursorShape.Finger : CursorShape.None;
 
-        Layout = Layout.Row();
-        Layout.Margin = 4;
-        Layout.Spacing = 4;
+		Layout = Layout.Row();
+		Layout.Margin = 4;
+		Layout.Spacing = 4;
 
-        var serializedObject = Layer.GetSerialized();
-        serializedObject.TryGetProperty(nameof(TilesetComponent.Layer.Name), out var name);
-        labelText = new LabelTextEntry(name);
-        labelText.IsItalic = Layer.IsLocked;
-        labelText.IsHidden = !Layer.IsVisible;
-        Layout.Add(labelText);
+		var serializedObject = Layer.GetSerialized();
+		serializedObject.TryGetProperty( nameof( TilesetComponent.Layer.Name ), out var name );
+		labelText = new LabelTextEntry( name );
+		labelText.IsItalic = Layer.IsLocked;
+		labelText.IsHidden = !Layer.IsVisible;
+		Layout.Add( labelText );
 
-        icoCollisionLayer = new Widget(this)
-        {
-            FixedSize = new Vector2(16, 16),
-            OnPaintOverride = () =>
-            {
-                Paint.SetPen(Color.Transparent);
-                Paint.SetBrush(Pixmap.FromTexture(Texture.Load(Editor.FileSystem.Mounted, "images/collision-bounce.png")));
-                Paint.Scale(0.5f, 0.5f);
-                Paint.DrawRect(LocalRect);
-                Paint.Scale(1, 1);
+		icoCollisionLayer = new Widget( this )
+		{
+			FixedSize = new Vector2( 16, 16 ),
+			OnPaintOverride = () =>
+			{
+				Paint.SetPen( Color.Transparent );
+				Paint.SetBrush( Pixmap.FromTexture( Texture.Load( Editor.FileSystem.Mounted, "images/collision-bounce.png" ) ) );
+				Paint.Scale( 0.5f, 0.5f );
+				Paint.DrawRect( LocalRect );
+				Paint.Scale( 1, 1 );
 
-                return true;
-            },
-            ToolTip = "Collision Layer",
-            Visible = false
-        };
-        Layout.Add(icoCollisionLayer);
+				return true;
+			},
+			ToolTip = "Collision Layer",
+			Visible = false
+		};
+		Layout.Add( icoCollisionLayer );
 
-        var btnVisible = new IconButton(Layer.IsVisible ? "visibility" : "visibility_off");
-        btnVisible.ToolTip = "Toggle Visibility";
-        btnVisible.StatusTip = "Toggle Visibility of Layer " + Layer.Name;
-        btnVisible.OnClick += () =>
-        {
-            Layer.IsVisible = !Layer.IsVisible;
-            btnVisible.Icon = Layer.IsVisible ? "visibility" : "visibility_off";
-            labelText.IsHidden = !Layer.IsVisible;
-        };
-        Layout.Add(btnVisible);
+		var btnVisible = new IconButton( Layer.IsVisible ? "visibility" : "visibility_off" );
+		btnVisible.ToolTip = "Toggle Visibility";
+		btnVisible.StatusTip = "Toggle Visibility of Layer " + Layer.Name;
+		btnVisible.OnClick += () =>
+		{
+			Layer.IsVisible = !Layer.IsVisible;
+			btnVisible.Icon = Layer.IsVisible ? "visibility" : "visibility_off";
+			labelText.IsHidden = !Layer.IsVisible;
+		};
+		Layout.Add( btnVisible );
 
-        var btnLock = new IconButton(Layer.IsLocked ? "lock" : "lock_open");
-        btnLock.ToolTip = "Lock Layer";
-        btnLock.StatusTip = "Lock Layer " + Layer.Name;
-        btnLock.OnClick += () =>
-        {
-            Layer.IsLocked = !Layer.IsLocked;
-            btnLock.Icon = Layer.IsLocked ? "lock" : "lock_open";
-            labelText.IsItalic = Layer.IsLocked;
-        };
-        Layout.Add(btnLock);
+		var btnLock = new IconButton( Layer.IsLocked ? "lock" : "lock_open" );
+		btnLock.ToolTip = "Lock Layer";
+		btnLock.StatusTip = "Lock Layer " + Layer.Name;
+		btnLock.OnClick += () =>
+		{
+			Layer.IsLocked = !Layer.IsLocked;
+			btnLock.Icon = Layer.IsLocked ? "lock" : "lock_open";
+			labelText.IsItalic = Layer.IsLocked;
+		};
+		Layout.Add( btnLock );
 
-        IsDraggable = true;
-        AcceptDrops = true;
-    }
+		IsDraggable = true;
+		AcceptDrops = true;
+	}
 
-    protected override void OnPaint()
-    {
-        if (dragData?.IsValid ?? false)
-        {
-            Paint.SetBrushAndPen(Theme.Black.WithAlpha(0.5f));
-            Paint.DrawRect(LocalRect, 4);
-        }
-        else if (TilesetTool.Active?.SelectedLayer == Layer)
-        {
-            Paint.SetBrushAndPen(Theme.Selection.Darken(0.5f));
-            Paint.DrawRect(LocalRect, 4);
-        }
-        else if (IsUnderMouse && TilesetTool.Active is not null)
-        {
-            Paint.SetBrushAndPen(Theme.White.WithAlpha(0.1f));
-            Paint.DrawRect(LocalRect, 4);
-        }
+	protected override void OnPaint ()
+	{
+		if ( dragData?.IsValid ?? false )
+		{
+			Paint.SetBrushAndPen( Theme.Black.WithAlpha( 0.5f ) );
+			Paint.DrawRect( LocalRect, 4 );
+		}
+		else if ( TilesetTool.Active?.SelectedLayer == Layer )
+		{
+			Paint.SetBrushAndPen( Theme.Highlight.Darken( 0.5f ) );
+			Paint.DrawRect( LocalRect, 4 );
+		}
+		else if ( IsUnderMouse && TilesetTool.Active is not null )
+		{
+			Paint.SetBrushAndPen( Theme.White.WithAlpha( 0.1f ) );
+			Paint.DrawRect( LocalRect, 4 );
+		}
 
-        if (draggingAbove)
-        {
-            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
-            Paint.DrawLine(LocalRect.TopLeft, LocalRect.TopRight);
-            draggingAbove = false;
-        }
-        else if (draggingBelow)
-        {
-            Paint.SetPen(Theme.Selection, 2f, PenStyle.Dot);
-            Paint.DrawLine(LocalRect.BottomLeft, LocalRect.BottomRight);
-            draggingBelow = false;
-        }
-    }
+		if ( draggingAbove )
+		{
+			Paint.SetPen( Theme.Highlight, 2f, PenStyle.Dot );
+			Paint.DrawLine( LocalRect.TopLeft, LocalRect.TopRight );
+			draggingAbove = false;
+		}
+		else if ( draggingBelow )
+		{
+			Paint.SetPen( Theme.Highlight, 2f, PenStyle.Dot );
+			Paint.DrawLine( LocalRect.BottomLeft, LocalRect.BottomRight );
+			draggingBelow = false;
+		}
+	}
 
-    void SetAsCollisionLayer()
-    {
-        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
-        foreach (var layer in list)
-        {
-            layer.IsCollisionLayer = false;
-        }
-        Layer.IsCollisionLayer = true;
+	void SetAsCollisionLayer ()
+	{
+		var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+		foreach ( var layer in list )
+		{
+			layer.IsCollisionLayer = false;
+		}
+		Layer.IsCollisionLayer = true;
 
-        foreach (var layerControl in ParentList.LayerControls)
-        {
-            layerControl.icoCollisionLayer.Visible = layerControl.Layer.IsCollisionLayer;
-        }
+		foreach ( var layerControl in ParentList.LayerControls )
+		{
+			layerControl.icoCollisionLayer.Visible = layerControl.Layer.IsCollisionLayer;
+		}
 
-        if (Layer.TilesetComponent.IsValid())
-        {
-            Layer.TilesetComponent.IsDirty = true;
-        }
-    }
+		if ( Layer.TilesetComponent.IsValid() )
+		{
+			Layer.TilesetComponent.IsDirty = true;
+		}
+	}
 
-    void Rename()
-    {
-        labelText.Edit();
-    }
+	void Rename ()
+	{
+		labelText.Edit();
+	}
 
-    void DeleteLayerPopup()
-    {
-        var popup = new PopupWidget(ParentList);
-        popup.Layout = Layout.Column();
-        popup.Layout.Margin = 16;
-        popup.Layout.Spacing = 8;
+	void DeleteLayerPopup ()
+	{
+		var popup = new PopupWidget( ParentList );
+		popup.Layout = Layout.Column();
+		popup.Layout.Margin = 16;
+		popup.Layout.Spacing = 8;
 
-        popup.Layout.Add(new Label($"Are you sure you want to delete this Layer?"));
+		popup.Layout.Add( new Label( $"Are you sure you want to delete this Layer?" ) );
 
-        var button = new Button.Primary("Delete");
+		var button = new Button.Primary( "Delete" );
 
-        button.MouseClick = () =>
-        {
-            Delete();
-            popup.Visible = false;
-        };
+		button.MouseClick = () =>
+		{
+			Delete();
+			popup.Visible = false;
+		};
 
-        popup.Layout.Add(button);
+		popup.Layout.Add( button );
 
-        var bottomBar = popup.Layout.AddRow();
-        bottomBar.AddStretchCell();
-        bottomBar.Add(button);
+		var bottomBar = popup.Layout.AddRow();
+		bottomBar.AddStretchCell();
+		bottomBar.Add( button );
 
-        var popupPos = new Vector2(Editor.Application.CursorPosition.x - 250, Editor.Application.CursorPosition.y);
-        popup.Position = popupPos;
-        popup.Visible = true;
-    }
+		var popupPos = new Vector2( Editor.Application.CursorPosition.x - 250, Editor.Application.CursorPosition.y );
+		popup.Position = popupPos;
+		popup.Visible = true;
+	}
 
-    [Shortcut("editor.delete", "DEL")]
-    void Delete()
-    {
-        ParentList.DeleteLayer(Layer);
-    }
+	[Shortcut( "editor.delete", "DEL" )]
+	void Delete ()
+	{
+		ParentList.DeleteLayer( Layer );
+	}
 
-    void DuplicateLayerPopup()
-    {
-        var popup = new PopupWidget(ParentList);
-        popup.Layout = Layout.Column();
-        popup.Layout.Margin = 16;
-        popup.Layout.Spacing = 8;
+	void DuplicateLayerPopup ()
+	{
+		var popup = new PopupWidget( ParentList );
+		popup.Layout = Layout.Column();
+		popup.Layout.Margin = 16;
+		popup.Layout.Spacing = 8;
 
-        popup.Layout.Add(new Label($"What would you like to name the duplicated Layer?"));
+		popup.Layout.Add( new Label( $"What would you like to name the duplicated Layer?" ) );
 
-        var entry = new LineEdit(popup);
-        entry.Text = $"{Layer.Name} 2";
-        var button = new Button.Primary("Duplicate");
+		var entry = new LineEdit( popup );
+		entry.Text = $"{Layer.Name} 2";
+		var button = new Button.Primary( "Duplicate" );
 
-        button.MouseClick = () =>
-        {
-            Duplicate(entry.Text);
-            popup.Visible = false;
-        };
+		button.MouseClick = () =>
+		{
+			Duplicate( entry.Text );
+			popup.Visible = false;
+		};
 
-        entry.ReturnPressed += button.MouseClick;
+		entry.ReturnPressed += button.MouseClick;
 
-        popup.Layout.Add(entry);
+		popup.Layout.Add( entry );
 
-        var bottomBar = popup.Layout.AddRow();
-        bottomBar.AddStretchCell();
-        bottomBar.Add(button);
+		var bottomBar = popup.Layout.AddRow();
+		bottomBar.AddStretchCell();
+		bottomBar.Add( button );
 
-        popup.Position = Editor.Application.CursorPosition;
-        popup.Visible = true;
+		popup.Position = Editor.Application.CursorPosition;
+		popup.Visible = true;
 
-        entry.Focus();
-    }
+		entry.Focus();
+	}
 
-    void Duplicate(string name)
-    {
-        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
-        var index = list.IndexOf(Layer);
-        var layer = Layer.Copy();
-        layer.Name = name;
-        list.Insert(index + 1, layer);
-        ParentList.SerializedProperty.SetValue(list);
-        ParentList.UpdateList();
-    }
+	void Duplicate ( string name )
+	{
+		var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+		var index = list.IndexOf( Layer );
+		var layer = Layer.Copy();
+		layer.Name = name;
+		list.Insert( index + 1, layer );
+		ParentList.SerializedProperty.SetValue( list );
+		ParentList.UpdateList();
+	}
 
-    protected override void OnContextMenu(ContextMenuEvent e)
-    {
-        base.OnContextMenu(e);
+	protected override void OnContextMenu ( ContextMenuEvent e )
+	{
+		base.OnContextMenu( e );
 
-        var m = new Menu(this);
+		var m = new Menu( this );
 
-        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
-        var collisionLayer = list.FirstOrDefault(x => x.IsCollisionLayer);
-        var firstLayer = list.FirstOrDefault();
-        if (!Layer.IsCollisionLayer && (collisionLayer is not null || Layer != firstLayer))
-        {
-            m.AddOption("Set as Collision Layer", "touch_app", SetAsCollisionLayer);
-            m.AddSeparator();
-        }
-        m.AddOption("Rename", "edit", Rename);
-        m.AddOption("Duplicate", "content_copy", DuplicateLayerPopup);
-        m.AddOption("Delete", "delete", Delete);
+		var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+		var collisionLayer = list.FirstOrDefault( x => x.IsCollisionLayer );
+		var firstLayer = list.FirstOrDefault();
+		if ( !Layer.IsCollisionLayer && ( collisionLayer is not null || Layer != firstLayer ) )
+		{
+			m.AddOption( "Set as Collision Layer", "touch_app", SetAsCollisionLayer );
+			m.AddSeparator();
+		}
+		m.AddOption( "Rename", "edit", Rename );
+		m.AddOption( "Duplicate", "content_copy", DuplicateLayerPopup );
+		m.AddOption( "Delete", "delete", Delete );
 
-        m.OpenAtCursor(false);
-    }
+		m.OpenAtCursor( false );
+	}
 
-    protected override void OnDragStart()
-    {
-        base.OnDragStart();
+	protected override void OnDragStart ()
+	{
+		base.OnDragStart();
 
-        dragData = new Drag(this);
-        dragData.Data.Object = Layer;
-        dragData.Execute();
-    }
+		dragData = new Drag( this );
+		dragData.Data.Object = Layer;
+		dragData.Execute();
+	}
 
-    public override void OnDragHover(DragEvent ev)
-    {
-        base.OnDragHover(ev);
+	public override void OnDragHover ( DragEvent ev )
+	{
+		base.OnDragHover( ev );
 
-        if (!TryDragOperation(ev, out var dragDelta))
-        {
-            draggingAbove = false;
-            draggingBelow = false;
-            return;
-        }
+		if ( !TryDragOperation( ev, out var dragDelta ) )
+		{
+			draggingAbove = false;
+			draggingBelow = false;
+			return;
+		}
 
-        draggingAbove = dragDelta > 0;
-        draggingBelow = dragDelta < 0;
-    }
+		draggingAbove = dragDelta > 0;
+		draggingBelow = dragDelta < 0;
+	}
 
-    public override void OnDragDrop(DragEvent ev)
-    {
-        base.OnDragDrop(ev);
+	public override void OnDragDrop ( DragEvent ev )
+	{
+		base.OnDragDrop( ev );
 
-        if (!TryDragOperation(ev, out var delta)) return;
+		if ( !TryDragOperation( ev, out var delta ) ) return;
 
-        var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
-        var index = list.IndexOf(Layer);
-        var movingIndex = index + delta;
-        var layer = list[movingIndex];
+		var list = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+		var index = list.IndexOf( Layer );
+		var movingIndex = index + delta;
+		var layer = list[movingIndex];
 
-        list.RemoveAt(movingIndex);
-        list.Insert(index, layer);
+		list.RemoveAt( movingIndex );
+		list.Insert( index, layer );
 
-        ParentList.SerializedProperty.SetValue(list);
-        ParentList.UpdateList();
-    }
+		ParentList.SerializedProperty.SetValue( list );
+		ParentList.UpdateList();
+	}
 
-    bool TryDragOperation(DragEvent ev, out int delta)
-    {
-        delta = 0;
-        var layer = ev.Data.OfType<TilesetComponent.Layer>().FirstOrDefault();
+	bool TryDragOperation ( DragEvent ev, out int delta )
+	{
+		delta = 0;
+		var layer = ev.Data.OfType<TilesetComponent.Layer>().FirstOrDefault();
 
-        if (layer == null || ParentList == null) return false;
+		if ( layer == null || ParentList == null ) return false;
 
-        var layerList = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
-        var myIndex = layerList.IndexOf(Layer);
-        var otherIndex = layerList.IndexOf(layer);
-        if (myIndex == -1 || otherIndex == -1) return false;
+		var layerList = ParentList.SerializedProperty.GetValue<List<TilesetComponent.Layer>>();
+		var myIndex = layerList.IndexOf( Layer );
+		var otherIndex = layerList.IndexOf( layer );
+		if ( myIndex == -1 || otherIndex == -1 ) return false;
 
-        delta = otherIndex - myIndex;
-        return true;
-    }
+		delta = otherIndex - myIndex;
+		return true;
+	}
 }

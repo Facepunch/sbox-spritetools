@@ -1,133 +1,132 @@
 using Editor;
 using Sandbox;
 using System;
-using System.Linq;
 
 namespace SpriteTools;
 
 internal class LabelTextEntry : Widget
 {
-    internal SerializedProperty Property;
-    string lastValue = "";
-    internal string lastSafeValue = "";
+	internal SerializedProperty Property;
+	string lastValue = "";
+	internal string lastSafeValue = "";
 
-    public bool IsItalic = false;
-    public bool IsHidden = false;
+	public bool IsItalic = false;
+	public bool IsHidden = false;
 
-    public string EmptyValue
-    {
-        get => _emptyValue;
-        set
-        {
-            _emptyValue = value;
-            RebuildUI();
-        }
-    }
-    string _emptyValue = "N/A";
+	public string EmptyValue
+	{
+		get => _emptyValue;
+		set
+		{
+			_emptyValue = value;
+			RebuildUI();
+		}
+	}
+	string _emptyValue = "N/A";
 
-    bool editing = false;
-    RealTimeSince timeSinceLastEdit = 0;
-    StringControlWidget stringControl;
+	bool editing = false;
+	RealTimeSince timeSinceLastEdit = 0;
+	StringControlWidget stringControl;
 
-    internal Func<string, bool> OnStopEditing;
+	internal Func<string, bool> OnStopEditing;
 
-    public LabelTextEntry(SerializedProperty property) : base(null)
-    {
-        Layout = Layout.Row();
-        Property = property;
-        MinimumHeight = 14;
+	public LabelTextEntry ( SerializedProperty property ) : base( null )
+	{
+		Layout = Layout.Row();
+		Property = property;
+		MinimumHeight = 14;
 
-        RebuildUI();
-    }
+		RebuildUI();
+	}
 
-    void RebuildUI()
-    {
-        Layout.Clear(true);
+	void RebuildUI ()
+	{
+		Layout.Clear( true );
 
-        if (editing)
-        {
-            stringControl = Layout.Add(new StringControlWidget(Property));
-            stringControl.HorizontalSizeMode = SizeMode.CanShrink;
-            stringControl.MaximumWidth = 250;
-            Layout.AddStretchCell();
-        }
-    }
+		if ( editing )
+		{
+			stringControl = Layout.Add( new StringControlWidget( Property ) );
+			stringControl.HorizontalSizeMode = SizeMode.CanShrink;
+			stringControl.MaximumWidth = 250;
+			Layout.AddStretchCell();
+		}
+	}
 
-    protected override void OnDoubleClick(MouseEvent e)
-    {
-        timeSinceLastEdit = 0;
+	protected override void OnDoubleClick ( MouseEvent e )
+	{
+		timeSinceLastEdit = 0;
 
-        if (editing)
-        {
-            editing = false;
-            RebuildUI();
-        }
-        else
-        {
-            Edit();
-        }
-    }
+		if ( editing )
+		{
+			editing = false;
+			RebuildUI();
+		}
+		else
+		{
+			Edit();
+		}
+	}
 
-    protected override void OnKeyPress(KeyEvent e)
-    {
-        base.OnKeyPress(e);
+	protected override void OnKeyPress ( KeyEvent e )
+	{
+		base.OnKeyPress( e );
 
-        if (e.Key == KeyCode.Enter || e.Key == KeyCode.Return)
-        {
-            StopEditing();
-        }
-    }
+		if ( e.Key == KeyCode.Enter || e.Key == KeyCode.Return )
+		{
+			StopEditing();
+		}
+	}
 
-    public void Edit()
-    {
-        lastSafeValue = Property.GetValue("N/A");
-        editing = true;
-        timeSinceLastEdit = 0f;
-        RebuildUI();
-        stringControl?.StartEditing();
-    }
+	public void Edit ()
+	{
+		lastSafeValue = Property.GetValue( "N/A" );
+		editing = true;
+		timeSinceLastEdit = 0f;
+		RebuildUI();
+		stringControl?.StartEditing();
+	}
 
-    public void StopEditing()
-    {
-        if (!editing) return;
+	public void StopEditing ()
+	{
+		if ( !editing ) return;
 
-        editing = false;
-        var value = Property.GetValue("");
-        if (OnStopEditing?.Invoke(value) ?? true)
-        {
-            Property.SetValue(value);
-        }
-        RebuildUI();
-    }
+		editing = false;
+		var value = Property.GetValue( "" );
+		if ( OnStopEditing?.Invoke( value ) ?? true )
+		{
+			Property.SetValue( value );
+		}
+		RebuildUI();
+	}
 
-    [EditorEvent.Frame]
-    void Frame()
-    {
-        if (editing)
-        {
-            var val = Property.GetValue("");
-            if (lastValue != val)
-            {
-                lastValue = val;
-                timeSinceLastEdit = 0;
-            }
+	[EditorEvent.Frame]
+	void Frame ()
+	{
+		if ( editing )
+		{
+			var val = Property.GetValue( "" );
+			if ( lastValue != val )
+			{
+				lastValue = val;
+				timeSinceLastEdit = 0;
+			}
 
-            if (timeSinceLastEdit > 5f)
-            {
-                StopEditing();
-            }
-        }
-    }
+			if ( timeSinceLastEdit > 5f )
+			{
+				StopEditing();
+			}
+		}
+	}
 
-    protected override void OnPaint()
-    {
-        base.OnPaint();
+	protected override void OnPaint ()
+	{
+		base.OnPaint();
 
-        if (editing) return;
-        Paint.SetPen(Theme.ControlText.WithAlpha(IsHidden ? 0.5f : 1f));
-        var val = Property.GetValue(EmptyValue);
-        if (string.IsNullOrEmpty(val)) val = EmptyValue;
-        Paint.SetDefaultFont(italic: IsItalic);
-        Paint.DrawText(LocalRect, val, TextFlag.LeftCenter);
-    }
+		if ( editing ) return;
+		Paint.SetPen( Theme.TextControl.WithAlpha( IsHidden ? 0.5f : 1f ) );
+		var val = Property.GetValue( EmptyValue );
+		if ( string.IsNullOrEmpty( val ) ) val = EmptyValue;
+		Paint.SetDefaultFont( italic: IsItalic );
+		Paint.DrawText( LocalRect, val, TextFlag.LeftCenter );
+	}
 }
