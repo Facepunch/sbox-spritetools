@@ -99,13 +99,13 @@ public class FrameButton : Widget
 			Paint.DrawRect( new Rect( LocalRect.TopLeft, LocalRect.BottomRight.WithY( 16f ) ) );
 		}
 
-		Paint.SetPen( Theme.White );
+		Paint.SetPen( Theme.Text );
 		var rect = new Rect( LocalRect.TopLeft, LocalRect.BottomRight.WithY( 16f ) );
 		Paint.DrawText( rect, ( FrameIndex + 1 ).ToString(), TextFlag.Center );
 
 		if ( dragData?.IsValid ?? false )
 		{
-			Paint.SetBrushAndPen( Theme.Black.WithAlpha( 0.5f ) );
+			Paint.SetBrushAndPen( Theme.WindowBackground.WithAlpha( 0.5f ) );
 			Paint.DrawRect( LocalRect );
 		}
 
@@ -137,11 +137,11 @@ public class FrameButton : Widget
 
 			tagRect.Position -= Vector2.Up;
 			Paint.SetFont( "Inter", 7, 1000, false );
-			Paint.SetPen( Theme.Black.WithAlpha( 0.4f ) );
+			Paint.SetPen( Theme.WindowBackground.WithAlpha( 0.4f ) );
 			tagRect.Position += 1;
 			Paint.DrawText( tagRect, events, TextFlag.Center );
 			tagRect.Position -= 1;
-			Paint.SetPen( Theme.White );
+			Paint.SetPen( Theme.Text );
 			Paint.DrawText( tagRect, events, TextFlag.Center );
 		}
 

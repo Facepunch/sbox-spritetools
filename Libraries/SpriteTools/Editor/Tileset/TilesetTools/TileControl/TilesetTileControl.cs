@@ -57,7 +57,7 @@ public class TilesetTileControl : Widget
 	{
 		if ( dragData?.IsValid ?? false )
 		{
-			Paint.SetBrushAndPen( Theme.Black.WithAlpha( 0.5f ) );
+			Paint.SetBrushAndPen( Theme.WindowBackground.WithAlpha( 0.5f ) );
 			Paint.DrawRect( LocalRect, 4 );
 		}
 		else if ( ParentList.Selected.Contains( this ) )
@@ -67,7 +67,7 @@ public class TilesetTileControl : Widget
 		}
 		else if ( IsUnderMouse )
 		{
-			Paint.SetBrushAndPen( Theme.White.WithAlpha( 0.1f ) );
+			Paint.SetBrushAndPen( Theme.Text.WithAlpha( 0.1f ) );
 			Paint.DrawRect( LocalRect, 4 );
 		}
 

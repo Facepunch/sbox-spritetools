@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Sandbox;
-using Editor;
+﻿using Editor;
 using Editor.Assets;
-using System.Threading.Tasks;
+using Sandbox;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-
 using static Editor.Inspectors.AssetInspector;
 
 namespace SpriteTools;
 
-[CanEdit("asset:sprite")]
+[CanEdit( "asset:sprite" )]
 public class SpriteInspector : Widget, IAssetInspector
 {
 	private SpriteResource Sprite;
@@ -19,49 +17,49 @@ public class SpriteInspector : Widget, IAssetInspector
 	private readonly ExpandGroup AnimationGroup;
 	private readonly AnimationList Animations;
 
-	public SpriteInspector(Widget parent) : base(parent)
+	public SpriteInspector ( Widget parent ) : base( parent )
 	{
 		Layout = Layout.Column();
 		Layout.Margin = 4;
 		Layout.Spacing = 4;
 
-		AnimationGroup = new ExpandGroup(this);
-		AnimationGroup.StateCookieName = $"{nameof(SpriteInspector)}.{nameof(AnimationGroup)}";
+		AnimationGroup = new ExpandGroup( this );
+		AnimationGroup.StateCookieName = $"{nameof( SpriteInspector )}.{nameof( AnimationGroup )}";
 		AnimationGroup.Icon = "directions_run";
 		AnimationGroup.Title = $"Animations";
 		AnimationGroup.Visible = false;
-		Layout.Add(AnimationGroup);
+		Layout.Add( AnimationGroup );
 
-		Animations = new AnimationList(AnimationGroup);
+		Animations = new AnimationList( AnimationGroup );
 		Animations.ItemSelected = PlayAnimation;
-		AnimationGroup.SetWidget(Animations);
+		AnimationGroup.SetWidget( Animations );
 	}
 
-	private void PlayAnimation(string name)
+	private void PlayAnimation ( string name )
 	{
-		if (AssetPreview is null)
+		if ( AssetPreview is null )
 			return;
 
-		if (AssetPreview is PreviewSprite preview)
+		if ( AssetPreview is PreviewSprite preview )
 		{
-			preview.SetAnimation(name);
+			preview.SetAnimation( name );
 		}
 	}
 
-	public void SetAssetPreview(AssetPreview preview)
+	public void SetAssetPreview ( AssetPreview preview )
 	{
 		AssetPreview = preview;
 	}
 
-	public void SetAsset(Asset asset)
+	public void SetAsset ( Asset asset )
 	{
 		Sprite = asset.LoadResource<SpriteResource>();
-		if (Sprite == null) return;
+		if ( Sprite == null ) return;
 
-		if (Sprite.Animations.Count > 0)
+		if ( Sprite.Animations.Count > 0 )
 		{
 			AnimationGroup.Visible = true;
-			Animations.SetSprite(Sprite);
+			Animations.SetSprite( Sprite );
 		}
 
 		AnimationGroup.Update();
@@ -72,19 +70,19 @@ public class SpriteInspector : Widget, IAssetInspector
 		public override string ItemName => "Animation";
 		public override string ItemIcon => "animgraph_editor/single_frame_icon.png";
 
-		public AnimationList(Widget parent) : base(parent)
+		public AnimationList ( Widget parent ) : base( parent )
 		{
 
 		}
 
-		public override void SetSprite(SpriteResource sprite)
+		public override void SetSprite ( SpriteResource sprite )
 		{
-			Items = Enumerable.Range(0, sprite.Animations.Count)
-				.Select(x => sprite.Animations[x].Name)
-				.OrderBy(x => x)
+			Items = Enumerable.Range( 0, sprite.Animations.Count )
+				.Select( x => sprite.Animations[x].Name )
+				.OrderBy( x => x )
 				.ToList();
 
-			ListView.SetItems(Items);
+			ListView.SetItems( Items );
 		}
 	}
 
@@ -98,91 +96,91 @@ public class SpriteInspector : Widget, IAssetInspector
 
 		public Action<string> ItemSelected { get; set; }
 
-		public abstract void SetSprite(SpriteResource model);
+		public abstract void SetSprite ( SpriteResource model );
 
-		public ItemList(Widget parent) : base(parent)
+		public ItemList ( Widget parent ) : base( parent )
 		{
 			Layout = Layout.Column();
 			Layout.Margin = 4;
 			Layout.Spacing = 4;
 
-			ListView = new ListView(this)
+			ListView = new ListView( this )
 			{
-				ItemSize = new Vector2(0, 25),
-				Margin = new(4, 4, 16, 4),
+				ItemSize = new Vector2( 0, 25 ),
+				Margin = new( 4, 4, 16, 4 ),
 				ItemPaint = PaintAnimationItem,
 				ItemContextMenu = ShowItemContext,
 				ToggleSelect = true,
-				ItemSelected = (o) => ItemSelected?.Invoke(o as string),
-				ItemDeselected = (o) => ItemSelected?.Invoke(null),
+				ItemSelected = ( o ) => ItemSelected?.Invoke( o as string ),
+				ItemDeselected = ( o ) => ItemSelected?.Invoke( null ),
 			};
 
-			var filter = new LineEdit(this)
+			var filter = new LineEdit( this )
 			{
 				PlaceholderText = $"Filter {ItemName}s..",
 				FixedHeight = 25
 			};
 
-			filter.TextEdited += (t) =>
+			filter.TextEdited += ( t ) =>
 			{
-				ListView.SetItems(Items == null || Items.Count == 0 ? null : string.IsNullOrWhiteSpace(t) ? Items :
-					Items.Where(x => x.Contains(t, StringComparison.OrdinalIgnoreCase)));
+				ListView.SetItems( Items == null || Items.Count == 0 ? null : string.IsNullOrWhiteSpace( t ) ? Items :
+					Items.Where( x => x.Contains( t, StringComparison.OrdinalIgnoreCase ) ) );
 			};
 
-			Layout.Add(filter);
-			Layout.Add(ListView, 1);
+			Layout.Add( filter );
+			Layout.Add( ListView, 1 );
 		}
 
-		private void ShowItemContext(object obj)
+		private void ShowItemContext ( object obj )
 		{
-			if (obj is not string name) return;
+			if ( obj is not string name ) return;
 
 			var m = new Menu();
 
-			m.AddOption("Copy", "content_copy", () =>
+			m.AddOption( "Copy", "content_copy", () =>
 			{
-				EditorUtility.Clipboard.Copy(name);
-			});
+				EditorUtility.Clipboard.Copy( name );
+			} );
 
-			m.OpenAt(Editor.Application.CursorPosition);
+			m.OpenAt( Editor.Application.CursorPosition );
 		}
 
-		private void PaintAnimationItem(VirtualWidget v)
+		private void PaintAnimationItem ( VirtualWidget v )
 		{
-			if (v.Object is not string name)
+			if ( v.Object is not string name )
 				return;
 
 			var rect = v.Rect;
 
 			Paint.Antialiasing = true;
 
-			var fg = Theme.White.Darken(0.2f);
+			var fg = Theme.Text.Darken( 0.2f );
 
-			if (Paint.HasSelected)
+			if ( Paint.HasSelected )
 			{
-				fg = Theme.White;
+				fg = Theme.Text;
 				Paint.ClearPen();
-				Paint.SetBrush(Theme.Primary.WithAlpha(0.5f));
-				Paint.DrawRect(rect, 2);
-				Paint.SetBrush(Theme.Primary.WithAlpha(0.4f));
+				Paint.SetBrush( Theme.Primary.WithAlpha( 0.5f ) );
+				Paint.DrawRect( rect, 2 );
+				Paint.SetBrush( Theme.Primary.WithAlpha( 0.4f ) );
 			}
-			else if (Paint.HasMouseOver)
+			else if ( Paint.HasMouseOver )
 			{
 				Paint.ClearPen();
-				Paint.SetBrush(Theme.Primary.WithAlpha(0.25f));
-				Paint.DrawRect(rect, 2);
+				Paint.SetBrush( Theme.Primary.WithAlpha( 0.25f ) );
+				Paint.DrawRect( rect, 2 );
 			}
 
-			var iconRect = rect.Shrink(8, 4);
+			var iconRect = rect.Shrink( 8, 4 );
 			iconRect.Width = iconRect.Height;
-			Paint.Draw(iconRect, ItemIcon);
+			Paint.Draw( iconRect, ItemIcon );
 
-			var textRect = rect.Shrink(4);
+			var textRect = rect.Shrink( 4 );
 			textRect.Left = iconRect.Right + 8;
 
 			Paint.SetDefaultFont();
-			Paint.SetPen(fg);
-			Paint.DrawText(textRect, $"{name}", TextFlag.LeftCenter);
+			Paint.SetPen( fg );
+			Paint.DrawText( textRect, $"{name}", TextFlag.LeftCenter );
 		}
 	}
 

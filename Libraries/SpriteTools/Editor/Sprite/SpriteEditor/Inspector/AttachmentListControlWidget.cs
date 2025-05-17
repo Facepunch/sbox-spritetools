@@ -67,9 +67,9 @@ public class AttachmentListControlWidget : ControlWidget
 			var index = y;
 			//grid.AddCell( 0, y, new IconButton( "drag_handle" ) { IconSize = 13, Foreground = Theme.ControlBackground, Background = Color.Transparent, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
 			grid.AddCell( 1, y, control, 1, 1, control.CellAlignment );
-			var visibilityButton = grid.AddCell( 2, y, new IconButton( "visibility" ) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
+			var visibilityButton = grid.AddCell( 2, y, new IconButton( "visibility" ) { Background = Theme.ControlBackground, FixedWidth = Theme.RowHeight, FixedHeight = Theme.RowHeight } );
 			visibilityButton.ToolTip = "Toggle attachment visibility";
-			var clearButton = grid.AddCell( 3, y, new IconButton( "clear", () => DeleteAttachmentPopup( index ) ) { Background = Theme.ControlBackground, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
+			var clearButton = grid.AddCell( 3, y, new IconButton( "clear", () => DeleteAttachmentPopup( index ) ) { Background = Theme.ControlBackground, FixedWidth = Theme.RowHeight, FixedHeight = Theme.RowHeight } );
 			clearButton.ToolTip = "Remove attachment";
 
 			visibilityButton.Icon = ( attachment?.Visible ?? true ) ? "visibility" : "visibility_off";
@@ -86,7 +86,7 @@ public class AttachmentListControlWidget : ControlWidget
 
 		// bottom row
 		{
-			addButton = grid.AddCell( 1, y, new IconButton( "add" ) { Background = Theme.ControlBackground, ToolTip = "Add attachment", FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
+			addButton = grid.AddCell( 1, y, new IconButton( "add" ) { Background = Theme.ControlBackground, ToolTip = "Add attachment", FixedWidth = Theme.RowHeight, FixedHeight = Theme.RowHeight } );
 			addButton.MouseClick = AddEntry;
 		}
 

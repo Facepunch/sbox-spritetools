@@ -108,7 +108,7 @@ public class SpriteComponentControlWidget : ControlWidget
 				{
 					scw.Enabled = false;
 				}
-				grid.AddCell( 2, y, new IconButton( ":" ) { IconSize = 13, Foreground = Theme.TextControl, Background = Color.Transparent, FixedWidth = ControlRowHeight, FixedHeight = ControlRowHeight } );
+				grid.AddCell( 2, y, new IconButton( ":" ) { IconSize = 13, Foreground = Theme.TextControl, Background = Color.Transparent, FixedWidth = Theme.RowHeight, FixedHeight = Theme.RowHeight } );
 				grid.AddCell( 3, y, valControl, 1, 1, valControl.CellAlignment );
 
 				y++;
