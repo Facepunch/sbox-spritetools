@@ -39,7 +39,8 @@ public class SpritesheetImporter : Dialog
 
 	internal List<SpritesheetImporterFrame> Frames = new List<SpritesheetImporterFrame>();
 
-	ControlSheet ControlSheet { get; set; }
+	ScrollArea ScrollArea { get; set; }
+	SegmentedControl SegmentedControl { get; set; }
 
 	public SpritesheetImporter ( Widget parent, string path ) : base( parent, false )
 	{
@@ -76,40 +77,65 @@ public class SpritesheetImporter : Dialog
 		Layout = Layout.Row();
 
 		var leftSide = Layout.Column();
-		leftSide.Margin = 16;
 		var leftContent = new Widget();
 		leftContent.MaximumWidth = 300;
 		leftContent.Layout = Layout.Column();
 		leftContent.Layout.Spacing = 4;
-		ControlSheet = new ControlSheet();
-		UpdateControlSheet();
-		leftContent.Layout.Add( ControlSheet );
-		leftContent.Layout.AddStretchCell();
+		leftContent.SetStyles( "{ background-color: " + Theme.WidgetBackground.Hex + "; padding: 16px; }" );
+
+		SegmentedControl = Layout.Add( new SegmentedControl() );
+		SegmentedControl.Layout.Margin = new Sandbox.UI.Margin( 2, 2 );
+		SegmentedControl.AddOption( "Setup Mode", "auto_fix_high" );
+		SegmentedControl.AddOption( "Manual Mode", "grid_on" );
+		SegmentedControl.OnSelectedChanged = ( index ) =>
+		{
+			UpdatePageContents();
+		};
+		leftContent.Layout.Add( SegmentedControl );
+
+		ScrollArea = new ScrollArea( this );
+		ScrollArea.ContentMargins = 8f;
+		ScrollArea.Canvas = new Widget();
+		ScrollArea.Canvas.Layout = Layout.Column();
+		ScrollArea.Canvas.Layout.Margin = 4f;
+		ScrollArea.Canvas.VerticalSizeMode = SizeMode.CanGrow;
+		ScrollArea.Canvas.MaximumWidth = 300;
+
+		leftContent.Layout.Add( ScrollArea );
+
+		var leftButtons = new Widget();
+		leftButtons.Layout = Layout.Column();
+		leftButtons.Layout.Spacing = 4;
+		leftButtons.Layout.Margin = 4;
 
 		var buttonCommit = new Button( "Commit Settings", "shortcut", this );
 		buttonCommit.Clicked += () =>
 		{
 			CommitFrames( Settings.GetFrames() );
 		};
-		leftContent.Layout.Add( buttonCommit );
+		leftButtons.Layout.Add( buttonCommit );
 
 		var buttonReset = new Button( "Reset All Settings", "refresh", this );
 		buttonReset.Clicked += () =>
 		{
 			Settings = new ImportSettings();
-			UpdateControlSheet();
+			UpdatePageContents();
 		};
-		leftContent.Layout.Add( buttonReset );
+		leftButtons.Layout.Add( buttonReset );
 
 		var buttonLoad = new Button( "Import Spritesheet", "download", this );
 		buttonLoad.Clicked += ImportSpritesheet;
-		leftContent.Layout.Add( buttonLoad );
+		leftButtons.Layout.Add( buttonLoad );
+
+		leftContent.Layout.Add( leftButtons );
 
 		leftSide.Add( leftContent );
 		Layout.Add( leftSide );
 
 		Preview = new Preview( this );
 		Layout.Add( Preview );
+
+		UpdatePageContents();
 	}
 
 	void ImportSpritesheet ()
@@ -124,10 +150,22 @@ public class SpritesheetImporter : Dialog
 	}
 
 	[EditorEvent.Hotload]
-	void UpdateControlSheet ()
+	void UpdatePageContents ()
 	{
-		ControlSheet?.Clear( true );
-		ControlSheet.AddObject( Settings.GetSerialized() );
+		ScrollArea.Canvas.Layout.Clear( true );
+		if ( SegmentedControl.SelectedIndex == 0 )
+		{
+			var sheet = new ControlSheet();
+			sheet.AddObject( Settings.GetSerialized() );
+
+			ScrollArea.Canvas.Layout.Add( sheet );
+			ScrollArea.Canvas.Layout.AddStretchCell();
+		}
+		else if ( SegmentedControl.SelectedIndex == 1 )
+		{
+			ScrollArea.Canvas.Layout.Add( new Label( "Click and drag anywhere to create a new frame.\n\nExisting frames can be moved or resized by clicking\nand dragging them." ) );
+			ScrollArea.Canvas.Layout.AddStretchCell();
+		}
 	}
 
 	List<Rect> GetRectList ()
