@@ -37,7 +37,9 @@ public class SpritesheetImporter : Dialog
 	public Action<string, List<Rect>> OnImport { get; set; }
 	public ImportSettings Settings { get; set; } = new ImportSettings();
 
+	internal bool HasModified = false;
 	internal List<SpritesheetImporterFrame> Frames = new List<SpritesheetImporterFrame>();
+	internal int PageIndex => SegmentedControl?.SelectedIndex ?? 0;
 
 	ScrollArea ScrollArea { get; set; }
 	SegmentedControl SegmentedControl { get; set; }
@@ -77,6 +79,7 @@ public class SpritesheetImporter : Dialog
 		Layout = Layout.Row();
 
 		var leftSide = Layout.Column();
+		leftSide.Margin = 4;
 		var leftContent = new Widget();
 		leftContent.MaximumWidth = 300;
 		leftContent.Layout = Layout.Column();
@@ -86,7 +89,7 @@ public class SpritesheetImporter : Dialog
 		SegmentedControl = Layout.Add( new SegmentedControl() );
 		SegmentedControl.Layout.Margin = new Sandbox.UI.Margin( 2, 2 );
 		SegmentedControl.AddOption( "Setup Mode", "auto_fix_high" );
-		SegmentedControl.AddOption( "Manual Mode", "grid_on" );
+		SegmentedControl.AddOption( "Manual Mode", "highlight_alt" );
 		SegmentedControl.OnSelectedChanged = ( index ) =>
 		{
 			UpdatePageContents();
@@ -106,19 +109,13 @@ public class SpritesheetImporter : Dialog
 		var leftButtons = new Widget();
 		leftButtons.Layout = Layout.Column();
 		leftButtons.Layout.Spacing = 4;
-		leftButtons.Layout.Margin = 4;
-
-		var buttonCommit = new Button( "Commit Settings", "shortcut", this );
-		buttonCommit.Clicked += () =>
-		{
-			CommitFrames( Settings.GetFrames() );
-		};
-		leftButtons.Layout.Add( buttonCommit );
 
 		var buttonReset = new Button( "Reset All Settings", "refresh", this );
 		buttonReset.Clicked += () =>
 		{
 			Settings = new ImportSettings();
+			HasModified = false;
+			Frames.Clear();
 			UpdatePageContents();
 		};
 		leftButtons.Layout.Add( buttonReset );
@@ -156,7 +153,8 @@ public class SpritesheetImporter : Dialog
 		if ( SegmentedControl.SelectedIndex == 0 )
 		{
 			var sheet = new ControlSheet();
-			sheet.AddObject( Settings.GetSerialized() );
+			var serialized = Settings.GetSerialized();
+			sheet.AddObject( serialized );
 
 			ScrollArea.Canvas.Layout.Add( sheet );
 			ScrollArea.Canvas.Layout.AddStretchCell();
@@ -165,6 +163,11 @@ public class SpritesheetImporter : Dialog
 		{
 			ScrollArea.Canvas.Layout.Add( new Label( "Click and drag anywhere to create a new frame.\n\nExisting frames can be moved or resized by clicking\nand dragging them." ) );
 			ScrollArea.Canvas.Layout.AddStretchCell();
+			if ( !HasModified )
+			{
+				Frames.Clear();
+				CommitFrames( Settings.GetFrames() );
+			}
 		}
 	}
 

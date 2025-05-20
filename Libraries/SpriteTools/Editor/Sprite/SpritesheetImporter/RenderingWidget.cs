@@ -19,6 +19,10 @@ public class RenderingWidget : SpriteRenderingWidget
 	float ySeparation;
 	Vector3 startMovePosition;
 
+	bool isCreating = false;
+	Vector2 startCreatePosition;
+	Vector2 endCreatePosition;
+
 	SpritesheetImporterFrame Selected = null;
 
 	RealTimeSince timeSinceLastCornerHover = 0;
@@ -88,39 +92,106 @@ public class RenderingWidget : SpriteRenderingWidget
 
 			int framesPerRow = Math.Clamp( Importer.Settings.FramesPerRow, 1, (int)TextureSize.x / Importer.Settings.FrameWidth );
 
-			using ( Gizmo.Scope( "import_settings" ) )
+			var isManualMode = Importer.PageIndex == 1;
+			if ( !isManualMode )
 			{
-				for ( int i = 0; i < Importer.Settings.NumberOfFrames; i++ )
+				using ( Gizmo.Scope( "import_settings" ) )
 				{
-					int cellX = i % framesPerRow;
-					int cellY = i / framesPerRow;
+					for ( int i = 0; i < Importer.Settings.NumberOfFrames; i++ )
+					{
+						int cellX = i % framesPerRow;
+						int cellY = i / framesPerRow;
 
-					float x = startX + ( cellX ) * ( frameWidth + xSeparation );
-					float y = startY + ( cellY ) * ( frameHeight + ySeparation );
+						float x = startX + ( cellX ) * ( frameWidth + xSeparation );
+						float y = startY + ( cellY ) * ( frameHeight + ySeparation );
 
-					// Draw Box
-					Gizmo.Draw.Line( new Vector3( y, x, 0 ), new Vector3( y, x + frameWidth, 0 ) );
-					Gizmo.Draw.Line( new Vector3( y, x + frameWidth, 0 ), new Vector3( y + frameHeight, x + frameWidth, 0 ) );
-					Gizmo.Draw.Line( new Vector3( y + frameHeight, x + frameWidth, 0 ), new Vector3( y + frameHeight, x, 0 ) );
-					Gizmo.Draw.Line( new Vector3( y + frameHeight, x, 0 ), new Vector3( y, x, 0 ) );
+						// Draw Box
+						Gizmo.Draw.Line( new Vector3( y, x, 0 ), new Vector3( y, x + frameWidth, 0 ) );
+						Gizmo.Draw.Line( new Vector3( y, x + frameWidth, 0 ), new Vector3( y + frameHeight, x + frameWidth, 0 ) );
+						Gizmo.Draw.Line( new Vector3( y + frameHeight, x + frameWidth, 0 ), new Vector3( y + frameHeight, x, 0 ) );
+						Gizmo.Draw.Line( new Vector3( y + frameHeight, x, 0 ), new Vector3( y, x, 0 ) );
+					}
 				}
 			}
 
-			using ( Gizmo.Scope( "committed_frames" ) )
-			{
-				Gizmo.Draw.Color = new Color( 0.1f, 0.4f, 1f );
-				Gizmo.Draw.LineThickness = 3f;
-
-				var frames = Importer.Frames.ToList();
-				foreach ( var frame in frames )
+			if ( isManualMode || Importer.HasModified )
+				using ( Gizmo.Scope( "committed_frames" ) )
 				{
-					FrameControl( frame );
+					Gizmo.Draw.Color = new Color( 0.1f, 0.4f, 1f );
+					Gizmo.Draw.LineThickness = 3f;
+
+					var frames = Importer.Frames.ToList();
+					foreach ( var frame in frames )
+					{
+						FrameControl( frame, isManualMode );
+					}
+				}
+
+
+			if ( isManualMode )
+			{
+				using ( Gizmo.Scope( "background" ) )
+				{
+					var planeBBox = new BBox( new Vector3( -planeHeight / 2f, -planeWidth / 2f, -10 ), new Vector3( planeHeight, planeWidth, 0f ) / 2f );
+					Gizmo.Hitbox.BBox( planeBBox );
+					//Gizmo.Draw.Color = Color.Red.WithAlpha( 0.6f );
+					//Gizmo.Draw.SolidBox( planeBBox );
+
+					if ( Gizmo.Pressed.This )
+					{
+						var rayPos = Gizmo.CurrentRay.Position;
+						if ( Gizmo.WasLeftMousePressed )
+						{
+							if ( Selected is null )
+							{
+								isCreating = true;
+								startCreatePosition = RayPositionToPixel( rayPos );
+							}
+							Selected = null;
+						}
+
+						if ( isCreating )
+						{
+							endCreatePosition = RayPositionToPixel( rayPos );
+						}
+					}
+					else
+					{
+						if ( isCreating )
+						{
+							var start = startCreatePosition;
+							var end = endCreatePosition;
+							var size = new Vector2( MathF.Abs( end.y - start.y ), MathF.Abs( end.x - start.x ) );
+							var topLeft = new Vector2( MathF.Min( start.y, end.y ), MathF.Min( start.x, end.x ) );
+							if ( size.x > 0 && size.y > 0 )
+							{
+								var rect = new Rect( topLeft, size );
+								var newFrame = new SpritesheetImporterFrame( rect );
+								Importer.Frames.Add( newFrame );
+							}
+						}
+						isCreating = false;
+					}
+				}
+
+				if ( isCreating )
+				{
+					using ( Gizmo.Scope( "creating" ) )
+					{
+						var start = PixelToRayPosition( startCreatePosition );
+						var end = PixelToRayPosition( endCreatePosition );
+						var size = ( end - start );
+						var bbox = BBox.FromPositionAndSize( start + size / 2f, size );
+						Gizmo.Draw.Color = Color.Yellow;
+						Gizmo.Draw.LineThickness = 3f;
+						Gizmo.Draw.LineBBox( bbox );
+					}
 				}
 			}
 		}
 	}
 
-	void FrameControl ( SpritesheetImporterFrame frame )
+	void FrameControl ( SpritesheetImporterFrame frame, bool isManualMode )
 	{
 		if ( frame is null ) return;
 		bool isSelected = Selected == frame; ;
@@ -143,84 +214,91 @@ public class RenderingWidget : SpriteRenderingWidget
 			var bbox = BBox.FromPositionAndSize( new Vector3( visualY + visualHeight / 2f, visualX + visualWidth / 2f, 1f ), new Vector3( visualHeight, visualWidth, 1f ) );
 			Gizmo.Hitbox.BBox( bbox );
 
-			if ( isSelected || Gizmo.Pressed.This )
+			if ( isManualMode )
 			{
-				Gizmo.Draw.LineThickness = 4;
-				Gizmo.Draw.Color = Color.Yellow;
-			}
 
-			var visualRayPos = ( Gizmo.CurrentRay.Position / new Vector3( planeWidth, planeHeight, 1f ) ) * new Vector3( TextureSize.x, TextureSize.y, 1f );
-
-			if ( Gizmo.WasLeftMousePressed )
-			{
-				startMovePosition = visualRayPos;
-			}
-
-			if ( Gizmo.Pressed.This )
-			{
-				Cursor = CursorShape.SizeAll;
-				timeSinceLastCornerHover = 0f;
-				var preDelta = startMovePosition - visualRayPos;
-				//preDelta = ( preDelta * new Vector3( TextureSize.x, TextureSize.y, 1 ) ) / new Vector2( planeWidth, planeHeight );
-				var deltaf = new Vector2( -preDelta.y, -preDelta.x );
-				//deltaf = ( deltaf / new Vector2( planeWidth, planeHeight ) );// * new Vector2( TextureSize.x, TextureSize.y );
-				if ( Math.Abs( deltaf.x ) >= 1f )
+				if ( isSelected || Gizmo.Pressed.This )
 				{
-					int xx = (int)deltaf.x;
-					if ( xx != 0 && CanExpand( frame, xx, 0 ) )
-					{
-						startMovePosition += new Vector3( 0, xx );
-						var rect = frame.Rect;
-						rect.Position = frame.Rect.Position + new Vector2( xx, 0 );
-						frame.Rect = rect;
-					}
+					Gizmo.Draw.LineThickness = 4;
+					Gizmo.Draw.Color = Color.Yellow;
 				}
-				if ( Math.Abs( deltaf.y ) >= 1f )
-				{
-					int yy = (int)deltaf.y;
-					if ( yy != 0 && CanExpand( frame, 0, yy ) )
-					{
-						startMovePosition += new Vector3( yy, 0 );
-						var rect = frame.Rect;
-						rect.Position = frame.Rect.Position + new Vector2( 0, yy );
-						frame.Rect = rect;
-					}
-				}
-			}
 
-			if ( Gizmo.IsHovered )
-			{
-				Cursor = CursorShape.Finger;
-				timeSinceLastCornerHover = 0f;
-				using ( Gizmo.Scope( "hover" ) )
-				{
-					Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha( 0.5f );
-					Gizmo.Draw.SolidBox( bbox );
-				}
+				var visualRayPos = ( Gizmo.CurrentRay.Position / new Vector3( planeWidth, planeHeight, 1f ) ) * new Vector3( TextureSize.x, TextureSize.y, 1f );
+
 				if ( Gizmo.WasLeftMousePressed )
 				{
-					Selected = frame;
+					startMovePosition = visualRayPos;
 				}
-				else if ( Gizmo.WasRightMousePressed )
-				{
-					Importer.Frames.Remove( frame );
-				}
-			}
 
-			if ( isSelected )
-			{
-				using ( Gizmo.Scope( "selected" ) )
+				if ( Gizmo.Pressed.This )
 				{
-					Gizmo.Draw.Color = Color.Orange;
-					Gizmo.Draw.LineThickness = 3;
-
-					// Draggable Corners
-					for ( int i = -1; i <= 1; i++ )
+					Cursor = CursorShape.SizeAll;
+					timeSinceLastCornerHover = 0f;
+					var preDelta = startMovePosition - visualRayPos;
+					//preDelta = ( preDelta * new Vector3( TextureSize.x, TextureSize.y, 1 ) ) / new Vector2( planeWidth, planeHeight );
+					var deltaf = new Vector2( -preDelta.y, -preDelta.x );
+					//deltaf = ( deltaf / new Vector2( planeWidth, planeHeight ) );// * new Vector2( TextureSize.x, TextureSize.y );
+					if ( Math.Abs( deltaf.x ) >= 1f )
 					{
-						for ( int j = -1; j <= 1; j++ )
+						int xx = (int)deltaf.x;
+						if ( xx != 0 && CanExpand( frame, xx, 0 ) )
 						{
-							if ( i == 0 && j == 0 ) continue;
-							DraggableCorner( frame, i, j, visualX + visualWidth * ( i + 1 ) / 2f, visualY + visualHeight * ( j + 1 ) / 2f );
+							startMovePosition += new Vector3( 0, xx );
+							var rect = frame.Rect;
+							rect.Position = frame.Rect.Position + new Vector2( xx, 0 );
+							frame.Rect = rect;
+							Importer.HasModified = true;
+						}
+					}
+					if ( Math.Abs( deltaf.y ) >= 1f )
+					{
+						int yy = (int)deltaf.y;
+						if ( yy != 0 && CanExpand( frame, 0, yy ) )
+						{
+							startMovePosition += new Vector3( yy, 0 );
+							var rect = frame.Rect;
+							rect.Position = frame.Rect.Position + new Vector2( 0, yy );
+							frame.Rect = rect;
+							Importer.HasModified = true;
+						}
+					}
+				}
+
+				if ( Gizmo.IsHovered )
+				{
+					Cursor = CursorShape.Finger;
+					timeSinceLastCornerHover = 0f;
+					using ( Gizmo.Scope( "hover" ) )
+					{
+						Gizmo.Draw.Color = Gizmo.Draw.Color.WithAlpha( 0.5f );
+						Gizmo.Draw.SolidBox( bbox );
+					}
+					if ( Gizmo.WasLeftMousePressed )
+					{
+						Selected = frame;
+					}
+					else if ( Gizmo.WasRightMousePressed )
+					{
+						Importer.Frames.Remove( frame );
+						Importer.HasModified = true;
+					}
+				}
+
+				if ( isSelected )
+				{
+					using ( Gizmo.Scope( "selected" ) )
+					{
+						Gizmo.Draw.Color = Color.Orange;
+						Gizmo.Draw.LineThickness = 3;
+
+						// Draggable Corners
+						for ( int i = -1; i <= 1; i++ )
+						{
+							for ( int j = -1; j <= 1; j++ )
+							{
+								if ( i == 0 && j == 0 ) continue;
+								DraggableCorner( frame, i, j, visualX + visualWidth * ( i + 1 ) / 2f, visualY + visualHeight * ( j + 1 ) / 2f );
+							}
 						}
 					}
 				}
@@ -260,7 +338,7 @@ public class RenderingWidget : SpriteRenderingWidget
 
 			if ( canDrag )
 			{
-				var bbox = BBox.FromPositionAndSize( new Vector3( yy, xx, 1f ), new Vector3( radius, radius, 1f ) );
+				var bbox = BBox.FromPositionAndSize( new Vector3( yy, xx, 2f ), new Vector3( radius, radius, radius ) * 1.5f );
 				Gizmo.Hitbox.BBox( bbox );
 
 				if ( Gizmo.Pressed.This )
@@ -294,6 +372,7 @@ public class RenderingWidget : SpriteRenderingWidget
 									{
 										size += new Vector2Int( am, 0 );
 									}
+									Importer.HasModified = true;
 								}
 							}
 							// Shinking
@@ -310,6 +389,7 @@ public class RenderingWidget : SpriteRenderingWidget
 								{
 									size -= new Vector2Int( am, 0 );
 								}
+								Importer.HasModified = true;
 							}
 						}
 					}
@@ -334,6 +414,7 @@ public class RenderingWidget : SpriteRenderingWidget
 									{
 										size += new Vector2Int( 0, am );
 									}
+									Importer.HasModified = true;
 								}
 							}
 							else if ( canShrinkY && ( size.y + delta.y ) > 1 )
@@ -348,6 +429,7 @@ public class RenderingWidget : SpriteRenderingWidget
 								{
 									size -= new Vector2Int( 0, am );
 								}
+								Importer.HasModified = true;
 							}
 						}
 					}
@@ -416,5 +498,21 @@ public class RenderingWidget : SpriteRenderingWidget
 		Gizmo.Draw.Line( new Vector3( y, x, 0 ), new Vector3( y + height, x, 0 ) );
 		Gizmo.Draw.Line( new Vector3( y + height, x, 0 ), new Vector3( y + height, x + width, 0 ) );
 		Gizmo.Draw.Line( new Vector3( y + height, x + width, 0 ), new Vector3( y, x + width, 0 ) );
+	}
+
+	Vector2 RayPositionToPixel ( Vector3 position )
+	{
+		var x = position.y + ( planeWidth / 2f );
+		var y = position.x + ( planeHeight / 2f );
+		x = MathF.Floor( ( x / planeWidth ) * TextureSize.x );
+		y = MathF.Floor( ( y / planeHeight ) * TextureSize.y );
+		return new Vector2( y, x );
+	}
+
+	Vector3 PixelToRayPosition ( Vector2 position )
+	{
+		var x = position.y / TextureSize.x * planeWidth - ( planeWidth / 2f );
+		var y = position.x / TextureSize.y * planeHeight - ( planeHeight / 2f );
+		return new Vector3( y, x, 0 );
 	}
 }
