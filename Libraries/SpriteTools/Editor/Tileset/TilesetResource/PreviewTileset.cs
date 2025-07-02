@@ -1,72 +1,68 @@
-using System;
-using Sandbox;
 using Editor;
 using Editor.Assets;
+using Sandbox;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SpriteTools;
 
-[AssetPreview("tileset")]
+[AssetPreview( "tileset" )]
 class PreviewTileset : AssetPreview
 {
-    SceneObject so;
-    Material previewMat;
-    TilesetResource tileset;
+	internal Texture texture;
 
-    /// <summary>
-    /// Use the eval, because in sequences we want to find a frame with the most action
-    /// </summary>
-    public override bool UsePixelEvaluatorForThumbs => true;
+	public override bool IsAnimatedPreview => false;
 
-    /// <summary>
-    /// Only render a video if we have animations
-    /// </summary>
-    public override bool IsAnimatedPreview => false;
+	public PreviewTileset ( Asset asset ) : base( asset )
+	{
+		if ( !asset.TryLoadResource<TilesetResource>( out var tileset ) )
+			return;
 
-    public PreviewTileset(Asset asset) : base(asset)
-    {
-        tileset = ResourceLibrary.Get<TilesetResource>(Asset.Path);
-    }
+		var filePath = tileset?.FilePath;
+		if ( filePath is null || !Editor.FileSystem.Content.FileExists( filePath ) )
+			return;
 
-    public override Task InitializeAsset()
-    {
-        var image = Texture.Load(Editor.FileSystem.Content, tileset?.FilePath);
-        if (image is null) return Task.CompletedTask;
+		var image = Texture.Load( Editor.FileSystem.Content, tileset?.FilePath );
+		if ( image is not null )
+		{
+			texture = image;
+		}
+	}
 
-        Camera.Position = Vector3.Up * 100;
-        Camera.Angles = new Angles(90, 180, 0);
-        Camera.Ortho = true;
-        Camera.OrthoHeight = 100f;
-        Camera.BackgroundColor = Color.Transparent;
+	public override Task InitializeAsset ()
+	{
+		using ( Scene.Push() )
+		{
+			PrimaryObject = new GameObject();
+			PrimaryObject.WorldTransform = Transform.Zero;
 
-        so = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
-        so.Transform = Transform.Zero;
-        previewMat = Material.Load("materials/sprite_2d.vmat").CreateCopy();
-        previewMat.Set("Texture", image);
-        previewMat.Set("g_flFlashAmount", 0f);
-        so.Flags.WantsFrameBufferCopy = true;
-        so.Flags.IsTranslucent = true;
-        so.Flags.IsOpaque = false;
-        so.Flags.CastShadows = false;
+			if ( texture is not null )
+			{
+				var sprite = PrimaryObject.AddComponent<SpriteRenderer>();
+				sprite.Texture = texture;
 
-        var aspect = image.Width / (float)image.Height;
-        if (aspect < 1)
-        {
-            so.Transform = so.Transform.WithScale(new Vector3(1, aspect, 1));
-        }
-        else
-        {
-            so.Transform = so.Transform.WithScale(new Vector3(1f / aspect, 1, 1));
-        }
+				var aspect = (float)texture.Width / (float)texture.Height;
+				sprite.Size = new Vector2( 16 * aspect, 16 );
 
-        so.SetMaterialOverride(previewMat);
+				if ( aspect > 1 )
+				{
+					sprite.Size = new Vector2( 16, 16 / aspect );
+				}
+			}
 
-        return Task.CompletedTask;
-    }
+			Camera.Orthographic = true;
+			Camera.OrthographicHeight = 16;
+		}
 
-    public override void UpdateScene(float cycle, float timeStep)
-    {
+		return Task.CompletedTask;
+	}
 
-    }
+	public override void UpdateScene ( float cycle, float timeStep )
+	{
+		base.UpdateScene( cycle, timeStep );
+
+		Camera.Orthographic = true;
+		Camera.OrthographicHeight = 16;
+		Camera.WorldPosition = Vector3.Forward * -200;
+		Camera.WorldRotation = Rotation.LookAt( Vector3.Forward );
+	}
 }

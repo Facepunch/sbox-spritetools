@@ -1,161 +1,79 @@
-using System;
-using Sandbox;
 using Editor;
 using Editor.Assets;
+using Sandbox;
+using System;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SpriteTools;
 
-[AssetPreview("sprite")]
+[AssetPreview( "sprite" )]
 class PreviewSprite : AssetPreview
 {
-    SceneObject so;
-    Material previewMat;
-    SpriteResource sprite;
-    TextureAtlas atlas;
-    SpriteResource.LoopMode loopMode;
-    int loopStart = 0;
-    int loopEnd = 0;
-    int frame = 0;
-    int frames = 1;
-    float frameTime = 1f;
-    float timer = 0f;
-    bool isPingPonging = false;
+	SpriteResource spriteResource;
+	SpriteComponent spriteComponent;
 
-    /// <summary>
-    /// Use the eval, because in sequences we want to find a frame with the most action
-    /// </summary>
-    public override bool UsePixelEvaluatorForThumbs => true;
+	public override bool IsAnimatedPreview => true;
 
-    /// <summary>
-    /// Only render a video if we have animations
-    /// </summary>
-    public override bool IsAnimatedPreview => (sprite?.Animations?.FirstOrDefault()?.Frames?.Count ?? 0) > 1;
+	public PreviewSprite ( Asset asset ) : base( asset )
+	{
+		if ( asset.TryLoadResource<SpriteResource>( out var sprite ) )
+		{
+			spriteResource = sprite;
+		}
+	}
 
-    public PreviewSprite(Asset asset) : base(asset)
-    {
-        sprite = SpriteResource.Load(Asset.Path);
-    }
+	public override Task InitializeAsset ()
+	{
+		using ( Scene.Push() )
+		{
+			PrimaryObject = new GameObject();
+			PrimaryObject.WorldTransform = Transform.Zero;
 
-    public override Task InitializeAsset()
-    {
-        Camera.Position = Vector3.Up * 100;
-        Camera.Angles = new Angles(90, 180, 0);
-        Camera.Ortho = true;
-        Camera.OrthoHeight = 100f;
-        Camera.BackgroundColor = Color.Transparent;
+			Camera.WorldRotation = Rotation.Identity;
+			Camera.WorldPosition = Vector3.Forward * -200;
+			Camera.Orthographic = true;
+			Camera.OrthographicHeight = 50;
 
-        so = new SceneObject(World, "models/preview_quad.vmdl", Transform.Zero);
-        so.Transform = Transform.Zero;
-        previewMat = Material.Load("materials/sprite_2d.vmat").CreateCopy();
-        previewMat.Set("Texture", Color.Transparent);
-        previewMat.Set("g_flFlashAmount", 0f);
-        so.Flags.WantsFrameBufferCopy = true;
-        so.Flags.IsTranslucent = true;
-        so.Flags.IsOpaque = false;
-        so.Flags.CastShadows = false;
+			spriteComponent = PrimaryObject.AddComponent<SpriteComponent>();
+			spriteComponent.Sprite = spriteResource;
+			spriteComponent.UpDirection = SpriteComponent.Axis.ZPositive;
+			spriteComponent.WorldRotation = new Angles( 0, 180, 0 );
+			spriteComponent.UsePixelScale = true;
 
-        var anim = sprite.Animations.FirstOrDefault();
-        Init(anim);
+			UpdateCamera();
+		}
 
-        so.SetMaterialOverride(previewMat);
+		return Task.CompletedTask;
+	}
 
-        return Task.CompletedTask;
-    }
+	public override void UpdateScene ( float cycle, float timeStep )
+	{
+		using ( Scene.Push() )
+		{
+			UpdateCamera();
+		}
 
-    public override void UpdateScene(float cycle, float timeStep)
-    {
-        timer += timeStep;
-        if (timer >= frameTime)
-        {
-            AdvanceFrame();
-            UpdateFrame();
+		TickScene( timeStep );
+	}
 
-            timer -= frameTime;
-        }
-    }
+	void UpdateCamera ()
+	{
+		if ( !spriteComponent.IsValid() )
+			return;
 
-    void Init(SpriteAnimation anim)
-    {
-        atlas = TextureAtlas.FromAnimation(anim);
-        if (atlas is not null)
-        {
-            previewMat.Set("Texture", atlas);
-            frame = 0;
-            isPingPonging = false;
-            loopMode = anim.LoopMode;
-            loopStart = anim.GetLoopStart();
-            loopEnd = anim.GetLoopEnd();
-            UpdateFrame();
+		var _imageSize = spriteComponent?.CurrentTexture?.FrameSize ?? 50;
+		var _origin = ( ( spriteComponent?.CurrentAnimation?.Origin ?? Vector2.Zero ) - 0.5f ) * _imageSize;
+		Camera.WorldPosition = ( Vector3.Forward * -200 ) + new Vector3( _origin.x, 0, _origin.y );
 
-            var aspectRatio = atlas.AspectRatio;
-            if (aspectRatio > 1f)
-                so.Transform = so.Transform.WithScale(new Vector3(1f / aspectRatio, 1f, 1f));
-            else
-                so.Transform = so.Transform.WithScale(new Vector3(1f, aspectRatio, 1f));
+		var _s = MathF.Max( _imageSize.x, _imageSize.y );
+		Camera.OrthographicHeight = ( _s > 0 ) ? _s : 50;
+	}
 
-            frameTime = 1f / anim.FrameRate;
-            frames = anim.Frames.Count;
-            if (frames < 1)
-                frames = 1;
-        }
-    }
-
-    void AdvanceFrame()
-    {
-        var playbackSpeed = isPingPonging ? -1 : 1;
-        if (playbackSpeed > 0)
-        {
-            frame++;
-            if (frame >= loopEnd && loopMode == SpriteResource.LoopMode.Forward)
-            {
-                frame = loopStart;
-            }
-            else if (frame >= loopEnd && loopMode == SpriteResource.LoopMode.PingPong)
-            {
-                frame = Math.Max(loopEnd - 1, loopStart);
-                isPingPonging = true;
-            }
-            else if (frame >= frames)
-            {
-                frame = 0;
-            }
-        }
-        else if (playbackSpeed < 0)
-        {
-            frame--;
-            if (frame < loopStart && loopMode == SpriteResource.LoopMode.Forward)
-            {
-                frame = loopEnd - 1;
-            }
-            else if (frame < loopStart && loopMode == SpriteResource.LoopMode.PingPong)
-            {
-                frame = Math.Min(loopStart + 1, loopEnd);
-                isPingPonging = false;
-            }
-            else if (frame < 0)
-            {
-                frame = frames - 1;
-            }
-        }
-    }
-
-    void UpdateFrame()
-    {
-        if (atlas is null) return;
-        var offset = atlas.GetFrameOffset(frame);
-        var tiling = atlas.GetFrameTiling();
-        previewMat.Set("g_vOffset", offset);
-        previewMat.Set("g_vTiling", tiling);
-        so.SetMaterialOverride(previewMat);
-    }
-
-    public void SetAnimation(string name)
-    {
-        var anim = sprite.Animations.FirstOrDefault(x => x.Name == name);
-        if (anim is null) return;
-        Init(anim);
-    }
+	public void SetAnimation ( string name )
+	{
+		if ( !spriteComponent.IsValid() ) return;
+		if ( string.IsNullOrEmpty( name ) ) return;
+		spriteComponent.PlayAnimation( name );
+	}
 
 }
