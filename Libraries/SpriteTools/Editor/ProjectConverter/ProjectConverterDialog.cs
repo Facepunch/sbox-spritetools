@@ -83,6 +83,7 @@ public class ProjectConverterDialog : Dialog
 			Progress.Update( relativePath, index, OutdatedSprites.Count );
 			index++;
 
+			var usedBy = AssetSystem.FindByPath( relativePath ).GetDependants( false );
 			var assetsFolder = Project.Current.GetAssetsPath();
 			var filePath = System.IO.Path.Combine( assetsFolder, relativePath );
 			if ( !System.IO.File.Exists( filePath ) )
@@ -98,8 +99,25 @@ public class ProjectConverterDialog : Dialog
 				System.IO.File.Delete( filePath + "_c" );
 			}
 
+			var newRelativePath = System.IO.Path.ChangeExtension( relativePath, ".spr" );
 			var newFilePath = System.IO.Path.ChangeExtension( filePath, ".spr" );
 			System.IO.File.WriteAllText( newFilePath, jsonStr );
+
+			foreach ( var usingAsset in usedBy )
+			{
+				Progress.Update( $"Updating any references to {relativePath}", index, OutdatedSprites.Count );
+				var file = usingAsset.GetSourceFile( true );
+				Log.Info( file );
+				if ( !System.IO.File.Exists( file ) )
+					continue;
+
+				var assetStr = await System.IO.File.ReadAllTextAsync( file );
+				Log.Info( assetStr );
+				assetStr = assetStr.Replace( relativePath, newRelativePath );
+				assetStr = assetStr.Replace( relativePath + "_c", newRelativePath + "_c" );
+				Log.Info( assetStr );
+				await System.IO.File.WriteAllTextAsync( file, assetStr );
+			}
 		}
 	}
 }
