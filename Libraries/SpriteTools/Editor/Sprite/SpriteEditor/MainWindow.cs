@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace SpriteTools.SpriteEditor;
 
-[EditorForAssetType( "sprite" )]
+[EditorForAssetType( "spr" )]
 [EditorApp( "Sprite Editor", "emoji_emotions", "Edit 2D Sprites" )]
 public partial class MainWindow : DockWindow, IAssetEditor
 {

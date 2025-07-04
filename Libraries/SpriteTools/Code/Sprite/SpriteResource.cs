@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
-[GameResource( "2D Sprite", "sprite", "A 2D sprite atlas", Icon = "emoji_emotions" )]
+[GameResource( "2D Sprite", "spr", "A 2D sprite atlas", Icon = "emoji_emotions" )]
 public partial class SpriteResource : GameResource
 {
 	/// <summary>

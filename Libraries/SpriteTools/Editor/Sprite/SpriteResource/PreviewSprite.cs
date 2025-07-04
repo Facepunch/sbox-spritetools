@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpriteTools;
 
-[AssetPreview( "sprite" )]
+[AssetPreview( "spr" )]
 class PreviewSprite : AssetPreview
 {
 	SpriteResource spriteResource;
