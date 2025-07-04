@@ -44,6 +44,7 @@ public class ProjectConverterDialog : Dialog
 
 				panel.Layout.AddStretchCell( 1 );
 				var btn = panel.Layout.Add( new Button.Primary( "Convert to new Sprite Tools format" ) );
+				btn.Clicked += ConvertToNewFormat;
 			}
 
 			{
@@ -69,5 +70,34 @@ public class ProjectConverterDialog : Dialog
 
 
 		Layout.AddStretchCell( 1 );
+	}
+
+	async void ConvertToNewFormat ()
+	{
+		using var progress = Progress.Start( "Updating to new Sprite Tools format" );
+
+		int index = 0;
+		foreach ( var sprite in OutdatedSprites )
+		{
+			var relativePath = sprite.ResourcePath;
+			Progress.Update( relativePath, index, OutdatedSprites.Count );
+			index++;
+
+			var assetsFolder = Project.Current.GetAssetsPath();
+			var filePath = System.IO.Path.Combine( assetsFolder, relativePath );
+
+			var jsonStr = await System.IO.File.ReadAllTextAsync( filePath );
+			if ( string.IsNullOrWhiteSpace( jsonStr ) )
+				continue;
+
+			System.IO.File.Delete( filePath );
+			if ( System.IO.File.Exists( filePath + "_c" ) )
+			{
+				System.IO.File.Delete( filePath + "_c" );
+			}
+
+			var newFilePath = System.IO.Path.ChangeExtension( filePath, ".spr" );
+			System.IO.File.WriteAllText( newFilePath, jsonStr );
+		}
 	}
 }
