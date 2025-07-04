@@ -19,7 +19,7 @@ public class ProjectConverterDialog : Dialog
 		Layout.Margin = 8f;
 		Layout.Spacing = 8f;
 
-		Layout.Add( new Label( $"Your project has {OutdatedSprites.Count} outdated Sprite Resources.\n\nPlease select one of the upgrade paths below:" ) );
+		Layout.Add( new Label( $"Your project has {OutdatedSprites.Count} outdated Sprite Resource(s).\n\nPlease select one of the upgrade paths below:" ) );
 
 		{
 			var rowWidget = Layout.Add( new Widget( this ) );
@@ -38,13 +38,29 @@ public class ProjectConverterDialog : Dialog
 
 				panel.Layout.Add( new Label( $"Convert to new Sprite Tools format" ) );
 
-				var lblDesc = panel.Layout.Add( new Label( $"If you wish to continue using Sprite Tools sprites,\nselect this option.\n\n" +
-					$"The sprite resource extension has changed from\n.sprite -> .spr to prevent conflicts with the new\nin-engine sprite resource." ) );
+				var lblDesc = panel.Layout.Add( new Label( $"\nThe sprite resource extension has changed from\n.sprite -> .spr to prevent conflicts with the new\nin-engine sprite resource." ) );
 				lblDesc.Color = Color.Gray;
 
+				var lblWarn = panel.Layout.Add( new Label( $"\nIf your code loads any .sprite resources via a string\nyou may have to update those yourself as the code\nupgrader is going to miss any manually constructed\nstrings." ) );
+				lblWarn.Color = Theme.Red;
+
 				panel.Layout.AddStretchCell( 1 );
-				var btn = panel.Layout.Add( new Button.Primary( "Convert to new Sprite Tools format" ) );
-				btn.Clicked += ConvertToNewFormat;
+
+				var btn1 = panel.Layout.Add( new Button.Primary( "Update Sprite Resources .sprite -> .spr" ) );
+				btn1.Clicked += () =>
+				{
+					ConvertToNewFormat();
+					btn1.Enabled = false;
+				};
+
+				panel.Layout.AddSpacingCell( 4 );
+
+				var btn2 = panel.Layout.Add( new Button.Primary( "Replace .sprite -> .spr file paths in Code" ) );
+				btn2.Clicked += () =>
+				{
+					ConvertCodeToNewFormat();
+					btn2.Enabled = false;
+				};
 			}
 
 			{
@@ -57,8 +73,7 @@ public class ProjectConverterDialog : Dialog
 
 				panel.Layout.Add( new Label( $"Convert to new in-engine SpriteResource" ) );
 
-				var lblDesc = panel.Layout.Add( new Label( $"If you wish to use the new in-engine Sprite\nResource, select this option.\n\n" +
-					$"TODO: Implement once we finalize API" ) );
+				var lblDesc = panel.Layout.Add( new Label( $"\nTODO: Implement once we finalize API" ) );
 				lblDesc.Color = Color.Gray;
 
 
@@ -72,9 +87,13 @@ public class ProjectConverterDialog : Dialog
 		Layout.AddStretchCell( 1 );
 	}
 
+	bool convertingToNewFormat = false;
 	async void ConvertToNewFormat ()
 	{
+		if ( convertingToNewFormat ) return;
+
 		using var progress = Progress.Start( "Updating to new Sprite Tools format" );
+		convertingToNewFormat = true;
 
 		int index = 0;
 		foreach ( var sprite in OutdatedSprites )
@@ -118,6 +137,44 @@ public class ProjectConverterDialog : Dialog
 				Log.Info( assetStr );
 				await System.IO.File.WriteAllTextAsync( file, assetStr );
 			}
+
+			convertingToNewFormat = false;
 		}
+	}
+
+	async void ConvertCodeToNewFormat ()
+	{
+		if ( convertingToNewFormat ) return;
+
+		using var progress = Progress.Start( "Updating code to new Sprite Tools format" );
+		convertingToNewFormat = true;
+
+		var codePath = Project.Current.GetCodePath();
+		var codeFiles = System.IO.Directory.GetFiles( codePath, "*.cs", System.IO.SearchOption.AllDirectories );
+		int index = 0;
+		foreach ( var file in codeFiles )
+		{
+			Progress.Update( $"Updating file {file}", index, codeFiles.Length );
+			index++;
+
+			if ( !System.IO.File.Exists( file ) )
+				continue;
+
+			var codeStr = await System.IO.File.ReadAllTextAsync( file );
+			if ( string.IsNullOrWhiteSpace( codeStr ) )
+				continue;
+
+			foreach ( var sprite in OutdatedSprites )
+			{
+				var relativePath = sprite.ResourcePath;
+				var newRelativePath = System.IO.Path.ChangeExtension( relativePath, ".spr" );
+				codeStr = codeStr.Replace( relativePath, newRelativePath );
+				codeStr = codeStr.Replace( relativePath + "_c", newRelativePath + "_c" );
+			}
+
+			await System.IO.File.WriteAllTextAsync( file, codeStr );
+		}
+
+		convertingToNewFormat = false;
 	}
 }

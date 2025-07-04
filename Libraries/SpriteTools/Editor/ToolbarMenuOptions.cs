@@ -51,6 +51,8 @@ public static class ToolbarMenuOptions
 		}
 
 		var dialog = new ProjectConverterDialog( outdatedSprites );
+		dialog.HasMaximizeButton = false;
+		dialog.Window.HasMaximizeButton = false;
 		dialog.Show();
 		dialog.Raise();
 	}
