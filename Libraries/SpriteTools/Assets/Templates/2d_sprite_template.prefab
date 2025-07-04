@@ -14,7 +14,7 @@
         "CreateAttachPoints": false,
         "FlashTint": "1,1,1,0",
         "PlaybackSpeed": 1,
-        "Sprite": "templates/example_sprite.sprite",
+        "Sprite": "templates/example_sprite.spr",
         "SpriteFlags": "None",
         "StartingAnimationName": "default",
         "Tint": "1,1,1,1",

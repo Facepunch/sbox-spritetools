@@ -119,7 +119,7 @@
               "CreateAttachPoints": false,
               "FlashTint": "1,1,1,0",
               "PlaybackSpeed": 1,
-              "Sprite": "sprites/ninja_frog.sprite",
+              "Sprite": "sprites/ninja_frog.spr",
               "SpriteFlags": "None",
               "StartingAnimationName": "idle",
               "Tint": "1,1,1,1",
