@@ -8,7 +8,7 @@ using static Editor.Inspectors.AssetInspector;
 
 namespace SpriteTools;
 
-[CanEdit( "asset:sprite" )]
+[CanEdit( "asset:spr" )]
 public class SpriteInspector : Widget, IAssetInspector
 {
 	private SpriteResource Sprite;

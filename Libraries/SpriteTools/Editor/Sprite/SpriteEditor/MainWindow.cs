@@ -191,7 +191,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		if ( string.IsNullOrEmpty( savePath ) ) savePath = GetSavePath( "New Sprite" );
 
 		_asset = null;
-		Sprite = AssetSystem.CreateResource( "sprite", savePath ).LoadResource<SpriteResource>();
+		Sprite = AssetSystem.CreateResource( "spr", savePath ).LoadResource<SpriteResource>();
 		_dirty = false;
 		_undoStack.Clear();
 
@@ -291,7 +291,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		}
 
 		// Register the asset if we haven't already
-		_asset ??= AssetSystem.CreateResource( "sprite", savePath );
+		_asset ??= AssetSystem.CreateResource( "spr", savePath );
 		_asset.SaveToDisk( Sprite );
 		_dirty = false;
 		UpdateWindowTitle();
