@@ -85,6 +85,8 @@ public class ProjectConverterDialog : Dialog
 
 			var assetsFolder = Project.Current.GetAssetsPath();
 			var filePath = System.IO.Path.Combine( assetsFolder, relativePath );
+			if ( !System.IO.File.Exists( filePath ) )
+				continue;
 
 			var jsonStr = await System.IO.File.ReadAllTextAsync( filePath );
 			if ( string.IsNullOrWhiteSpace( jsonStr ) )
