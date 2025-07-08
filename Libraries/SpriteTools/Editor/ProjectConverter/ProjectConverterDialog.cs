@@ -6,9 +6,9 @@ namespace SpriteTools.ProjectConverter;
 
 public class ProjectConverterDialog : Dialog
 {
-	List<SpriteResource2D> OutdatedSprites { get; set; } = new();
+	List<Sandbox.SpriteResource> OutdatedSprites { get; set; } = new();
 
-	public ProjectConverterDialog ( List<SpriteResource2D> outdatedSprites )
+	public ProjectConverterDialog ( List<Sandbox.SpriteResource> outdatedSprites )
 	{
 		WindowTitle = "Sprite Tools Project Converter";
 		Window.Title = WindowTitle;

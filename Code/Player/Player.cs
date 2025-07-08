@@ -40,7 +40,7 @@ public sealed class Player : Component
 	{
 		Local = this;
 
-		Sprite.Sprite = ResourceLibrary.Get<SpriteResource>( "sprites/ninja_frog.spr" );
+		Sprite.Sprite = ResourceLibrary.Get<SpriteTools.SpriteResource>( "sprites/ninja_frog.spr" );
 	}
 
 	protected override void OnUpdate ()

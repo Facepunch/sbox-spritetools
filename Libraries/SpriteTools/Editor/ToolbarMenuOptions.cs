@@ -21,8 +21,8 @@ public static class ToolbarMenuOptions
 	[Menu( "Editor", "Sprite Tools/Convert Project" )]
 	public static void OpenConverterWindow ()
 	{
-		List<SpriteResource2D> outdatedSprites = new();
-		foreach ( var spriteResource in ResourceLibrary.GetAll<Sandbox.SpriteResource2D>() )
+		List<Sandbox.SpriteResource> outdatedSprites = new();
+		foreach ( var spriteResource in ResourceLibrary.GetAll<Sandbox.SpriteResource>() )
 		{
 			var jsonStr = Editor.FileSystem.Content.ReadAllText( spriteResource.ResourcePath );
 			if ( string.IsNullOrWhiteSpace( jsonStr ) )
