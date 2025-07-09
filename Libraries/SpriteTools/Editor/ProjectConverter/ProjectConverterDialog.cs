@@ -13,7 +13,7 @@ public class ProjectConverterDialog : Dialog
 		WindowTitle = "Sprite Tools Project Converter";
 		Window.Title = WindowTitle;
 		OutdatedSprites = outdatedSprites;
-		Window.FixedSize = new Vector2( 640, 360 );
+		Window.FixedSize = new Vector2( 640, 360 + 56 );
 
 		Layout = Layout.Column();
 		Layout.Margin = 8f;
@@ -27,7 +27,7 @@ public class ProjectConverterDialog : Dialog
 			rowWidget.Layout.Margin = 8f;
 			rowWidget.Layout.Spacing = 8f;
 			rowWidget.HorizontalSizeMode = SizeMode.Flexible;
-			rowWidget.FixedHeight = 256;
+			rowWidget.FixedHeight = 256 + 56;
 
 			{
 				var panel = rowWidget.Layout.Add( new Widget( this ) );
@@ -41,7 +41,8 @@ public class ProjectConverterDialog : Dialog
 				var lblDesc = panel.Layout.Add( new Label( $"\nThe sprite resource extension has changed from\n.sprite -> .spr to prevent conflicts with the new\nin-engine sprite resource." ) );
 				lblDesc.Color = Color.Gray;
 
-				var lblWarn = panel.Layout.Add( new Label( $"\nIf your code loads any .sprite resources via a string\nyou may have to update those yourself as the code\nupgrader is going to miss any manually constructed\nstrings." ) );
+				var lblWarn = panel.Layout.Add( new Label( $"\nIf your code loads any .sprite resources via a string\nyou may have to update those yourself as the code\nupgrader is going to miss any manually constructed\nstrings.\n\n" +
+					$"Also keep in mind that if you choose this path, you\nmay need to convert your project AGAIN in a future\nupdate as SpriteTools slowly becomes an\ninterface for the built-in Sprites" ) );
 				lblWarn.Color = Theme.Red;
 
 				panel.Layout.AddStretchCell( 1 );
@@ -73,13 +74,23 @@ public class ProjectConverterDialog : Dialog
 
 				panel.Layout.Add( new Label( $"Convert to new in-engine SpriteResource" ) );
 
-				var lblDesc = panel.Layout.Add( new Label( $"\nTODO: Implement once we finalize API" ) );
+				var lblDesc = panel.Layout.Add( new Label( $"\nYour existing .sprite resources will be converted to\nin-engine .sprite resources. This is will give you more\nperformance and stability, but you will LOSE:" ) );
 				lblDesc.Color = Color.Gray;
+
+				var lblWarn = panel.Layout.Add( new Label( $"\n- Attach Points\n- Looping Points\n- Broadcast Events\n- Spritesheet Importer (use TextureGenerator instead)\n- And more (such as the Sprite Editor Window)\n\n" +
+					$"You must also manually update some of your code\nto fit the new API. Components can be converted\nautomatically within scenes/prefabs, however." ) );
+				lblWarn.Color = Theme.Red;
 
 
 				panel.Layout.AddStretchCell( 1 );
-				var btn = panel.Layout.Add( new Button.Primary( "Convert to in-engine SpriteResource" ) );
-				btn.Enabled = false; // TODO: Implement conversion logic
+
+				var btn1 = panel.Layout.Add( new Button.Primary( "Update Sprite Tools .sprite -> Sandbox .sprite" ) );
+				btn1.Enabled = false; // TODO: Implement conversion logic
+
+				panel.Layout.AddSpacingCell( 4 );
+
+				var btn2 = panel.Layout.Add( new Button.Primary( "Update SpriteComponent -> SpriteRenderer" ) );
+				btn2.Enabled = false; // TODO: Implement conversion logic
 			}
 		}
 
