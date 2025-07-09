@@ -3,6 +3,7 @@ using Sandbox;
 using SpriteTools.ProjectConverter;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace SpriteTools;
@@ -35,7 +36,7 @@ public static class ToolbarMenuOptions
 				{
 					if ( animEntry.AsObject().TryGetPropertyValue( "Frames", out var framesNode ) && framesNode is not null )
 					{
-						if ( framesNode.AsArray().Any( x => x.AsObject().TryGetPropertyValue( "FilePath", out var _ ) ) )
+						if ( framesNode.AsArray().Any( x => x is JsonObject && x.AsObject().TryGetPropertyValue( "FilePath", out var _ ) ) )
 						{
 							outdatedSprites.Add( spriteResource );
 						}
