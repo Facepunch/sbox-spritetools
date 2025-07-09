@@ -45,7 +45,7 @@ public class TilesetLayerControl : Widget
 			OnPaintOverride = () =>
 			{
 				Paint.SetPen( Color.Transparent );
-				Paint.SetBrush( Pixmap.FromTexture( Texture.Load( Editor.FileSystem.Mounted, "images/collision-bounce.png" ) ) );
+				Paint.SetBrush( Pixmap.FromTexture( Texture.LoadFromFileSystem( "images/collision-bounce.png", Editor.FileSystem.Mounted ) ) );
 				Paint.Scale( 0.5f, 0.5f );
 				Paint.DrawRect( LocalRect );
 				Paint.Scale( 1, 1 );

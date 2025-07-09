@@ -21,7 +21,7 @@ class PreviewTileset : AssetPreview
 		if ( filePath is null || !Editor.FileSystem.Content.FileExists( filePath ) )
 			return;
 
-		var image = Texture.Load( Editor.FileSystem.Content, tileset?.FilePath );
+		var image = Texture.LoadFromFileSystem( tileset?.FilePath, Editor.FileSystem.Content );
 		if ( image is not null )
 		{
 			texture = image;
