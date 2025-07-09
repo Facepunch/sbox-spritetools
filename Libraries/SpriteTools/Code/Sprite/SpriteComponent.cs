@@ -249,7 +249,7 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 		{
 			var ratio = CurrentTexture?.AspectRatio ?? 1;
 			var size = new Vector2( 50, 50 );
-			if ( UsePixelScale )
+			if ( UsePixelScale && CurrentTexture is not null )
 			{
 				var scl = CurrentTexture.FrameSize.x < CurrentTexture.FrameSize.x ? CurrentTexture.FrameSize.y : CurrentTexture.FrameSize.y;
 				size *= new Vector2( scl, scl ) / 100f;
