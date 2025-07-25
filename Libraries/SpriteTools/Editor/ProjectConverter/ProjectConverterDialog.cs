@@ -238,9 +238,38 @@ public class ProjectConverterDialog : Dialog
 				// Loop through all animations and convert them to the new format
 				foreach ( var animEntry in animationsArray )
 				{
-					if ( animEntry is JsonObject animObject && animObject.TryGetPropertyValue( "Frames", out var framesNode ) && framesNode is JsonArray framesArray )
+					if ( animEntry is not JsonObject animObject )
+						continue;
+
+					// Check for Looping bool and set loopMode accordingly
+					var loopMode = Sprite.LoopMode.Loop;
+					if ( animObject.TryGetPropertyValue( "Looping", out var loopingNode ) && loopingNode is JsonValue loopingValue )
+					{
+						loopMode = loopingValue.GetValue<bool>() ? Sprite.LoopMode.Loop : Sprite.LoopMode.None;
+					}
+
+					// Check for LoopMode string and set loopMode accordingly
+					if ( animObject.TryGetPropertyValue( "LoopMode", out var loopModeNode ) && loopModeNode is JsonValue loopModeValue )
+					{
+						loopMode = loopModeValue.GetValue<string>() switch
+						{
+							"None" => Sprite.LoopMode.None,
+							"Forward" => Sprite.LoopMode.Loop,
+							"PingPong" => Sprite.LoopMode.PingPong,
+							_ => loopMode
+						};
+					}
+
+					// Re-create the frame list so SpriteAnimationFrame -> Texture
+					if ( animObject.TryGetPropertyValue( "Frames", out var framesNode ) && framesNode is JsonArray framesArray )
 					{
 						var newFrames = new JsonArray();
+
+						// If more than one frame is present, we'll set Type to Animated
+						if ( framesArray.Count > 1 )
+						{
+							spriteType = Sprite.SpriteType.Animated;
+						}
 
 						foreach ( var frameEntry in framesArray )
 						{
@@ -311,7 +340,8 @@ public class ProjectConverterDialog : Dialog
 							}
 						}
 
-						// Replace the old frames array with the new one
+						// Update the animation with it's new values
+						animObject["LoopMode"] = loopMode.ToString();
 						animObject["Frames"] = newFrames;
 					}
 				}
@@ -321,7 +351,10 @@ public class ProjectConverterDialog : Dialog
 			json["Type"] = spriteType.ToString();
 
 			// Convert back to JSON string
-			jsonStr = json.ToJsonString();
+			jsonStr = json.ToJsonString( new()
+			{
+				WriteIndented = true
+			} );
 
 
 			System.IO.File.Delete( filePath );
