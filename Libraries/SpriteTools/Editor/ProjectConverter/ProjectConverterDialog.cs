@@ -6,9 +6,9 @@ namespace SpriteTools.ProjectConverter;
 
 public class ProjectConverterDialog : Dialog
 {
-	List<Sandbox.SpriteResource> OutdatedSprites { get; set; } = new();
+	List<string> OutdatedSprites { get; set; } = new();
 
-	public ProjectConverterDialog ( List<Sandbox.SpriteResource> outdatedSprites )
+	public ProjectConverterDialog ( List<string> outdatedSprites )
 	{
 		WindowTitle = "Sprite Tools Project Converter";
 		Window.Title = WindowTitle;
@@ -42,7 +42,7 @@ public class ProjectConverterDialog : Dialog
 				lblDesc.Color = Color.Gray;
 
 				var lblWarn = panel.Layout.Add( new Label( $"\nIf your code loads any .sprite resources via a string\nyou may have to update those yourself as the code\nupgrader is going to miss any manually constructed\nstrings.\n\n" +
-					$"Also keep in mind that if you choose this path, you\nmay need to convert your project AGAIN in a future\nupdate as SpriteTools slowly becomes an\ninterface for the built-in Sprites" ) );
+					$"Also keep in mind that if you choose this path, you\nmay need to convert your project AGAIN in a future\nupdate as SpriteTools is slowly phased out in favor\nof the built-in Sprites." ) );
 				lblWarn.Color = Theme.Red;
 
 				panel.Layout.AddStretchCell( 1 );
@@ -50,7 +50,7 @@ public class ProjectConverterDialog : Dialog
 				var btn1 = panel.Layout.Add( new Button.Primary( "Update Sprite Resources .sprite -> .spr" ) );
 				btn1.Clicked += () =>
 				{
-					ConvertToNewFormat();
+					ConvertResourceToNewFormat();
 					btn1.Enabled = false;
 				};
 
@@ -77,7 +77,7 @@ public class ProjectConverterDialog : Dialog
 				var lblDesc = panel.Layout.Add( new Label( $"\nYour existing .sprite resources will be converted to\nin-engine .sprite resources. This is will give you more\nperformance and stability, but you will LOSE:" ) );
 				lblDesc.Color = Color.Gray;
 
-				var lblWarn = panel.Layout.Add( new Label( $"\n- Attach Points\n- Looping Points\n- Broadcast Events\n- Spritesheet Importer (use TextureGenerator instead)\n- And more (such as the Sprite Editor Window)\n\n" +
+				var lblWarn = panel.Layout.Add( new Label( $"\n- 3D Sprite Rotation (Billboard for now, very soon)\n- Attach Points\n- Looping Points\n- Broadcast Events\n- Spritesheet Importer (use TextureGenerator instead)\n- And more (such as the Sprite Editor Window)\n\n" +
 					$"You must also manually update some of your code\nto fit the new API. Components can be converted\nautomatically within scenes/prefabs, however." ) );
 				lblWarn.Color = Theme.Red;
 
@@ -99,7 +99,7 @@ public class ProjectConverterDialog : Dialog
 	}
 
 	bool convertingToNewFormat = false;
-	async void ConvertToNewFormat ()
+	async void ConvertResourceToNewFormat ()
 	{
 		if ( convertingToNewFormat ) return;
 
@@ -109,7 +109,7 @@ public class ProjectConverterDialog : Dialog
 		int index = 0;
 		foreach ( var sprite in OutdatedSprites )
 		{
-			var relativePath = sprite.ResourcePath;
+			var relativePath = sprite;
 			Progress.Update( relativePath, index, OutdatedSprites.Count );
 			index++;
 
@@ -142,10 +142,8 @@ public class ProjectConverterDialog : Dialog
 					continue;
 
 				var assetStr = await System.IO.File.ReadAllTextAsync( file );
-				Log.Info( assetStr );
 				assetStr = assetStr.Replace( relativePath, newRelativePath );
 				assetStr = assetStr.Replace( relativePath + "_c", newRelativePath + "_c" );
-				Log.Info( assetStr );
 				await System.IO.File.WriteAllTextAsync( file, assetStr );
 			}
 
@@ -177,7 +175,7 @@ public class ProjectConverterDialog : Dialog
 
 			foreach ( var sprite in OutdatedSprites )
 			{
-				var relativePath = sprite.ResourcePath;
+				var relativePath = sprite;
 				var newRelativePath = System.IO.Path.ChangeExtension( relativePath, ".spr" );
 				codeStr = codeStr.Replace( relativePath, newRelativePath );
 				codeStr = codeStr.Replace( relativePath + "_c", newRelativePath + "_c" );

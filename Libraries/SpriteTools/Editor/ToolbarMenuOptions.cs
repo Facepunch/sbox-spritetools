@@ -22,10 +22,13 @@ public static class ToolbarMenuOptions
 	[Menu( "Editor", "Sprite Tools/Convert Project" )]
 	public static void OpenConverterWindow ()
 	{
-		List<Sandbox.SpriteResource> outdatedSprites = new();
-		foreach ( var spriteResource in ResourceLibrary.GetAll<Sandbox.SpriteResource>() )
+		List<string> outdatedSprites = new();
+
+		// Loop over all files names .sprite in the project since ResourceLibrary.GetAll<Sprite>() might not catch all of them
+		var allFiles = Editor.FileSystem.Content.FindFile( "", "*.sprite", true );
+		foreach ( var file in allFiles )
 		{
-			var jsonStr = Editor.FileSystem.Content.ReadAllText( spriteResource.ResourcePath );
+			var jsonStr = Editor.FileSystem.Content.ReadAllText( file );
 			if ( string.IsNullOrWhiteSpace( jsonStr ) )
 				continue;
 
@@ -38,7 +41,7 @@ public static class ToolbarMenuOptions
 					{
 						if ( framesNode.AsArray().Any( x => x is JsonObject && x.AsObject().TryGetPropertyValue( "FilePath", out var _ ) ) )
 						{
-							outdatedSprites.Add( spriteResource );
+							outdatedSprites.Add( file );
 						}
 					}
 				}
@@ -64,7 +67,7 @@ public static class ToolbarMenuOptions
 	static async void OnEditorCreated ( EditorMainWindow mainWindow )
 	{
 		// Give the user a sec to breathe
-		await Task.Delay( 2500 );
+		await Task.Delay( 5000 );
 
 		// Automatically open the converter window if the project needs an upgrade
 		OpenConverterWindow();

@@ -38,12 +38,12 @@ class PreviewTileset : AssetPreview
 			if ( texture is not null )
 			{
 				var sprite = PrimaryObject.AddComponent<Sandbox.SpriteRenderer>();
-				var resource = new Sandbox.SpriteResource();
-				var anim = new Sandbox.SpriteResource.Animation();
+				var resource = new Sprite();
+				var anim = new Sprite.Animation();
 
 				anim.Frames.Add( texture );
 				resource.Animations.Add( anim );
-				sprite.SpriteResource = resource;
+				sprite.Sprite = resource;
 
 				var aspect = (float)texture.Width / (float)texture.Height;
 				sprite.Size = new Vector2( 16 * aspect, 16 );
