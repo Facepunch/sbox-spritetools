@@ -1,6 +1,8 @@
 ﻿using Editor;
 using Sandbox;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace SpriteTools.ProjectConverter;
 
@@ -19,7 +21,16 @@ public class ProjectConverterDialog : Dialog
 		Layout.Margin = 8f;
 		Layout.Spacing = 8f;
 
-		Layout.Add( new Label( $"Your project has {OutdatedSprites.Count} outdated Sprite Resource(s).\n\nPlease select one of the upgrade paths below:" ) );
+		if ( OutdatedSprites.Count == 0 )
+		{
+			var legacySprites = ResourceLibrary.GetAll<SpriteResource>().Count();
+			var newSprites = ResourceLibrary.GetAll<Sprite>().Count();
+			Layout.Add( new Label( $"Your project has {legacySprites} .spr Resources and {newSprites} .sprite Resources." ) );
+		}
+		else
+		{
+			Layout.Add( new Label( $"Your project has {OutdatedSprites.Count} outdated Sprite Resource(s).\n\nPlease select one of the upgrade paths below:" ) );
+		}
 
 		{
 			var rowWidget = Layout.Add( new Widget( this ) );
@@ -78,19 +89,27 @@ public class ProjectConverterDialog : Dialog
 				lblDesc.Color = Color.Gray;
 
 				var lblWarn = panel.Layout.Add( new Label( $"\n- 3D Sprite Rotation (Billboard for now, very soon)\n- Attach Points\n- Looping Points\n- Broadcast Events\n- Spritesheet Importer (use TextureGenerator instead)\n- And more (such as the Sprite Editor Window)\n\n" +
-					$"You must also manually update some of your code\nto fit the new API. Components can be converted\nautomatically within scenes/prefabs, however." ) );
+					$"You must also update your code for the new API.\nSprite Tools can be removed after converting.\nYou can come back and do this at any time." ) );
 				lblWarn.Color = Theme.Red;
 
 
 				panel.Layout.AddStretchCell( 1 );
 
 				var btn1 = panel.Layout.Add( new Button.Primary( "Update Sprite Tools .sprite -> Sandbox .sprite" ) );
-				btn1.Enabled = false; // TODO: Implement conversion logic
+				btn1.Clicked += () =>
+				{
+					ConvertResourceToEngineFormat();
+					btn1.Enabled = false;
+				};
 
 				panel.Layout.AddSpacingCell( 4 );
 
 				var btn2 = panel.Layout.Add( new Button.Primary( "Update SpriteComponent -> SpriteRenderer" ) );
-				btn2.Enabled = false; // TODO: Implement conversion logic
+				btn2.Clicked += () =>
+				{
+					ConvertCodeToEngineFormat();
+					btn2.Enabled = false;
+				};
 			}
 		}
 
@@ -185,5 +204,176 @@ public class ProjectConverterDialog : Dialog
 		}
 
 		convertingToNewFormat = false;
+	}
+
+	async void ConvertResourceToEngineFormat ()
+	{
+		using var progress = Progress.Start( "Updating to new in-engine SpriteResource format" );
+		int index = 0;
+		foreach ( var sprite in OutdatedSprites )
+		{
+			var relativePath = sprite;
+			Progress.Update( relativePath, index, OutdatedSprites.Count );
+			index++;
+			var usedBy = AssetSystem.FindByPath( relativePath ).GetDependants( false );
+			var assetsFolder = Project.Current.GetAssetsPath();
+			var filePath = System.IO.Path.Combine( assetsFolder, relativePath );
+			if ( !System.IO.File.Exists( filePath ) )
+				continue;
+			var jsonStr = await System.IO.File.ReadAllTextAsync( filePath );
+			if ( string.IsNullOrWhiteSpace( jsonStr ) )
+				continue;
+
+			// Update the JSON to the new format
+			var json = Json.ParseToJsonObject( jsonStr );
+			var spriteType = Sprite.SpriteType.Static;
+			if ( json.TryGetPropertyValue( "Animations", out var animationsNode ) && animationsNode is JsonArray animationsArray )
+			{
+				// If more than one animation is present, we'll set Type to Animated
+				if ( animationsArray.Count > 1 )
+				{
+					spriteType = Sprite.SpriteType.Animated;
+				}
+
+				// Loop through all animations and convert them to the new format
+				foreach ( var animEntry in animationsArray )
+				{
+					if ( animEntry is JsonObject animObject && animObject.TryGetPropertyValue( "Frames", out var framesNode ) && framesNode is JsonArray framesArray )
+					{
+						var newFrames = new JsonArray();
+
+						foreach ( var frameEntry in framesArray )
+						{
+							if ( frameEntry is not JsonObject frameObject )
+								continue;
+
+							// Get the FilePath from the SpriteAnimationFrame
+							if ( frameObject.TryGetPropertyValue( "FilePath", out var filePathNode ) && filePathNode is JsonValue filePathValue )
+							{
+								// Create a new texture generator for the frame
+								var frameFilePath = filePathValue.GetValue<string>();
+								if ( string.IsNullOrWhiteSpace( frameFilePath ) )
+								{
+									newFrames.Add( null );
+									continue;
+								}
+
+								var texture = Texture.Load( frameFilePath );
+								var resourceData = new JsonObject()
+								{
+									["FilePath"] = frameFilePath
+								};
+
+								// Check if SpriteSheetRect is set (not 0,0,0,0)
+								if ( frameObject.TryGetPropertyValue( "SpriteSheetRect", out var rectNode ) && rectNode is JsonObject rectObject )
+								{
+									if ( rectObject.TryGetPropertyValue( "Size", out var sizeNode ) && sizeNode is JsonValue sizeValue )
+									{
+										var sizeStr = sizeValue.GetValue<string>();
+										var sizeParts = sizeStr.Split( ',' );
+
+										if ( sizeParts.Length == 2 &&
+											int.TryParse( sizeParts[0], out var width ) &&
+											int.TryParse( sizeParts[1], out var height ) &&
+											( width > 0 || height > 0 ) )
+										{
+											// Add cropping to the texture generator
+
+											// Set up cropping based on SpriteSheetRect
+											if ( rectObject.TryGetPropertyValue( "Position", out var posNode ) && posNode is JsonValue posValue )
+											{
+												var posStr = posValue.GetValue<string>();
+												var posParts = posStr.Split( ',' );
+
+												if ( posParts.Length == 2 &&
+													int.TryParse( posParts[0], out var x ) &&
+													int.TryParse( posParts[1], out var y ) )
+												{
+													var cropping = new JsonObject();
+													cropping["Left"] = x;
+													cropping["Top"] = y;
+													cropping["Right"] = texture.Width - x - width;
+													cropping["Bottom"] = texture.Height - y - height;
+													resourceData["Cropping"] = cropping;
+												}
+											}
+										}
+									}
+								}
+
+								newFrames.Add( new JsonObject()
+								{
+									["$compiler"] = "texture",
+									["$source"] = "imagefile",
+									["data"] = resourceData,
+									["compiled"] = null
+								} );
+							}
+						}
+
+						// Replace the old frames array with the new one
+						animObject["Frames"] = newFrames;
+					}
+				}
+			}
+
+			// Set the sprite type
+			json["Type"] = spriteType.ToString();
+
+			// Convert back to JSON string
+			jsonStr = json.ToJsonString();
+
+
+			System.IO.File.Delete( filePath );
+			if ( System.IO.File.Exists( filePath + "_c" ) )
+			{
+				System.IO.File.Delete( filePath + "_c" );
+			}
+			var newRelativePath = System.IO.Path.ChangeExtension( relativePath, ".sprite" );
+			var newFilePath = System.IO.Path.ChangeExtension( filePath, ".sprite" );
+			System.IO.File.WriteAllText( newFilePath, jsonStr );
+			foreach ( var usingAsset in usedBy )
+			{
+				Progress.Update( $"Updating any references to {relativePath}", index, OutdatedSprites.Count );
+				var file = usingAsset.GetSourceFile( true );
+				Log.Info( file );
+				if ( !System.IO.File.Exists( file ) )
+					continue;
+				var assetStr = await System.IO.File.ReadAllTextAsync( file );
+				assetStr = assetStr.Replace( relativePath, newRelativePath );
+				assetStr = assetStr.Replace( relativePath + "_c", newRelativePath + "_c" );
+				await System.IO.File.WriteAllTextAsync( file, assetStr );
+			}
+		}
+		convertingToNewFormat = false;
+	}
+
+	async void ConvertCodeToEngineFormat ()
+	{
+		using var progress = Progress.Start( "Updating code to use SpriteRenderer instead of SpriteComponent" );
+
+		var codePath = Project.Current.GetCodePath();
+		var codeFiles = System.IO.Directory.GetFiles( codePath, "*.cs", System.IO.SearchOption.AllDirectories );
+		int index = 0;
+		foreach ( var file in codeFiles )
+		{
+			Progress.Update( $"Updating file {file}", index, codeFiles.Length );
+			index++;
+
+			if ( !System.IO.File.Exists( file ) )
+				continue;
+
+			var codeStr = await System.IO.File.ReadAllTextAsync( file );
+			if ( string.IsNullOrWhiteSpace( codeStr ) )
+				continue;
+
+			// Replace SpriteComponent references with SpriteRenderer
+			codeStr = codeStr.Replace( "SpriteComponent", "SpriteRenderer" );
+
+			// Update namespace references if any
+			codeStr = codeStr.Replace( "using SpriteTools;", "using Sandbox;" );
+
+			await System.IO.File.WriteAllTextAsync( file, codeStr );
+		}
 	}
 }
