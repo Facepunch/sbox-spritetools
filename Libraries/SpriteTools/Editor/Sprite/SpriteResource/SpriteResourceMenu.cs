@@ -57,8 +57,8 @@ internal static class SpriteResourceMenu
 		anim.LoopMode = SpriteResource.LoopMode.Forward;
 
 		asset.SaveToDisk( sprite );
-		MainAssetBrowser.Instance?.UpdateAssetList();
-		MainAssetBrowser.Instance?.FocusOnAsset( asset );
+		MainAssetBrowser.Instance?.Local?.UpdateAssetList();
+		MainAssetBrowser.Instance?.Local?.FocusOnAsset( asset );
 		EditorUtility.InspectorObject = asset;
 	}
 
@@ -82,7 +82,7 @@ internal static class SpriteResourceMenu
 			newAsset.SaveToDisk( sprite );
 		}
 
-		MainAssetBrowser.Instance?.UpdateAssetList();
+		MainAssetBrowser.Instance?.Local?.UpdateAssetList();
 	}
 
 	private static void CreateSpriteResourcesPopup ( IEnumerable<AssetEntry> assets )

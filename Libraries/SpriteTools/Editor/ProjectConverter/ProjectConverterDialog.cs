@@ -83,7 +83,7 @@ public class ProjectConverterDialog : Dialog
 				panel.Layout = Layout.Column();
 				panel.Layout.Margin = 8;
 
-				panel.Layout.Add( new Label( $"Convert to new in-engine SpriteResource" ) );
+				panel.Layout.Add( new Label( $"Convert to new in-engine Sprite Resource" ) );
 
 				var lblDesc = panel.Layout.Add( new Label( $"\nYour existing .sprite resources will be converted to\nin-engine .sprite resources. This is will give you more\nperformance and stability, but you will LOSE:" ) );
 				lblDesc.Color = Color.Gray;
@@ -208,7 +208,7 @@ public class ProjectConverterDialog : Dialog
 
 	async void ConvertResourceToEngineFormat ()
 	{
-		using var progress = Progress.Start( "Updating to new in-engine SpriteResource format" );
+		using var progress = Progress.Start( "Updating to new in-engine Sprite resource format" );
 		int index = 0;
 		foreach ( var sprite in OutdatedSprites )
 		{
@@ -226,15 +226,8 @@ public class ProjectConverterDialog : Dialog
 
 			// Update the JSON to the new format
 			var json = Json.ParseToJsonObject( jsonStr );
-			var spriteType = Sprite.SpriteType.Static;
 			if ( json.TryGetPropertyValue( "Animations", out var animationsNode ) && animationsNode is JsonArray animationsArray )
 			{
-				// If more than one animation is present, we'll set Type to Animated
-				if ( animationsArray.Count > 1 )
-				{
-					spriteType = Sprite.SpriteType.Animated;
-				}
-
 				// Loop through all animations and convert them to the new format
 				foreach ( var animEntry in animationsArray )
 				{
@@ -264,12 +257,6 @@ public class ProjectConverterDialog : Dialog
 					if ( animObject.TryGetPropertyValue( "Frames", out var framesNode ) && framesNode is JsonArray framesArray )
 					{
 						var newFrames = new JsonArray();
-
-						// If more than one frame is present, we'll set Type to Animated
-						if ( framesArray.Count > 1 )
-						{
-							spriteType = Sprite.SpriteType.Animated;
-						}
 
 						foreach ( var frameEntry in framesArray )
 						{
@@ -347,9 +334,6 @@ public class ProjectConverterDialog : Dialog
 				}
 			}
 
-			// Set the sprite type
-			json["Type"] = spriteType.ToString();
-
 			// Convert back to JSON string
 			jsonStr = json.ToJsonString( new()
 			{
@@ -400,11 +384,9 @@ public class ProjectConverterDialog : Dialog
 			if ( string.IsNullOrWhiteSpace( codeStr ) )
 				continue;
 
-			// Replace SpriteComponent references with SpriteRenderer
+			// Replace SpriteComponent references with SpriteRenderer, let the user manually fix any errors that come from this
+			// since a lot of it is done on a case-by-case basis since not all properties are 1:1, but all features are.
 			codeStr = codeStr.Replace( "SpriteComponent", "SpriteRenderer" );
-
-			// Update namespace references if any
-			codeStr = codeStr.Replace( "using SpriteTools;", "using Sandbox;" );
 
 			await System.IO.File.WriteAllTextAsync( file, codeStr );
 		}
