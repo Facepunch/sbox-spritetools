@@ -336,7 +336,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 
 	string GetSavePath ( string title = "Save Tileset" )
 	{
-		var lastDirectory = Cookie.GetString( "LastSaveTilesetLocation", "" );
+		var lastDirectory = EditorCookie.GetString( "LastSaveTilesetLocation", "" );
 		var fd = new FileDialog( null )
 		{
 			Title = title,
@@ -351,7 +351,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		if ( !fd.Execute() ) return null;
 
 		var selectedFile = fd.SelectedFile;
-		Cookie.SetString( "LastSaveTilesetLocation", System.IO.Path.GetDirectoryName( selectedFile ) );
+		EditorCookie.SetString( "LastSaveTilesetLocation", System.IO.Path.GetDirectoryName( selectedFile ) );
 		return selectedFile;
 	}
 
