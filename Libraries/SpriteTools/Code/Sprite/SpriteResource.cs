@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
-[GameResource( "2D Sprite", "sprite", "A 2D sprite atlas", Icon = "emoji_emotions" )]
+[AssetType( Name = "2D Sprite", Extension = "sprite", Category = "SpriteTools" )]
 public partial class SpriteResource : GameResource
 {
 	/// <summary>
@@ -84,6 +84,11 @@ public partial class SpriteResource : GameResource
 			}
 		}
 		return paths;
+	}
+
+	protected override Bitmap CreateAssetTypeIcon ( int width, int height )
+	{
+		return CreateSimpleAssetTypeIcon( "emoji_emotions", width, height, "#67ac5c", "#1a2c17" );
 	}
 
 	/// <summary>
