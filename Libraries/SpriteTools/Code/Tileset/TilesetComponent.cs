@@ -98,7 +98,7 @@ public partial class TilesetComponent : Component, Component.ExecuteInEditor
 
 	/// <inheritdoc cref="Collider.Friction" />
 	[Property, Feature( "Collision" ), Group( "Surface Properties" )]
-	[Range( 0f, 1f, 0.01f, true, true )]
+	[Range( 0f, 1f, true, true ), Step( 0.01f )]
 	public float? Friction
 	{
 		get => _friction;

@@ -128,13 +128,13 @@ public class SpriteAnimation
 	/// <summary>
 	/// The speed of the animation. This is the number of frames per second.
 	/// </summary>
-	[Property, Range( 0f, 999f, 0.01f, true, false )]
+	[Property, Range( 0f, 999f, true, false ), Step( 0.01f )]
 	public float FrameRate { get; set; } = 15.0f;
 
 	/// <summary>
 	/// The origin of the sprite. This is used to determine where the sprite is drawn relative to/scaled around.
 	/// </summary>
-	[Property, Range( 0f, 1f, 0.01f, true, false )] public Vector2 Origin { get; set; } = new Vector2( 0.5f, 0.5f );
+	[Property, Range( 0f, 1f, true, false ), Step( 0.01f )] public Vector2 Origin { get; set; } = new Vector2( 0.5f, 0.5f );
 
 	/// <summary>
 	/// Whether or not the animation should loop. Replaced with LoopMode.
