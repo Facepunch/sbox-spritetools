@@ -54,7 +54,7 @@ public class TileAtlas
 			Log.Error( $"Tileset texture file {path} does not exist." );
 			return null;
 		}
-		var texture = Texture.Load( FileSystem.Mounted, path );
+		var texture = Texture.LoadFromFileSystem( path, FileSystem.Mounted );
 		var atlas = new TileAtlas();
 
 		var tileSize = tilesetResource.TileSize;

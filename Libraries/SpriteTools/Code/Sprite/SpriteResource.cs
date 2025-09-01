@@ -63,7 +63,7 @@ public partial class SpriteResource : GameResource
 	{
 		var anim = Animations.FirstOrDefault();
 		if ( anim is null || anim.Frames.Count == 0 ) return Texture.Transparent;
-		if ( anim.Frames.Count == 1 ) return Texture.Load( FileSystem.Mounted, anim.Frames[0].FilePath );
+		if ( anim.Frames.Count == 1 ) return Texture.LoadFromFileSystem( anim.Frames[0].FilePath, FileSystem.Mounted );
 		var atlas = TextureAtlas.FromAnimation( anim );
 		return atlas.GetTextureFromFrame( 0 );
 	}

@@ -140,7 +140,7 @@ public class TextureAtlas
 					return null;
 				}
 
-				var texture = Texture.Load( FileSystem.Mounted, frame.FilePath );
+				var texture = Texture.LoadFromFileSystem( frame.FilePath, FileSystem.Mounted );
 				atlas.Texture = texture;
 				return atlas;
 			}
@@ -156,7 +156,7 @@ public class TextureAtlas
 				Log.Error( $"TextureAtlas: Texture file not found: {frame.FilePath}" );
 				continue;
 			}
-			var texture = Texture.Load( FileSystem.Mounted, frame.FilePath );
+			var texture = Texture.LoadFromFileSystem( frame.FilePath, FileSystem.Mounted );
 			var rect = frame.SpriteSheetRect;
 			if ( rect.Width == 0 || rect.Height == 0 )
 			{
@@ -249,7 +249,7 @@ public class TextureAtlas
 				Log.Error( $"TextureAtlas: Texture file not found: {path}" );
 				continue;
 			}
-			var texture = Texture.Load( FileSystem.Mounted, path );
+			var texture = Texture.LoadFromFileSystem( path, FileSystem.Mounted );
 			textures.Add( texture );
 			atlas.MaxFrameSize = new Vector2(
 				Math.Max( atlas.MaxFrameSize.x, texture.Width ),
@@ -334,7 +334,7 @@ public class TextureAtlas
 		}
 		atlas.MaxFrameSize += 2;
 
-		var spritesheet = Texture.Load( FileSystem.Mounted, path );
+		var spritesheet = Texture.LoadFromFileSystem( path, FileSystem.Mounted );
 		var pixels = spritesheet.GetPixels();
 
 		Vector2 imageSize = atlas.Size * atlas.MaxFrameSize;

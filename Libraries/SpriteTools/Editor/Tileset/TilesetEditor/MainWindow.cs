@@ -446,7 +446,7 @@ public partial class MainWindow : DockWindow, IAssetEditor
 		int y = 0;
 		int framesPerRow = (int)preview.TextureSize.x / Tileset.TileSize.x;
 		int framesPerHeight = (int)preview.TextureSize.y / Tileset.TileSize.y;
-		var pixels = Texture.Load( Editor.FileSystem.Mounted, Tileset.FilePath ).GetPixels();
+		var pixels = Texture.LoadFromFileSystem( Tileset.FilePath, Editor.FileSystem.Mounted ).GetPixels();
 
 		while ( y < framesPerHeight )
 		{
