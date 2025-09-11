@@ -42,7 +42,7 @@ internal static class SpriteResourceMenu
 			return;
 
 		var paths = assets.Select( x => System.IO.Path.ChangeExtension( x.Asset.Path, System.IO.Path.GetExtension( x.Asset.AbsolutePath ) ) );
-		asset = AssetSystem.CreateResource( "sprite", fd.SelectedFile );
+		asset = AssetSystem.CreateResource( "spr", fd.SelectedFile );
 		await asset.CompileIfNeededAsync();
 		var sprite = asset.LoadResource<SpriteResource>();
 		var anim = sprite.Animations.FirstOrDefault();
@@ -67,7 +67,7 @@ internal static class SpriteResourceMenu
 		foreach ( var entry in assets )
 		{
 			var asset = entry.Asset;
-			var newAsset = AssetSystem.CreateResource( "sprite", System.IO.Path.ChangeExtension( asset.AbsolutePath, ".sprite" ) );
+			var newAsset = AssetSystem.CreateResource( "spr", System.IO.Path.ChangeExtension( asset.AbsolutePath, ".sprite" ) );
 			await newAsset.CompileIfNeededAsync();
 			var sprite = newAsset.LoadResource<SpriteResource>();
 			var anim = sprite.Animations.FirstOrDefault();

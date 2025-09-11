@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace SpriteTools;
 
-[AssetType( Name = "2D Sprite", Extension = "sprite", Category = "SpriteTools" )]
+[AssetType( Name = "2D Sprite", Extension = "spr", Category = "SpriteTools" )]
 public partial class SpriteResource : GameResource
 {
 	/// <summary>
