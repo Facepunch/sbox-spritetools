@@ -40,8 +40,10 @@ class PreviewTileset : AssetPreview
 				var sprite = PrimaryObject.AddComponent<Sandbox.SpriteRenderer>();
 				var resource = new Sprite();
 				var anim = new Sprite.Animation();
+				var frame = new Sprite.Frame();
+				frame.Texture = texture;
 
-				anim.Frames.Add( texture );
+				anim.Frames.Add( frame );
 				resource.Animations.Add( anim );
 				sprite.Sprite = resource;
 
