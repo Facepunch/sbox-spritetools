@@ -29,7 +29,7 @@ public class ProjectConverterDialog : Dialog
 		}
 		else
 		{
-			Layout.Add( new Label( $"Your project has {OutdatedSprites.Count} outdated Sprite Resource(s).\n\nPlease select one of the upgrade paths below:" ) );
+			Layout.Add( new Label( $"Your project has {OutdatedSprites.Count} outdated Sprite Resource(s). Backup your project before continuing.\n\nPlease select one of the upgrade paths below:" ) );
 		}
 
 		{
@@ -44,52 +44,20 @@ public class ProjectConverterDialog : Dialog
 				var panel = rowWidget.Layout.Add( new Widget( this ) );
 				panel.SetStyles( "background-color: #222;" );
 				panel.SetSizeMode( SizeMode.Flexible, SizeMode.Flexible );
-				panel.Layout = Layout.Column();
-				panel.Layout.Margin = 8;
-
-				panel.Layout.Add( new Label( $"Convert to new Sprite Tools format" ) );
-
-				var lblDesc = panel.Layout.Add( new Label( $"\nThe sprite resource extension has changed from\n.sprite -> .spr to prevent conflicts with the new\nin-engine sprite resource." ) );
-				lblDesc.Color = Color.Gray;
-
-				var lblWarn = panel.Layout.Add( new Label( $"\nIf your code loads any .sprite resources via a string\nyou may have to update those yourself as the code\nupgrader is going to miss any manually constructed\nstrings.\n\n" +
-					$"Also keep in mind that if you choose this path, you\nmay need to convert your project AGAIN in a future\nupdate as SpriteTools is slowly phased out in favor\nof the built-in Sprites." ) );
-				lblWarn.Color = Theme.Red;
-
-				panel.Layout.AddStretchCell( 1 );
-
-				var btn1 = panel.Layout.Add( new Button.Primary( "Update Sprite Resources .sprite -> .spr" ) );
-				btn1.Clicked += () =>
-				{
-					ConvertResourceToNewFormat();
-					btn1.Enabled = false;
-				};
-
-				panel.Layout.AddSpacingCell( 4 );
-
-				var btn2 = panel.Layout.Add( new Button.Primary( "Replace .sprite -> .spr file paths in Code" ) );
-				btn2.Clicked += () =>
-				{
-					ConvertCodeToNewFormat();
-					btn2.Enabled = false;
-				};
-			}
-
-			{
-				var panel = rowWidget.Layout.Add( new Widget( this ) );
-				panel.SetStyles( "background-color: #222;" );
-				panel.SetSizeMode( SizeMode.Flexible, SizeMode.Flexible );
 				panel.FixedWidth = 300;
 				panel.Layout = Layout.Column();
 				panel.Layout.Margin = 8;
 
 				panel.Layout.Add( new Label( $"Convert to new in-engine Sprite Resource" ) );
 
-				var lblDesc = panel.Layout.Add( new Label( $"\nYour existing .sprite resources will be converted to\nin-engine .sprite resources. This is will give you more\nperformance and stability, but you will LOSE:" ) );
+				var lblSub = panel.Layout.Add( new Label( $"Recommended. More performant and continued support." ) );
+				lblSub.SetStyles( "font-size: 10px; color: rgb(0, 220, 0); margin-top: 4px; margin-bottom: 8px;" );
+
+				var lblDesc = panel.Layout.Add( new Label( $"Your existing .sprite resources will be converted to\nin-engine .sprite resources. This is will give you more\nperformance and stability, but there are some minor\nAPI differences and gaps that will be implemented\nover-time.\n\n" +
+					$"This will not affect any Tilesets you have. And if you\nhave none, then you can safely remove this library\nafter you've finished converting." ) );
 				lblDesc.Color = Color.Gray;
 
-				var lblWarn = panel.Layout.Add( new Label( $"\n- 3D Sprite Rotation (Billboard for now, very soon)\n- Attach Points\n- Looping Points\n- Broadcast Events\n- Spritesheet Importer (use TextureGenerator instead)\n- And more (such as the Sprite Editor Window)\n\n" +
-					$"You must also update your code for the new API.\nSprite Tools can be removed after converting.\nYou can come back and do this at any time." ) );
+				var lblWarn = panel.Layout.Add( new Label( $"\nWhen converting, you may have a few code errors\ndue to API differences. You can also come back and\ndo this later if you choose the option on the right." ) );
 				lblWarn.Color = Theme.Red;
 
 
@@ -108,6 +76,44 @@ public class ProjectConverterDialog : Dialog
 				btn2.Clicked += () =>
 				{
 					ConvertCodeToEngineFormat();
+					btn2.Enabled = false;
+				};
+			}
+
+			{
+				var panel = rowWidget.Layout.Add( new Widget( this ) );
+				panel.SetStyles( "background-color: #222;" );
+				panel.SetSizeMode( SizeMode.Flexible, SizeMode.Flexible );
+				panel.Layout = Layout.Column();
+				panel.Layout.Margin = 8;
+
+				panel.Layout.Add( new Label( $"Continue using Sprite Tools format" ) );
+
+				var lblSub = panel.Layout.Add( new Label( $"Tools are outdated and will no longer receive updates." ) );
+				lblSub.SetStyles( "font-size: 10px; color: orange; margin-top: 4px; margin-bottom: 8px;" );
+
+				var lblDesc = panel.Layout.Add( new Label( $"The sprite resource extension has changed from\n.sprite -> .spr to prevent conflicts with the new\nin-engine sprite resource." ) );
+				lblDesc.Color = Color.Gray;
+
+				var lblWarn = panel.Layout.Add( new Label( $"\nIf your code loads any .sprite resources via a string\nyou may have to update those yourself as the code\nupgrader is going to miss any manually constructed\nstrings.\n\n" +
+					$"Also keep in mind that if you choose this path, you\nare not guaranteed future support. If changes are\nmade to in-engine sprites in the future, this\nconverter will no longer work. Proceed with caution." ) );
+				lblWarn.Color = Theme.Red;
+
+				panel.Layout.AddStretchCell( 1 );
+
+				var btn1 = panel.Layout.Add( new Button.Primary( "Update Sprite Resources .sprite -> .spr" ) );
+				btn1.Clicked += () =>
+				{
+					ConvertResourceToNewFormat();
+					btn1.Enabled = false;
+				};
+
+				panel.Layout.AddSpacingCell( 4 );
+
+				var btn2 = panel.Layout.Add( new Button.Primary( "Replace .sprite -> .spr file paths in Code" ) );
+				btn2.Clicked += () =>
+				{
+					ConvertCodeToNewFormat();
 					btn2.Enabled = false;
 				};
 			}
