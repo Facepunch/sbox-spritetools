@@ -455,7 +455,9 @@ public sealed class SpriteComponent : Component, Component.ExecuteInEditor
 		_flipVertical = _spriteFlags.HasFlag( SpriteFlags.VerticalFlip );
 		var targetModel = _spriteFlags.HasFlag( SpriteFlags.DrawBackface ) ? "models/sprite_quad_2_sided.vmdl" : "models/sprite_quad_1_sided.vmdl";
 		if ( SceneObject is not null && SceneObject.Model.ResourcePath != targetModel )
+		{
 			SceneObject.Model = Model.Load( targetModel );
+		}
 		ApplyMaterialOffset();
 	}
 

@@ -60,7 +60,7 @@ VS
 		i.vPositionOs = v.vPositionOs.xyz;
 		i.vColor = v.vColor;
 
-		ExtraShaderData_t extraShaderData = GetExtraPerInstanceShaderData( v );
+		ExtraShaderData_t extraShaderData = GetExtraPerInstanceShaderData( v.nInstanceTransformID );
 		i.vTintColor = extraShaderData.vTint;
 
 		VS_DecodeObjectSpaceNormalAndTangent( v, i.vNormalOs, i.vTangentUOs_flTangentVSign );
