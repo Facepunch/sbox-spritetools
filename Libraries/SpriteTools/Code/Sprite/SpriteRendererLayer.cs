@@ -23,10 +23,7 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		set
 		{
 			_sprite = value;
-			if ( _spriteRenderer.IsValid() )
-			{
-				_spriteRenderer.Sprite = value;
-			}
+			ApplySprite();
 		}
 	}
 	Sprite _sprite;
@@ -59,6 +56,7 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 					_rotationOffset = Rotation.From( -90, 0, 0 );
 					break;
 			}
+			ApplyRotation();
 		}
 	}
 	SpriteComponent.Axis _upDirection = SpriteComponent.Axis.YPositive;
@@ -99,25 +97,6 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	Color _flashTint = Color.White.WithAlpha( 0 );
 
 	/// <summary>
-	/// Used to override the material with your own. Useful for custom shaders.
-	/// Shader requires a texture parameter named "Texture".
-	/// </summary>
-	[Property]
-	[Category( "Visuals" )]
-	public Material MaterialOverride
-	{
-		get => _materialOverride;
-		set
-		{
-			_materialOverride = value;
-			SpriteMaterial = null;
-		}
-	}
-	Material _materialOverride;
-	private Material SpriteMaterial { get; set; }
-	public Material Material => SpriteMaterial;
-
-	/// <summary>
 	/// The playback speed of the animation.
 	/// </summary>
 	[Property] public float PlaybackSpeed { get; set; } = 1.0f;
@@ -132,7 +111,16 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	/// </summary>
 	[Property]
 	[Category( "Visuals" )]
-	public SpriteComponent.ShadowRenderType CastShadows { get; set; } = SpriteComponent.ShadowRenderType.On;
+	public SpriteComponent.ShadowRenderType CastShadows
+	{
+		get => _castShadows;
+		set
+		{
+			_castShadows = value;
+			ApplyShadows();
+		}
+	}
+	SpriteComponent.ShadowRenderType _castShadows = SpriteComponent.ShadowRenderType.On;
 
 	[Property]
 	[Category( "Visuals" )]
@@ -158,23 +146,19 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	/// The sprite animation that is currently playing.
 	/// </summary>
 	[JsonIgnore]
-	public SpriteAnimation CurrentAnimation
+	public Sprite.Animation CurrentAnimation
 	{
-		get => _currentAnimation;
+		get => _spriteRenderer?.CurrentAnimation;
 		set
 		{
-			if ( value is null )
+			if ( _spriteRenderer.IsValid() )
 			{
-				_currentAnimation = null;
-				return;
+				PlayAnimation( value.Name );
 			}
-			PlayAnimation( value.Name );
 		}
 	}
-	[JsonIgnore]
-	SpriteAnimation _currentAnimation;
 
-	[Property, Category( "Sprite" ), Title( "Current Animation" ), SpriteComponent.AnimationName]
+	[Property, Category( "Sprite" ), Title( "Current Animation" ), Editor( "sprite_animation_name" )]
 	private string StartingAnimationName
 	{
 		get => CurrentAnimation?.Name ?? ( _sprite?.Animations?.FirstOrDefault()?.Name ?? "" );
@@ -191,10 +175,8 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	{
 		get
 		{
-			var texture = _spriteRenderer?.Texture;
-			var ratio = ( texture.Width == 0 || texture.Height == 0 ) ? 1f : (float)texture.Height / (float)texture.Width;
 			var size = new Vector2( 50, 50 );
-			BBox bbox = new BBox( new Vector3( -size.x, -size.y * ratio, -0.1f ), new Vector3( size.x, size.y * ratio, 0.1f ) );
+			BBox bbox = new BBox( new Vector3( -size.x, -size.y, -0.1f ), new Vector3( size.x, size.y, 0.1f ) );
 			var origin = ( CurrentAnimation?.Origin ?? new Vector2( 0.5f, 0.5f ) ) - new Vector2( 0.5f, 0.5f );
 			bbox = bbox.Translate( new Vector3( origin.y, origin.x, 0 ) * new Vector3( -size.x * 2f, -size.y * 2f, 1f ) );
 			return bbox;
@@ -289,10 +271,23 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		}
 	}
 
+	protected override void OnPreRender ()
+	{
+		base.OnPreRender();
+
+		if ( LocalScale.z == 1 && LocalScale.x != 1 )
+		{
+			LocalScale = new Vector3( LocalScale.z, LocalScale.y, 1 );
+		}
+		else if ( LocalScale.x == 1 && LocalScale.z == 1 && LocalScale.y != 1 )
+		{
+			LocalScale = new Vector3( LocalScale.y, LocalScale.y, LocalScale.y );
+		}
+	}
+
 	protected override void DrawGizmos ()
 	{
 		base.DrawGizmos();
-		if ( Game.IsPlaying ) return;
 		if ( Sprite is null ) return;
 
 		Gizmo.Transform = Gizmo.Transform.WithRotation( WorldRotation * _rotationOffset );
@@ -306,6 +301,14 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 			Gizmo.Draw.Color = Gizmo.IsSelected ? Color.White : Color.Orange;
 			Gizmo.Draw.LineBBox( bbox );
 		}
+	}
+
+	private void ApplySprite ()
+	{
+		if ( !_spriteRenderer.IsValid() )
+			return;
+
+		_spriteRenderer.Sprite = _sprite;
 	}
 
 	private void ApplyColor ()
@@ -330,17 +333,40 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		_spriteRenderer.FlipVertical = _spriteFlags.HasFlag( SpriteFlags.VerticalFlip );
 	}
 
+	private void ApplyRotation ()
+	{
+		if ( !_spriteRenderer.IsValid() )
+			return;
+
+		_spriteRenderer.LocalRotation = _rotationOffset * new Angles( -90, 0, 0 );
+	}
+
+	private void ApplyShadows ()
+	{
+		if ( !_spriteRenderer.IsValid() )
+			return;
+
+		_spriteRenderer.Shadows = _castShadows != SpriteComponent.ShadowRenderType.Off;
+	}
+
 	private void CreateSpriteRenderer ()
 	{
 		var childObject = new GameObject();
 		childObject.Parent = GameObject;
-		childObject.Flags |= GameObjectFlags.Hidden;
+		childObject.Flags |= GameObjectFlags.NotSaved | GameObjectFlags.Hidden;
 		_spriteRenderer = childObject.AddComponent<SpriteRenderer>();
 		_spriteRenderer.Billboard = SpriteRenderer.BillboardMode.None;
+		_spriteRenderer.TextureFilter = Sandbox.Rendering.FilterMode.Point;
 		_spriteRenderer.Enabled = false;
+		_spriteRenderer.Size = 80;
+		_spriteRenderer.IsSorted = true;
+		_spriteRenderer.Shadows = false;
 
+		ApplySprite();
 		ApplyColor();
 		ApplySpriteFlags();
+		ApplyRotation();
+		ApplyShadows();
 	}
 
 	/// <summary>
@@ -350,256 +376,9 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	/// <param name="force">Whether or not the animation should be forced. If true this will restart the animation from frame index 0 even if the specified animation is equal to the current animation.</param>
 	public void PlayAnimation ( string animationName, bool force = false )
 	{
+		if ( _spriteRenderer?.CurrentAnimation?.Name == animationName )
+			return;
+
 		_spriteRenderer?.PlayAnimation( animationName );
 	}
-
-	//internal void UpdateSceneObject ()
-	//{
-	//	if ( !SceneObject.IsValid() ) return;
-
-	//	SceneObject.RenderingEnabled = true;
-	//	SceneObject.Flags.ExcludeGameLayer = CastShadows == ShadowRenderType.ShadowsOnly;
-	//	SceneObject.Flags.CastShadows = CastShadows != ShadowRenderType.Off;
-
-	//	if ( CurrentAnimation == null )
-	//	{
-	//		SceneObject.Transform = WorldTransform;
-	//		SceneObject.RenderingEnabled = false;
-	//		return;
-	//	}
-
-	//	AdvanceFrame();
-
-	//	// var texture = Texture.Load(FileSystem.Mounted, CurrentAnimation.Frames[CurrentFrameIndex].FilePath);
-	//	// if (texture is not null)
-	//	//     SpriteMaterial.Set("Texture", texture);
-
-	//	// Add pivot to transform
-	//	var pos = WorldPosition;
-	//	var rot = WorldRotation * _rotationOffset;
-	//	var scale = WorldScale * new Vector3( 1f, 1f * ( CurrentTexture?.AspectRatio ?? 1f ), 1f );
-	//	if ( UsePixelScale )
-	//	{
-	//		var _frameSize = CurrentTexture?.FrameSize ?? new Vector2( 100, 100 );
-	//		var scl = _frameSize.x < _frameSize.x ? _frameSize.y : _frameSize.y;
-	//		scale *= ( new Vector3( scl, scl, 1f ) ) / 100f;
-	//	}
-	//	var origin = CurrentAnimation.Origin - new Vector2( 0.5f, 0.5f );
-	//	pos -= new Vector3( origin.y, origin.x, 0 ) * 100f * scale;
-	//	pos = pos.RotateAround( WorldPosition, rot );
-	//	SceneObject.Transform = new Transform( pos, rot, scale );
-	//}
-
-	//internal void UpdateAttachments ()
-	//{
-	//	if ( AttachPoints is not null && AttachPoints.Count > 0 )
-	//	{
-	//		foreach ( var attachment in AttachPoints )
-	//		{
-	//			var transform = GetAttachmentTransform( attachment.Key );
-
-	//			attachment.Value.LocalPosition = transform.Position;
-	//			attachment.Value.LocalRotation = transform.Rotation;
-	//		}
-	//	}
-	//}
-
-	//void ApplyMaterialOffset ()
-	//{
-	//	if ( CurrentTexture is null ) return;
-	//	if ( SpriteMaterial is null ) return;
-	//	var offset = CurrentTexture.GetFrameOffset( CurrentFrameIndex );
-	//	var tiling = CurrentTexture.GetFrameTiling();
-	//	if ( _flipHorizontal )
-	//	{
-	//		offset.x = -offset.x - tiling.x;
-	//	}
-	//	if ( _flipVertical )
-	//	{
-	//		offset.y = -offset.y - tiling.y;
-	//	}
-	//	SpriteMaterial.Set( "g_vTiling", tiling );
-	//	SpriteMaterial.Set( "g_vOffset", offset );
-	//	UpdateAttachments();
-	//}
-
-	//void ApplySpriteFlags ()
-	//{
-	//	_flipHorizontal = _spriteFlags.HasFlag( SpriteFlags.HorizontalFlip );
-	//	_flipVertical = _spriteFlags.HasFlag( SpriteFlags.VerticalFlip );
-	//	var targetModel = _spriteFlags.HasFlag( SpriteFlags.DrawBackface ) ? "models/sprite_quad_2_sided.vmdl" : "models/sprite_quad_1_sided.vmdl";
-	//	if ( SceneObject is not null && SceneObject.Model.ResourcePath != targetModel )
-	//	{
-	//		SceneObject.Model = Model.Load( targetModel );
-	//	}
-	//	ApplyMaterialOffset();
-	//}
-
-	//void AdvanceFrame ()
-	//{
-	//	var frameCount = CurrentAnimation.Frames.Count;
-	//	if ( frameCount <= 1 ) return;
-	//	var currentPlayback = PlaybackSpeed * ( _isPingPonging ? -1 : 1 );
-	//	var frameRate = ( 1f / ( ( currentPlayback == 0 ) ? 0 : ( CurrentAnimation.FrameRate * Math.Abs( currentPlayback ) ) ) );
-	//	_timeSinceLastFrame += ( ( Game.IsPlaying ) ? Time.Delta : RealTime.Delta );
-	//	if ( _timeSinceLastFrame < frameRate ) return;
-	//	if ( !( CurrentAnimation.LoopMode != SpriteResource.LoopMode.None || ( currentPlayback > 0 && CurrentFrameIndex < frameCount - 1 ) || ( currentPlayback < 0 && CurrentFrameIndex > 0 ) ) ) return;
-
-	//	var loopStart = CurrentAnimation.GetLoopStart();
-	//	var loopEnd = CurrentAnimation.GetLoopEnd();
-	//	if ( currentPlayback > 0 )
-	//	{
-	//		var frame = CurrentFrameIndex;
-	//		frame++;
-	//		if ( frame > loopEnd && CurrentAnimation.LoopMode != SpriteResource.LoopMode.None )
-	//		{
-	//			switch ( CurrentAnimation.LoopMode )
-	//			{
-	//				case SpriteResource.LoopMode.PingPong:
-	//					_isPingPonging = !_isPingPonging;
-	//					frame = Math.Max( loopEnd - 1, loopStart );
-	//					break;
-	//				case SpriteResource.LoopMode.Forward:
-	//					_isPingPonging = false;
-	//					frame = loopStart;
-	//					break;
-	//			}
-	//		}
-	//		else if ( frame >= frameCount - 1 && Game.IsPlaying )
-	//		{
-	//			_queuedAnimations.Add( CurrentAnimation.Name );
-	//		}
-	//		CurrentFrameIndex = frame;
-	//	}
-	//	else if ( currentPlayback < 0 )
-	//	{
-	//		var frame = CurrentFrameIndex;
-	//		frame--;
-	//		if ( frame < loopStart && CurrentAnimation.LoopMode != SpriteResource.LoopMode.None )
-	//		{
-	//			switch ( CurrentAnimation.LoopMode )
-	//			{
-	//				case SpriteResource.LoopMode.PingPong:
-	//					_isPingPonging = !_isPingPonging;
-	//					frame = Math.Min( loopStart + 1, loopEnd );
-	//					break;
-	//				case SpriteResource.LoopMode.Forward:
-	//					_isPingPonging = false;
-	//					frame = loopEnd;
-	//					break;
-	//			}
-	//		}
-	//		else if ( frame <= 0 && Game.IsPlaying )
-	//		{
-	//			OnAnimationComplete?.Invoke( CurrentAnimation.Name );
-	//		}
-	//		CurrentFrameIndex = frame;
-	//	}
-
-	//	_timeSinceLastFrame = 0;
-	//	var currentFrame = CurrentAnimation.Frames[CurrentFrameIndex];
-	//	foreach ( var tag in currentFrame.Events )
-	//	{
-	//		QueueEvent( tag );
-	//	}
-	//}
-
-	//internal void UpdateSprite ()
-	//{
-	//	if ( Sprite == null )
-	//	{
-	//		BroadcastEvents.Clear();
-	//		CurrentAnimation = null;
-	//		return;
-	//	}
-
-	//	if ( SpriteMaterial is not null && CurrentTexture is not null )
-	//	{
-	//		SpriteMaterial.Set( "Texture", CurrentTexture );
-	//		ApplyMaterialOffset();
-	//		SceneObject.SetMaterialOverride( SpriteMaterial );
-	//	}
-
-	//	List<string> keysToRemove = BroadcastEvents.Keys.ToList();
-
-	//	foreach ( var animation in Sprite.Animations )
-	//	{
-	//		foreach ( var frame in animation.Frames )
-	//		{
-	//			foreach ( var tag in frame.Events )
-	//			{
-	//				if ( keysToRemove.Contains( tag ) )
-	//					keysToRemove.Remove( tag );
-	//				if ( !BroadcastEvents.ContainsKey( tag ) )
-	//					BroadcastEvents[tag] = ( _ ) => { };
-	//			}
-	//		}
-	//	}
-
-
-	//	foreach ( var key in keysToRemove )
-	//	{
-	//		BroadcastEvents.Remove( key );
-	//	}
-	//}
-
-	///// <summary>
-	///// Get the global transform of an attachment point. Returns Transform.World if the attachment point does not exist.
-	///// </summary>
-	///// <param name="attachmentName">The name of the attach point</param>
-	//public Transform GetAttachmentTransform ( string attachmentName )
-	//{
-	//	if ( AttachPoints.ContainsKey( attachmentName ) )
-	//	{
-	//		var ratio = CurrentTexture.AspectRatio;
-	//		var attachPos = CurrentAnimation.GetAttachmentPosition( attachmentName, CurrentFrameIndex );
-	//		var origin = CurrentAnimation.Origin - new Vector2( 0.5f, 0.5f );
-	//		var rot = Rotation.Identity;
-	//		var pos = ( new Vector3( attachPos.y, attachPos.x, 0 ) - ( Vector3.One.WithZ( 0 ) / 2f ) - new Vector3( origin.y, origin.x, 0 ) ) * 100f;
-	//		pos *= new Vector3( 1f, ratio, 1f );
-	//		pos = pos.RotateAround( Vector3.Zero, _rotationOffset );
-
-	//		if ( SpriteFlags.HasFlag( SpriteFlags.HorizontalFlip ) ) rot *= Rotation.From( 180, 0, 0 );
-	//		if ( SpriteFlags.HasFlag( SpriteFlags.VerticalFlip ) ) rot *= Rotation.From( 0, 0, 180 );
-	//		pos = pos.RotateAround( origin / 2f * new Vector2( 100, 100 * ratio ), rot );
-
-	//		return new Transform( pos, rot, Vector3.One );
-	//	}
-	//	return Transform.World;
-	//}
-
-	//List<string> _queuedEvents = new();
-	//List<string> _queuedAnimations = new();
-	//void QueueEvent ( string tag )
-	//{
-	//	_queuedEvents.Add( tag );
-	//}
-
-	//internal void RunBroadcastQueue ()
-	//{
-	//	if ( _queuedEvents.Count > 0 )
-	//	{
-	//		foreach ( var tag in _queuedEvents )
-	//		{
-	//			BroadcastEvent( tag );
-	//		}
-	//		_queuedEvents.Clear();
-	//	}
-
-	//	if ( _queuedAnimations.Count > 0 )
-	//	{
-	//		foreach ( var anim in _queuedAnimations )
-	//		{
-	//			OnAnimationComplete?.Invoke( anim );
-	//		}
-	//		_queuedAnimations.Clear();
-	//	}
-	//}
-
-	//void BroadcastEvent ( string tag )
-	//{
-	//	OnBroadcastEvent?.Invoke( tag );
-	//	if ( BroadcastEvents.ContainsKey( tag ) )
-	//		BroadcastEvents[tag]?.Invoke( this );
-	//}
 }
