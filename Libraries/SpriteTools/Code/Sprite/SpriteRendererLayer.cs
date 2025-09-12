@@ -275,9 +275,9 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	{
 		base.OnPreRender();
 
-		if ( LocalScale.z == 1 && LocalScale.x != 1 )
+		if ( LocalScale.z == 1 && LocalScale.y != 1 )
 		{
-			LocalScale = new Vector3( LocalScale.z, LocalScale.y, 1 );
+			LocalScale = new Vector3( LocalScale.x, LocalScale.y, LocalScale.y );
 		}
 		else if ( LocalScale.x == 1 && LocalScale.z == 1 && LocalScale.y != 1 )
 		{
@@ -319,7 +319,12 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		var color = _tint;
 		if ( _flashTint.a > 0 )
 		{
-			color = Color.Lerp( color, _flashTint, _flashTint.a ).WithAlpha( _flashTint.a * 1000f );
+			var intensity = _flashTint.a * 1000;
+			color = Color.Lerp( color, _flashTint.WithAlpha( color.a ), _flashTint.a );
+			color.r *= intensity;
+			color.g *= intensity;
+			color.b *= intensity;
+			color.a = intensity;
 		}
 		_spriteRenderer.Color = color;
 	}
@@ -358,7 +363,7 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		_spriteRenderer.Billboard = SpriteRenderer.BillboardMode.None;
 		_spriteRenderer.TextureFilter = Sandbox.Rendering.FilterMode.Point;
 		_spriteRenderer.Enabled = false;
-		_spriteRenderer.Size = 80;
+		_spriteRenderer.Size = 100;
 		_spriteRenderer.IsSorted = true;
 		_spriteRenderer.Shadows = false;
 
