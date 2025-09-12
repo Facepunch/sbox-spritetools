@@ -325,10 +325,13 @@ public class ProjectConverterDialog : Dialog
 
 								newFrames.Add( new JsonObject()
 								{
-									["$compiler"] = "texture",
-									["$source"] = "imagefile",
-									["data"] = resourceData,
-									["compiled"] = null
+									["Texture"] = new JsonObject()
+									{
+										["$compiler"] = "texture",
+										["$source"] = "imagefile",
+										["data"] = resourceData,
+										["compiled"] = null
+									}
 								} );
 							}
 						}
@@ -393,6 +396,7 @@ public class ProjectConverterDialog : Dialog
 			// Replace SpriteComponent references with SpriteRenderer, let the user manually fix any errors that come from this
 			// since a lot of it is done on a case-by-case basis since not all properties are 1:1, but all features are.
 			codeStr = codeStr.Replace( "SpriteComponent", "SpriteRenderer" );
+			codeStr = codeStr.Replace( "SpriteResource", "Sprite" );
 
 			await System.IO.File.WriteAllTextAsync( file, codeStr );
 		}
