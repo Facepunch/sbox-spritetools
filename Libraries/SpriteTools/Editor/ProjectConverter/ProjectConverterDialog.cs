@@ -373,8 +373,8 @@ public class ProjectConverterDialog : Dialog
 				var assetStr = await System.IO.File.ReadAllTextAsync( file );
 				assetStr = assetStr.Replace( relativePath, newRelativePath );
 				assetStr = assetStr.Replace( relativePath + "_c", newRelativePath + "_c" );
-				assetStr = assetStr.Replace( "\"__type\": \"SpriteTools.SpriteComponent\"", "\"__type\": \"Sandbox.SpriteRenderer\"" );
-				assetStr = assetStr.Replace( "\"component_type\": \"SpriteComponent\"", "\"__type\": \"SpriteRenderer\"" );
+				assetStr = assetStr.Replace( "\"__type\": \"SpriteTools.SpriteComponent\"", "\"__type\": \"Sandbox.SpriteRendererLayer\"" );
+				assetStr = assetStr.Replace( "\"component_type\": \"SpriteComponent\"", "\"__type\": \"SpriteRendererLayer\"" );
 				await System.IO.File.WriteAllTextAsync( file, assetStr );
 			}
 		}
@@ -402,9 +402,9 @@ public class ProjectConverterDialog : Dialog
 
 			// Replace SpriteComponent references with SpriteRenderer, let the user manually fix any errors that come from this
 			// since a lot of it is done on a case-by-case basis since not all properties are 1:1, but all features are.
-			codeStr = codeStr.Replace( "SpriteTools.SpriteComponent", "Sandbox.SpriteRenderer" );
+			codeStr = codeStr.Replace( "SpriteTools.SpriteComponent", "SpriteTools.SpriteRendererLayer" );
 			codeStr = codeStr.Replace( "SpriteTools.SpriteResource", "Sandbox.Sprite" );
-			codeStr = codeStr.Replace( "SpriteComponent", "SpriteRenderer" );
+			codeStr = codeStr.Replace( "SpriteComponent", "SpriteRendererLayer" );
 			codeStr = codeStr.Replace( "SpriteResource", "Sprite" );
 
 			await System.IO.File.WriteAllTextAsync( file, codeStr );
