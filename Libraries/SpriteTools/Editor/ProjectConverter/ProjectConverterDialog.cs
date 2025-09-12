@@ -162,7 +162,6 @@ public class ProjectConverterDialog : Dialog
 			{
 				Progress.Update( $"Updating any references to {relativePath}", index, OutdatedSprites.Count );
 				var file = usingAsset.GetSourceFile( true );
-				Log.Info( file );
 				if ( !System.IO.File.Exists( file ) )
 					continue;
 
@@ -216,6 +215,7 @@ public class ProjectConverterDialog : Dialog
 	{
 		using var progress = Progress.Start( "Updating to new in-engine Sprite resource format" );
 		int index = 0;
+
 		foreach ( var sprite in OutdatedSprites )
 		{
 			var relativePath = sprite;
@@ -232,25 +232,28 @@ public class ProjectConverterDialog : Dialog
 
 			// Update the JSON to the new format
 			var json = Json.ParseToJsonObject( jsonStr );
-			if ( json.TryGetPropertyValue( "Animations", out var animationsNode ) && animationsNode is JsonArray animationsArray )
+			if ( json.TryGetPropertyValue( "Animations", out var animationsNode ) )
 			{
+				var animationsArray = animationsNode.AsArray();
+				if ( animationsArray is null ) continue;
+
 				// Loop through all animations and convert them to the new format
 				foreach ( var animEntry in animationsArray )
 				{
-					if ( animEntry is not JsonObject animObject )
-						continue;
+					var animObject = animEntry.AsObject();
+					if ( animEntry is null ) continue;
 
 					// Check for Looping bool and set loopMode accordingly
 					var loopMode = Sprite.LoopMode.Loop;
-					if ( animObject.TryGetPropertyValue( "Looping", out var loopingNode ) && loopingNode is JsonValue loopingValue )
+					if ( animObject.TryGetPropertyValue( "Looping", out var loopingNode ) )
 					{
-						loopMode = loopingValue.GetValue<bool>() ? Sprite.LoopMode.Loop : Sprite.LoopMode.None;
+						loopMode = loopingNode.GetValue<bool>() ? Sprite.LoopMode.Loop : Sprite.LoopMode.None;
 					}
 
 					// Check for LoopMode string and set loopMode accordingly
-					if ( animObject.TryGetPropertyValue( "LoopMode", out var loopModeNode ) && loopModeNode is JsonValue loopModeValue )
+					if ( animObject.TryGetPropertyValue( "LoopMode", out var loopModeNode ) )
 					{
-						loopMode = loopModeValue.GetValue<string>() switch
+						loopMode = loopModeNode.GetValue<string>() switch
 						{
 							"None" => Sprite.LoopMode.None,
 							"Forward" => Sprite.LoopMode.Loop,
@@ -260,20 +263,23 @@ public class ProjectConverterDialog : Dialog
 					}
 
 					// Re-create the frame list so SpriteAnimationFrame -> Texture
-					if ( animObject.TryGetPropertyValue( "Frames", out var framesNode ) && framesNode is JsonArray framesArray )
+					if ( animObject.TryGetPropertyValue( "Frames", out var framesNode ) )
 					{
+						var framesArray = framesNode.AsArray();
+						if ( framesArray is null ) continue;
+
 						var newFrames = new JsonArray();
 
 						foreach ( var frameEntry in framesArray )
 						{
-							if ( frameEntry is not JsonObject frameObject )
-								continue;
+							var frameObject = frameEntry.AsObject();
+							if ( frameObject is null ) continue;
 
 							// Get the FilePath from the SpriteAnimationFrame
-							if ( frameObject.TryGetPropertyValue( "FilePath", out var filePathNode ) && filePathNode is JsonValue filePathValue )
+							if ( frameObject.TryGetPropertyValue( "FilePath", out var filePathNode ) )
 							{
 								// Create a new texture generator for the frame
-								var frameFilePath = filePathValue.GetValue<string>();
+								var frameFilePath = filePathNode.GetValue<string>();
 								if ( string.IsNullOrWhiteSpace( frameFilePath ) )
 								{
 									newFrames.Add( null );
@@ -362,12 +368,13 @@ public class ProjectConverterDialog : Dialog
 			{
 				Progress.Update( $"Updating any references to {relativePath}", index, OutdatedSprites.Count );
 				var file = usingAsset.GetSourceFile( true );
-				Log.Info( file );
 				if ( !System.IO.File.Exists( file ) )
 					continue;
 				var assetStr = await System.IO.File.ReadAllTextAsync( file );
 				assetStr = assetStr.Replace( relativePath, newRelativePath );
 				assetStr = assetStr.Replace( relativePath + "_c", newRelativePath + "_c" );
+				assetStr = assetStr.Replace( "\"__type\": \"SpriteTools.SpriteComponent\"", "\"__type\": \"Sandbox.SpriteRenderer\"" );
+				assetStr = assetStr.Replace( "\"component_type\": \"SpriteComponent\"", "\"__type\": \"SpriteRenderer\"" );
 				await System.IO.File.WriteAllTextAsync( file, assetStr );
 			}
 		}
@@ -395,6 +402,8 @@ public class ProjectConverterDialog : Dialog
 
 			// Replace SpriteComponent references with SpriteRenderer, let the user manually fix any errors that come from this
 			// since a lot of it is done on a case-by-case basis since not all properties are 1:1, but all features are.
+			codeStr = codeStr.Replace( "SpriteTools.SpriteComponent", "Sandbox.SpriteRenderer" );
+			codeStr = codeStr.Replace( "SpriteTools.SpriteResource", "Sandbox.Sprite" );
 			codeStr = codeStr.Replace( "SpriteComponent", "SpriteRenderer" );
 			codeStr = codeStr.Replace( "SpriteResource", "Sprite" );
 

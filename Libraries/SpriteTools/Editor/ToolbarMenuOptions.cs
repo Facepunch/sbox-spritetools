@@ -42,6 +42,7 @@ public static class ToolbarMenuOptions
 						if ( framesNode.AsArray().Any( x => x is JsonObject && x.AsObject().TryGetPropertyValue( "FilePath", out var _ ) ) )
 						{
 							outdatedSprites.Add( file );
+							break; // No need to check further frames, we found one that needs conversion
 						}
 					}
 				}
