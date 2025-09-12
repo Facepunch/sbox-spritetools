@@ -373,7 +373,7 @@ public class ProjectConverterDialog : Dialog
 				var assetStr = await System.IO.File.ReadAllTextAsync( file );
 				assetStr = assetStr.Replace( relativePath, newRelativePath );
 				assetStr = assetStr.Replace( relativePath + "_c", newRelativePath + "_c" );
-				assetStr = assetStr.Replace( "\"__type\": \"SpriteTools.SpriteComponent\"", "\"__type\": \"Sandbox.SpriteRendererLayer\"" );
+				assetStr = assetStr.Replace( "\"__type\": \"SpriteTools.SpriteComponent\"", "\"__type\": \"SpriteTools.SpriteRendererLayer\"" );
 				assetStr = assetStr.Replace( "\"component_type\": \"SpriteComponent\"", "\"__type\": \"SpriteRendererLayer\"" );
 				await System.IO.File.WriteAllTextAsync( file, assetStr );
 			}
