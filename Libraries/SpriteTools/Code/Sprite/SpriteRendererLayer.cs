@@ -331,10 +331,13 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		{
 			var intensity = _flashTint.a * 1000;
 			color = Color.Lerp( color, _flashTint.WithAlpha( color.a ), _flashTint.a );
-			color.r *= intensity;
-			color.g *= intensity;
-			color.b *= intensity;
-			color.a = intensity;
+			if ( _flashTint.WithAlpha( 1 ) != Color.Black )
+			{
+				color.r *= intensity;
+				color.g *= intensity;
+				color.b *= intensity;
+				color.a = intensity;
+			}
 		}
 		_spriteRenderer.Color = color;
 	}
