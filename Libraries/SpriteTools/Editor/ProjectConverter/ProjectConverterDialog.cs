@@ -244,7 +244,7 @@ public class ProjectConverterDialog : Dialog
 					if ( animEntry is null ) continue;
 
 					// Check for Looping bool and set loopMode accordingly
-					var loopMode = Sprite.LoopMode.Loop;
+					var loopMode = Sprite.LoopMode.None;
 					if ( animObject.TryGetPropertyValue( "Looping", out var loopingNode ) )
 					{
 						loopMode = loopingNode.GetValue<bool>() ? Sprite.LoopMode.Loop : Sprite.LoopMode.None;
