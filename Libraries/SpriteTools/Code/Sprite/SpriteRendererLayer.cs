@@ -99,7 +99,17 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	/// <summary>
 	/// The playback speed of the animation.
 	/// </summary>
-	[Property] public float PlaybackSpeed { get; set; } = 1.0f;
+	[Property]
+	public float PlaybackSpeed
+	{
+		get => _playbackSpeed;
+		set
+		{
+			_playbackSpeed = value;
+			ApplyPlaybackSpeed();
+		}
+	}
+	private float _playbackSpeed = 1.0f;
 
 	/// <summary>
 	/// Whether or not the object should scale based on the resolution of the Sprite.
@@ -354,6 +364,14 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		_spriteRenderer.Shadows = _castShadows != SpriteComponent.ShadowRenderType.Off;
 	}
 
+	private void ApplyPlaybackSpeed ()
+	{
+		if ( !_spriteRenderer.IsValid() )
+			return;
+
+		_spriteRenderer.PlaybackSpeed = _playbackSpeed;
+	}
+
 	private void CreateSpriteRenderer ()
 	{
 		var childObject = new GameObject();
@@ -372,6 +390,7 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		ApplySpriteFlags();
 		ApplyRotation();
 		ApplyShadows();
+		ApplyPlaybackSpeed();
 	}
 
 	/// <summary>
