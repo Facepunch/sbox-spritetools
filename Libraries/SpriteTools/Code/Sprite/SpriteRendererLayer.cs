@@ -181,6 +181,9 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		}
 	}
 
+	[Property, Category( "Actions" )]
+	public Action<string> OnAnimationComplete { get; set; }
+
 	public BBox Bounds
 	{
 		get
@@ -207,6 +210,11 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 			}
 		}
 	}
+
+	/// <summary>
+	/// The SpriteRenderer that is being used behind the scenes.
+	/// </summary>
+	public SpriteRenderer Renderer => _spriteRenderer;
 
 	private SpriteRenderer _spriteRenderer;
 
@@ -387,6 +395,7 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		_spriteRenderer.Size = 100;
 		_spriteRenderer.IsSorted = true;
 		_spriteRenderer.Shadows = false;
+		_spriteRenderer.OnAnimationEnd += OnAnimationComplete;
 
 		ApplySprite();
 		ApplyColor();
@@ -407,5 +416,13 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 			return;
 
 		_spriteRenderer?.PlayAnimation( animationName );
+	}
+}
+
+public static class SpriteLayerExtensions
+{
+	public static Texture GetPreviewTexture ( this Sprite sprite )
+	{
+		return sprite?.Animations?.FirstOrDefault()?.Frames?.FirstOrDefault()?.Texture ?? Texture.Transparent;
 	}
 }
