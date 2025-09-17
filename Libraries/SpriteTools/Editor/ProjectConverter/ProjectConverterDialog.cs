@@ -54,7 +54,7 @@ public class ProjectConverterDialog : Dialog
 				lblSub.SetStyles( "font-size: 10px; color: rgb(0, 220, 0); margin-top: 4px; margin-bottom: 8px;" );
 
 				var lblDesc = panel.Layout.Add( new Label( $"Your existing .sprite resources will be converted to\nin-engine .sprite resources. This is will give you more\nperformance and stability, but there are some minor\nAPI differences and gaps that will be implemented\nover-time.\n\n" +
-					$"This will not affect any Tilesets you have. And if you\nhave none, then you can safely remove this library\nafter you've finished converting." ) );
+					$"This will not affect any Tilesets you have. And if you\nDO have any you may have to upgrade again\nin the future." ) );
 				lblDesc.Color = Color.Gray;
 
 				var lblWarn = panel.Layout.Add( new Label( $"\nWhen converting, you may have a few code errors\ndue to API differences. You can also come back and\ndo this later if you choose the option on the right." ) );
