@@ -38,6 +38,7 @@ public class SpriteRenderingWidget : SceneRenderingWidget
 			Camera.OrthographicHeight = 512f;
 			Camera.WorldRotation = new Angles( 90, 180, 0 );
 			Camera.BackgroundColor = Theme.ControlBackground;
+			Camera.WorldPosition = new Vector3( 0, 0, targetZoom );
 			var ambientLight = cameraObj.Components.Create<AmbientLight>();
 			ambientLight.Color = Color.White * 1f;
 
@@ -56,7 +57,8 @@ public class SpriteRenderingWidget : SceneRenderingWidget
 			TextureRect = textureObj.AddComponent<ModelRenderer>();
 			TextureRect.Model = Model.Load( "models/preview_quad.vmdl" );
 			TextureRect.MaterialOverride = PreviewMaterial;
-			TextureRect.WorldPosition = Vector3.Zero;
+			TextureRect.WorldTransform = Transform.Zero;
+			TextureRect.RenderType = ModelRenderer.ShadowRenderType.Off;
 		}
 	}
 
