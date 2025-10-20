@@ -184,6 +184,9 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 	[Property, Category( "Actions" )]
 	public Action<string> OnAnimationComplete { get; set; }
 
+	[Property, Category( "Actions" )]
+	public Action<string> OnBroadcastMessage { get; set; }
+
 	public BBox Bounds
 	{
 		get
@@ -395,7 +398,8 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		_spriteRenderer.Size = 100;
 		_spriteRenderer.IsSorted = true;
 		_spriteRenderer.Shadows = false;
-		//_spriteRenderer.OnAnimationEnd += OnAnimationComplete;
+		_spriteRenderer.OnAnimationEnd += OnAnimationComplete;
+		_spriteRenderer.OnBroadcastMessage += OnBroadcastMessage;
 
 		ApplySprite();
 		ApplyColor();
