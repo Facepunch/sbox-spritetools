@@ -4,18 +4,15 @@ using System;
 
 namespace SpriteTools;
 
-public class SpriteRenderingWidget : NativeRenderingWidget
+public class SpriteRenderingWidget : SceneRenderingWidget
 {
 	public Action OnDragSelected;
 
-	public SceneWorld World;
-	public SceneObject TextureRect;
-	SceneObject BackgroundRect;
+	public ModelRenderer TextureRect;
+	ModelRenderer BackgroundRect;
 	public Material PreviewMaterial;
 	public Vector2 TextureSize { get; private set; }
 	public float AspectRatio { get; private set; }
-
-	protected Gizmo.Instance SceneInstance;
 
 	protected float targetZoom = 115f;
 	Vector2 cameraGrabPos = Vector2.Zero;
@@ -28,39 +25,39 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 		MouseTracking = true;
 		FocusMode = FocusMode.Click;
 
-		SceneInstance = new Gizmo.Instance();
-		World = SceneInstance.World;
-		Camera = new SceneCamera
+		Scene = Scene.CreateEditorScene();
+		using ( Scene.Push() )
 		{
-			World = World,
-			AmbientLightColor = Color.White * 1f,
-			ZNear = 1f,
-			ZFar = 4000,
-			EnablePostProcessing = true,
-			Position = new Vector3( 0, 0, targetZoom ),
-			Angles = new Angles( 90, 180, 0 ),
-			Ortho = true,
-			OrthoHeight = 512f,
-			AntiAliasing = true,
-			BackgroundColor = Theme.ControlBackground,
-		};
 
-		new SceneDirectionalLight( World, new Angles( 90, 0, 0 ), Color.White );
+			var cameraObj = new GameObject( "Camera" );
+			Camera = cameraObj.Components.Create<CameraComponent>();
+			Camera.ZFar = 4000f;
+			Camera.ZNear = 1f;
+			Camera.EnablePostProcessing = false;
+			Camera.Orthographic = true; ;
+			Camera.OrthographicHeight = 512f;
+			Camera.WorldRotation = new Angles( 90, 180, 0 );
+			Camera.BackgroundColor = Theme.ControlBackground;
+			var ambientLight = cameraObj.Components.Create<AmbientLight>();
+			ambientLight.Color = Color.White * 1f;
 
-		var backgroundMat = Material.Load( "materials/sprite_editor_transparent.vmat" );
-		BackgroundRect = new SceneObject( World, "models/preview_quad.vmdl", Transform.Zero );
-		BackgroundRect.SetMaterialOverride( backgroundMat );
-		BackgroundRect.Position = new Vector3( 0, 0, -1 );
+			var backgroundMat = Material.Load( "materials/sprite_editor_transparent.vmat" );
+			var backgroundObj = new GameObject( "Background" );
+			BackgroundRect = backgroundObj.AddComponent<ModelRenderer>();
+			BackgroundRect.Model = Model.Load( "models/preview_quad.vmdl" );
+			BackgroundRect.MaterialOverride = backgroundMat;
+			BackgroundRect.WorldPosition = new Vector3( 0, 0, -1 );
 
-		PreviewMaterial = Material.Load( "materials/sprite_2d.vmat" ).CreateCopy();
-		PreviewMaterial.Set( "Texture", Color.Transparent );
-		PreviewMaterial.Set( "g_flFlashAmount", 0f );
-		TextureRect = new SceneObject( World, "models/preview_quad.vmdl", Transform.Zero );
-		TextureRect.SetMaterialOverride( PreviewMaterial );
-		TextureRect.Flags.WantsFrameBufferCopy = true;
-		TextureRect.Flags.IsTranslucent = true;
-		TextureRect.Flags.IsOpaque = false;
-		TextureRect.Flags.CastShadows = false;
+			PreviewMaterial = Material.Load( "materials/sprite_2d.vmat" ).CreateCopy();
+			PreviewMaterial.Set( "Texture", Color.Transparent );
+			PreviewMaterial.Set( "g_flFlashAmount", 0f );
+
+			var textureObj = new GameObject( "Texture" );
+			TextureRect = textureObj.AddComponent<ModelRenderer>();
+			TextureRect.Model = Model.Load( "models/preview_quad.vmdl" );
+			TextureRect.MaterialOverride = PreviewMaterial;
+			TextureRect.WorldPosition = Vector3.Zero;
+		}
 	}
 
 	protected override void OnWheel ( WheelEvent e )
@@ -88,8 +85,8 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 
 		if ( cameraGrabbing )
 		{
-			var delta = ( cameraGrabPos - e.LocalPosition ) * ( Camera.OrthoHeight / 512f );
-			Camera.Position = new Vector3( Camera.Position.x + delta.y, Camera.Position.y + delta.x, Camera.Position.z );
+			var delta = ( cameraGrabPos - e.LocalPosition ) * ( Camera.OrthographicHeight / 512f );
+			Camera.WorldPosition = new Vector3( Camera.WorldPosition.x + delta.y, Camera.WorldPosition.y + delta.x, Camera.WorldPosition.z );
 			cameraGrabPos = e.LocalPosition;
 		}
 	}
@@ -104,17 +101,9 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 		}
 	}
 
-	public override void PreFrame ()
+	protected override void PreFrame ()
 	{
-		Camera.OrthoHeight = Camera.OrthoHeight.LerpTo( targetZoom, 0.1f );
-	}
-
-	public override void OnDestroyed ()
-	{
-		base.OnDestroyed();
-
-		World?.Delete();
-		World = null;
+		Camera.OrthographicHeight = Camera.OrthographicHeight.LerpTo( targetZoom, 0.1f );
 	}
 
 	public void Zoom ( float delta )
@@ -126,7 +115,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 	public void Fit ()
 	{
 		targetZoom = 115f;
-		Camera.Position = new Vector3( 0, 0, targetZoom );
+		Camera.WorldPosition = new Vector3( 0, 0, targetZoom );
 	}
 
 	public void SetTexture ( Texture texture, Rect rect = default )
@@ -137,7 +126,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 		}
 		PreviewMaterial.Set( "Texture", texture );
 		TextureSize = new Vector2( texture.Width, texture.Height );
-		TextureRect.SetMaterialOverride( PreviewMaterial );
+		TextureRect.MaterialOverride = PreviewMaterial;
 
 		var tiling = rect.Size / TextureSize;
 		var offset = rect.Position / TextureSize;
@@ -159,7 +148,7 @@ public class SpriteRenderingWidget : NativeRenderingWidget
 		if ( AspectRatio < 1f )
 			size = new Vector3( 1f, AspectRatio, 1f );
 
-		BackgroundRect.Transform = Transform.Zero.WithScale( size ).WithPosition( new Vector3( 0, 0, -1 ) );
-		TextureRect.Transform = Transform.Zero.WithScale( size );
+		BackgroundRect.WorldTransform = Transform.Zero.WithScale( size ).WithPosition( new Vector3( 0, 0, -1 ) );
+		TextureRect.WorldTransform = Transform.Zero.WithScale( size );
 	}
 }

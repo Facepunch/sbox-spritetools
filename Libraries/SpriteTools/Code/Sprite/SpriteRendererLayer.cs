@@ -395,7 +395,7 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		_spriteRenderer.Size = 100;
 		_spriteRenderer.IsSorted = true;
 		_spriteRenderer.Shadows = false;
-		_spriteRenderer.OnAnimationEnd += OnAnimationComplete;
+		//_spriteRenderer.OnAnimationEnd += OnAnimationComplete;
 
 		ApplySprite();
 		ApplyColor();
