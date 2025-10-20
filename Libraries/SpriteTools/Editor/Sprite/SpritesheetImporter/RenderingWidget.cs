@@ -64,8 +64,7 @@ public class RenderingWidget : SpriteRenderingWidget
 			Importer.Settings.NumberOfFrames = Importer.Settings.FramesPerRow;
 		}
 
-		SceneInstance.Input.IsHovered = IsUnderMouse;
-		SceneInstance.UpdateInputs( Camera, this );
+		UpdateInputs();
 
 		if ( timeSinceLastCornerHover > 0.025f )
 		{
@@ -73,7 +72,7 @@ public class RenderingWidget : SpriteRenderingWidget
 		}
 
 
-		using ( SceneInstance.Push() )
+		using ( GizmoInstance.Push() )
 		{
 			Gizmo.Draw.Color = Color.White;
 			Gizmo.Draw.LineThickness = 2f;

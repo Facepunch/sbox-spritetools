@@ -151,4 +151,24 @@ public class SpriteRenderingWidget : SceneRenderingWidget
 		BackgroundRect.WorldTransform = Transform.Zero.WithScale( size ).WithPosition( new Vector3( 0, 0, -1 ) );
 		TextureRect.WorldTransform = Transform.Zero.WithScale( size );
 	}
+
+	protected void UpdateInputs ()
+	{
+		Camera.CustomSize = Size;
+
+		GizmoInstance.Input.IsHovered = IsUnderMouse;
+		GizmoInstance.Input.Modifiers = Editor.Application.KeyboardModifiers;
+		GizmoInstance.Input.CursorPosition = Editor.Application.CursorPosition;
+		GizmoInstance.Input.LeftMouse = Editor.Application.MouseButtons.HasFlag( MouseButtons.Left );
+		GizmoInstance.Input.RightMouse = Editor.Application.MouseButtons.HasFlag( MouseButtons.Right );
+
+		GizmoInstance.Input.CursorPosition -= ScreenPosition;
+		GizmoInstance.Input.CursorRay = Camera.ScreenPixelToRay( GizmoInstance.Input.CursorPosition );
+
+		if ( !GizmoInstance.Input.IsHovered )
+		{
+			GizmoInstance.Input.LeftMouse = false;
+			GizmoInstance.Input.RightMouse = false;
+		}
+	}
 }

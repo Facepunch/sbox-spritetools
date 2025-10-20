@@ -215,7 +215,7 @@ public class Preview : Widget
 	void CreateAttachment ( string name )
 	{
 		MainWindow.PushUndo( "Add Attachment Point " + name );
-		var tr = Rendering.World.Trace.Ray( Rendering.Camera.GetRay( attachmentCreatePosition ), 5000f ).Run();
+		var tr = Rendering.Scene.Trace.Ray( Rendering.Camera.ScreenPixelToRay( attachmentCreatePosition ), 5000f ).Run();
 		var pos = tr.EndPosition.WithZ( 0f );
 		var attachPos = new Vector2( pos.y, pos.x );
 		attachPos = ( attachPos / 100f ) + ( Vector2.One * 0.5f );
