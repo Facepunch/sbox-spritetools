@@ -268,4 +268,9 @@ public partial class TilesetCollider : Collider, Component.ExecuteInEditor
 		}
 		return false;
 	}
+
+	protected override IEnumerable<PhysicsShape> CreatePhysicsShapes ( PhysicsBody targetBody, Transform local )
+	{
+		throw new NotImplementedException();
+	}
 }
