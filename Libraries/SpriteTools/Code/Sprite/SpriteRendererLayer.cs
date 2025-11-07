@@ -345,20 +345,8 @@ public sealed class SpriteRendererLayer : Component, Component.ExecuteInEditor
 		if ( !_spriteRenderer.IsValid() )
 			return;
 
-		var color = _tint;
-		if ( _flashTint.a > 0 )
-		{
-			var intensity = _flashTint.a * 1000;
-			color = Color.Lerp( color, _flashTint.WithAlpha( color.a ), _flashTint.a );
-			if ( _flashTint.WithAlpha( 1 ) != Color.Black )
-			{
-				color.r *= intensity;
-				color.g *= intensity;
-				color.b *= intensity;
-				color.a = intensity;
-			}
-		}
-		_spriteRenderer.Color = color;
+		_spriteRenderer.Color = _tint;
+		_spriteRenderer.OverlayColor = _flashTint;
 	}
 
 	private void ApplySpriteFlags ()
