@@ -41,7 +41,7 @@ partial class SpriteDropObject : BaseDropObject
 		if ( texture is not null )
 		{
 			// origin vector in respect to the camera
-			var camRot = SceneViewportWidget.LastSelected.State.CameraRotation * Rotation.From( 90, 0, 0 );
+			var camRot = SceneViewWidget.Current.LastSelectedViewportWidget.State.CameraRotation * Rotation.From( 90, 0, 0 );
 			var originVec = camRot.Backward * origin.y + camRot.Right * origin.x;
 			Gizmo.Draw.Sprite( originVec * 100f, new Vector2( 100f, 100f ), texture, true );
 		}
@@ -63,7 +63,7 @@ partial class SpriteDropObject : BaseDropObject
 		{
 			var DragObject = new GameObject();
 			DragObject.Name = sprite.ResourceName;
-			DragObject.Transform.World = traceTransform.WithRotation( SceneViewportWidget.LastSelected.State.CameraRotation * new Angles( 0, -90, 90 ) );
+			DragObject.Transform.World = traceTransform.WithRotation( SceneViewWidget.Current.LastSelectedViewportWidget.State.CameraRotation * new Angles( 0, -90, 90 ) );
 
 			GameObject = DragObject;
 

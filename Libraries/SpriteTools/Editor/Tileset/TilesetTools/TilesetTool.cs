@@ -135,13 +135,13 @@ public partial class TilesetTool : EditorTool
 			return;
 		}
 
-		if ( SceneViewportWidget.LastSelected?.SceneView?.Tools?.CurrentTool?.CurrentTool is null )
+		if ( SceneViewWidget.Current.LastSelectedViewportWidget?.SceneView?.Tools?.CurrentTool?.CurrentTool is null )
 		{
 			_sceneObject.RenderingEnabled = false;
 		}
 
 		if ( SelectedLayer is null ) return;
-		var state = SceneViewportWidget.LastSelected.State;
+		var state = SceneViewWidget.Current.LastSelectedViewportWidget.State;
 		var gridSize = GridSize * ( SelectedLayer.TilesetResource?.TileScale ?? 1f );
 		using ( Gizmo.Scope( "grid" ) )
 		{
@@ -277,13 +277,13 @@ public partial class TilesetTool : EditorTool
 
 	void InitGrid ()
 	{
-		WasGridActive = SceneViewportWidget.LastSelected.State.ShowGrid;
-		SceneViewportWidget.LastSelected.State.ShowGrid = false;
+		WasGridActive = SceneViewWidget.Current.LastSelectedViewportWidget.State.ShowGrid;
+		SceneViewWidget.Current.LastSelectedViewportWidget.State.ShowGrid = false;
 	}
 
 	void ResetGrid ()
 	{
-		SceneViewportWidget.LastSelected.State.ShowGrid = WasGridActive;
+		SceneViewWidget.Current.LastSelectedViewportWidget.State.ShowGrid = WasGridActive;
 	}
 
 	[Shortcut( "tileset-tools.tileset-tool", "SHIFT+T", typeof( SceneViewportWidget ) )]
